@@ -1,0 +1,60 @@
+{
+  "concept": "7F",
+  "artifact": "post-change-comparison",
+  "capturedOn": "2026-09-22",
+  "comparisonMeaning": "Concept 7F is a documentation-only audit. The after state means the product evidence is now documented; it does not mean Concept 7G or any UI change was implemented.",
+  "before": {
+    "productShell": "Existing map-first single-page shell with Plan, Simulate, Analyze, Review rail and contextual drawer.",
+    "lineageVisibility": "Project visible globally; Scenario/Version mostly visible in Project menu and Setup; Run/Report lineage visible in Review details.",
+    "staleCommunication": "RF-affecting edits invalidate rendered results and show Plan changed / Run guidance.",
+    "drawerDensity": "Setup, Propagation, RF Diagnostics, and Data combine core and specialized/research content.",
+    "responsiveEvidence": "1440px/1280px usable; 1024px crowded; 640px best-effort bottom-sheet map layout with layer-menu overflow.",
+    "bundleEvidence": "One main JS chunk with Vite >500 kB warning.",
+    "productDecision": "No Concept 7G selected yet."
+  },
+  "after": {
+    "productShell": "Same application shell; documented as global, project, Scenario, map, Run, and Report ownership.",
+    "lineageVisibility": "Gap documented and made the selected Concept 7G target; no header or panel behavior changed.",
+    "staleCommunication": "Existing invalidation behavior documented as safe but incomplete; Current/Stale/Historical vocabulary proposed for a future phase.",
+    "drawerDensity": "Overload and research-boundary evidence documented; no panels merged or moved.",
+    "responsiveEvidence": "Representative width findings recorded with realistic support boundary; no CSS changed.",
+    "bundleEvidence": "Generated sizes and source-level eager-load candidates recorded; no dynamic imports added.",
+    "productDecision": "Concept 7G — Results, Lineage & Stale-State UX selected.",
+    "documentationArtifacts": [
+      "docs/concept-7f-pre-change-baseline.json",
+      "docs/concept-7f-product-ux-audit.md",
+      "docs/concept-7f-screen-inventory.json",
+      "docs/concept-7f-navigation-map.json",
+      "docs/concept-7f-task-matrix.json",
+      "docs/concept-7f-terminology-audit.json",
+      "docs/concept-7f-state-communication.json",
+      "docs/concept-7f-bundle-audit.json",
+      "docs/concept-7f-product-debt.json",
+      "docs/concept-7f-next-phase.json",
+      "docs/concept-7f-post-change-comparison.json"
+    ]
+  },
+  "invarianceChecks": {
+    "rf": "no change",
+    "optimizer": "no change",
+    "projectDomain": "no change",
+    "scenarioDomain": "no change",
+    "runHistory": "no change",
+    "reportArtifactStorage": "no change",
+    "indexedDbSchemas": "no change",
+    "apiContracts": "no change",
+    "authentication": "not introduced",
+    "database": "not introduced",
+    "designSystem": "not introduced"
+  },
+  "validation": {
+    "frontendBuild": "passed: 1689 modules transformed; Vite emitted the documented >500 kB warning; JS 921.62 kB raw / 252.89 kB gzip.",
+    "frontendLint": "passed: npm run lint",
+    "frontendTests": "passed: 45 test files and 237 tests",
+    "documentationValidation": "passed: 39 HTML pages and 41 API paths; PyYAML was supplied in an isolated temporary target because system Python did not provide it.",
+    "jsonValidation": "passed: all 10 Concept 7F JSON artifacts parse with Node JSON.parse",
+    "versionConsistency": "passed: A.T.O.M version metadata is consistent at 0.8.0",
+    "gitDiffCheck": "passed: git diff --check produced no output"
+  },
+  "stopCondition": "After the listed validations pass or any failure is recorded with its cause, stop Concept 7F. Do not implement the selected Concept 7G in this task."
+}

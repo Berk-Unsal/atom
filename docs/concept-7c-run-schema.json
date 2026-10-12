@@ -1,0 +1,24 @@
+{
+  "concept": "7C",
+  "storage_schema_version": 1,
+  "envelope": {
+    "storage_schema_version": "integer, exact value 1",
+    "run": "domain Run"
+  },
+  "run": {
+    "identity": ["run_id", "run_type", "project_id", "scenario_id", "scenario_revision_id", "created_at"],
+    "compute_identity": ["scenario_fingerprint", "input_fingerprint", "dataset_references", "engine", "rf_contract", "optimizer_contract"],
+    "exact_input": "canonical_input_snapshot.request plus source/draft, inventory, dataset, receiver, interference, optimizer, defaults, and engine metadata",
+    "statuses": ["queued", "running", "succeeded", "failed", "cancelled"],
+    "lifecycle_fields": ["status", "started_at", "completed_at", "warnings", "error", "summary", "details", "artifact_references", "metadata"],
+    "simulation_details": ["compact statistics", "coverage-gap statistics", "model identity", "provenance"],
+    "optimization_details": ["baseline_solution", "public_pareto_solutions", "recommended_solution_id", "selected_solution_id", "effective_priorities", "objective_availability", "constraints", "search_policy", "budgets", "evaluated_count", "cache_summary", "optimizer_identity", "rf_contract", "optimization_run_id"],
+    "immutable_after_terminal": "all identity, input, dataset, engine, RF, optimizer, and canonical snapshot fields",
+    "forbidden_or_stripped": ["geojson", "full_rays", "ray_paths", "samples", "terrain_grid", "surface_grid", "evaluation_ledger", "private_evaluations", "archive", "raw_measurements"]
+  },
+  "lineage": {
+    "durable_solution_id": "optimization_solution_id",
+    "compute_solution_id": "optimizer_solution_id/id",
+    "scenario_revision_origin": ["originating_run_id", "originating_solution_id"]
+  }
+}

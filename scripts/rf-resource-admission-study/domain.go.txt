@@ -1,0 +1,29 @@
+package main
+
+import (
+ "encoding/json"
+ "os"
+ "path/filepath"
+ "testing"
+ "time"
+ "ankara-5g-raytracer/raytracer"
+)
+
+// Pre-handler metadata lookup in an opt-in disposable test binary only.
+func TestResourceDomainInventory(t *testing.T){
+ if os.Getenv("ATOM_RUN_RESOURCE_STUDY")!="1"{t.Skip("gated metadata inventory")}
+ w:=os.Getenv("ATOM_POLICY_WORKDIR");pack,e:=raytracer.LoadDatasetPack("../data-pipeline");if e!=nil{t.Fatal(e)}
+ files,_:=filepath.Glob(filepath.Join(w,"plans","*.json"));rows:=[]map[string]any{}
+ type planned struct {Endpoint string `json:"endpoint"`;Body json.RawMessage `json:"body"`}
+ type plan struct {Label string `json:"label"`;Requests []planned `json:"requests"`;Synthetic bool `json:"synthetic"`}
+ type point struct {Lon float64 `json:"tower_lon"`;Lat float64 `json:"tower_lat"`;RF map[string]any `json:"rf_profile"`}
+ for _,file:=range files {var plans []plan;b,_:=os.ReadFile(file);if e=json.Unmarshal(b,&plans);e!=nil{t.Fatal(e)}
+  for _,p:=range plans {if p.Synthetic{continue};for _,r:=range p.Requests {var body struct {Lon float64 `json:"tower_lon"`;Lat float64 `json:"tower_lat"`;Radius float64 `json:"radius_m"`;RF map[string]any `json:"rf_profile"`;Towers []point `json:"towers"`};_=json.Unmarshal(r.Body,&body)
+   points:=body.Towers;if len(points)==0{points=[]point{{body.Lon,body.Lat,body.RF}}};radius:=body.Radius;if radius==0{radius=400}
+   cpu:=capacityCPU();start:=time.Now();seen:=map[*raytracer.BuildingFootprint]bool{};counts:=[]int{};vertices:=0
+   for _,point:=range points {rad:=radius;if x,ok:=point.RF["radius_m"].(float64);ok{rad=x};found:=pack.BuildingIndex.SearchBounds(raytracer.BoundsAroundPoint(raytracer.Point{Lon:point.Lon,Lat:point.Lat},rad));counts=append(counts,len(found));for _,building:=range found {if !seen[building]{seen[building]=true;vertices+=len(building.Vertices)}}}
+   rows=append(rows,map[string]any{"plan":filepath.Base(file),"label":p.Label,"endpoint":r.Endpoint,"square_domain_footprints_per_cell":counts,"union_footprints":len(seen),"union_vertices":vertices,"lookup_wall_seconds":time.Since(start).Seconds(),"lookup_cpu_seconds":capacityCPU()-cpu})
+  }}
+ }
+ b,_:=json.MarshalIndent(map[string]any{"method":"conservative square envelope R-tree lookup; no RF compute; union counts include complete footprint vertices","rows":rows},"","  ");if e=os.WriteFile(filepath.Join(w,"domain-inventory.json"),b,0644);e!=nil{t.Fatal(e)}
+}

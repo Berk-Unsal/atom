@@ -1,0 +1,81 @@
+{
+  "concept": "8C",
+  "phase": "post-change interaction contract",
+  "ordinaryModes": {
+    "owner": "App.mapInteractionMode (local React state; not a new persisted enum)",
+    "default": "inspect",
+    "choices": [
+      {
+        "id": "inspect",
+        "label": "Inspect",
+        "meaning": "Open the read-only contextual inspector for a map entity.",
+        "mapClick": "Cell clicks open the inspector. No plan selection or RF request is triggered by inspection."
+      },
+      {
+        "id": "select-cells",
+        "label": "Select cells",
+        "meaning": "In Network mode, toggle a Cell in the selected cluster.",
+        "mapClick": "Toggles existing Network membership semantics; does not open the inspector. The explicit Evaluate Network action remains the compute boundary."
+      }
+    ],
+    "exclusive": true,
+    "accessibleState": "Text-labelled buttons in a named Map interaction mode group with aria-pressed and a check icon; on phones a labelled disclosure names the active mode."
+  },
+  "specialTools": [
+    {
+      "id": "draw-area",
+      "owner": "Setup / Network selection",
+      "availableWhen": "Network mode and Select cells interaction are active.",
+      "activeFeedback": "Draw area, live status text, point instruction, Finish, and Cancel.",
+      "completion": "Existing polygon logic selects up to six nearest cells within the drawn area; fewer than two found does not create an evaluable cluster.",
+      "cancel": "Escape or Cancel drops the in-progress polygon and restores the underlying Select cells mode."
+    },
+    {
+      "id": "place-cell",
+      "owner": "Inventory",
+      "availableWhen": "The Inventory workflow arms cell placement.",
+      "activeFeedback": "Place cell, click instruction, and Cancel replace the ordinary mode controls.",
+      "completion": "Places the existing manual inventory cell and exits placement."
+    },
+    {
+      "id": "pick-path-endpoint",
+      "owner": "Propagation / Path Profile",
+      "availableWhen": "The existing Path Profile workflow arms receiver picking.",
+      "activeFeedback": "Pick receiver, click instruction, and Cancel replace the ordinary mode controls.",
+      "completion": "Sets the receiver endpoint; analysis remains an explicit action."
+    },
+    {
+      "id": "clear-cluster",
+      "owner": "Network selection",
+      "isMode": false,
+      "meaning": "Immediate destructive cluster edit; clears selected membership and network azimuths and invalidates results as before."
+    },
+    {
+      "id": "fit-selected-cells",
+      "owner": "Map navigation",
+      "isMode": false,
+      "meaning": "Changes the Leaflet viewport only. Does not set Map Focus or mutate the plan."
+    }
+  ],
+  "priority": {
+    "mapClick": "Any armed special tool consumes the map click before ordinary Inspect/Select cells handling. Area points, placement, and endpoint selection retain their existing owning handlers.",
+    "escape": [
+      "Cancel armed path receiver selection, area drawing, or placement.",
+      "Close Layers, View, or interaction disclosures; the active disclosure trigger regains focus.",
+      "Return ordinary Select cells to Inspect.",
+      "Close the contextual inspector.",
+      "Dismiss the stage chooser, then close the task drawer according to existing behavior."
+    ],
+    "restoration": "Special modes are separate ephemeral booleans layered over the ordinary mode. Completing/cancelling returns to the still-current ordinary mode; no serialized mode was added."
+  },
+  "networkSelection": {
+    "minimumForEvaluation": 2,
+    "maximumClusterSize": 6,
+    "wording": "At least 2 cells are required to evaluate; 6 is the maximum cluster size.",
+    "counter": "Selected cluster n / 6 cells.",
+    "primaryAction": "Select cells appears only while more cells are needed and selection mode is not already active; Evaluate Network appears when the plan is ready."
+  },
+  "setupSynchronization": "The existing Setup Select cells on map action arms Select cells. While active, Setup changes to Selecting cells on map…; during area drawing it says Drawing selection area…. At widths of 900px and below, the Setup sheet closes after the entry action so map cells remain available; reopening Setup shows the active status rather than a duplicate entry action.",
+  "mutationBoundary": "Only existing Select cells, area selection, placement, clear, and Inventory edits mutate plan data. Inspect, Map Focus, Scope, Layers, and Fit remain presentation/navigation actions.",
+  "persistence": "No interaction-mode enum, popover state, or special-tool state is written to project/domain persistence. Existing Map Focus/ray Scope map presentation handling is preserved."
+}

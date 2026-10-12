@@ -1,0 +1,60 @@
+{
+  "artifact": "concept-7a-next-phase",
+  "artifact_version": "1.0.0",
+  "selected_next_phase": {
+    "id": "concept-7b",
+    "title": "Formal Project/Scenario Domain Model and Repository Boundary",
+    "mode": "local_first",
+    "short_description": "Define pure domain types and a repository interface, then adapt the existing IndexedDB workspace behind it without changing RF, optimizer, or API behavior."
+  },
+  "why_this_phase": [
+    "It addresses the highest current risk: mixed ownership inside App.jsx and an opaque whole-workspace persistence record.",
+    "It preserves the working local-first behavior while creating a seam for later server persistence.",
+    "It makes scenario revisions, resolved inputs, run lineage, and report references testable before adding database operations.",
+    "It prevents a premature relational migration from copying current ambiguity into tables."
+  ],
+  "in_scope": [
+    "Pure Project, Inventory, InventoryCell, DatasetRef, Scenario, ScenarioRevision, Run, ArtifactRef, ReportDefinition types",
+    "Repository interfaces and LocalRepository adapter",
+    "Schema-compatible IndexedDB read/write adapter",
+    "Canonical serialization/fingerprint boundary",
+    "Explicit input-vs-UI state classification",
+    "Apply OptimizationSolution as a new scenario/revision",
+    "Unit tests for round trips, stale datasets, revision lineage, and immutability"
+  ],
+  "out_of_scope": [
+    "PostgreSQL/PostGIS",
+    "Object-storage service",
+    "Auth/workspaces/sharing",
+    "Production migration of existing IndexedDB records to a new physical schema",
+    "RF algorithm or optimizer changes",
+    "Concept 6 validation/terrain changes",
+    "Inventing Site grouping",
+    "Changing atom-scenario-v1"
+  ],
+  "acceptance_criteria": [
+    "Existing schema v1/v2 and legacy project imports still load.",
+    "IndexedDB remains the default local persistence path with localStorage fallback.",
+    "A ScenarioRevision serializes all RF-affecting inputs needed to reconstruct current requests.",
+    "UI-only state is not serialized into a ScenarioRevision.",
+    "A Run envelope can record simulation, optimization, validation, batch experiment, and diagnostic types.",
+    "Applying an optimizer solution creates a new scenario/revision with originating_run_id.",
+    "Reports can reference explicit scenario/revision/run identities without changing the current download UI.",
+    "No production RF result, optimizer policy, dataset, or API behavior changes."
+  ],
+  "recommended_sequence": [
+    "Add domain type definitions and validation helpers.",
+    "Add LocalRepository interface backed by projectStore.",
+    "Move App workspace calls to the repository adapter.",
+    "Add immutable ScenarioRevision and Run metadata tests.",
+    "Add solution-to-scenario branching semantics.",
+    "Document follow-on PostgreSQL/PostGIS/object-storage adapters without implementing them."
+  ],
+  "invariance_contract": [
+    "Same resolved RF request for a given existing workspace state.",
+    "Same current scenario fingerprint algorithm and output.",
+    "Same IndexedDB/localStorage compatibility behavior.",
+    "Same current dataset pack and active-dataset semantics.",
+    "Same optimizer search policy, budgets, Pareto public archive, and response DTOs."
+  ]
+}

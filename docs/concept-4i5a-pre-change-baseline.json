@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "concept": "4I.5A",
+  "title": "140 GHz specular reflection geometry and composition pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "worktree_note": "Concepts 4I.1 through 4I.4 were already present in the shared worktree. This artifact freezes their recorded behavior before adding the 4I.5A audit-only documentation and test fixtures. Existing unrelated dirty changes are preserved.",
+  "scope": {
+    "read_only_scientific_architectural_audit": true,
+    "production_reflection_implementation": false,
+    "production_rf_behavior_change": false,
+    "network_or_optimizer_coupling": false,
+    "canonical_propagation_change": false,
+    "research_sub_thz_change": false
+  },
+  "before_change": {
+    "single_bounce_reflection_evaluator_present": false,
+    "reflection_route_present": false,
+    "reflection_ui_present": false,
+    "canonical_reflection_dispatch_present": false,
+    "research_sub_thz_reflection_composition_present": false,
+    "p1411_reflection_composition_present": false,
+    "p526_reflection_composition_present": false,
+    "atmosphere_reflection_composition_present": false,
+    "building_entry_reflection_composition_present": false,
+    "interference_reflection_composition_present": false,
+    "radio_quality_reflection_composition_present": false,
+    "optimizer_reflection_composition_present": false,
+    "automatic_osm_material_reflection_inference_present": false
+  },
+  "scan_evidence": {
+    "commands": [
+      "rg -n 'reflection|specular|image method|ray tracer' backend-go frontend-react docs -g '*.go' -g '*.js' -g '*.jsx' -g '*.md'",
+      "rg -n 'sub-thz|p1411|p526|material|atmospheric' backend-go/raytracer backend-go -g '*.go'"
+    ],
+    "interpretation": "The existing matches are prior audit/reference material and isolated 4I.4 slab behavior; no single-bounce facade reflection evaluator or canonical reflected-path route exists before 4I.5A.",
+    "production_files_changed_by_4i5a": []
+  },
+  "canonical_snapshots": {
+    "canonical_2_6_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "rays": 8,
+        "radius_m": 100,
+        "frequency_ghz": 2.6,
+        "tx_power_dbm": 30,
+        "azimuth_deg": 90,
+        "beam_width_deg": 360,
+        "model": "urban_short_range"
+      },
+      "stats": {
+        "blocked_pct": 0,
+        "avg_rx_dbm": -43,
+        "min_range_m": 100,
+        "max_range_m": 100
+      },
+      "first_feature": {
+        "distance_m": 25,
+        "path_loss_db": 70.07902264967872,
+        "wall_loss_db": 0,
+        "signal_dbm": -15.07902264967872
+      }
+    },
+    "canonical_28_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "rays": 8,
+        "radius_m": 100,
+        "frequency_ghz": 28,
+        "tx_power_dbm": 30,
+        "azimuth_deg": 90,
+        "beam_width_deg": 360,
+        "model": "urban_short_range"
+      },
+      "stats": {
+        "blocked_pct": 12.5,
+        "avg_rx_dbm": -72.1,
+        "min_range_m": 72.3,
+        "max_range_m": 100
+      },
+      "first_feature": {
+        "distance_m": 25,
+        "path_loss_db": 90.72271631710674,
+        "wall_loss_db": 0,
+        "signal_dbm": -35.722716317106745
+      }
+    },
+    "research_sub_thz_140_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "rays": 8,
+        "radius_m": 100,
+        "frequency_ghz": 140,
+        "tx_power_dbm": 30,
+        "azimuth_deg": 90,
+        "beam_width_deg": 360,
+        "model": "research_sub_thz"
+      },
+      "applicability_reason": "research_profile_only",
+      "wall_loss_rule_db_per_event": 80,
+      "composition": "FSPL + max(wall_event_count, 0) * 80 dB; no gas, rain, fog, material, diffraction, or measured reflection term.",
+      "stats": {
+        "blocked_pct": 87.5,
+        "avg_rx_dbm": -123.6,
+        "min_range_m": 17.6,
+        "max_range_m": 100
+      },
+      "first_feature": {
+        "distance_m": 25,
+        "slant_distance_m": 34.3110769286,
+        "fspl_db": 106.08124770471235,
+        "wall_loss_db": 0,
+        "signal_dbm": -51.081247704712354
+      }
+    }
+  },
+  "reference_snapshots": {
+    "4i2a_atmospheric_reference": {
+      "source": "docs/concept-4i2a-post-change-comparison.json",
+      "frequency_ghz": 140,
+      "gas_db": 0.0735577398480971,
+      "rain_db": 1.0229000625292286,
+      "fog_db": 0.27993683098088384,
+      "fspl_db": 113.47023144742553,
+      "total_db": 114.84662608078375,
+      "composition": "isolated reference ledger; not canonical"
+    },
+    "4i2b_p1411_reference": {
+      "source": "docs/concept-4i2b-reference-comparison.json",
+      "model_family": "applicability-gated median/basic-transmission-loss candidates",
+      "composition": "side-by-side only; not canonical and not an added facade reflection path"
+    },
+    "4i3_measurement_validation": {
+      "source": "docs/concept-4i3-post-change-comparison.json",
+      "composition": "isolated evidence validation/reference adapter; no canonical reflection coupling"
+    },
+    "4i4_material_reference": {
+      "source": "docs/concept-4i4-reference-comparison.json",
+      "model_id": "p2040_material_slab_reference_v1",
+      "composition": "isolated material/slab reference; no free-space spreading and no whole-building reflection claim"
+    },
+    "p526_diagnostic": {
+      "source": "docs/concept-4f1-canonical-audit.json",
+      "frequency_ghz": 28,
+      "distance_m": 85.4,
+      "classification": "building-obstructed",
+      "obstruction_height": "unavailable",
+      "diagnostic_reason": "obstruction_height_unavailable",
+      "fspl_db": 100.33703760506351,
+      "canonical_path_loss_db": 118.58,
+      "canonical_rx_dbm": -63.58,
+      "diffraction_composition": "diagnostic-only and separate"
+    },
+    "building_entry": {
+      "source": "docs/concept-4e-building-entry.md",
+      "composition": "independent O2I entry diagnostic; not a reflected-path term"
+    },
+    "interference_radio_quality": {
+      "source": "docs/concept-4h1-interference-radio-quality.md",
+      "composition": "independent received-carrier, serving-cell, interference, and noise ledger"
+    },
+    "4h2_optimizer": {
+      "source": "docs/concept-4h2-radio-quality-optimization.md",
+      "disabled_fingerprint": "network-99c0e814ad1fd432639296a9367b1997",
+      "enabled_fingerprint": "network-c8b82cc86d8b7dc361d425526e8e7c38",
+      "composition": "optional radio-quality objective; no reflection input"
+    }
+  },
+  "invariance_contract": {
+    "must_remain_exactly_unchanged": [
+      "2.6 GHz canonical propagation",
+      "28 GHz canonical propagation",
+      "research_sub_thz 140 GHz dispatch and 80 dB/event heuristic",
+      "4I.2A atmospheric reference",
+      "4I.2B P.1411 reference",
+      "4I.3 measurement validation",
+      "4I.4 material/slab reference",
+      "P.526 diagnostic",
+      "building entry",
+      "interference",
+      "radio quality",
+      "4H.2 optimizer and Pareto outputs"
+    ],
+    "allowed_4i5a_changes": [
+      "audit Markdown and JSON artifacts",
+      "build-reference-pages listing and generated reference page",
+      "changelog/index documentation",
+      "read-only test-only geometry/data-readiness fixtures"
+    ],
+    "forbidden_4i5a_changes": [
+      "production reflection evaluator",
+      "network ray changes",
+      "canonical 140 GHz propagation changes",
+      "automatic material inference",
+      "atmosphere integration",
+      "P.1411 changes",
+      "P.526 changes",
+      "building-entry changes",
+      "interference, radio-quality, or optimization changes"
+    ]
+  },
+  "baseline_conclusion": "Before Concept 4I.5A there is no defensible or implemented mapping from Tx geometry plus finite facade geometry plus a P.2040 reflection coefficient to an isolated reflected-path received-power reference. The audit can proceed without changing any production RF behavior."
+}

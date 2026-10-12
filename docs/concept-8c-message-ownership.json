@@ -1,0 +1,38 @@
+{
+  "concept": "8C",
+  "phase": "post-change message ownership",
+  "surfaces": [
+    {
+      "surface": "Command bar",
+      "owns": "Readiness and the next major workflow action.",
+      "networkCopy": "Select cells before the minimum is met and selection mode is idle; action is suppressed while the user is already selecting or a special tool is active; Evaluate Network when ready.",
+      "removed": "Misleading Add N cells wording, where N could read as a target rather than the minimum."
+    },
+    {
+      "surface": "Setup drawer",
+      "owns": "Network progress and workflow-specific explanation.",
+      "networkCopy": "Selected cluster n / 6 cells; At least 2 cells are required to evaluate; 6 is the maximum cluster size.",
+      "activeState": "The entry CTA becomes Selecting cells on map… or Drawing selection area… while the matching mode is active."
+    },
+    {
+      "surface": "Map interaction control",
+      "owns": "What the next map click does.",
+      "copy": "Inspect, Select cells, Draw area, Place cell, or Pick receiver, with explicit live status and available Finish/Cancel actions."
+    },
+    {
+      "surface": "Transient selection status",
+      "owns": "Short-lived confirmation or correction after selection/tool action.",
+      "behavior": "Existing selectionNotice is rendered as role=status and clears after 5 seconds; no permanent duplicate instruction is added to the map."
+    },
+    {
+      "surface": "Map key",
+      "owns": "Interpretation of visible map encodings and evidence ranges, not workflow instructions."
+    }
+  ],
+  "selectionRedundancyRemoved": [
+    "No exact Add N cells primary action while Select cells is already active.",
+    "Setup reports the active mode instead of repeating its entry CTA.",
+    "The ordinary Inspect/Select cells pair is the sole persistent ordinary interaction choice.",
+    "Transient feedback expires rather than accumulating as a second permanent instruction."
+  ]
+}

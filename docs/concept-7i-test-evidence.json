@@ -1,0 +1,49 @@
+{
+  "concept": "7I",
+  "date": "2026-09-23",
+  "startingWorktree": {"status":"clean","preexistingDirtyChanges":[]},
+  "frontend": {
+    "unitAndWorkflow": {"command":"npm test","status":"passed","testFilesPassed":52,"testsPassed":275,"failed":0},
+    "lint": {"command":"npm run lint","status":"passed"},
+    "e2e": {"command":"npm run test:e2e","status":"passed","projects":["desktop-1440","desktop-1024","tablet-768","mobile-390"],"scheduled":80,"passed":69,"skipped":11,"failed":0},
+    "e2eCoverage": [
+      "Cold startup contains no selected lazy feature chunks.",
+      "Propagation Research loads only when its disclosure opens; keyboard Enter opens it and Space collapses/reopens while retaining a local value.",
+      "RF Diagnostics Research, Experiments, Core Lab, Run History, and Report chunks load after selecting their owning feature.",
+      "Aborted Propagation feature chunk shows local Reload recovery while the map and Run Sector remain available, then loads after restart.",
+      "Historical Report generation from cold Run History first exercises a failed reportExport chunk, reload recovery, then loads renderer/artifact/UI code without opening Report first; the only compute request is the initial Sector Run.",
+      "Existing Run source Version, report lineage, ordinary RF, path-profile, material/reflection, optimization, and workspace flows pass.",
+      "Responsive suite checks no horizontal overflow and disclosure/drawer geometry at 1440, 1280, 1024, 640, and 390 px; E2E projects also include 768 px tablet and 390 px mobile."
+    ],
+    "focusedLazyBoundaryTests": [
+      "No import until active.",
+      "Accessible loading state and successful module render.",
+      "Loaded disclosure child preserves local state on collapse/reopen.",
+      "Rejected import is isolated and a reload action is offered without removing surrounding map/workspace."
+    ],
+    "build": {"command":"npm run build","status":"passed","vite":"6.4.3","modulesTransformed":1703,"durationMs":1090,"mainEntryRawBytes":769861,"mainEntryGzipDisplayed":"218.28 kB","initialCssRawBytes":152345,"initialCssGzipDisplayed":"28.89 kB","warning":"Default Vite advisory remains for the 769.86 kB entry; warning configuration unchanged."}
+  },
+  "backend": {
+    "backendGo": {"commands":["go vet ./...","go test -race ./..."],"status":"passed","testPackages":["ankara-5g-raytracer","ankara-5g-raytracer/raytracer"],"noTestFilePackages":["cmd/import-concept-6a1","cmd/run-experiment","cmd/validate-dataset"]},
+    "coreLabAdapter": {"commands":["go vet ./...","go test -race ./..."],"status":"passed","note":"Cached passing package result."},
+    "changedBackendFiles": []
+  },
+  "documentation": {
+    "status": "Reference generation and JSON parsing passed; docs/validate_docs.py passed after loading the repository-pinned PyYAML dependency into a temporary path.",
+    "requiredJsonFiles": ["concept-7i-pre-change-baseline.json","concept-7i-module-inventory.json","concept-7i-split-plan.json","concept-7i-chunk-map.json","concept-7i-feature-load-matrix.json","concept-7i-state-continuity.json","concept-7i-initial-load-metrics.json","concept-7i-test-evidence.json","concept-7i-post-change-comparison.json"],
+    "requiredHumanGuide": "concept-7i-safe-lazy-loading.md"
+  },
+  "requestResultSemantics": {
+    "requestBuildersOrPayloadSchemasModified": false,
+    "backendFilesModified": false,
+    "scenarioCanonicalizationOrRunSchemaModified": false,
+    "reportDomainSourceBindingModified": false,
+    "evidence": "Changes are in component boundaries, import timing, lightweight report chart helper extraction, and display/test/docs. Full frontend regression suite and Go validation passed; cold report E2E observed one initial compute and no report-triggered compute."
+  },
+  "caveats": [
+    "The cold performance preview had no backend, so its API calls returned 500 and dataset-ready behavior was not measured there.",
+    "The full E2E suite skips real-backend-only cases when the configured backend is unavailable in this local preview.",
+    "No independent pre/post golden comparison was captured for arbitrary artifact SHA-256 values or a serialized representative Run snapshot.",
+    "No dedicated matrix exhaustively combined each loaded feature with every Project/Scenario/profile transition; see the state-continuity artifact."
+  ]
+}

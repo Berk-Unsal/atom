@@ -1,0 +1,1606 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-10-05T15:18:31.277196+00:00",
+  "audit_result": "PASS \u2014 completed evidence is intact; negative certification verdicts retained",
+  "measurement_identity_groups": 2704,
+  "batch_auto_snapshots": 47,
+  "archive_entries_verified": 487,
+  "freeze_order": [
+    {
+      "contract": "main",
+      "locked_at": "2026-10-05T09:21:46.395123+00:00",
+      "first_measured_group": "2026-10-05T09:21:49.323413+00:00",
+      "freeze_precedes_measurement": true
+    },
+    {
+      "contract": "workflow",
+      "locked_at": "2026-10-05T09:24:58.909386+00:00",
+      "first_measured_group": "2026-10-05T14:51:09.892993+00:00",
+      "freeze_precedes_measurement": true
+    },
+    {
+      "contract": "surface",
+      "locked_at": "2026-10-05T09:40:21.260678+00:00",
+      "first_measured_group": "2026-10-05T14:58:47.667154+00:00",
+      "freeze_precedes_measurement": true
+    },
+    {
+      "contract": "science",
+      "locked_at": "2026-10-05T12:18:22.116480+00:00",
+      "first_measured_group": "2026-10-05T14:59:45.192454+00:00",
+      "freeze_precedes_measurement": true
+    }
+  ],
+  "unchanged_paths": [
+    "backend-go",
+    "frontend-react",
+    "core-lab-adapter",
+    "data-pipeline",
+    "Dockerfile",
+    "docker-compose.yml",
+    "VERSION",
+    "docs/deployment.md",
+    "scripts/auto-resource-geometry",
+    "scripts/auto-resource-estimator-validation"
+  ],
+  "methodology_violations_retained": [
+    "Frozen Surface negative-control annotation expected422; actual production validator returns400 for cell_size_m5 below10m minimum. Original expectation and observations retained; no qualification forced."
+  ],
+  "phase_coverage": [
+    {
+      "phase": 0,
+      "title": "BASELINE",
+      "finding": "Clean baseline and successful checks; original excluded E2E invocations retained."
+    },
+    {
+      "phase": 1,
+      "title": "FREEZE CERTIFICATION CONTRACT",
+      "finding": "Main successor and each supplement frozen before their measurements; no gate relaxed."
+    },
+    {
+      "phase": 2,
+      "title": "CANDIDATE RESOURCE PROFILES",
+      "finding": "A/B/C bounded profiles and D control recreated; exact quotas and memory documented."
+    },
+    {
+      "phase": 3,
+      "title": "PROFILE SEMANTICS",
+      "finding": "Resource floors require tested runtime, dataset, workloads and policy assumptions."
+    },
+    {
+      "phase": 4,
+      "title": "AUTO DETECTION CHECK",
+      "finding": "All 47 batch Auto records valid before RF; Docker inspection supplies known provenance."
+    },
+    {
+      "phase": 5,
+      "title": "CERTIFICATION DATASET",
+      "finding": "Exact Ankara 2026.07 pack and two file hashes; indexed counts recorded."
+    },
+    {
+      "phase": 6,
+      "title": "DATASET COMPLEXITY BOUNDARY",
+      "finding": "Exact pack only; no general dataset complexity ceiling inferred."
+    },
+    {
+      "phase": 7,
+      "title": "GEOMETRY DOMAINS",
+      "finding": "Eight domains, two per band; fitting excluded; validation reuse disclosed."
+    },
+    {
+      "phase": 8,
+      "title": "WORKLOAD CLASS DEFINITIONS",
+      "finding": "W1/W2/W3 preregistered; no UI class selector added."
+    },
+    {
+      "phase": 9,
+      "title": "W1 STANDARD INTERACTIVE",
+      "finding": "All W1 operations and complete Optimize/explanation supplement completed."
+    },
+    {
+      "phase": 10,
+      "title": "W2 MODERATE INTERACTIVE",
+      "finding": "All moderate W2 operations completed, including bounded alternate search."
+    },
+    {
+      "phase": 11,
+      "title": "W3 HEAVY SUPPORTED / EDGE",
+      "finding": "Valid W3 probes completed; invalid 5 m controls preserved alongside valid 10 m supplement."
+    },
+    {
+      "phase": 12,
+      "title": "SEARCH POLICY COVERAGE",
+      "finding": "Legacy, bounded multi-start and bounded Pareto archive searches measured unchanged."
+    },
+    {
+      "phase": 13,
+      "title": "CERTIFICATION GATES",
+      "finding": "Observable completion, invariance, cancellation and headroom gates frozen."
+    },
+    {
+      "phase": 14,
+      "title": "MEMORY CERTIFICATION GATE",
+      "finding": "75% kernel hard-limit peak gate; startup/cache included; RSS not reservation."
+    },
+    {
+      "phase": 15,
+      "title": "CPU / THROTTLING GATE",
+      "finding": "Throttling observed; no zero-throttle requirement or compute estimator."
+    },
+    {
+      "phase": 16,
+      "title": "RESPONSE-VOLUME BOUNDARY",
+      "finding": "Streaming response bytes recorded per response and logical workflow."
+    },
+    {
+      "phase": 17,
+      "title": "ACTUAL HTTP ONLY",
+      "finding": "Real TCP/production Gin/middleware/serialization; streaming client."
+    },
+    {
+      "phase": 18,
+      "title": "RUN REPEATS",
+      "finding": "All 2704 planned groups completed without replacing failures."
+    },
+    {
+      "phase": 19,
+      "title": "BALANCED RUN ORDER",
+      "finding": "Seed 20261005 and balanced Latin profile order frozen."
+    },
+    {
+      "phase": 20,
+      "title": "FRESH + WARMED SERVICE",
+      "finding": "Warmed service plus 18 fresh first requests; startup cost separate."
+    },
+    {
+      "phase": 21,
+      "title": "SINGLE-INTERACTIVE CERTIFICATION",
+      "finding": "W1 and W2 single results, including interrupted and failed repeats, recorded."
+    },
+    {
+      "phase": 22,
+      "title": "CURRENT CONCURRENCY=2",
+      "finding": "All three required distinct-client concurrency scenarios measured."
+    },
+    {
+      "phase": 23,
+      "title": "CONCURRENCY FAILURE POLICY",
+      "finding": "Production concurrency retained; no general support claim for any candidate."
+    },
+    {
+      "phase": 24,
+      "title": "DEFAULT ASYNC OVERLAP",
+      "finding": "Normal async actual overlap passed 72/72 with worker1/queue16."
+    },
+    {
+      "phase": 25,
+      "title": "SUSTAINED ASYNC OVERLAP",
+      "finding": "Sustained actual evidence passed 51/72; all 21 failed cases retained."
+    },
+    {
+      "phase": 26,
+      "title": "MIXED-LOAD REFERENCE COMPLETENESS",
+      "finding": "Exact five-repeat mixed references required and verified before launch."
+    },
+    {
+      "phase": 27,
+      "title": "CANCELLATION",
+      "finding": "Cancellation/release passed 36/36; same/other-client follow-ups verified."
+    },
+    {
+      "phase": 28,
+      "title": "RATE-BUDGET INTERACTION",
+      "finding": "7/7/2/15 workflow attempts; 20/min policy and ClientIP unchanged."
+    },
+    {
+      "phase": 29,
+      "title": "SCIENTIFIC INVARIANCE",
+      "finding": "584 canonical request groups invariant; elapsed_ms-only correction audited."
+    },
+    {
+      "phase": 30,
+      "title": "PROFILE A CERTIFICATION",
+      "finding": "A NOT CERTIFIED; numerical W1 pass does not override protocol failures."
+    },
+    {
+      "phase": 31,
+      "title": "PROFILE B CERTIFICATION",
+      "finding": "B NOT CERTIFIED; numerical W1 pass does not override protocol failures."
+    },
+    {
+      "phase": 32,
+      "title": "PROFILE C CERTIFICATION",
+      "finding": "C NOT CERTIFIED at measured 8CPU/10GiB; interrupted W1 retained."
+    },
+    {
+      "phase": 33,
+      "title": "DEFAULT DEVELOPMENT CONTROL",
+      "finding": "D unbounded control measured, never certified."
+    },
+    {
+      "phase": 34,
+      "title": "PROFILE COMPARISON",
+      "finding": "Latency, headroom, contention, volume and throttling compared without monotonicity assumption."
+    },
+    {
+      "phase": 35,
+      "title": "MINIMUM PROFILE DECISION",
+      "finding": "No minimum reference certified."
+    },
+    {
+      "phase": 36,
+      "title": "RECOMMENDED PROFILE DECISION",
+      "finding": "No recommended reference certified."
+    },
+    {
+      "phase": 37,
+      "title": "HIGH-CAPACITY PROFILE DECISION",
+      "finding": "No candidate certified for heavier W2; W3 best effort."
+    },
+    {
+      "phase": 38,
+      "title": "INTERACTIVE ENVELOPE",
+      "finding": "Full requested matrix published; W2 contention explicitly NOT TESTED."
+    },
+    {
+      "phase": 39,
+      "title": "HEAVY/OFFLINE CLASSIFICATION",
+      "finding": "Valid heavy inputs remain available outside any interactive guarantee."
+    },
+    {
+      "phase": 40,
+      "title": "TIMEOUT INTERPRETATION",
+      "finding": "W3 60-second timeouts retained as workload-boundary observations."
+    },
+    {
+      "phase": 41,
+      "title": "AUTO PROFILE MATCHING DESIGN",
+      "finding": "Descriptive Auto matching design only; no production matcher/admission."
+    },
+    {
+      "phase": 42,
+      "title": "PROFILE MATCH INPUTS",
+      "finding": "Known CPU, hard/effective memory, runtime, exact pack and fixed policy required."
+    },
+    {
+      "phase": 43,
+      "title": "USER EXPERIENCE DECISION",
+      "finding": "Auto-only UX retained; no CPU/RAM/profile/preset controls."
+    },
+    {
+      "phase": 44,
+      "title": "SELF-HOSTED APP IMPLICATION",
+      "finding": "Self-hosted/native/hosted implications documented; no packaging change."
+    },
+    {
+      "phase": 45,
+      "title": "EIGHT-CELL IMPLICATION",
+      "finding": "Six-Cell cap retained; no foundation yet for eight-Cell re-audit."
+    },
+    {
+      "phase": 46,
+      "title": "PREVIOUS ESTIMATOR PATH",
+      "finding": "Estimator fitting, retuning and admission remain paused."
+    },
+    {
+      "phase": 47,
+      "title": "PREFLIGHT UNKNOWN-ZERO ISSUE",
+      "finding": "Historical unknown-zero prototype retained; audit-only unknown/null successor tested."
+    },
+    {
+      "phase": 48,
+      "title": "DOCUMENTATION",
+      "finding": "Markdown/JSON/HTML completed with evidence, limitations and negative verdicts."
+    },
+    {
+      "phase": 49,
+      "title": "DEPLOYMENT DOCUMENTATION",
+      "finding": "No certified profile; deployment documentation correctly left unchanged."
+    },
+    {
+      "phase": 50,
+      "title": "VERSIONING",
+      "finding": "VERSION0.11.0 retained; no release, tag or publishing."
+    },
+    {
+      "phase": 51,
+      "title": "VALIDATION",
+      "finding": "All required quality commands successful; original and post-audit outputs preserved."
+    }
+  ],
+  "required_final_report_items": [
+    {
+      "number": 1,
+      "label": "Starting baseline"
+    },
+    {
+      "number": 2,
+      "label": "Certification-lock SHA256"
+    },
+    {
+      "number": 3,
+      "label": "Dataset identity"
+    },
+    {
+      "number": 4,
+      "label": "Candidate profiles"
+    },
+    {
+      "number": 5,
+      "label": "Profiles actually recreated"
+    },
+    {
+      "number": 6,
+      "label": "Auto detection accuracy"
+    },
+    {
+      "number": 7,
+      "label": "W1 definition"
+    },
+    {
+      "number": 8,
+      "label": "W2 definition"
+    },
+    {
+      "number": 9,
+      "label": "W3 definition"
+    },
+    {
+      "number": 10,
+      "label": "Certification gates"
+    },
+    {
+      "number": 11,
+      "label": "Deadline-headroom gate"
+    },
+    {
+      "number": 12,
+      "label": "Memory-headroom gate"
+    },
+    {
+      "number": 13,
+      "label": "CPU/throttle interpretation"
+    },
+    {
+      "number": 14,
+      "label": "Geometry domains"
+    },
+    {
+      "number": 15,
+      "label": "Repeat counts"
+    },
+    {
+      "number": 16,
+      "label": "HTTP methodology"
+    },
+    {
+      "number": 17,
+      "label": "Warm/fresh methodology"
+    },
+    {
+      "number": 18,
+      "label": "W1 Profile A single-work result"
+    },
+    {
+      "number": 19,
+      "label": "W1 Profile B single-work result"
+    },
+    {
+      "number": 20,
+      "label": "W1 Profile C single-work result"
+    },
+    {
+      "number": 21,
+      "label": "W2 Profile A result"
+    },
+    {
+      "number": 22,
+      "label": "W2 Profile B result"
+    },
+    {
+      "number": 23,
+      "label": "W2 Profile C result"
+    },
+    {
+      "number": 24,
+      "label": "W3 observations"
+    },
+    {
+      "number": 25,
+      "label": "Profile A two-optimizer result"
+    },
+    {
+      "number": 26,
+      "label": "Profile B two-optimizer result"
+    },
+    {
+      "number": 27,
+      "label": "Profile C two-optimizer result"
+    },
+    {
+      "number": 28,
+      "label": "Optimize+Evaluate concurrency result"
+    },
+    {
+      "number": 29,
+      "label": "Evaluate+Evaluate result"
+    },
+    {
+      "number": 30,
+      "label": "Profile A async-overlap result"
+    },
+    {
+      "number": 31,
+      "label": "Profile B async-overlap result"
+    },
+    {
+      "number": 32,
+      "label": "Profile C async-overlap result"
+    },
+    {
+      "number": 33,
+      "label": "Sustained-load finding"
+    },
+    {
+      "number": 34,
+      "label": "Largest latency inflation"
+    },
+    {
+      "number": 35,
+      "label": "Largest single response"
+    },
+    {
+      "number": 36,
+      "label": "Largest workflow response volume"
+    },
+    {
+      "number": 37,
+      "label": "Peak observed RSS"
+    },
+    {
+      "number": 38,
+      "label": "Peak cgroup memory"
+    },
+    {
+      "number": 39,
+      "label": "OOM events"
+    },
+    {
+      "number": 40,
+      "label": "Minimum deadline headroom"
+    },
+    {
+      "number": 41,
+      "label": "Cancellation/release result"
+    },
+    {
+      "number": 42,
+      "label": "Request-budget invariance"
+    },
+    {
+      "number": 43,
+      "label": "Scientific invariance"
+    },
+    {
+      "number": 44,
+      "label": "Profile A verdict"
+    },
+    {
+      "number": 45,
+      "label": "Profile B verdict"
+    },
+    {
+      "number": 46,
+      "label": "Profile C verdict"
+    },
+    {
+      "number": 47,
+      "label": "Minimum certified profile"
+    },
+    {
+      "number": 48,
+      "label": "Recommended certified profile"
+    },
+    {
+      "number": 49,
+      "label": "High-capacity profile finding"
+    },
+    {
+      "number": 50,
+      "label": "Certified workload matrix"
+    },
+    {
+      "number": 51,
+      "label": "Heavy/best-effort workload boundary"
+    },
+    {
+      "number": 52,
+      "label": "Whether API-valid and interactive-certified are now explicitly separated"
+    },
+    {
+      "number": 53,
+      "label": "Auto profile-matching feasibility"
+    },
+    {
+      "number": 54,
+      "label": "Unknown-vs-zero preflight finding/fix"
+    },
+    {
+      "number": 55,
+      "label": "Self-hosted app implication"
+    },
+    {
+      "number": 56,
+      "label": "Hosted deployment implication"
+    },
+    {
+      "number": 57,
+      "label": "Whether estimator-driven admission remains paused"
+    },
+    {
+      "number": 58,
+      "label": "Whether fixed profiles are sufficient for current development"
+    },
+    {
+      "number": 59,
+      "label": "Whether a separate 8-Cell re-audit is now justified"
+    },
+    {
+      "number": 60,
+      "label": "Production invariance"
+    },
+    {
+      "number": 61,
+      "label": "Version recommendation"
+    },
+    {
+      "number": 62,
+      "label": "Files created/changed"
+    },
+    {
+      "number": 63,
+      "label": "Tests/checks"
+    },
+    {
+      "number": 64,
+      "label": "Freeze decision"
+    },
+    {
+      "number": 65,
+      "label": "Single recommended next action"
+    }
+  ],
+  "supplementary_evidence": [
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-edge-0.json.gz",
+      "sha256": "458007a19f7b24929780eaffacccd9d0c07e0e6cad1e0f9d8a227e38c26ed666",
+      "uncompressed_sha256": "555b23668f13ceafffd61cea5f8e6df7b80c697c639cab33fbb2218102fd9182"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-fresh-dense-0.json.gz",
+      "sha256": "219debedd60fa765b224425c5311f49846a8640eec567ffe344662bb04abff88",
+      "uncompressed_sha256": "4c33d65ebd9d802b9c82b1fc662b6cba87acd146d703c1b4180638849afa9436"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-fresh-dense-1.json.gz",
+      "sha256": "3bb1855106781c84dd7458d4070ed6e7dd50a6414b7bba7e105b6ac922451da5",
+      "uncompressed_sha256": "95b03b9976d6f258911d7313632f2cda55857eb660216f2e0fba992ae1072efb"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-fresh-dense-2.json.gz",
+      "sha256": "3d4ee3847b08bcdbc559a3b3c865039c4245f6d3ea8f10b27edfe885d89f405a",
+      "uncompressed_sha256": "58154395e00af531537c9f90fde15fae9a0b0be255ec68606c542567891a0187"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-fresh-sparse-0.json.gz",
+      "sha256": "f4063118b2da2d58589b120a48b4ee3a3a7a82c89188cb76db5617548f14a814",
+      "uncompressed_sha256": "f4ee87d583a04f2a605166fff97f22052547f1c1651fc40ee5da70a9c8877132"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-fresh-sparse-1.json.gz",
+      "sha256": "2bf669da299f5bed9e0cc5c0ba9fadbc29ab2cb8ec8020297c84b905ce249744",
+      "uncompressed_sha256": "1489b0ed8017790623cb57a84ae6d1476ce235eac82504fb02848b56bccd933b"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-fresh-sparse-2.json.gz",
+      "sha256": "4f9d3a7f881c30e0268b2912d1c2741693ea3b6278aee1ea070a250622b341e0",
+      "uncompressed_sha256": "0de7fbd3b58b559b8e4626973ec8b276629f9b460f7c9223d5f906cebb1baf4e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-mixed-0.json.gz",
+      "sha256": "c65b404c435eccbc35e961a7873a7a54cd32a99e7cbed9a68c0508f0466ed765",
+      "uncompressed_sha256": "73a2f8cf96931220398c762da59bd917c07172a91cfa2fb88d21783556a245d2"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-single-0.json.gz",
+      "sha256": "a4284094adf4ae016fd8fd3dfa4fc5e5e20034d54153b2cc9b507bae24cea957",
+      "uncompressed_sha256": "a41dc85f048d935d14b1a6c2121e675e9416beb97735f730189db2b4d0b04ae0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-single-1.json.gz",
+      "sha256": "76c2a20705c520348b9870503e04df75d1ba174d486ccacb23ff42c7bc4f3d1f",
+      "uncompressed_sha256": "61618237591a38623b9119b6b455dd9e8e2153e5e52b210d6206a6b76c72bbd0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-single-2.json.gz",
+      "sha256": "25d3dca3bce1a984d4aabe95461cfb935fb5b074b1dbb3cf3b16188ccc0c75ea",
+      "uncompressed_sha256": "edc7dfad3bd59ce90a85de7da1f56fed33ba7ae1745602d95f1b453bf3ea6aef"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-edge-0.json.gz",
+      "sha256": "acf083e16d5771e5de05cedf4195dab9d7e08c80b178e0e64dc1923a59c1f791",
+      "uncompressed_sha256": "41dc7a4e54a17dbcf75fcf0c93467bf19ba3f9edc82f72bc8ee6137fde41725a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-fresh-dense-0.json.gz",
+      "sha256": "219debedd60fa765b224425c5311f49846a8640eec567ffe344662bb04abff88",
+      "uncompressed_sha256": "4c33d65ebd9d802b9c82b1fc662b6cba87acd146d703c1b4180638849afa9436"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-fresh-dense-1.json.gz",
+      "sha256": "3bb1855106781c84dd7458d4070ed6e7dd50a6414b7bba7e105b6ac922451da5",
+      "uncompressed_sha256": "95b03b9976d6f258911d7313632f2cda55857eb660216f2e0fba992ae1072efb"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-fresh-dense-2.json.gz",
+      "sha256": "3d4ee3847b08bcdbc559a3b3c865039c4245f6d3ea8f10b27edfe885d89f405a",
+      "uncompressed_sha256": "58154395e00af531537c9f90fde15fae9a0b0be255ec68606c542567891a0187"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-fresh-sparse-0.json.gz",
+      "sha256": "f4063118b2da2d58589b120a48b4ee3a3a7a82c89188cb76db5617548f14a814",
+      "uncompressed_sha256": "f4ee87d583a04f2a605166fff97f22052547f1c1651fc40ee5da70a9c8877132"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-fresh-sparse-1.json.gz",
+      "sha256": "2bf669da299f5bed9e0cc5c0ba9fadbc29ab2cb8ec8020297c84b905ce249744",
+      "uncompressed_sha256": "1489b0ed8017790623cb57a84ae6d1476ce235eac82504fb02848b56bccd933b"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-fresh-sparse-2.json.gz",
+      "sha256": "4f9d3a7f881c30e0268b2912d1c2741693ea3b6278aee1ea070a250622b341e0",
+      "uncompressed_sha256": "0de7fbd3b58b559b8e4626973ec8b276629f9b460f7c9223d5f906cebb1baf4e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-mixed-0.json.gz",
+      "sha256": "5759046b64e406082a25decdc2c9a0f2867a2e0df400f78dae43caba61483d4f",
+      "uncompressed_sha256": "44e0eff333073703442780de023fe9923ac587427e5caec77bf86e3d9322449b"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-single-0.json.gz",
+      "sha256": "7b7dc03e6041d4cf357f8917a75088f406699d2bca76e038713f5b6d1f4f4410",
+      "uncompressed_sha256": "91a165286b373e26a54f48d97c3f3b177464d933987d98dbcce314f5bb1824de"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-single-1.json.gz",
+      "sha256": "55e987ccc2fe1538f5a51518fdeeb5fe508736b1fd8b42cda39d3028597541ac",
+      "uncompressed_sha256": "2a3b9f49dd87121b59f000b03ff2f7c0975f9f272f2e96d8695e5795b8a65f0d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-single-2.json.gz",
+      "sha256": "aefc344be71150c1ec8420e653f5eb739bac00ab4dc8e1e973984909f79ca2ae",
+      "uncompressed_sha256": "db6682b789ecf5367704f231252ddd10fb3e8968a6190f77b29069922427b749"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-edge-0.json.gz",
+      "sha256": "cf15505cb9a0bb128f7a0b989ac072b7e6ec2dc69dcecb291dcbeb79a49c009c",
+      "uncompressed_sha256": "43db3dcdee18776920c7b3003f35aa30a499becfff0582d1cde17ca06f470dbd"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-fresh-dense-0.json.gz",
+      "sha256": "219debedd60fa765b224425c5311f49846a8640eec567ffe344662bb04abff88",
+      "uncompressed_sha256": "4c33d65ebd9d802b9c82b1fc662b6cba87acd146d703c1b4180638849afa9436"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-fresh-dense-1.json.gz",
+      "sha256": "3bb1855106781c84dd7458d4070ed6e7dd50a6414b7bba7e105b6ac922451da5",
+      "uncompressed_sha256": "95b03b9976d6f258911d7313632f2cda55857eb660216f2e0fba992ae1072efb"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-fresh-dense-2.json.gz",
+      "sha256": "3d4ee3847b08bcdbc559a3b3c865039c4245f6d3ea8f10b27edfe885d89f405a",
+      "uncompressed_sha256": "58154395e00af531537c9f90fde15fae9a0b0be255ec68606c542567891a0187"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-fresh-sparse-0.json.gz",
+      "sha256": "f4063118b2da2d58589b120a48b4ee3a3a7a82c89188cb76db5617548f14a814",
+      "uncompressed_sha256": "f4ee87d583a04f2a605166fff97f22052547f1c1651fc40ee5da70a9c8877132"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-fresh-sparse-1.json.gz",
+      "sha256": "2bf669da299f5bed9e0cc5c0ba9fadbc29ab2cb8ec8020297c84b905ce249744",
+      "uncompressed_sha256": "1489b0ed8017790623cb57a84ae6d1476ce235eac82504fb02848b56bccd933b"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-fresh-sparse-2.json.gz",
+      "sha256": "4f9d3a7f881c30e0268b2912d1c2741693ea3b6278aee1ea070a250622b341e0",
+      "uncompressed_sha256": "0de7fbd3b58b559b8e4626973ec8b276629f9b460f7c9223d5f906cebb1baf4e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-mixed-0.json.gz",
+      "sha256": "5bdfc5f6205707e7a33f4bf8c4e1cb55f0858cdeca6cbb954db57d3927d3f549",
+      "uncompressed_sha256": "7fe85804d00cb9d1953bf29a375851f77cb78f30f11de84f626f2041779f8099"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-single-0.json.gz",
+      "sha256": "d6aad856f2d4debe114c078ad59387101927d7f6f2d81a0b6ad45275702fdf78",
+      "uncompressed_sha256": "6820602613fdc1cd37091fd95e5d5d3e1961284fa93e7b0952dcb1540539fcf4"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-single-1.json.gz",
+      "sha256": "ef4f6efcaa52e3cbb77b671ab95bb54ee98f8dea67261c16a903644dfc8a0890",
+      "uncompressed_sha256": "8847daee9d9dd81186a4cb59703ecc66f698d967219b5fffdb68c96af9aff6e2"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-single-2.json.gz",
+      "sha256": "71bbd1f12d4b305da826b88bbb6bbcc03e7e84087cb53ec5d2a5945cd7dd4612",
+      "uncompressed_sha256": "d1fb3355ca7777b29ab5bbb39a23e27e40852c91b48d08345828feed9e585224"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-D-edge-0.json.gz",
+      "sha256": "aef07d2a88c9fb288823b2add7432a34234ee1e1fc3121dd3b4f3abeaf9828af",
+      "uncompressed_sha256": "e076232fad9d1e736caac00d6842053e25b0d8bdf7abb5f0f2d893df4ddcb587"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-D-single-0.json.gz",
+      "sha256": "40bb470c94d25a661d6b70dfb8594394012a4cf4b34ac8f9db9c4fb9d688247a",
+      "uncompressed_sha256": "acfb528ecfaaff9ad7a32f8034fc66da8df4b4db3d6816f2470f9a52ed0b686e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-D-single-1.json.gz",
+      "sha256": "cb3f11a6dd2d2b6edac59ead996cf1a39d4573edd48af8056588360af3a37e17",
+      "uncompressed_sha256": "ac3cc8f7f7d1e168d05fffe5cfc8889d001c45ba3354cf0d3eaab4376fc83ec5"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-D-single-2.json.gz",
+      "sha256": "5f1217d059801e103eb82fcd67acbb4828ab08db9ea4408cc9644b8f7ab048b1",
+      "uncompressed_sha256": "5c11efa1a981027fd9c72a79c6a342868cf8f7f929a18ed8b1d905cf8d02131c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-environment-main.json.gz",
+      "sha256": "a7969eaf453db598e6777bbe8a3835608946bc369b1db09b407b45200be86bd6",
+      "uncompressed_sha256": "3532fd110e9e098338988efa0dbc6e34b57c8db1ac88e88b6395b1137c2e86da"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-workflow-0.json.gz",
+      "sha256": "f18b33404aa55f2f5a32222e1648821c3685043de7ee3126f613ed032582bf88",
+      "uncompressed_sha256": "e5a945674088784a39ece77f13f9483d8745a1ee348890ce6db56b770860b3b9"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-workflow-0.json.gz",
+      "sha256": "cc3a299ce7d210eb90f33482a4fc14257f7da4f99448f3a70c731e771007bdb6",
+      "uncompressed_sha256": "f3455c29f0fc309fa676449b3ca8a99ea9764e03aed34558bfb219e80b6b5ad0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-workflow-0.json.gz",
+      "sha256": "a4c81aa7dcf38cb9f8a05f8df0907b7140bc2a178431c330b615beecbd871166",
+      "uncompressed_sha256": "41de86ca9c6777919a91deca55da210e4e55acc1651fb0b5f7747a8c9a144f7a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-environment-workflow.json.gz",
+      "sha256": "9280db4fdeaa3b616def4e8ecabc8c1860aa66c2df1f402ba6e52259b50a47e0",
+      "uncompressed_sha256": "8bdaa3902c114df0f331207d5f275544abd1ee349ef0e85b76e75f3051480d0c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-surface-valid-0.json.gz",
+      "sha256": "0b1c62dd1e85c77e7c62402e80b3fb14b94948411b0fccad716f9967b1856d27",
+      "uncompressed_sha256": "253f0969a683fc0fc4cfa238517b4bcf8e16cd2de9f15c9204a28ab3db47e65f"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-surface-valid-0.json.gz",
+      "sha256": "33d69bdde0585c4cb4a03cc3d23830867d66459b03c7b9d214557ab29841a219",
+      "uncompressed_sha256": "9ad4830d6ecb569b53e52911e2c2ace9b9f4f298f560edb2d25ee8fa7e79dc36"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-surface-valid-0.json.gz",
+      "sha256": "6467089eefd0051428753c0e8f7231b97009c699b253b07b505faf93e91583fc",
+      "uncompressed_sha256": "ad46cc5985b692d0373b2d59c96df86fb895d1e9a1da515f8faab857737e048e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-D-surface-valid-0.json.gz",
+      "sha256": "4e95344b1a9b3cf18809f2f71102c07a1a707a9a8af9ac317f1299d0a9f16841",
+      "uncompressed_sha256": "beea4ee4a074255681177518cae36ff82674342de6600206408241218885231e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-environment-surface.json.gz",
+      "sha256": "dd50c78ef6434f1381f5fe3dc0c547c6a7bd23f7bbb9e929605a18e849327ae9",
+      "uncompressed_sha256": "3ce64d360f77e2ee9c77ca0dbe30ccbdfed954dc3143c2c6589c5a5d694f0342"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-A-science-0.json.gz",
+      "sha256": "cf538149b02a35671721a43bdd991c3d3f9c1ed4f4faa3e4bf2450e6d98b1588",
+      "uncompressed_sha256": "df5c84e09bf7802db93b9362d938b7b6ab64ff7a96db1cd66c8de69d34d3d4ea"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-B-science-0.json.gz",
+      "sha256": "6094c02a41aebc24afcb452ee4f2e7411591f0683c12fdd16faaae8b2d11499b",
+      "uncompressed_sha256": "f2687cb77a2f86351ce5264b01019194e57d03543657594141fbf85eb5621b34"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-plan-C-science-0.json.gz",
+      "sha256": "dbfb68380e22e6b646a98bd5c1b2c4c3b614bbe5f9637ff6b021859eef36f4a1",
+      "uncompressed_sha256": "8df801729b5a29f2e5fe175e272219bd37f8ad7f9c837749d1a15e5547c67e79"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-environment-science.json.gz",
+      "sha256": "0e896ca8609d644c59445485a4487b7a3396859fd69a0d488a47da50b79c39db",
+      "uncompressed_sha256": "52687f4b7c6defba578c06d1a58b72bbc5254064ac634fc08d9ac5b0e1f4e7f6"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-2.6-W1.json.gz",
+      "sha256": "76e325de1b15f310f8aa0bd7748ee35f3d1e8457730cf56587a42013e69485e7",
+      "uncompressed_sha256": "842cf07f7d9eb9207d28ac7b890d2b7f5c8f6e399a0040ed8578b95cc58b5c16"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-2.6-W2-alt.json.gz",
+      "sha256": "67995666244639750ec3ad430db696dd948064037edba19ee15b259bdb30140f",
+      "uncompressed_sha256": "39b2d5cb1164ad53000fe3477f8024f82adf2e6dcecd176fd38b628d9b61af40"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-2.6-W2.json.gz",
+      "sha256": "d2c38c0db2877db8bab10718c28fd91f5fdfc99454c77e3300f0010cc43d7730",
+      "uncompressed_sha256": "a7915e83121fe81aad8dd73319c1718b8eb2c87253cd7fa6b83ea655f2fef41c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-2.6-W3.json.gz",
+      "sha256": "202be5e72d89caf0578c041025019a9bd6cd881dba74c218f66ae3da34d87058",
+      "uncompressed_sha256": "cb250fe9edcd1d6e74743bbdfbd80e2556cceec30f194e32b837f0cb5f06d8d6"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-28-W1.json.gz",
+      "sha256": "cb0da394126bd1c54759172fab62c756690a9e38317c4f831dcba1c338276ccd",
+      "uncompressed_sha256": "d3ef9bc1ba6c5e2266c69ed6f16cfe15170fed4eaf35a40e5df6d0199240df27"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-28-W2-alt.json.gz",
+      "sha256": "81e781dc1a2de89cd72f14083ecdaa9b9cf804471a31c7802d6f1153436263bf",
+      "uncompressed_sha256": "a0e2b6fbbc74bd53d66a5e78e7a4a8fdf8e1d0facd9cd6a2fc22d92bf55f532c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-28-W2.json.gz",
+      "sha256": "38034af018ed33a1ccc9d56e7c9027c2b90c36bf378942289edc04a2c3065891",
+      "uncompressed_sha256": "7e97692bb8e83e781ff90091dffe92bb4a041f1209c96f454cc5ebd1028d404e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-1-28-W3.json.gz",
+      "sha256": "6c3e29cf98d238d026c84d6c6e8b2d5a58b056ada2e830b1c492e74eb2aec03b",
+      "uncompressed_sha256": "e32e23f22caf44faf5acd47d31701cf075a13cbb8aca72c419be8bd49655d85a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-2.6-W1.json.gz",
+      "sha256": "18f59e3b91dc89488028bf02698c0f3aaef2a6eee81ca3627e890a82757d7a03",
+      "uncompressed_sha256": "cd74b8304b2b8762aa660629817b55ca668286e625785a97f2dfab21a44fa76a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-2.6-W2-alt.json.gz",
+      "sha256": "64608118dac0839a5c53792a1389dd8d0f86d2a9bd7c785f81258bdb2260ec38",
+      "uncompressed_sha256": "b37bd0d17e6b11743a38d8d7d3f6d2eca632871eaf97003b5e724d9f898939ec"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-2.6-W2.json.gz",
+      "sha256": "759da9139398876f37335819fc4836b7a5a7e62fd6a7e4de07d1499b691c06d2",
+      "uncompressed_sha256": "85d12e6ee17e66a4646ddbc8fd348586b3e33bb44dd316019a69eb0b7f68b89c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-2.6-W3.json.gz",
+      "sha256": "cc070b193f73b0465795ecb300a469e2ae748a34fac9b270dc2c037e41a78eea",
+      "uncompressed_sha256": "013e9a62781767433d5c8b9105432fa9c4e0f2f342edee5704a1d0e98341bc65"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-28-W1.json.gz",
+      "sha256": "0f24e9cc448b3f907e5c036efd967301b220cfd87487eef4a07d38f712f34d6c",
+      "uncompressed_sha256": "8701ab1b83d58f23fa24bdc319eb710613e07bb5c8d608db03229f7751f48a4e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-28-W2-alt.json.gz",
+      "sha256": "60bb76570828a2292f163c9be5cffbf1e959b77d6c992433c183c46ba2d6b326",
+      "uncompressed_sha256": "bec3e0027d828450e565cc450f3a8d7ac50d91c36870d93ef86e65717bf1ef48"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-28-W2.json.gz",
+      "sha256": "514a98fd5c94b26cfc682571b86c56fc82e50e4c0793cb3f42c6752d22edca15",
+      "uncompressed_sha256": "3a4005e0c10cc4b2d9c0601f21ca43d2361ddbf5207d6b9edcbef851db57eb1e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-dense-certification-2-28-W3.json.gz",
+      "sha256": "015191e71205dc588dc96a497c7f98cc39ff9a828f31af2bd0eb70d8faef6a42",
+      "uncompressed_sha256": "541fdbd68c286b000da95a7c0de3ed1244ee6b5f9124dc88ff64e1ec199a09e4"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-2.6-W1.json.gz",
+      "sha256": "4efbe195919df6975ecb366fe9ce57a31d1acee6be9319cc2bc4268ebd94dd7c",
+      "uncompressed_sha256": "fc2f431ea6b025d514aa2ae64c11a79547bcf1435dedd679d87aabcf4e8defa4"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-2.6-W2-alt.json.gz",
+      "sha256": "0504648eb890c52f775f833a519e2e8a8464cc8fae56d6bcde7632007d352c53",
+      "uncompressed_sha256": "579390530ea32e4d02fd43742b5ef0946febe0f7c77bb2c92bcff2096db8bd48"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-2.6-W2.json.gz",
+      "sha256": "9f70aab3c9101e00e580b8479b0b1a806a9b46e8beb1bdefa320b455aaf75f44",
+      "uncompressed_sha256": "4f8243d3888c071cb9583bfb0916f6ed2c786bb8a6ef7b47b56735b25636debb"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-2.6-W3.json.gz",
+      "sha256": "2ca1384c92e2b72f033a0ec69d421b722e254f9b7efc2d60de725b6ade2561a4",
+      "uncompressed_sha256": "f5336106227ffc7cb7dd3f41ca17c9d436ad79fe321bc0a3a504070b8f28689a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-28-W1.json.gz",
+      "sha256": "852fc429aa1cbb193aabe95529e58f2366afebfdfd453c1f8f9ce4ddad05fac9",
+      "uncompressed_sha256": "edc25cab5494d9ab0967f2018c9f3dd730546623dca7914ee677db5e2ff97203"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-28-W2-alt.json.gz",
+      "sha256": "a0df7ab5705df3f98c3bad31a0436bfef50735703cabaac753404e88ad871f95",
+      "uncompressed_sha256": "70f48faa21c09945c57cbedba7c400528711f2018a38d027712d6d6cc44a9dfd"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-28-W2.json.gz",
+      "sha256": "fbf3716d3dff40c0bfd25493bc2797700aa7ba4209d1b28eec50e5e0121d7607",
+      "uncompressed_sha256": "2eddac548927e887424d6e0588bb6c47f19fc864562a27b55f50d279ec079776"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-1-28-W3.json.gz",
+      "sha256": "19ffb72d2a1b96ce5e90bd9b223005078288195c8f5ed926475ab0b18c1b6f28",
+      "uncompressed_sha256": "e8e539d5ff7d0ba23c8bcfa6ba2a26c4d2c61ede7dc0ba0758b305bd7bbb35c6"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-2.6-W1.json.gz",
+      "sha256": "067291d01c34a2469a0b9a4e11a567fef61a948196ff13c106da9f32ef06f64c",
+      "uncompressed_sha256": "22fb04f891ec25c499072c7bf5bda92d6efa9d1a38c53f975265e5f073a5bdf3"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-2.6-W2-alt.json.gz",
+      "sha256": "df45c210b3034ac488731883b8c91819ad1b52a52e044cbb823fc503fb652317",
+      "uncompressed_sha256": "dc98c121fb20f4a68442b29e664344098554d70eb8f2b8a0b965040605ad2a87"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-2.6-W2.json.gz",
+      "sha256": "b7b212c012fe8e239bfcd5aa5a8c1d0b6b49794332d64593d844b829771b9862",
+      "uncompressed_sha256": "8ab3656286065180cce5475b061176ab2268e866f5b7a120cb0d7913633db461"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-2.6-W3.json.gz",
+      "sha256": "82ebd592abb1664d26f5d7647ba86f3dcb9ad96222a7d4c3192c46119cc31d5e",
+      "uncompressed_sha256": "7eac03ba8a6b37c778983a2b46eec1c9c1b9c857360509c26b4ea1483a8c9fa7"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-28-W1.json.gz",
+      "sha256": "e67787020c9e15b14f7a486163dcc4544e8516dbe05b4c67b5086ddce6f805b4",
+      "uncompressed_sha256": "b341d1d9fc8fd16eeef279a6bbc0499bdd468289a8a093d84dc4749641c66441"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-28-W2-alt.json.gz",
+      "sha256": "85a7f41da3fdcde9b4da6133a67c90cccba3aa45b4df19ad070edaa1b5b6bb99",
+      "uncompressed_sha256": "96ac899ee19317c69c87a1aeb996b935121834a6e73fb918c740c5dd3a2c4ec5"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-28-W2.json.gz",
+      "sha256": "47353267162574178a1408f6f2ba778efc39571b714f25495adae6bbf16b2c04",
+      "uncompressed_sha256": "00a9799b13b3b9e7d11118bdbe1551f84a3df2405ec27f27db443c58c418e9bb"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-medium-certification-2-28-W3.json.gz",
+      "sha256": "e33c02b113dda78764e66211a61ab5c5c288b4966ac41ba4699064a2c85f7101",
+      "uncompressed_sha256": "91cd2645079103e8a78372ca5eb2a78a05c09e950f1b2f7ca653c08910a9f1cc"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-2.6-W1.json.gz",
+      "sha256": "711d2790d609ad280144efc3b7ccea766187197db6aed46c9060e63cad0ddab6",
+      "uncompressed_sha256": "44ace335ba310fc7a4119d7918bce7eff4dc05176004cf7d79c6a505981e9fb0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-2.6-W2-alt.json.gz",
+      "sha256": "d2e6bc6153667ce8e418052cc0d97c92636d67b4b11efc223d5f155bbb8f9e2c",
+      "uncompressed_sha256": "a0c2bea79e166d04dc915da512240a32f0e2f6dd90eb66e869f4bfa753f4c978"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-2.6-W2.json.gz",
+      "sha256": "7d987224a1aaf72b0f0408c03b48a2e2d386808dc3fdb1084937dbc0f87dd510",
+      "uncompressed_sha256": "5fa217578d1b8201e71f5c8657492a72a30e161eae54e8640db34351851a62d2"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-2.6-W3.json.gz",
+      "sha256": "8aef2096f141144a5d10c0f84e3a35281b5a49b4e4157ade71268803a747859f",
+      "uncompressed_sha256": "416bfee75b690485530483f11c471f98920f2bb608a07fa45315332ad225c38a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-28-W1.json.gz",
+      "sha256": "96121bc991ef3d5f4828856ddca800cb6cb803a88c7ff4240e465317e369b560",
+      "uncompressed_sha256": "3231ab8e86e82c3ddac28b0823acdf8b3a0e49ab8a5540e8e51930f45e1b1d69"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-28-W2-alt.json.gz",
+      "sha256": "4ee7f6fe4c30a590ebf26e1a2b072acf5e5ec3e24c8f793eb1ece4575b063714",
+      "uncompressed_sha256": "6e2061949639ef4dfb8144ecd9a4a0dcf419147ea9c3f8a3fec076e4509f0802"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-28-W2.json.gz",
+      "sha256": "292be0dab936603cfb5625426c5f828357fde455d18066369103ecab307f0da0",
+      "uncompressed_sha256": "7ca8af678c50c9c73c29ff0ca097e175ef35c3dcdb8ab29594f64c3117d74155"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-1-28-W3.json.gz",
+      "sha256": "a731b87db2b8abf931076576f45fd505253d9f47adfa8e83d5b9b0220b92876d",
+      "uncompressed_sha256": "1fdd50b01962a3578a1978fce64925030dc8dc0192f3bdde7090161457073402"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-2.6-W1.json.gz",
+      "sha256": "dadd1be40be9f0ec530f6f267d919ee08f3a87fa6285b41eaa554714adab4416",
+      "uncompressed_sha256": "65ca817ca4a569e777237443be626888f107d21125e87e7bca645187eccdd997"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-2.6-W2-alt.json.gz",
+      "sha256": "21041dc47fe27e7f29d5f624fd5609deb1c37e7f159f21853fafb2d01d690d22",
+      "uncompressed_sha256": "39cd1150a38aa21624cd89f6e4f57a0c99f1808fff2b3ac5476e8319b7c0e88c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-2.6-W2.json.gz",
+      "sha256": "b4669eb5d3e8a258bfdd0660ab8a632be99b23959806090b18c84ace2f73160f",
+      "uncompressed_sha256": "4404187ef31da7e58a4592aa3a8f24376588458f87d132b0dad3abae006aaa68"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-2.6-W3.json.gz",
+      "sha256": "e3324e60ea2af0ec9eac5534b566a7e95e66a9d6d94f825a25b8252fe5626ad8",
+      "uncompressed_sha256": "8159cb222f83a4a3aa99165bdf02b70b98c22089fab3a8456448805a9e532436"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-28-W1.json.gz",
+      "sha256": "48ad1519b6032745e1922b749591d0fa6285b2a3e8dbd847bdee8db93d9b1c09",
+      "uncompressed_sha256": "7cb26741a692408ba9fffd796a3721ec3b9a639f138d04d3e8393dca81172e2e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-28-W2-alt.json.gz",
+      "sha256": "e391588c303fc1a30caa6642f4fec2fe3dba45ad662789af042da9ffe28fd266",
+      "uncompressed_sha256": "547a7f65492aa0113c96300f89cb3e6009b6f28a5002b1f4d613cdb0955c42ef"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-28-W2.json.gz",
+      "sha256": "a17ddb614de2d580baa763db9ab2232c79b3b96ad5cfb24a925ee7ac3889a360",
+      "uncompressed_sha256": "3287f555beb10595f6c49752db1a2a2373679d0417dd5404a1f9dc27b18f952d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-sparse-certification-2-28-W3.json.gz",
+      "sha256": "aae1888b883abf3ab2f998db887632549a7067f3c23fb5ddadee33147a71897a",
+      "uncompressed_sha256": "63edb332eba547bf36664f306e3aa2c8f1b58d96364f266a9ebbe36edfdfc3fa"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-2.6-W1.json.gz",
+      "sha256": "f3979fcb73d7218ba8dd6467164adbd730aa3bbd8085c344a6bc9aa5580dc3b1",
+      "uncompressed_sha256": "fbd2529dfc8a09bc700c3aaa37c86a3458019f4aa0a94469f0456beb281988be"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-2.6-W2-alt.json.gz",
+      "sha256": "f0bb942e207efe7eaf6fc9705076b5bc5f37bce5a2670690d866582c60b465b8",
+      "uncompressed_sha256": "d56a27dbffc18b2d3a479c13bd96102e8706237f1c511bdfa469fff972f1273c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-2.6-W2.json.gz",
+      "sha256": "af5c16ef0f23d37ceb6386dcf5e68efe27e4a376af48afcbd8ef962a17f484da",
+      "uncompressed_sha256": "6729ce7dbfe5bed709c14a2a94d3656360f15e374b7268f71f8cfae04d0d498a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-2.6-W3.json.gz",
+      "sha256": "0c47562bb0ddafbf7271a12650abfa7b4f19ea4c765371371549040622ce5bf0",
+      "uncompressed_sha256": "c27c7bcfdec4da461c5a2217a0266c5f3f6f0582ac99e6d3845724758900c320"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-28-W1.json.gz",
+      "sha256": "7f42ac59af0f1739af64e83bd8a8028e4114d05049541fe18d5c9059d35d8a95",
+      "uncompressed_sha256": "bb746070a923a9c496545fd6aab0bf39d7d3b07062908092dcdd4439bd7a3a18"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-28-W2-alt.json.gz",
+      "sha256": "342b61b7d71f21c795cf71f4540f47675e509254d3540878e073c3524a4109a7",
+      "uncompressed_sha256": "c546b845919632f15339e0000440ab8c1a0ae016b42564b300f47230da5974f8"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-28-W2.json.gz",
+      "sha256": "4b48205edbf071fa7e3458b156f79eb83b88210d6c1b7ae6453a9a4d0b7a19a6",
+      "uncompressed_sha256": "39d47320f48f93f17bb0d32ee717dac710a7063225bc755b5ef88ad729415683"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-1-28-W3.json.gz",
+      "sha256": "0d5e90bad0581d28247bff60e7be595dab9afd94f20fe681c5cbd1ca227c409f",
+      "uncompressed_sha256": "e4ce4fe78a79209fd849d83b4eeaeb2982854625db0e2a457c4ff16805c1ca3f"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-2.6-W1.json.gz",
+      "sha256": "48916c7984eb8fefd64d0a61a22e8348d628f7a3c00407f395ae46e8a16359ad",
+      "uncompressed_sha256": "986f3ae3da2cf65973001b475aca2e6eadbf9b42c2531a335a20a963f7b8aac0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-2.6-W2-alt.json.gz",
+      "sha256": "4325bd617b5faa2af4b7e38ba684b06de52ededd25f09fc3689644b4edcc0e4d",
+      "uncompressed_sha256": "ba532fb5a43ba20f34f2a649c917674c53c7ea10e2b73146b40cd347e40376bc"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-2.6-W2.json.gz",
+      "sha256": "c05bf310785283d575f2b2aedee333bc2851fb3b2711eaf55a84f45cc6d01d8c",
+      "uncompressed_sha256": "cf71afc0cc077df95926221de5a674fe77c2b2b9a19aff02b558d93e5f9b3dc6"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-2.6-W3.json.gz",
+      "sha256": "34c04814d7302612ca80d0d3149d03d4ce6d55d5aa42bc07304c82f4a4516bd1",
+      "uncompressed_sha256": "926175ca7e7cdb7bb4ef6a37a8afc2bc42d29a1f2bbee22fb48e392a35038897"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-28-W1.json.gz",
+      "sha256": "fe11243507ab4c74c6a2ad2e2d0865b93e0212597d4b60a741464e759e664d1a",
+      "uncompressed_sha256": "a6532294c3bfe401282de05c5222cc751f6a3676834b512c4cee43cadb638aa9"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-28-W2-alt.json.gz",
+      "sha256": "b0317675da77a8728fe0f07bd2bf233a25e57681e7cc3995c130979ee0fdfe1b",
+      "uncompressed_sha256": "d6ded3b053cce1c073eefd3ea6ae059e7793a6e0ddb5b6792aa769537f86a19c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-28-W2.json.gz",
+      "sha256": "dafb271b654961685d9c4e353785ea8188df2abfcf750a63660d8468e25bd865",
+      "uncompressed_sha256": "52e3f4a2167d3ba10e681ebe7903da295100f4d572f696efcec2e3979fa4b53d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-fixture-very-dense-certification-2-28-W3.json.gz",
+      "sha256": "f86ff342677024fb0052e488c2699482fb85cc61d53694badb0632ff58f2f6a9",
+      "uncompressed_sha256": "0df00933870712f1e73a6ec4f3daf68e8ecad84d43fe4758470cba57e05e638a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-supplement-input-audit.jsonl.gz",
+      "sha256": "50e191e4fe6758f390a949d2813f3baa3ffcf39ab7ff5e26429180756f8bc4f1",
+      "uncompressed_sha256": "b1d8a67e0bac04a3832c75cef5b6011f23133980092ff1c5cb25e4b91a76ec13"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-original-checks.json.gz",
+      "sha256": "2cc00dd834d29e58f7ee3e83fed0a8bc0176a90a2fc0cea33f8b3ab7d04d5298",
+      "uncompressed_sha256": "7b02fad029029e710189dd83708bae8e72286cb661fe17cae79a56bf41b29d5e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-backend_tests.log.gz",
+      "sha256": "66fbd73f854c717de6a6b77fc0bc638278a4545a72400d724d2c79a37690f000",
+      "uncompressed_sha256": "e65e9d3790139843847574c0f63924fa215cf97e66ee4172a0a38bad14b6fbf0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-backend_race.log.gz",
+      "sha256": "66fbd73f854c717de6a6b77fc0bc638278a4545a72400d724d2c79a37690f000",
+      "uncompressed_sha256": "e65e9d3790139843847574c0f63924fa215cf97e66ee4172a0a38bad14b6fbf0"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-backend_vet.log.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-frontend_tests.log.gz",
+      "sha256": "54f4095a2cab51053be6c8a09122030f099608df6a00c31945a64e39f8542b1a",
+      "uncompressed_sha256": "c36ed031051364a35eb752e342bb621f393db47f7bb72c5660ea090be3f0cf3c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-frontend_lint.log.gz",
+      "sha256": "7eba943c0b8390f69f43bb87478fa0894d0f35686ec555e48f51a112e426d7e4",
+      "uncompressed_sha256": "8c0fc05ce8eb404607f62c91f788627799d973382ab2d64911d3e6878dd6235a"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-frontend_build.log.gz",
+      "sha256": "d9c6441ee881159736402e337b0754ae8a305dc301d048d9c9853fa560d70275",
+      "uncompressed_sha256": "29ce566ae8ce55918d2b872291a50ac196a92ca18d16f488c89b6cb6dd45f9ec"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-rf_budget_e2e.log.gz",
+      "sha256": "4de1384b28ff6bdeff56dee63c92bc2c2fc2f70693c575f608c3decc4a0ee45b",
+      "uncompressed_sha256": "fec66111e642ce1c34f5723292842ab2f884b5ac297c41a3f276740b38f8bed9"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-rf_deadline_e2e.log.gz",
+      "sha256": "bbf40a82e829ed335d3de8b15671ba199aec8b83484156cf954330f5fcc2ee50",
+      "uncompressed_sha256": "a5cfbbe56657fe86ef8c79d48861dfa7c5203604b80e3dba25a18ffd7b951e5e"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-auto_resource_profile_tests.log.gz",
+      "sha256": "b92733ef7e22bea6bcf2b603335e12ab14c659c81e5bad1ca0f354d27b7d3cab",
+      "uncompressed_sha256": "152b3d449d324cfbe79d1efb1f8143c7dd1e72d09de7142b58d6f652fbbfd1d8"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-scientific_canonicalizer_tests.log.gz",
+      "sha256": "18037c0946510db34dc827a117848fb004ab1f05c52843ce0a48a1eee2d6339a",
+      "uncompressed_sha256": "967b1fadac6c8690bc05908855987d39d797c96a60d285d805367c53498704aa"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-fixed_profile_protocol_and_gate_tests.log.gz",
+      "sha256": "7678c480930631241494ca3746ba388492a4c59674981676d14ce49810b22db4",
+      "uncompressed_sha256": "bf9da9f6281f18c45968d3d634931ed28261014c2ea210209c531f72e2e3885c"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-geometry_calibration_preservation_tests.log.gz",
+      "sha256": "35509c6b96764e8221758c2c68837830410d0e6924fb0ff95bc6821d5b231476",
+      "uncompressed_sha256": "8ffa5975dbde749685ff98587bd42d81c65a4fbb8cdb7823318908026d6cecb9"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-locked_validation_preservation_tests.log.gz",
+      "sha256": "605617bd89b070110d75c6fa17f87d32d82b5cf00883baa4726494a00c8f8de9",
+      "uncompressed_sha256": "6dc6f713d7adc105079acb0f9975c94f1932f863fd18fe5df6511b4f8a6c0019"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-dataset_validation.log.gz",
+      "sha256": "14879367c95861048b91a2b74cc77bad5149d0b90491a4a67a9079d4db529b76",
+      "uncompressed_sha256": "a9e90c529c2d7044aba420f561a2b3b88fb69151288ac2f1ed0f6993e132b4f7"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-docs_build.log.gz",
+      "sha256": "e720eec743f6d1e377bb6d6c83502b56cf4c7fa555012655891af9db645b0ed6",
+      "uncompressed_sha256": "af307e565b3af51b0b83291657b260eb5bcc5dcffb2bccf0f5265b99ebbb2c2d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-docs_validation.log.gz",
+      "sha256": "6b0e2dded70753c22334a68b3a1f20c209c631ba59ff7a891c763920aba672a5",
+      "uncompressed_sha256": "b09fd971306f8f22df8efd9220107883ca69cd7050be3204b8519ee94e2deb1d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-version_consistency.log.gz",
+      "sha256": "49f15183fb91df2e64b7c991e2a0159258f764e31f80f1ecb0fbb3153f023ec2",
+      "uncompressed_sha256": "2e4cc0cc1198c5cdae81bcbdc187b87f89ed588c807cd7f9fbfe445509946af2"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-diff_whitespace.log.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-docs_final_build.log.gz",
+      "sha256": "e720eec743f6d1e377bb6d6c83502b56cf4c7fa555012655891af9db645b0ed6",
+      "uncompressed_sha256": "af307e565b3af51b0b83291657b260eb5bcc5dcffb2bccf0f5265b99ebbb2c2d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-docs_final_validation.log.gz",
+      "sha256": "6b0e2dded70753c22334a68b3a1f20c209c631ba59ff7a891c763920aba672a5",
+      "uncompressed_sha256": "b09fd971306f8f22df8efd9220107883ca69cd7050be3204b8519ee94e2deb1d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-final_diff_check.log.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-post_audit_tooling_tests.log.gz",
+      "sha256": "d93feceb04489ce3c58eafadd1d1bfac6222979c692445bad64610b55f7e0b6c",
+      "uncompressed_sha256": "337f00a8cb074c39bb41b2e16f0337466baa7e7fef650e96a680be5228191833"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-post_audit_docs_build.log.gz",
+      "sha256": "e720eec743f6d1e377bb6d6c83502b56cf4c7fa555012655891af9db645b0ed6",
+      "uncompressed_sha256": "af307e565b3af51b0b83291657b260eb5bcc5dcffb2bccf0f5265b99ebbb2c2d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-post_audit_docs_validation.log.gz",
+      "sha256": "6b0e2dded70753c22334a68b3a1f20c209c631ba59ff7a891c763920aba672a5",
+      "uncompressed_sha256": "b09fd971306f8f22df8efd9220107883ca69cd7050be3204b8519ee94e2deb1d"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-post_audit_version.log.gz",
+      "sha256": "49f15183fb91df2e64b7c991e2a0159258f764e31f80f1ecb0fbb3153f023ec2",
+      "uncompressed_sha256": "2e4cc0cc1198c5cdae81bcbdc187b87f89ed588c807cd7f9fbfe445509946af2"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-check-post_audit_diff.log.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/fixed-deployment-profiles/evidence/completed-post-audit-checks.json.gz",
+      "sha256": "d354d919f6363ae33ac43d8fd28fa89648a9c1dd8b8abae22d7df41474465ca1",
+      "uncompressed_sha256": "7e4bc1f15dbe8d50892f845cdf27243576186927f6d86c5a1306260c4f47f1ed"
+    }
+  ],
+  "original_quality_checks": {
+    "backend_tests": {
+      "command": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "cwd": "backend-go",
+      "exit_code": 0,
+      "seconds": 0.35417154198512435,
+      "completed_at": "2026-10-05T15:00:06.611185+00:00"
+    },
+    "backend_race": {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./..."
+      ],
+      "cwd": "backend-go",
+      "exit_code": 0,
+      "seconds": 0.20779383298940957,
+      "completed_at": "2026-10-05T15:00:06.819428+00:00"
+    },
+    "backend_vet": {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "cwd": "backend-go",
+      "exit_code": 0,
+      "seconds": 0.1686041250359267,
+      "completed_at": "2026-10-05T15:00:06.988299+00:00"
+    },
+    "frontend_tests": {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "cwd": "frontend-react",
+      "exit_code": 0,
+      "seconds": 11.206082082993817,
+      "completed_at": "2026-10-05T15:00:18.194750+00:00"
+    },
+    "frontend_lint": {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "frontend-react",
+      "exit_code": 0,
+      "seconds": 3.72858549997909,
+      "completed_at": "2026-10-05T15:00:21.923696+00:00"
+    },
+    "frontend_build": {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "frontend-react",
+      "exit_code": 0,
+      "seconds": 1.2943782919901423,
+      "completed_at": "2026-10-05T15:00:23.218389+00:00"
+    },
+    "rf_budget_e2e": {
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "e2e/rf-budget.spec.js",
+        "--project=desktop-1440",
+        "--workers=1"
+      ],
+      "cwd": "frontend-react",
+      "exit_code": 0,
+      "seconds": 10.216798625013325,
+      "completed_at": "2026-10-05T15:00:33.435880+00:00"
+    },
+    "rf_deadline_e2e": {
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "e2e/network-deadline.spec.js",
+        "--project=desktop-1440",
+        "--workers=1"
+      ],
+      "cwd": "frontend-react",
+      "exit_code": 0,
+      "seconds": 9.78620641696034,
+      "completed_at": "2026-10-05T15:00:43.222845+00:00"
+    },
+    "auto_resource_profile_tests": {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-run",
+        "ResourceProfile|AutoResource|RF.*Budget|Cancellation|Cancel|Experiment"
+      ],
+      "cwd": "backend-go",
+      "exit_code": 0,
+      "seconds": 1.3604906660038978,
+      "completed_at": "2026-10-05T15:00:44.583692+00:00"
+    },
+    "scientific_canonicalizer_tests": {
+      "command": [
+        "go",
+        "test",
+        "-run",
+        "^TestFixedScientificHash$"
+      ],
+      "cwd": "/tmp/atom-resource-fixed-science/backend-go",
+      "exit_code": 0,
+      "seconds": 1.3960640000295825,
+      "completed_at": "2026-10-05T15:00:45.980098+00:00"
+    },
+    "fixed_profile_protocol_and_gate_tests": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/fixed-deployment-profiles",
+        "-p",
+        "test_*.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 1.8535409580217674,
+      "completed_at": "2026-10-05T15:00:47.834057+00:00"
+    },
+    "geometry_calibration_preservation_tests": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/auto-resource-geometry",
+        "-p",
+        "test_*.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.08291904197540134,
+      "completed_at": "2026-10-05T15:00:47.917288+00:00"
+    },
+    "locked_validation_preservation_tests": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/auto-resource-estimator-validation",
+        "-p",
+        "test_*.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 2.387599209032487,
+      "completed_at": "2026-10-05T15:00:50.305268+00:00"
+    },
+    "dataset_validation": {
+      "command": [
+        "go",
+        "run",
+        "./cmd/validate-dataset",
+        "../data-pipeline"
+      ],
+      "cwd": "backend-go",
+      "exit_code": 0,
+      "seconds": 1.9868606249801815,
+      "completed_at": "2026-10-05T15:00:52.292489+00:00"
+    },
+    "docs_build": {
+      "command": [
+        "sh",
+        "docs/build-reference-pages.sh"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 6.647625292011071,
+      "completed_at": "2026-10-05T15:00:58.940558+00:00"
+    },
+    "docs_validation": {
+      "command": [
+        "/tmp/atom-persistence-docs-venv/bin/python",
+        "docs/validate_docs.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.46607174997916445,
+      "completed_at": "2026-10-05T15:00:59.406905+00:00"
+    },
+    "version_consistency": {
+      "command": [
+        "python3",
+        "scripts/versioning.py",
+        "check"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.03337608301080763,
+      "completed_at": "2026-10-05T15:00:59.440638+00:00"
+    },
+    "diff_whitespace": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.026517624966800213,
+      "completed_at": "2026-10-05T15:00:59.467446+00:00"
+    },
+    "docs_final_build": {
+      "command": [
+        "sh",
+        "docs/build-reference-pages.sh"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 6.403043332975358
+    },
+    "docs_final_validation": {
+      "command": [
+        "/tmp/atom-persistence-docs-venv/bin/python",
+        "docs/validate_docs.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.3436740839970298
+    },
+    "final_diff_check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.017584791989065707
+    }
+  },
+  "post_audit_quality_checks": {
+    "post_audit_tooling_tests": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/fixed-deployment-profiles",
+        "-p",
+        "test_*.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 2.435877292009536,
+      "completed_at": "2026-10-05T15:16:22.887384+00:00"
+    },
+    "post_audit_docs_build": {
+      "command": [
+        "sh",
+        "docs/build-reference-pages.sh"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 6.231634958006907,
+      "completed_at": "2026-10-05T15:16:29.119253+00:00"
+    },
+    "post_audit_docs_validation": {
+      "command": [
+        "/tmp/atom-persistence-docs-venv/bin/python",
+        "docs/validate_docs.py"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.3407011249801144,
+      "completed_at": "2026-10-05T15:16:29.459999+00:00"
+    },
+    "post_audit_version": {
+      "command": [
+        "python3",
+        "scripts/versioning.py",
+        "check"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.03313370898831636,
+      "completed_at": "2026-10-05T15:16:29.493184+00:00"
+    },
+    "post_audit_diff": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "",
+      "exit_code": 0,
+      "seconds": 0.01741379202576354,
+      "completed_at": "2026-10-05T15:16:29.510642+00:00"
+    }
+  }
+}

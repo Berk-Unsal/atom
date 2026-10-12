@@ -1,0 +1,23 @@
+{
+  "concept": "8G",
+  "before": {
+    "fixtureCells": 451,
+    "query": "empty query returned full loaded inventory",
+    "resultRowsInDOM": 250,
+    "editorTogetherWithBrowse": true,
+    "listMaxHeightPx": 210,
+    "screenshots": ["docs/assets/concept-8g/before/1440-inventory.png", "docs/assets/concept-8g/before/1024-inventory.png", "docs/assets/concept-8g/before/390-inventory.png"]
+  },
+  "afterNormalFixture": {
+    "loadedCells": 451,
+    "criterion": "explicit 5G technology filter",
+    "exactLoadedMatches": 451,
+    "initialRowsInDOM": 50,
+    "listAndEditorTogether": false,
+    "listRowsPerExplicitIncrease": 50,
+    "mapAreaCaptureAt1440": { "capturedCells": 389, "initialRowsInDOM": 50 },
+    "screenshots": ["docs/assets/concept-8g/after/1440-inventory-search.png", "docs/assets/concept-8g/after/1440-inventory-map-area.png"]
+  },
+  "syntheticFixture": { "cells": 10000, "initialRowsInDOM": 50, "afterOneShowNextRowsInDOM": 100, "mapAreaCells": 5000, "mapAreaRowsInDOM": 50 },
+  "interpretation": "The normal loaded dataset remains client-side and the whole matching array is computed; only the visible DOM page is bounded by default."
+}

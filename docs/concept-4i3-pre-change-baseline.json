@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "concept": "4I.3",
+  "title": "Measurement evidence and spatial-validation pre-change baseline",
+  "artifact": "pre-change-baseline",
+  "captured_at": "2026-09-18",
+  "baseline_commit": "d66ad902075402a2df8df413bec63e9a51059561",
+  "worktree_note": "Concepts 4I.1, 4I.2A, and 4I.2B were already present in the shared worktree. This artifact freezes their recorded reference behavior before adding the separate 4I.3 measurement-campaign and validation infrastructure.",
+  "existing_measurement_audit": {
+    "legacy_route": "POST /api/measurements/evaluate",
+    "legacy_input": "MeasurementEvaluationRequestInput",
+    "legacy_quantity": "4G/5G RSRP samples matched to the existing interference/radio-quality estimator",
+    "legacy_scope": "network_tech 4g or 5g; tower request; imported RSRP CSV; residuals against the canonical interference model",
+    "campaign_schema_present": false,
+    "measurement_provenance_contract_present": false,
+    "quantity_semantics_contract_present": false,
+    "sub_thz_model_adapter_present": false,
+    "spatial_holdout_present": false,
+    "note": "The legacy workflow remains untouched and is not reused as the 4I.3 campaign contract. It is not evidence of 100–200 GHz measurement validation."
+  },
+  "canonical_snapshots": {
+    "canonical_2_6_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 0, "avg_rx_dbm": -43, "min_range_m": 100, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 70.07902264967872, "wall_loss_db": 0, "signal_dbm": -15.07902264967872}
+    },
+    "canonical_28_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "urban_short_range",
+      "stats": {"blocked_pct": 12.5, "avg_rx_dbm": -72.1, "min_range_m": 72.3, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "path_loss_db": 90.72271631710674, "wall_loss_db": 0, "signal_dbm": -35.722716317106745}
+    },
+    "research_sub_thz_140_ghz": {
+      "source": "docs/concept-4i2b-pre-change-baseline.json",
+      "endpoint": "POST /api/simulate",
+      "model_id": "research_sub_thz",
+      "applicability_reason": "research_profile_only",
+      "stats": {"blocked_pct": 87.5, "avg_rx_dbm": -123.6, "min_range_m": 17.6, "max_range_m": 100},
+      "first_feature": {"distance_m": 25, "slant_distance_m": 34.3110769286, "fspl_db": 106.08124770471235, "wall_loss_db": 0, "signal_dbm": -51.081247704712354}
+    },
+    "four_h_two_optimizer": {
+      "source": "docs/concept-4i2a-pre-change-baseline.json",
+      "disabled_fingerprint": "network-99c0e814ad1fd432639296a9367b1997",
+      "enabled_fingerprint": "network-c8b82cc86d8b7dc361d425526e8e7c38",
+      "note": "The source artifact contains the exact disabled/enabled optimizer statistics and Pareto counts."
+    }
+  },
+  "existing_reference_snapshots": {
+    "concept_4i2a_atmospheric_reference": "docs/concept-4i2a-post-change-comparison.json",
+    "concept_4i2b_p1411_reference": "docs/concept-4i2b-reference-comparison.json",
+    "p526_diagnostic": "docs/concept-4f1-canonical-audit.json",
+    "height_and_geometry_readiness": "docs/concept-4i1-140ghz-applicability.json"
+  },
+  "real_backend_baseline": {
+    "command": "ATOM_REAL_E2E=1 ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline npm run test:e2e",
+    "result_before_4i3": "27 passed, 9 skipped",
+    "dataset": {"building_footprints": 161784, "tower_cells": 451}
+  },
+  "baseline_quality_gate": {
+    "command": "cd backend-go && go test ./...",
+    "result": "passed",
+    "captured_output": "ok ankara-5g-raytracer; ok ankara-5g-raytracer/raytracer"
+  },
+  "required_post_change_invariance": [
+    "canonical 2.6 GHz simulation",
+    "canonical 28 GHz simulation",
+    "research_sub_thz profile and 140 GHz behavior",
+    "4I.2A atmospheric reference",
+    "4I.2B P.1411 candidates",
+    "P.526 diffraction diagnostic",
+    "building entry",
+    "interference and radio quality",
+    "4H.2 optimization and Pareto outputs"
+  ],
+  "planned_4i3_boundary": {
+    "new_route": "POST /api/sub-thz-validation",
+    "new_model_family": "measurement_evidence_validation_v1",
+    "production_coupling": false,
+    "new_propagation_equation": false,
+    "external_numeric_samples": "metadata-only unless explicitly published and redistributable",
+    "calibration": "constant bias only, with separate calibration and validation groups"
+  }
+}

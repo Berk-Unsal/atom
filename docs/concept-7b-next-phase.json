@@ -1,0 +1,13 @@
+{
+  "artifact": "concept-7b-next-phase",
+  "artifact_version": "1.0.0",
+  "recommendation": "A",
+  "title": "Durable Local Run History",
+  "reason": "The formal Run envelope and public OptimizationSolution model now exist, but current saved scenarios still treat result payloads primarily as compactable caches. The next highest-value gap is to make local Run history queryable and user-visible while retaining the same repository and no-server policy.",
+  "not_recommended_yet": [
+    "PostgreSQL/PostGIS repository foundation: no sharing, sync, or remote durable-run requirement has been established.",
+    "Complex scenario branching UX: the pure branch operation exists and can be productized after Run lineage is visible.",
+    "Artifact/report evidence storage: ReportDefinition and artifact references exist, but durable local Run lineage should be exercised first."
+  ],
+  "constraints": ["keep IndexedDB default", "keep localStorage fallback", "do not change RF/optimizer semantics", "do not add authentication or server persistence"]
+}

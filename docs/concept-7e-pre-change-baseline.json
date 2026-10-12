@@ -1,0 +1,55 @@
+{
+  "concept": "7E",
+  "title": "Scenario, revision, and branch UX productization",
+  "captured_at": "2026-09-21",
+  "scope": "Frontend product UX and local ProjectV2 compatibility storage only",
+  "baseline": {
+    "project": {
+      "display_term": "Project",
+      "storage": "ProjectV2 workspace persisted in IndexedDB with localStorage fallback",
+      "selection": "One active project at a time"
+    },
+    "scenario": {
+      "display_term": "Scenario",
+      "storage": "Flat project.scenarios snapshots with id, name, plan, summary, artifacts, and requiresRerun",
+      "switching": "Project menu opened a snapshot immediately and restored its plan; no version selection existed",
+      "active_semantics": "A matching autosaved draft kept activeScenarioId; a changed draft cleared activeScenarioId",
+      "dirty_state": "Command bar exposed local persistence state, while the scenario surface did not distinguish Saved from Unsaved changes",
+      "save_current": "Each Save current action created another top-level Scenario snapshot",
+      "delete": "Scenario deletion was available from the project menu with an in-app undo toast",
+      "branching": "No user-facing branch-from-version workflow",
+      "duplicate": "Only whole-project duplication was available; Scenario duplication had no independent-lineage explanation"
+    },
+    "version_history": {
+      "domain_support": "The compatibility adapter already accepted additive domain.revisions records from earlier domain work",
+      "ui_support": "No Version history, parent revision, change summary, input diff, restore, or continue-from-version surface",
+      "hydration": "Opening a saved snapshot could restore cached artifacts; there was no explicit metadata-only Version inspection"
+    },
+    "optimization": {
+      "historical_apply": "Run History exposed Apply to new revision, but the flow required the current Scenario and used its current revision as the source",
+      "branch_apply": "No separate branch application action",
+      "lineage": "Originating Run and solution IDs existed in domain support but were not consistently exposed as friendly Version lineage"
+    },
+    "run_and_report": {
+      "run_history": "Rows showed raw ScenarioRevision or Draft labels and had no source Version navigation",
+      "reports": "Retained artifacts showed raw ScenarioRevision identity and source Run IDs, but no friendly Scenario + Version navigation",
+      "comparison": "The existing Results comparison compared flat summary KPIs, not Scenario + Version input state; it did not offer semantic compatibility gating for retained Run result comparison"
+    },
+    "retention_and_limits": {
+      "scenario_cap": 100,
+      "cached_scenario_artifact_retention": "At most five newest scenarios retain compact cached artifacts; older scenario artifacts are nulled and requiresRerun is set",
+      "large_result_policy": "Run History and Report Artifact stores are additive local stores; large RF arrays are not intended to become Scenario Version payloads"
+    },
+    "pre_change_validation": {
+      "frontend_tests": "43 files / 230 tests",
+      "frontend_lint": "passed",
+      "frontend_build": "passed with the existing bundle-size warning",
+      "interpretation": "These figures describe the 7D baseline immediately before 7E implementation; they are not 7E completion evidence"
+    }
+  },
+  "non_goals": [
+    "RF propagation, interference, optimization, or backend algorithm changes",
+    "Remote collaboration, authentication, server-side persistence, or database migration",
+    "Automatic RF reruns when switching, inspecting, restoring, branching, or applying a solution"
+  ]
+}

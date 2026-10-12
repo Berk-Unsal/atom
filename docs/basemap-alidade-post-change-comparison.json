@@ -1,0 +1,199 @@
+{
+  "date": "2026-10-03",
+  "starting_commit": "c565e58921b4b978109b013765a062b657812510",
+  "branch": "codex/basemap-alidade-evaluation",
+  "version": "0.9.3",
+  "decision": "B",
+  "default_light_basemap": "alidade-smooth",
+  "fallback": "osm-standard, explicitly selectable",
+  "bundle_before": {
+    "initial_js_raw_bytes": 825124,
+    "initial_js_gzip_bytes": 233032,
+    "css_raw_bytes": 243521,
+    "css_gzip_bytes": 37840,
+    "js_chunk_count": 15
+  },
+  "bundle_after": {
+    "initial_js_raw_bytes": 826828,
+    "initial_js_gzip_bytes": 233602,
+    "css_raw_bytes": 244178,
+    "css_gzip_bytes": 37967,
+    "js_chunk_count": 15
+  },
+  "bundle_delta": {
+    "initial_js_raw_bytes": 1704,
+    "initial_js_gzip_bytes": 570,
+    "css_raw_bytes": 657,
+    "css_gzip_bytes": 127,
+    "js_chunk_count": 0
+  },
+  "dependencies_added": 0,
+  "invariance": {
+    "backend-go/": {
+      "files": 143,
+      "before_sha256": "08a3fbfc5c7539806f0d9db7d03de3c10eb20a11cd9fc9733ad2a611298213ab",
+      "after_sha256": "08a3fbfc5c7539806f0d9db7d03de3c10eb20a11cd9fc9733ad2a611298213ab",
+      "identical": true,
+      "changed_files": []
+    },
+    "core-lab-adapter/": {
+      "files": 7,
+      "before_sha256": "a46542bf51af1e34724b4127e5eb36d0c3dd198530fe08e85477fd23bdb8dfb7",
+      "after_sha256": "a46542bf51af1e34724b4127e5eb36d0c3dd198530fe08e85477fd23bdb8dfb7",
+      "identical": true,
+      "changed_files": []
+    },
+    "data-pipeline/": {
+      "files": 23,
+      "before_sha256": "6c90e08af5b2a1236877697b105fb0e2b43dad612f41e1843be8fc998ce675cd",
+      "after_sha256": "6c90e08af5b2a1236877697b105fb0e2b43dad612f41e1843be8fc998ce675cd",
+      "identical": true,
+      "changed_files": []
+    },
+    "frontend-react/src/domain/": {
+      "files": 21,
+      "before_sha256": "721cd7cc9dd6073ed4b17249efb04e75168f6b0798ff89518846f5a7bbcdb163",
+      "after_sha256": "721cd7cc9dd6073ed4b17249efb04e75168f6b0798ff89518846f5a7bbcdb163",
+      "identical": true,
+      "changed_files": []
+    },
+    "frontend-react/src/hooks/": {
+      "files": 11,
+      "before_sha256": "56482b459fb626291c1b9512502fe2be6dc38deb1b785965c2b9035669f7e822",
+      "after_sha256": "56482b459fb626291c1b9512502fe2be6dc38deb1b785965c2b9035669f7e822",
+      "identical": true,
+      "changed_files": []
+    },
+    "frontend-react/src/utils/": {
+      "files": 50,
+      "before_sha256": "01d35b19c8a117d59f1e8f4ca120c31251973f80ac29b2379efe51faa789818b",
+      "after_sha256": "01d35b19c8a117d59f1e8f4ca120c31251973f80ac29b2379efe51faa789818b",
+      "identical": true,
+      "changed_files": []
+    },
+    "frontend-react/src/features/": {
+      "files": 4,
+      "before_sha256": "91ea62040411c0b59ca438b8d9e278d62db72a55ae5b599be96e923718fac522",
+      "after_sha256": "91ea62040411c0b59ca438b8d9e278d62db72a55ae5b599be96e923718fac522",
+      "identical": true,
+      "changed_files": []
+    },
+    "frontend-react/package.json": {
+      "files": 1,
+      "before_sha256": "db9ca38d406943f8f7527efdaf58cc77090c37ec33ba8546a1e35cf9a6b9c18b",
+      "after_sha256": "db9ca38d406943f8f7527efdaf58cc77090c37ec33ba8546a1e35cf9a6b9c18b",
+      "identical": true,
+      "changed_files": []
+    },
+    "frontend-react/package-lock.json": {
+      "files": 1,
+      "before_sha256": "325d79d92dc85de97d21a09c8478416e930e66c7b477afa4059c859e5c2bf0fd",
+      "after_sha256": "325d79d92dc85de97d21a09c8478416e930e66c7b477afa4059c859e5c2bf0fd",
+      "identical": true,
+      "changed_files": []
+    },
+    "MapCanvas scientific/camera implementation": {
+      "identical": true,
+      "sha256": "308e8a71cdf3444c38a609e3f7c2b293e7cdb9af950b395fbb6cdb84421fb47c"
+    }
+  },
+  "scientific_colors": "MapCanvas scientific renderer suffix byte-identical; marker presenter, geojson color helpers, RF CSS category/marker colors unchanged; browser overlay pane filters all none and computed Map key colors identical",
+  "limitations": [
+    "visual fixture evaluation, not new numerical RF validation",
+    "live latency and production domain authentication not benchmarked/provisioned",
+    "dark theme deliberately not implemented"
+  ],
+  "compression_method": "gzip.compress level 9 for byte comparisons; Vite logged initial JS gzip 233.69 kB before / 234.29 kB after",
+  "concept_8h_css_preservation": {
+    "identical_except_basemap_selector_and_appended_basemap_rules": true,
+    "scientific_palette_and_tokens_unchanged": true
+  },
+  "performance": {
+    "initial_js_growth_percent": 0.207,
+    "active_tile_layers": 1,
+    "pan_zoom": "Existing Leaflet controls, rendering stack and MapContainer bounds unchanged; browser tests switch after pan/zoom without transform/tile-coordinate changes",
+    "load_metrics": "See assets/basemap-alidade/evidence.json. Cached capture waits include 700ms canvas/status stabilization; not a provider latency benchmark."
+  },
+  "files_created_or_changed": [
+    "CHANGELOG.md",
+    "docs/assets/basemap-alidade/active-selected-cell-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/active-selected-cell-osm-standard.jpg",
+    "docs/assets/basemap-alidade/building-overlay-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/building-overlay-osm-standard.jpg",
+    "docs/assets/basemap-alidade/default-map-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/default-map-osm-standard.jpg",
+    "docs/assets/basemap-alidade/dense-sogutozu-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/dense-sogutozu-osm-standard.jpg",
+    "docs/assets/basemap-alidade/evidence.json",
+    "docs/assets/basemap-alidade/plan-menu-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/plan-menu-osm-standard.jpg",
+    "docs/assets/basemap-alidade/review-1366-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/review-1366-osm-standard.jpg",
+    "docs/assets/basemap-alidade/review-1512-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/review-1512-osm-standard.jpg",
+    "docs/assets/basemap-alidade/review-390-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/review-390-osm-standard.jpg",
+    "docs/assets/basemap-alidade/review-current-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/review-current-osm-standard.jpg",
+    "docs/assets/basemap-alidade/rf-diagnostics-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/rf-diagnostics-osm-standard.jpg",
+    "docs/assets/basemap-alidade/selected-network-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/selected-network-osm-standard.jpg",
+    "docs/assets/basemap-alidade/selection-polygon-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/selection-polygon-osm-standard.jpg",
+    "docs/assets/basemap-alidade/setup-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/setup-osm-standard.jpg",
+    "docs/assets/basemap-alidade/signal-rays-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/signal-rays-osm-standard.jpg",
+    "docs/assets/basemap-alidade/sinr-alidade-smooth.jpg",
+    "docs/assets/basemap-alidade/sinr-osm-standard.jpg",
+    "docs/basemap-alidade-foundation.md",
+    "docs/basemap-alidade-post-change-comparison.json",
+    "docs/basemap-alidade-pre-change-baseline.json",
+    "docs/basemap-alidade-provider-audit.json",
+    "docs/basemap-alidade-test-evidence.json",
+    "docs/basemap-alidade-visual-comparison.md",
+    "docs/changelog.html",
+    "docs/search-index.json",
+    "frontend-react/e2e/basemapHelpers.js",
+    "frontend-react/e2e/workspace.spec.js",
+    "frontend-react/src/App.jsx",
+    "frontend-react/src/components/BasemapLayer.jsx",
+    "frontend-react/src/components/BasemapLayer.test.jsx",
+    "frontend-react/src/components/MapCanvas.jsx",
+    "frontend-react/src/components/WorkspaceChrome.jsx",
+    "frontend-react/src/components/WorkspaceChrome.test.jsx",
+    "frontend-react/src/components/basemaps.js",
+    "frontend-react/src/components/basemaps.test.js",
+    "frontend-react/src/styles.css"
+  ],
+  "visual_evidence": {
+    "pairs": 15,
+    "states": [
+      "default-map",
+      "plan-menu",
+      "setup",
+      "selected-network",
+      "active-selected-cell",
+      "dense-sogutozu",
+      "selection-polygon",
+      "building-overlay",
+      "sinr",
+      "rf-diagnostics",
+      "review-1366",
+      "review-1512",
+      "review-390",
+      "review-current",
+      "signal-rays"
+    ],
+    "maximum_horizontal_overflow": 0,
+    "attribution_key_collisions": 0,
+    "visible_tile_count_range": [
+      6,
+      30
+    ],
+    "matching_pair_tile_counts": true,
+    "canvas_hash_equal_pairs": 15,
+    "camera_marker_palette_result_cta_invariance": "Exact pair assertions passed in the gated capture test"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "artifact": "concept-7b-compatibility-matrix",
+  "artifact_version": "1.0.0",
+  "storage": {
+    "database_name_before": "atom-planning-workspace",
+    "database_name_after": "atom-planning-workspace",
+    "database_version_before": 1,
+    "database_version_after": 1,
+    "object_store_before": "workspace",
+    "object_store_after": "workspace",
+    "key_before": "current",
+    "key_after": "current",
+    "fallback_before": "atom.planning.workspace.v1",
+    "fallback_after": "atom.planning.workspace.v1",
+    "physical_migration": false
+  },
+  "formats": [
+    { "input": "schema v1 workspace", "parser": "migrateWorkspace -> normalizeWorkspace", "result": "domain-normalized in memory; ProjectV2 storage remains readable", "tested": true },
+    { "input": "schema v2 workspace", "parser": "normalizeWorkspace -> workspaceToDomain", "result": "domain model with compatibility workspace preserved", "tested": true },
+    { "input": "legacy single-project envelope", "parser": "migrateWorkspace -> normalizeWorkspace -> workspaceToDomain", "result": "one Project domain entity and explicit Inventory/ScenarioRevision", "tested": true },
+    { "input": "schema v1/v2 project file", "parser": "importProjectFile", "result": "fresh compatibility project/scenario ids; domain metadata is regenerated", "tested": true }
+  ],
+  "domain_adapter": {
+    "forward": "workspaceToDomain",
+    "reverse": "domainToWorkspace",
+    "lossy_fields": [],
+    "ui_state_policy": "legacy ProjectV2 plan fields remain available for current UI restoration, but ScenarioRevision canonical/request inputs omit UI-only fields",
+    "large_result_policy": "retained artifacts remain under existing compaction rules; domain Run details are summaries/public solutions, not private RF evaluation arrays"
+  },
+  "round_trip_assertions": ["ids and lineage", "settings", "flat cells and RF profiles", "scenario selection", "optimization configuration", "dataset identity", "retained artifact references", "UI-only compatibility restoration"]
+}

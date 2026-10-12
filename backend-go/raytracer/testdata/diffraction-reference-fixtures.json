@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "corpus_id": "p526-single-edge-diagnostic-v1",
+  "reference": "ITU-R P.526-16 section 4.1, equations (26) and (31)",
+  "loss_convention": "positive attenuation in dB relative to the unobstructed free-space field",
+  "assumptions": [
+    "signed h is obstacle-top height above the straight Tx-Rx line",
+    "d1 and d2 are self-consistent distances from the obstacle edge to Tx and Rx",
+    "equation (31) is used for v > -0.78 and loss is zero at or below -0.78",
+    "equation (30) Fresnel-integral evaluation is not implemented by A.T.O.M"
+  ],
+  "direct_v_fixtures": [
+    {"id":"clear-strongly-negative-v","v":-2.0,"expected_loss_db":0.0,"tolerance":0.000001,"provenance":"P.526-16 equation (31) domain guard: v <= -0.78 is zero loss"},
+    {"id":"transition-v-minus-0.779","v":-0.779,"expected_loss_db":0.010560367,"tolerance":0.000001,"provenance":"just inside the P.526-16 equation (31) transition threshold"},
+    {"id":"v-zero","v":0.0,"expected_loss_db":6.032852209,"tolerance":0.000001,"provenance":"P.526-16 equation (31) at direct-ray contact"},
+    {"id":"v-moderate-positive","v":1.0,"expected_loss_db":13.925728934,"tolerance":0.000001,"provenance":"independent evaluation of P.526-16 equation (31)"},
+    {"id":"v-strong-positive","v":5.0,"expected_loss_db":26.813581123,"tolerance":0.000001,"provenance":"independent evaluation of P.526-16 equation (31)"}
+  ],
+  "geometry_fixtures": [
+    {"id":"asymmetric-2-6ghz","frequency_ghz":2.6,"height_above_los_m":1.0,"d1_m":50.0,"d2_m":100.0,"expected_v":0.721359819,"expected_loss_db":11.999088810,"tolerance":0.000001,"provenance":"independent equation (26) calculation with asymmetric d1/d2"},
+    {"id":"2-6ghz","frequency_ghz":2.6,"height_above_los_m":1.0,"d1_m":50.0,"d2_m":50.0,"expected_v":0.832954571,"expected_loss_db":12.801671335,"tolerance":0.000001,"provenance":"independent equation (26) and equation (31) calculation"},
+    {"id":"28ghz","frequency_ghz":28.0,"height_above_los_m":10.0,"d1_m":100.0,"d2_m":100.0,"expected_v":19.328522619,"expected_loss_db":38.605385348,"tolerance":0.000001,"provenance":"independent equation (26) and equation (31) calculation"},
+    {"id":"140ghz-research-only","frequency_ghz":140.0,"height_above_los_m":10.0,"d1_m":100.0,"d2_m":100.0,"expected_v":43.219890480,"expected_loss_db":45.615320542,"tolerance":0.000001,"provenance":"mathematical reference only; does not validate research_sub_thz propagation"}
+  ]
+}

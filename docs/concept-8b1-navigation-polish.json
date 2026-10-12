@@ -1,0 +1,101 @@
+{
+  "concept": "8B.1",
+  "stageArchitecture": [
+    "Plan",
+    "Simulate",
+    "Analyze",
+    "Review"
+  ],
+  "toolCount": 13,
+  "toolsByStage": {
+    "Plan": [
+      {
+        "id": "setup",
+        "label": "Setup"
+      },
+      {
+        "id": "inventory",
+        "label": "Inventory"
+      }
+    ],
+    "Simulate": [
+      {
+        "id": "propagation",
+        "label": "Propagation"
+      },
+      {
+        "id": "experiments",
+        "label": "Experiments"
+      },
+      {
+        "id": "surfaces",
+        "label": "Signal surface"
+      }
+    ],
+    "Analyze": [
+      {
+        "id": "interference",
+        "label": "Interference"
+      },
+      {
+        "id": "validation",
+        "label": "RF Diagnostics"
+      },
+      {
+        "id": "building-entry",
+        "label": "Building entry"
+      },
+      {
+        "id": "core",
+        "label": "5G Core"
+      }
+    ],
+    "Review": [
+      {
+        "id": "results",
+        "label": "Results"
+      },
+      {
+        "id": "history",
+        "label": "Run history"
+      },
+      {
+        "id": "data",
+        "label": "Data"
+      },
+      {
+        "id": "report",
+        "label": "Report"
+      }
+    ]
+  },
+  "rowPolicy": {
+    "normalCopy": "Tool name only; generic description sentences stay in the selected tool drawer.",
+    "current": "Visible Current label plus aria-current=\"page\".",
+    "unavailable": "Visible concise reason; full original reason remains in aria-describedby; row remains present with aria-disabled.",
+    "attention": "Visible Attention text with accessible Needs attention status.",
+    "result": "Visible Result, or run count for Run history; accessible result-available description.",
+    "optionalTool": "The optional 5G Core tool remains optional by unchanged registry metadata; no extra pill added."
+  },
+  "geometry": {
+    "desktopWidthPx": 244,
+    "tabletWidthPx": 248,
+    "desktopRowHeightPx": 48,
+    "phoneMinRowHeightPx": 58,
+    "desktopMaxHeight": "min(72vh, 490px)"
+  },
+  "measuredResults": {
+    "1440": {
+      "railAttached": true,
+      "anyVerticalScroll": false,
+      "truncatedToolNames": 0,
+      "mapControlOverlaps": 0
+    }
+  },
+  "mobile": {
+    "pattern": "Existing single bottom-sheet chooser, vertical rows; no horizontal sibling tabs.",
+    "noHeightIncrease": true,
+    "touchTargetMinimumPx": 58
+  },
+  "semanticsChanged": false
+}

@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "concept": "4I.1",
+  "title": "140 GHz reference applicability and architecture audit",
+  "artifact": "applicability-audit",
+  "captured_at": "2026-09-18",
+  "audit_commit_basis": "d66ad902075402a2df8df413bec63e9a51059561",
+  "decision": "Keep research_sub_thz unchanged and research-only. A.T.O.M does not currently have a defensible canonical 140 GHz urban NLOS model for arbitrary Ankara footprint, rooftop, facade, or unknown-height paths.",
+  "scope_rule": "A recommendation title or headline frequency range is not sufficient. Applicability is recorded at the clause, table, equation, scenario, geometry, and distance level.",
+  "authoritative_references": [
+    {
+      "id": "itu-r-p525-5",
+      "version": "P.525-5 (2024-11)",
+      "status": "in_force",
+      "scope": "Free-space basic transmission loss",
+      "relevant_clauses": "§4, equations (5)–(6)",
+      "frequency_status_at_140ghz": "mathematical_baseline",
+      "atom_use": "Use only as the FSPL base for an explicitly componentized future model; not an urban NLOS model.",
+      "url": "https://www.itu.int/rec/r-rec-p.525"
+    },
+    {
+      "id": "itu-r-p1411-13",
+      "version": "P.1411-13 (2025-09)",
+      "status": "in_force",
+      "scope": "Outdoor short-range propagation from 300 MHz to 300 GHz in the main recommendation scope",
+      "relevant_clauses": "§3.2 data requirements; §4.1.1 Table 4 below-rooftop site-general models; §4.1.3 street-corner models; §4.2 Table 8 above-rooftop models; §4.3 low-height terminals; §4.5.1 vegetation",
+      "frequency_status_at_140ghz": "model-dependent; see p1411_model_audit",
+      "atom_use": "Candidate future reference only. Table 4 has bounded below-rooftop 140 GHz rows; above-rooftop, street-corner, low-height, and building-entry routes do not establish a general 140 GHz model.",
+      "url": "https://www.itu.int/rec/R-REC-P.1411-13-202509-I/en",
+      "pdf_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1411-13-202509-I!!PDF-E.pdf"
+    },
+    {
+      "id": "itu-r-p676-13",
+      "version": "P.676-13 (2022-08)",
+      "status": "in_force",
+      "scope": "Attenuation by atmospheric gases; line-by-line and approximate methods",
+      "relevant_clauses": "Annex 1 line-by-line method; Annex 2 approximate method; terrestrial path equation",
+      "frequency_status_at_140ghz": "applicable_for_atmospheric_term_with_local_state",
+      "atom_use": "Future additive atmosphere component only when pressure, temperature, and water-vapour state/path integration are explicit.",
+      "url": "https://www.itu.int/rec/R-REC-P.676-13-202208-I/en"
+    },
+    {
+      "id": "itu-r-p838-3",
+      "version": "P.838-3 (2005-03)",
+      "status": "in_force",
+      "scope": "Specific attenuation model for rain from 1 to 1 000 GHz",
+      "relevant_clauses": "§2, equations (1)–(5), coefficient tables",
+      "frequency_status_at_140ghz": "applicable_for_specific_rain_attenuation",
+      "atom_use": "Controlled path sensitivity only until a P.837-backed climate/availability and effective terrestrial path model is supplied.",
+      "url": "https://www.itu.int/rec/R-REC-P.838-3-200503-I/en"
+    },
+    {
+      "id": "itu-r-p837-8",
+      "version": "P.837-8 (2025-09)",
+      "status": "in_force",
+      "scope": "Prediction of rainfall rate statistics and 1-minute rain-rate conversion",
+      "relevant_clauses": "Annex 1 map/data method; Annex 2 conversion of local measurements",
+      "frequency_status_at_140ghz": "not_a_path_loss_model; supplies rain statistics",
+      "atom_use": "Required future climatology/data source for annual or percentage-time rain availability; no automatic Ankara weather ingest exists.",
+      "url": "https://www.itu.int/rec/R-REC-P.837/en"
+    },
+    {
+      "id": "itu-r-p840-9",
+      "version": "P.840-9 (2023-08)",
+      "status": "in_force",
+      "scope": "Cloud and fog attenuation for 1–200 GHz with integrated cloud liquid water content",
+      "relevant_clauses": "§1 specific attenuation; §3.1 instantaneous slant-path attenuation",
+      "frequency_status_at_140ghz": "applicable_with_cloud_liquid_water_and_geometry",
+      "atom_use": "Future cloud/fog component; horizontal terrestrial use needs a local liquid-water path rather than an unqualified vertical-column substitution.",
+      "url": "https://www.itu.int/rec/R-REC-P.840-9-202308-I/en"
+    },
+    {
+      "id": "itu-r-p2040-4",
+      "version": "P.2040-4 (2025-09)",
+      "status": "in_force",
+      "scope": "Electrical properties and reflection/transmission of building materials and structures from 1 MHz to 450 GHz",
+      "relevant_clauses": "Annex 1 §2.1; §2.2.1 interface coefficients; §2.2.2 slab equations (39)–(44); Table 3",
+      "frequency_status_at_140ghz": "material rows exist but are indicative and parameter-dependent",
+      "atom_use": "Future deterministic facade/material interaction only with thickness, complex permittivity/conductivity, angle, polarization, and layer structure.",
+      "url": "https://www.itu.int/rec/R-REC-P.2040-4-202509-I/en",
+      "pdf_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf"
+    },
+    {
+      "id": "itu-r-p526-16",
+      "version": "P.526-16 (2025-11)",
+      "status": "in_force",
+      "scope": "Diffraction by obstacles; isolated-edge and related methods",
+      "relevant_clauses": "§2.4 roughness; §4.1 equation (26) knife-edge parameter and equation (31) approximation",
+      "frequency_status_at_140ghz": "mathematically applicable for known isolated obstacles; not a complete urban NLOS model",
+      "atom_use": "Retain the existing research-only diagnostic. Do not sum it with current wall loss or a future canonical NLOS model.",
+      "url": "https://www.itu.int/rec/R-REC-P.526-16-202511-I/en",
+      "pdf_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.526-16-202511-I!!PDF-E.pdf"
+    },
+    {
+      "id": "itu-r-p2108-1",
+      "version": "P.2108-1 (2021-09)",
+      "status": "in_force",
+      "scope": "Clutter loss for terminal and Earth-space/aeronautical paths",
+      "relevant_clauses": "§3 and Table 1 model ranges; double-counting guidance",
+      "frequency_status_at_140ghz": "out_of_range; Table 1 terrestrial terminal-in-clutter route ends at 67 GHz and Earth-space route at 100 GHz",
+      "atom_use": "Do not extrapolate or attach to the 140 GHz profile.",
+      "url": "https://www.itu.int/rec/R-REC-P.2108/en"
+    },
+    {
+      "id": "itu-r-p2109-2",
+      "version": "P.2109-2 (2023-08)",
+      "status": "in_force",
+      "scope": "Building entry loss from 80 MHz to 100 GHz",
+      "relevant_clauses": "Scope and Annex model inputs/validation range",
+      "frequency_status_at_140ghz": "out_of_range",
+      "atom_use": "Do not use for 140 GHz. A future facade model needs 140 GHz measurements and material/geometry inputs.",
+      "url": "https://www.itu.int/rec/R-REC-P.2109-2-202308-I/en"
+    },
+    {
+      "id": "itu-r-p1238-13",
+      "version": "P.1238-13 (2025-09)",
+      "status": "in_force",
+      "scope": "Indoor propagation planning from 300 MHz to 450 GHz",
+      "relevant_clauses": "Indoor propagation scope and indoor model annexes",
+      "frequency_status_at_140ghz": "indoor_scope_in_range",
+      "atom_use": "Reference for a future indoor workstream, not an outdoor Ankara footprint/NLOS substitute and not currently connected to the 140 GHz profile.",
+      "url": "https://www.itu.int/rec/R-REC-P.1238-13-202509-I/en",
+      "pdf_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1238-13-202509-I!!PDF-E.pdf"
+    },
+    {
+      "id": "3gpp-tr-38-901",
+      "version": "V19.4.0 (2026-06-23)",
+      "status": "current_released_version",
+      "scope": "Study on channel model for frequencies from 0.5 to 100 GHz",
+      "relevant_clauses": "UMa/UMi path-loss and channel-model clauses within the 0.5–100 GHz scope",
+      "frequency_status_at_140ghz": "out_of_range",
+      "atom_use": "No 140 GHz 3GPP TR 38.901 model or conformance claim; current urban_short_range remains capped below 100 GHz.",
+      "url": "https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3173",
+      "etsi_pdf_url": "https://www.etsi.org/deliver/etsi_tr/138900_138999/138901/19.04.00_60/tr_138901v190400p.pdf"
+    }
+  ],
+  "p1411_model_audit": [
+    {
+      "model_id": "table4_below_rooftop_los",
+      "clause": "§4.1.1 Table 4, site-general below-rooftop LOS",
+      "row_frequency_ghz": "0.45–300",
+      "base_distance_m": "5–660",
+      "coefficients": "alpha=2.07, beta=31.23, gamma=2.06, sigma=4.91",
+      "140ghz_footnote_distance_limit_m": 500,
+      "140ghz_status": "conditionally_applicable",
+      "conditions": ["both terminals below rooftops in the intended site-general morphology", "building/height context is adequate", "model used as a statistical basic-transmission-loss row", "additional oxygen and hydrometeor attenuation considered separately where appropriate"],
+      "not_satisfied_by_default": "A.T.O.M default 25 m transmitter height is not automatically a below-rooftop terminal, and the current profile does not implement this equation."
+    },
+    {
+      "model_id": "table4_urban_highrise_nlos",
+      "clause": "§4.1.1 Table 4, site-general below-rooftop urban high-rise NLOS",
+      "row_frequency_ghz": "0.8–159",
+      "base_distance_m": "20–715",
+      "coefficients": "alpha=3.73, beta=16.02, gamma=2.26, sigma=7.62",
+      "140ghz_footnote_distance_limit_m": 150,
+      "140ghz_status": "conditionally_applicable",
+      "conditions": ["urban high-rise below-rooftop site-general scenario", "distance is within the 140 GHz footnote limit", "not a roof-crossing or arbitrary-height facade-entry model"]
+    },
+    {
+      "model_id": "table4_urban_lowrise_suburban_nlos",
+      "clause": "§4.1.1 Table 4, site-general below-rooftop urban low-rise/suburban NLOS",
+      "row_frequency_ghz": "0.45–255",
+      "base_distance_m": "10–250",
+      "coefficients": "alpha=4.52, beta=6.04, gamma=2.14, sigma=8.02",
+      "140ghz_footnote_distance_limit_m": 150,
+      "140ghz_status": "conditionally_applicable",
+      "conditions": ["urban low-rise or suburban below-rooftop site-general scenario", "distance is within the 140 GHz footnote limit", "no claim for 200–400 m 140 GHz NLOS" ]
+    },
+    {
+      "model_id": "table8_above_rooftop",
+      "clause": "§4.2.1 Table 8, site-general above-rooftop",
+      "row_frequency_ghz": "2.2–73 for listed LOS/NLOS rows",
+      "base_distance_m": "55–1200 for LOS; 260–1200 for urban high-rise NLOS",
+      "140ghz_status": "out_of_range",
+      "conditions": ["the document title range does not extend these rows to 140 GHz", "no 140 GHz above-rooftop canonical row is inferred"]
+    },
+    {
+      "model_id": "street_corner_and_low_height",
+      "clause": "§4.1.3 and §4.3",
+      "row_frequency_ghz": "approximately 0.3–38 for the cited street-corner/low-height models",
+      "140ghz_status": "out_of_range",
+      "conditions": ["equations are tied to lower-frequency measurement sets", "not extrapolated to 140 GHz"]
+    }
+  ],
+  "scenario_distance_matrix": [
+    {
+      "scenario": "clear_los",
+      "distances_m": [10, 25, 50, 100, 200, 400],
+      "p1411_below_rooftop_los_by_distance": ["conditional", "conditional", "conditional", "conditional", "conditional", "conditional_to_500m"],
+      "p1411_below_rooftop_nlos_by_distance": ["not_applicable", "not_applicable", "not_applicable", "not_applicable", "not_applicable", "not_applicable"],
+      "p1411_above_rooftop_by_distance": ["out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range"],
+      "p526_status_by_distance": ["not_needed", "not_needed", "not_needed", "not_needed", "not_needed", "not_needed"],
+      "canonical_runtime_status": "research_sub_thz_applies_but_is_not_standards_based"
+    },
+    {
+      "scenario": "footprint_nlos",
+      "distances_m": [10, 25, 50, 100, 200, 400],
+      "p1411_below_rooftop_los_by_distance": ["not_applicable", "not_applicable", "not_applicable", "not_applicable", "not_applicable", "not_applicable"],
+      "p1411_below_rooftop_nlos_by_distance": ["lowrise_edge_only", "conditional", "conditional", "conditional", "out_of_140ghz_footnote_limit", "out_of_140ghz_footnote_limit"],
+      "p1411_above_rooftop_by_distance": ["out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range"],
+      "p526_status_by_distance": ["not_a_complete_nlos_model", "not_a_complete_nlos_model", "not_a_complete_nlos_model", "not_a_complete_nlos_model", "not_a_complete_nlos_model", "not_a_complete_nlos_model"],
+      "canonical_runtime_status": "research_sub_thz_applies_with_one_wall_event_heuristic"
+    },
+    {
+      "scenario": "one_boundary_crossing",
+      "distances_m": [10, 25, 50, 100, 200, 400],
+      "p1411_below_rooftop_los_by_distance": ["not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model"],
+      "p1411_below_rooftop_nlos_by_distance": ["not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model", "not_a_facade_entry_model"],
+      "p1411_above_rooftop_by_distance": ["out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range"],
+      "p526_status_by_distance": ["diagnostic_if_known_edge", "diagnostic_if_known_edge", "diagnostic_if_known_edge", "diagnostic_if_known_edge", "diagnostic_if_known_edge", "diagnostic_if_known_edge"],
+      "canonical_runtime_status": "research_sub_thz_applies_with_one_wall_event_heuristic"
+    },
+    {
+      "scenario": "two_boundary_crossings",
+      "distances_m": [10, 25, 50, 100, 200, 400],
+      "p1411_below_rooftop_los_by_distance": ["not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model"],
+      "p1411_below_rooftop_nlos_by_distance": ["not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model", "not_a_multiboundary_model"],
+      "p1411_above_rooftop_by_distance": ["out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range"],
+      "p526_status_by_distance": ["diagnostic_if_known_edges", "diagnostic_if_known_edges", "diagnostic_if_known_edges", "diagnostic_if_known_edges", "diagnostic_if_known_edges", "diagnostic_if_known_edges"],
+      "canonical_runtime_status": "research_sub_thz_applies_with_two_wall_event_heuristic"
+    },
+    {
+      "scenario": "known_height_blocker",
+      "distances_m": [10, 25, 50, 100, 200, 400],
+      "p1411_below_rooftop_los_by_distance": ["not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model"],
+      "p1411_below_rooftop_nlos_by_distance": ["not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model", "not_a_blocker_model"],
+      "p1411_above_rooftop_by_distance": ["out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range"],
+      "p526_status_by_distance": ["diagnostic_only", "diagnostic_only", "diagnostic_only", "diagnostic_only", "diagnostic_only", "diagnostic_only"],
+      "canonical_runtime_status": "research_sub_thz_does_not_consume_height_evidence"
+    },
+    {
+      "scenario": "unknown_height_blocker",
+      "distances_m": [10, 25, 50, 100, 200, 400],
+      "p1411_below_rooftop_los_by_distance": ["data_insufficient", "data_insufficient", "data_insufficient", "data_insufficient", "data_insufficient", "data_insufficient"],
+      "p1411_below_rooftop_nlos_by_distance": ["data_insufficient", "data_insufficient", "data_insufficient", "data_insufficient", "data_insufficient", "data_insufficient"],
+      "p1411_above_rooftop_by_distance": ["out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range", "out_of_range"],
+      "p526_status_by_distance": ["unavailable_height", "unavailable_height", "unavailable_height", "unavailable_height", "unavailable_height", "unavailable_height"],
+      "canonical_runtime_status": "research_sub_thz_applies_if_event_count_is_supplied_but_state_is_not_physics"
+    }
+  ],
+  "double_counting_matrix": [
+    {"terms": ["P.525 FSPL", "P.1411 Table 4 path loss"], "relationship": "alternative_base_models", "decision": "choose one; do not add", "reason": "Table 4 Lb is already a path-loss model with its own frequency/distance terms"},
+    {"terms": ["P.525 FSPL", "P.676 gas", "P.838 rain", "P.840 cloud/fog"], "relationship": "componentized_stack", "decision": "potentially additive with explicit provenance", "reason": "distinct physical terms, subject to geometry and any empirical model calibration"},
+    {"terms": ["P.1411 Table 4", "P.676/P.838/P.840"], "relationship": "conditional atmosphere augmentation", "decision": "only after checking measurement/model basis", "reason": "P.1411 calls for additional oxygen/hydrometeor consideration, but an empirical row can already reflect local conditions"},
+    {"terms": ["P.1411 NLOS", "P.2108 clutter"], "relationship": "overlapping urban/clutter loss", "decision": "do not blindly add; P.2108 is out of range at 140", "reason": "P.2108 itself warns against applying clutter twice when the path model includes it"},
+    {"terms": ["P.2109 building entry", "P.2040 material slab/interface"], "relationship": "alternative facade abstractions", "decision": "choose one accounting boundary", "reason": "P.2109 is aggregate entry loss; P.2040 is a component-level material/structure method and is out of range for P.2109 at 140"},
+    {"terms": ["P.526 diffraction diagnostic", "research_sub_thz wall loss"], "relationship": "alternative path views", "decision": "never sum", "reason": "the existing diagnostic is explicitly separate and the 80 dB term is not an edge-loss decomposition"},
+    {"terms": ["P.526 diffraction", "future reflection/ray-tracing NLOS"], "relationship": "partial geometric mechanisms", "decision": "avoid double counting after future calibration", "reason": "an obstacle may be represented by diffraction, reflection, scattering, or a measured excess-loss distribution"},
+    {"terms": ["P.837 rain climatology", "P.838 rain attenuation"], "relationship": "statistics plus attenuation", "decision": "add through a declared availability workflow", "reason": "P.837 supplies rate distributions; P.838 supplies specific attenuation"},
+    {"terms": ["P.1238 indoor model", "P.2040 material interaction"], "relationship": "indoor model may already aggregate material effects", "decision": "separate future indoor scope from outdoor model", "reason": "do not attach an indoor path-loss model and then add every wall/material term again"},
+    {"terms": ["legacy 80 dB event", "P.2040/P.2109/P.526"], "relationship": "heuristic versus physical/empirical terms", "decision": "do not add", "reason": "the current event is a compatibility heuristic, not a decomposed physical term"}
+  ],
+  "peer_reviewed_measurement_survey": [
+    {
+      "citation": "Y. Xing and T. S. Rappaport, Propagation Measurements and Path Loss Models for sub-THz in Urban Microcells, IEEE ICC 2021, DOI 10.1109/ICC42927.2021.9500385",
+      "url": "https://arxiv.org/abs/2103.01151",
+      "band_and_scene": "140/142 GHz outdoor downtown Brooklyn UMi; terrestrial and rooftop-surrogate campaigns",
+      "reported_extent": "terrestrial campaign up to roughly 100 m in the abstract; article reports links/coverage around 117 m in some configurations",
+      "useful_terms": ["directional and synthesized omnidirectional LOS/NLOS path loss", "foliage excess loss", "directional horn calibration"],
+      "transferability": "low_to_medium; strong evidence for a measurement-backed scenario profile, not Ankara-wide universal NLOS"
+    },
+    {
+      "citation": "D. Shakya et al., Radio Propagation Measurements and Statistical Channel Models for Outdoor Urban Microcells in Open Squares and Streets at 142, 73, and 28 GHz, IEEE TAP 72(4), 3580–3595 (2024), DOI 10.1109/TAP.2024.3366581",
+      "url": "https://doi.org/10.1109/TAP.2024.3366581",
+      "band_and_scene": "142/73/28 GHz Brooklyn and Manhattan outdoor open squares/streets",
+      "reported_extent": "142 GHz links approximately 24–117 m in the cited urban campaigns",
+      "useful_terms": ["cross-frequency comparison", "sparse sub-THz multipath", "large-scale channel statistics"],
+      "transferability": "low_to_medium; morphology and antenna/route selection must match"
+    },
+    {
+      "citation": "B. De Beelde et al., Outdoor channel modeling at D-band frequencies for future fixed wireless access applications, IEEE WCL 11(11), 2355–2359 (2022), DOI 10.1109/LWC.2022.3202921",
+      "url": "https://biblio.ugent.be/publication/01GQHEC5QMYV683Z0225CYYWVD",
+      "band_and_scene": "120–165 GHz outdoor D-band fixed-wireless-access measurements",
+      "reported_extent": "short directional LOS/NLOS and facade reflection experiments, approximately metre-to-100 m scale",
+      "useful_terms": ["angular path loss", "angular spread", "facade reflection losses"],
+      "transferability": "medium for mechanism priors, low for Ankara production coefficients"
+    },
+    {
+      "citation": "Z. Sun et al., Path Loss Measurement of Outdoor Wireless Channel in D-band, Sensors 22(24), 9734 (2022), DOI 10.3390/s22249734",
+      "url": "https://www.mdpi.com/1424-8220/22/24/9734",
+      "band_and_scene": "138–163.2 GHz outdoor long-distance LOS road/campus links",
+      "reported_extent": "100–800 m, including 100/200/400 m scale observations",
+      "useful_terms": ["long-LOS distance behavior", "FI/CI path-loss fits", "narrow-beam horn measurements"],
+      "transferability": "low for NLOS/urban blockage; useful only as a bounded long-LOS comparison"
+    },
+    {
+      "citation": "S. Ju et al., 140 GHz Urban Microcell Propagation Measurements for Spatial Consistency Modeling, arXiv:2103.05496",
+      "url": "https://arxiv.org/abs/2103.05496",
+      "band_and_scene": "142 GHz outdoor UMi route in a 39 m x 12 m urban rectangle",
+      "reported_extent": "about 102 m route with 3 m receiver spacing",
+      "useful_terms": ["spatial consistency", "shadowing and delay/angular correlation"],
+      "transferability": "low for absolute path loss; useful for a future spatial-correlation workstream"
+    }
+  ],
+  "required_environmental_and_data_inputs": {
+    "scene": ["building polygons with absolute and relative heights", "roof shape/edge geometry", "terrain/DTM or explicit flat-ground datum", "facade material, layer, thickness, moisture, and incidence angle", "vegetation/foliage geometry and state", "street width and morphology classification"],
+    "atmosphere": ["pressure", "temperature", "water-vapour density or vertical profile", "rain rate and P.837 climate statistics", "cloud/fog liquid water content and path geometry"],
+    "radio_hardware": ["frequency-dependent measured TX/RX gain patterns", "physical aperture/beam/codebook and pointing", "polarization and mismatch", "conducted power/EIRP calibration", "receiver noise bandwidth, noise figure, sensitivity, and margin"],
+    "validation": ["georeferenced 140 GHz channel sounder measurements", "LOS/NLOS and roof/facade labels", "raw directional and synthesized omnidirectional data", "weather and foliage metadata", "holdout locations separated by morphology rather than random samples"]
+  },
+  "current_model_gap_analysis": [
+    "No production 140 GHz gas/rain/cloud/clutter/material term is automatically supplied by the network evaluator.",
+    "The current research profile has no empirical distance exponent, shadowing distribution, reflection/scattering model, blockage state, or beam-visibility model beyond footprint event counting.",
+    "The current 80 dB wall event has no material, thickness, angle, moisture, frequency-continuous, or confidence provenance.",
+    "The current default 25 m transmitter height can be above local roofs, while the bounded P.1411 Table 4 140 GHz rows are below-rooftop site-general rows.",
+    "Unknown building height is a geometry-data limitation; it cannot be converted into a validated 140 GHz excess-loss distribution by a conservative NLOS label alone.",
+    "The current receiver threshold and antenna terms are deterministic planning assumptions, not 140 GHz device or PHY validation."
+  ],
+  "recommended_future_architecture": {
+    "production_boundary": "Keep research_sub_thz as an explicitly non-conformant compatibility profile until gates below pass.",
+    "candidate_component_stack": [
+      "P.525 FSPL base with exact distance/height convention",
+      "P.676 gas component with local atmosphere provenance",
+      "P.838 rain plus P.837 statistical availability workflow",
+      "P.840 cloud/fog component with terrestrial path geometry",
+      "P.1411 Table 4 below-rooftop statistical candidate only for its explicit 140 GHz distance/morphology envelope",
+      "P.2040 material/facade interaction only when electrical and geometric inputs exist",
+      "P.526 known-edge diagnostic kept separate from canonical NLOS",
+      "measurement-calibrated reflection/scattering/blockage residual model for scenes outside the P.1411 row envelope",
+      "measured frequency-dependent antenna and receiver calibration",
+      "term ledger with provenance, applicability, uncertainty, and double-counting IDs"
+    ],
+    "gating": ["no arbitrary extrapolation above each reference model's clause-level range", "separate LOS/NLOS/above-rooftop/facade-entry paths", "spatial holdout validation at 100–200 GHz", "measurement-backed uncertainty and morphology stratification", "invariance of all existing 2.6/28 GHz and current 140 GHz compatibility workflows"]
+  },
+  "recommended_concept_4i2_scope": {
+    "first_increment": "Add an opt-in, non-canonical 140 GHz reference experiment surface that evaluates P.525 + independently supplied P.676/P.838/P.840 terms and returns a full provenance ledger; do not replace research_sub_thz.",
+    "second_increment": "Implement P.1411 Table 4 below-rooftop site-general rows as a bounded, explicitly conditional candidate with distance/morphology applicability checks and no roof-crossing or facade-entry claim.",
+    "third_increment": "Add a measurement fixture schema and calibration workflow for 100–200 GHz directional/omnidirectional data, with site-stratified holdout validation before any model becomes canonical.",
+    "deferred": ["general 140 GHz urban NLOS optimizer integration", "automatic weather/clutter/material datasets", "full ray tracing/multipath", "radio-quality/throughput semantics at 140 GHz", "above-rooftop and building-entry standard claims without new evidence"]
+  },
+  "roadmap_after_4i1": [
+    {"concept": "4I.2", "focus": "bounded componentized 140 GHz reference experiment and P.1411 Table 4 applicability-gated candidate"},
+    {"concept": "4I.3", "focus": "100–200 GHz measurement fixture schema, campaign provenance, calibration, and spatial holdout validation"},
+    {"concept": "4I.4", "focus": "conditional facade/material and known-edge mechanisms with explicit layer/angle/thickness inputs"},
+    {"concept": "4I.5", "focus": "morphology-stratified empirical residual/blockage/reflection model; production promotion only after validation"},
+    {"concept": "4I.6", "focus": "only if evidence supports it: bounded 140 GHz planning integration and separate radio-link semantics"}
+  ],
+  "non_claims": [
+    "No 140 GHz standards conformance is claimed.",
+    "No 3GPP TR 38.901 extension beyond 100 GHz is claimed.",
+    "No universal urban NLOS, above-rooftop, building-entry, clutter, vegetation, weather, or indoor model is claimed.",
+    "No physical material loss is inferred from the current 80 dB wall heuristic.",
+    "No LTE/NR/6G radio-quality, throughput, MCS, scheduler, UE, or array-beamforming behavior is validated at 140 GHz.",
+    "Peer-reviewed measurements are not treated as transferable Ankara coefficients without morphology and hardware calibration evidence."
+  ]
+}

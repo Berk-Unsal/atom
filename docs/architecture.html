@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="description" content="Deep system architecture for the A.T.O.M RF planning platform." />
   <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
   <link rel="stylesheet" href="./assets/docs.css" />
   <title>System Architecture | A.T.O.M Documentation</title>
 </head>
@@ -54,6 +55,16 @@
           </div>
         </div>
       </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
       <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"></span>
       </button>
@@ -62,7 +73,7 @@
         <a href="./architecture.html" aria-current="page">Architecture</a>
         <a href="./api.html">API</a>
         <a href="./changelog.html">Changelog</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
         <a class="nav-cta" href="./download.html">Download &amp; Use</a>
       </nav>
     </div>
@@ -102,7 +113,7 @@
         </div>
         <div class="hero-facts" aria-label="Architecture facts">
           <div class="hero-fact"><span>Primary runtime</span><strong>Single container</strong></div>
-          <div class="hero-fact"><span>Backend</span><strong>Go 1.26 + Gin</strong></div>
+          <div class="hero-fact"><span>Backend</span><strong>Go 1.26.6 + Gin</strong></div>
           <div class="hero-fact"><span>Frontend</span><strong>React + Leaflet</strong></div>
           <div class="hero-fact"><span>Project persistence</span><strong>Browser IndexedDB</strong></div>
           <div class="hero-fact"><span>Default RF capacity</span><strong>2 concurrent jobs</strong></div>
@@ -227,6 +238,7 @@
               <div class="stack-unit"><strong>Planning engines</strong><span>Coverage gaps, azimuth sweep, network evaluation, network optimization, candidate recommendation, and overlap scoring.</span></div>
               <div class="stack-unit"><strong>Interference engine</strong><span>Adaptive grid, serving-cell choice, linear power sums, RSRP, SINR, RSRQ, RSSI, and demand impact.</span></div>
               <div class="stack-unit"><strong>Measurement evaluator</strong><span>Predicts 4G/5G RSRP at uploaded points, reports residual error, and offers holdout-tested global bias correction.</span></div>
+              <div class="stack-unit"><strong>Measurement evidence ledger</strong><span>Isolated versioned campaigns, quantity normalization, applicability-first reference adapters, deterministic holdouts, and conservative readiness diagnostics at <code>/api/sub-thz-validation</code>.</span></div>
               <div class="stack-unit"><strong>Core Lab proxy</strong><span>5G-only status, topology, sessions, events, and scenario requests with a 1.5 second adapter timeout.</span></div>
             </section>
             <section class="stack-column" aria-label="Data and integration components">
@@ -478,7 +490,7 @@
         <a href="./index.html">Overview</a>
         <a href="./download.html">Download</a>
         <a href="./api.html">API</a>
-        <a href="https://github.com/Berk-Unsal/urban-ray-tracer">GitHub</a>
+        <a href="https://github.com/Berk-Unsal/atom">GitHub</a>
         <span>&copy; <span data-current-year>2026</span></span>
       </nav>
     </div>

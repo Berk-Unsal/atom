@@ -59,6 +59,32 @@ func TestReuseThreeExcludesOrthogonalInterferer(t *testing.T) {
 	}
 }
 
+func TestExplicitPerCellChannelsOverrideReuseAssignment(t *testing.T) {
+	req := testInterferenceRequest(1)
+	NormalizeInterferenceRequest(&req)
+	req.Towers[0].RFProfile.ChannelID = "A"
+	req.Towers[1].RFProfile.ChannelID = "B"
+	preset, _ := interferencePresetFor(req.NetworkTech, req.BandwidthMHz)
+	point := DestinationPoint(Point{Lon: 32, Lat: 39}, 90, 10)
+	properties := evaluateInterferencePoint(req, preset, EmptyBuildingIndex(), point)
+	if properties.ChannelID != "A" || properties.InterferenceDBm != nil {
+		t.Fatalf("explicit channels were not applied: %+v", properties)
+	}
+}
+
+func TestPerCellPowerChangesServingCell(t *testing.T) {
+	req := testInterferenceRequest(1)
+	NormalizeInterferenceRequest(&req)
+	req.Towers[0].RFProfile.TxPowerDBm = 10
+	req.Towers[1].RFProfile.TxPowerDBm = 40
+	preset, _ := interferencePresetFor(req.NetworkTech, req.BandwidthMHz)
+	point := DestinationPoint(Point{Lon: 32, Lat: 39}, 90, 10)
+	properties := evaluateInterferencePoint(req, preset, EmptyBuildingIndex(), point)
+	if properties.ServingCellID != "b" {
+		t.Fatalf("serving cell = %q, want higher-power cell b", properties.ServingCellID)
+	}
+}
+
 func TestInterferenceServingCellUsesStrongestRSRP(t *testing.T) {
 	req := testInterferenceRequest(1)
 	req.Towers[1].TowerLon -= 0.001
@@ -190,7 +216,9 @@ func TestInterferenceDemandCandidatesUseSpatialBounds(t *testing.T) {
 func BenchmarkInterferenceTwoCells(b *testing.B) {
 	req := testInterferenceRequest(1)
 	for index := 0; index < b.N; index++ {
-		AnalyzeInterference(req, EmptyBuildingIndex())
+		if _, err := AnalyzeInterferenceContext(context.Background(), req, EmptyBuildingIndex()); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -205,7 +233,9 @@ func BenchmarkInterferenceSixCells(b *testing.B) {
 		{ID: "f", TowerLon: 32.005, TowerLat: 39, AzimuthDeg: 90},
 	}
 	for index := 0; index < b.N; index++ {
-		AnalyzeInterference(req, EmptyBuildingIndex())
+		if _, err := AnalyzeInterferenceContext(context.Background(), req, EmptyBuildingIndex()); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 

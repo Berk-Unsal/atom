@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "concept": "6A.2",
+  "artifact": "post-change-comparison",
+  "audit_version": "concept-6a2-external-rf-benchmark-audit-v1",
+  "captured_at": "2026-09-21",
+  "before_artifact": "docs/concept-6a2-pre-change-baseline.json",
+  "after_artifact": "docs/concept-6a2-post-change-comparison.json",
+  "audit_only_change_set": [
+    "docs/concept-6a2-pre-change-baseline.json",
+    "docs/concept-6a2-inventory-capability.json",
+    "docs/concept-6a2-benchmark-fitness-contract.json",
+    "docs/concept-6a2-candidate-matrix.json",
+    "docs/concept-6a2-shortlist.json",
+    "docs/concept-6a2-selected-benchmark.json",
+    "docs/concept-6a2-next-phase.json",
+    "docs/concept-6a2-post-change-comparison.json",
+    "docs/concept-6a2-external-benchmark-audit.md"
+  ],
+  "pre_existing_changes_preserved": true,
+  "production_behavior_changed": false,
+  "comparison": {
+    "concept_6a": {
+      "before": "no_measurement_data",
+      "after": "no_measurement_data",
+      "changed": false
+    },
+    "concept_6a1": {
+      "before": "dry_run_ready_real_data_unavailable",
+      "after": "dry_run_ready_real_data_unavailable",
+      "changed": false
+    },
+    "concept_6b": {
+      "before": "closed",
+      "after": "closed",
+      "changed": false
+    },
+    "canonical_rf": {
+      "before": "urban_short_range at the declared 2.6 and 28 GHz profiles",
+      "after": "unchanged; no production RF code or configuration edited",
+      "changed": false
+    },
+    "inventory_semantics": {
+      "before": "existing TowerStation/TowerRequestInput plus CellRFProfile contract",
+      "after": "unchanged; capability is documentation only",
+      "changed": false
+    },
+    "validation_and_calibration": {
+      "before": "synthetic controls and dry-run infrastructure; no real-data calibration",
+      "after": "unchanged; external sources remain candidates and no calibration is active",
+      "changed": false
+    },
+    "optimizer_interference_terrain": {
+      "before": "existing behavior and fingerprints",
+      "after": "unchanged",
+      "changed": false
+    }
+  },
+  "audit_findings": {
+    "full_inventory_validation_source": null,
+    "best_near_candidate": "chongqing-macro-5g",
+    "complementary_measurement_candidate": "vienna-4g-5g-drive-test",
+    "benchmark_selected": false,
+    "adapter_implemented": false,
+    "production_candidate": false,
+    "calibration_active": false
+  },
+  "invariance_assertions": [
+    "No canonical RF evaluator, profile default, antenna model, receiver model, or link-budget term was changed by this audit.",
+    "No inventory parser, inventory data type, or planning default was changed by this audit.",
+    "No validation result, calibration parameter, readiness file, optimizer, radio-quality policy, terrain behavior, or scenario fingerprint was changed by this audit.",
+    "The dirty worktree that existed before the audit remains preserved."
+  ],
+  "validation": {
+    "status": "passed",
+    "notes": "The system Python lacked PyYAML, so docs/validate_docs.py was run with the pinned docs/requirements.txt dependency installed into a temporary directory; the repository was not modified.",
+    "commands": [
+      "jq empty docs/concept-6a2-*.json",
+      "python3 docs/validate_docs.py",
+      "python3 scripts/versioning.py check",
+      "git diff --check"
+    ]
+  }
+}

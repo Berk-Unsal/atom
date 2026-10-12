@@ -1,0 +1,19 @@
+{
+  "artifact": "concept-7b-test-evidence",
+  "artifact_version": "1.0.0",
+  "frontend": {
+    "lint": { "command": "cd frontend-react && npm run lint", "result": "passed" },
+    "targeted_tests": { "command": "cd frontend-react && npm test -- --run src/domain src/repository src/utils/projectStore.test.js src/hooks/useProjectWorkspace.test.jsx", "result": "passed" },
+    "full_tests": { "command": "cd frontend-react && npm test", "result": "passed", "observed": "197 tests across 37 files" },
+    "build": { "command": "cd frontend-react && npm run build", "result": "passed" }
+  },
+  "documentation": { "command": "python3 docs/validate_docs.py (run in temporary venv with docs/requirements.txt dependency PyYAML)", "result": "passed: 36 HTML pages and 41 API paths" },
+  "targeted_suites": [
+    { "file": "frontend-react/src/domain/domain.test.js", "coverage": ["creation", "override precedence", "explicit clear", "UI-state exclusion", "branching", "apply optimization solution", "public optimization solutions"] },
+    { "file": "frontend-react/src/domain/requestEquivalence.test.js", "coverage": ["2.6 GHz", "28 GHz", "interference", "optimization"] },
+    { "file": "frontend-react/src/repository/projectCompatibility.test.js", "coverage": ["ProjectV2 to domain to ProjectV2 round trip", "RF input retention", "UI state exclusion from revision"] },
+    { "file": "frontend-react/src/repository/localRepository.test.js", "coverage": ["repository contract", "Run persistence through compatibility metadata"] },
+    { "file": "frontend-react/src/utils/projectStore.test.js", "coverage": ["schema v1", "legacy envelope", "IndexedDB fallback", "serialized writes", "compaction"] }
+  ],
+  "backend_scope": { "production_backend_files_changed": false, "fingerprint_file_changed": false, "RF_calculation_file_changed": false, "optimizer_file_changed": false }
+}

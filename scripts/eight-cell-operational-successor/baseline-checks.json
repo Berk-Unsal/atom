@@ -1,0 +1,213 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 0.39467729203170165,
+    "started_at": "2026-10-07T14:41:53.809469+00:00",
+    "completed_at": "2026-10-07T14:41:54.204128+00:00"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 0.20280349999666214,
+    "started_at": "2026-10-07T14:41:54.204437+00:00",
+    "completed_at": "2026-10-07T14:41:54.407206+00:00"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 0.17366408300586045,
+    "started_at": "2026-10-07T14:41:54.407569+00:00",
+    "completed_at": "2026-10-07T14:41:54.581190+00:00"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 10.846751750039402,
+    "started_at": "2026-10-07T14:41:54.581555+00:00",
+    "completed_at": "2026-10-07T14:42:05.428348+00:00"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 3.8823375839856453,
+    "started_at": "2026-10-07T14:42:05.428963+00:00",
+    "completed_at": "2026-10-07T14:42:09.311260+00:00"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 1.3243374170269817,
+    "started_at": "2026-10-07T14:42:09.311689+00:00",
+    "completed_at": "2026-10-07T14:42:10.635985+00:00"
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": 1,
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "517ab816924a3a36e3da-c2d80f0f63cf255099be",
+          "file": "rf-budget.spec.js",
+          "title": "real RF budget: six-cell Evaluate, Interference, inspect, re-evaluate, then abuse",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true,
+      "report_path": "/tmp/atom-eight-cell-operational-successor/baseline-rf_budget_e2e.playwright.json",
+      "report_sha256": "63c370a5e93977466f254ad9ed3b4f2a3a24a93c9b3cccc4863321e5715d77ad"
+    },
+    "test_environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "seconds": 9.948248625034466,
+    "started_at": "2026-10-07T14:42:10.636367+00:00",
+    "completed_at": "2026-10-07T14:42:20.584635+00:00"
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": 1,
+    "execution_guard": {
+      "passed": 1,
+      "discovered": 1,
+      "executed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "required_tests": [
+        {
+          "id": "6eb2bebe5f7dbec70ae0-03ce0a2405ac15553026",
+          "file": "network-deadline.spec.js",
+          "title": "real network optimization deadline: affected six-cell defaults preserve output and one-request cost",
+          "project": "desktop-1440",
+          "result_statuses": [
+            "passed"
+          ],
+          "passed": true
+        }
+      ],
+      "opt_in_active": true,
+      "report_path": "/tmp/atom-eight-cell-operational-successor/baseline-rf_deadline_e2e.playwright.json",
+      "report_sha256": "8ec8b6aff3294f5cdcdc934b4a66ea74e7a6935be1c2b1fe48ff6842fc0dfaa4"
+    },
+    "test_environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "seconds": 9.736607083003037,
+    "started_at": "2026-10-07T14:42:20.584898+00:00",
+    "completed_at": "2026-10-07T14:42:30.321538+00:00"
+  },
+  "auto_resource_profile_tests": {
+    "command": [
+      "go",
+      "test",
+      "./...",
+      "-run",
+      "ResourceProfile|AutoResource"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 0.19046733301365748,
+    "started_at": "2026-10-07T14:42:30.321833+00:00",
+    "completed_at": "2026-10-07T14:42:30.512258+00:00"
+  },
+  "w1_preservation_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/w1-shipping-runtime-qualification",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "execution_guard": null,
+    "test_environment": {},
+    "seconds": 0.35103125002933666,
+    "started_at": "2026-10-07T14:42:30.512616+00:00",
+    "completed_at": "2026-10-07T14:42:30.863601+00:00"
+  }
+}

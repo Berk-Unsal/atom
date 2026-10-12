@@ -2,6 +2,11 @@ local first_title_removed = false
 
 local page_routes = {
   ["api.md"] = "api.html",
+  ["rf-analysis-request-budget-audit.md"] = "rf-analysis-request-budget-audit.html",
+  ["network-optimization-deadline-audit.md"] = "network-optimization-deadline-audit.html",
+  ["auto-resource-estimator-locked-validation.md"] = "auto-resource-estimator-locked-validation.html",
+  ["auto-resource-geometry-calibration.md"] = "auto-resource-geometry-calibration.html",
+  ["auto-resource-profile-foundation.md"] = "auto-resource-profile-foundation.html",
   ["algorithms.md"] = "algorithms.html",
   ["features.md"] = "features.html",
   ["visualization.md"] = "visualization.html",
@@ -13,6 +18,8 @@ local page_routes = {
   ["architecture.md"] = "architecture.html",
   ["getting-started.md"] = "download.html",
   ["index.md"] = "index.html",
+  ["concept-4g1-antenna-link-budget.md"] = "concept-4g1-antenna-link-budget.html",
+  ["concept-6a1-1-real-pilot-ingestion.md"] = "concept-6a1-1-real-pilot-ingestion.html",
 }
 
 function Header(element)

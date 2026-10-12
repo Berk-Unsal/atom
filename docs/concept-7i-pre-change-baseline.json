@@ -1,0 +1,137 @@
+{
+  "concept": "7I",
+  "capturedAt": "2026-09-23",
+  "repository": {
+    "root": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "startingGitStatus": "clean",
+    "startingStagedDiffFiles": [],
+    "startingUnstagedDiffFiles": [],
+    "startingUntrackedFiles": [],
+    "preexistingDirtyChanges": []
+  },
+  "application": {
+    "version": "0.8.0",
+    "node": "v26.8.1",
+    "npm": "11.19.0",
+    "vite": "6.4.3",
+    "react": "18.3.1",
+    "reactDom": "18.3.1",
+    "playwright": "1.61.1",
+    "browser": {
+      "name": "Chromium",
+      "version": "149.0.7827.55",
+      "mode": "headless"
+    },
+    "operatingEnvironment": "Darwin 27.0.0, arm64, Apple T8132"
+  },
+  "productionBuild": {
+    "command": "npm run build",
+    "durationMs": 1080,
+    "modulesTransformed": 1695,
+    "warnings": [
+      "Vite large-chunk advisory: a 957.78 kB minified JavaScript asset exceeds the default 500 kB advisory threshold."
+    ],
+    "assets": [
+      {
+        "file": "assets/index-D6cTVo8H.js",
+        "kind": "javascript",
+        "entry": true,
+        "rawBytes": 957782,
+        "gzipBytesLevel9": 262186,
+        "viteDisplayedRaw": "957.78 kB",
+        "viteDisplayedGzip": "263.00 kB",
+        "initial": true,
+        "deferred": false
+      },
+      {
+        "file": "assets/index-EPaW6lXB.css",
+        "kind": "css",
+        "rawBytes": 151599,
+        "gzipBytesLevel9": 28419,
+        "viteDisplayedRaw": "151.60 kB",
+        "viteDisplayedGzip": "28.75 kB",
+        "initial": true,
+        "deferred": false
+      }
+    ],
+    "totals": {
+      "javascriptRawBytes": 957782,
+      "javascriptGzipBytesLevel9": 262186,
+      "cssRawBytes": 151599,
+      "cssGzipBytesLevel9": 28419,
+      "initialJavascriptRawBytes": 957782,
+      "initialJavascriptGzipBytesLevel9": 262186,
+      "buildDurationMs": 1080
+    },
+    "gzipMethod": "Node zlib gzipSync, level 9; this byte measure is used consistently for the post-change comparison. Vite's displayed gzip estimate is retained separately."
+  },
+  "buildManifest": {
+    "command": "npx vite build --manifest --outDir /tmp/atom-7i-baseline",
+    "durationMs": 1010,
+    "manifestPath": "/tmp/atom-7i-baseline/.vite/manifest.json",
+    "entries": {
+      "index.html": {
+        "file": "assets/index-D6cTVo8H.js",
+        "isEntry": true,
+        "staticImports": [],
+        "dynamicImports": [],
+        "css": ["assets/index-EPaW6lXB.css"]
+      }
+    },
+    "javascriptChunkCount": 1,
+    "dynamicChunkCount": 0
+  },
+  "initialBrowserResourceGraph": {
+    "server": "Vite production preview at http://127.0.0.1:4173/; no backend service was running",
+    "method": "Five fresh Playwright Chromium contexts at 1440x900. Each context used a cold browser cache; requests were collected before any specialized feature was intentionally opened.",
+    "staticApplicationResources": [
+      {
+        "path": "/assets/index-D6cTVo8H.js",
+        "kind": "JavaScript entry",
+        "requestsPerColdLoad": 1,
+        "responseBodyRawBytes": 957782,
+        "resourceTimingTransferBytes": 263303,
+        "resourceTimingDecodedBodyBytes": 957782
+      },
+      {
+        "path": "/assets/index-EPaW6lXB.css",
+        "kind": "CSS entry dependency",
+        "requestsPerColdLoad": 1,
+        "responseBodyRawBytes": 151599,
+        "resourceTimingTransferBytes": 29049,
+        "resourceTimingDecodedBodyBytes": 151599
+      }
+    ],
+    "otherObservedInitialRequests": [
+      { "path": "/api/meta", "kind": "fetch", "status": 500, "reason": "Vite preview was run without the backend service" },
+      { "path": "/api/datasets", "kind": "fetch", "status": 500, "reason": "Vite preview was run without the backend service" },
+      { "path": "/api/towers", "kind": "fetch", "status": 500, "reason": "Vite preview was run without the backend service" },
+      { "path": "/api/buildings/summary", "kind": "fetch", "status": 500, "reason": "Vite preview was run without the backend service" },
+      { "path": "/icon/icon.svg", "kind": "image", "status": 200 },
+      { "path": "https://tile.openstreetmap.org/{z}/{x}/{y}.png", "kind": "map tile images", "initial": true, "tileCountVariesByViewport": true }
+    ],
+    "specializedFeatureChunks": [],
+    "initialGraphConclusion": "All JavaScript, including the candidate specialized features, is in the single static entry; there are no existing deferred chunks."
+  },
+  "coldStartupMeasurements": {
+    "milestones": "Elapsed from page.goto start until DOMContentLoaded, visible Setup heading, and visible .leaflet-container respectively.",
+    "runs": [
+      { "run": 1, "documentResponseMs": 41, "setupVisibleMs": 109, "mapVisibleMs": 113 },
+      { "run": 2, "documentResponseMs": 40, "setupVisibleMs": 107, "mapVisibleMs": 111 },
+      { "run": 3, "documentResponseMs": 40, "setupVisibleMs": 107, "mapVisibleMs": 109 },
+      { "run": 4, "documentResponseMs": 39, "setupVisibleMs": 110, "mapVisibleMs": 114 },
+      { "run": 5, "documentResponseMs": 40, "setupVisibleMs": 108, "mapVisibleMs": 111 }
+    ],
+    "summaryMs": {
+      "documentResponse": { "minimum": 39, "median": 40, "maximum": 41 },
+      "setupVisible": { "minimum": 107, "median": 108, "maximum": 110 },
+      "mapVisible": { "minimum": 109, "median": 111, "maximum": 114 }
+    },
+    "datasetReady": null,
+    "limitations": [
+      "Local preview timing only; it does not represent production CDN, network, or user-device performance.",
+      "Dataset readiness could not be measured because the backend was not running; the four initial API calls returned 500.",
+      "This smoke measurement verifies visible shell/map milestones, not successful dataset-backed planning or RF execution."
+    ]
+  }
+}

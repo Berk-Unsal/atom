@@ -1,0 +1,232 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/backend-go",
+    "exit_code": 0,
+    "seconds": 0.3792316250037402,
+    "completed_at": "2026-10-05T18:25:05.317664+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-backend_tests.log"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/backend-go",
+    "exit_code": 0,
+    "seconds": 0.2326126249972731,
+    "completed_at": "2026-10-05T18:25:05.550785+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-backend_race.log"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/backend-go",
+    "exit_code": 0,
+    "seconds": 0.2034639170160517,
+    "completed_at": "2026-10-05T18:25:05.754631+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-backend_vet.log"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/frontend-react",
+    "exit_code": 0,
+    "seconds": 12.890337124990765,
+    "completed_at": "2026-10-05T18:25:18.645455+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-frontend_tests.log"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/frontend-react",
+    "exit_code": 0,
+    "seconds": 3.84408741700463,
+    "completed_at": "2026-10-05T18:25:22.490021+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-frontend_lint.log"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/frontend-react",
+    "exit_code": 0,
+    "seconds": 1.3357572499662638,
+    "completed_at": "2026-10-05T18:25:23.826202+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-frontend_build.log"
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/frontend-react",
+    "exit_code": 0,
+    "seconds": 10.039989749959204,
+    "completed_at": "2026-10-05T18:25:33.866625+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-rf_budget_e2e.log"
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/frontend-react",
+    "exit_code": 0,
+    "seconds": 12.209566625009757,
+    "completed_at": "2026-10-05T18:25:46.076660+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-rf_deadline_e2e.log"
+  },
+  "auto_resource_profile_tests": {
+    "command": [
+      "go",
+      "test",
+      "./...",
+      "-run",
+      "ResourceProfile|AutoResource|Cancellation|Cancel|Experiment"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer/backend-go",
+    "exit_code": 0,
+    "seconds": 1.3177058750297874,
+    "completed_at": "2026-10-05T18:25:47.394754+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-auto_resource_profile_tests.log"
+  },
+  "qualification_protocol_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/w1-shipping-runtime-qualification",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 0.3441912500420585,
+    "completed_at": "2026-10-05T18:25:47.739390+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-qualification_protocol_tests.log"
+  },
+  "prior_study_preservation_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/fixed-deployment-profiles",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 2.7100174999795854,
+    "completed_at": "2026-10-05T18:25:50.449810+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-prior_study_preservation_tests.log"
+  },
+  "docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 7.555069457972422,
+    "completed_at": "2026-10-05T18:25:58.005300+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-docs_build.log"
+  },
+  "docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 0.48378175002289936,
+    "completed_at": "2026-10-05T18:25:58.489512+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-docs_validation.log"
+  },
+  "version": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 0.03637891699327156,
+    "completed_at": "2026-10-05T18:25:58.526285+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-version.log"
+  },
+  "diff": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 0.026795916026458144,
+    "completed_at": "2026-10-05T18:25:58.553478+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final-diff.log"
+  },
+  "final_docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 8.247117624967359,
+    "completed_at": "2026-10-05T18:26:06.830753+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final_docs_build.log"
+  },
+  "final_docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 1.1902594590210356,
+    "completed_at": "2026-10-05T18:26:08.021352+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final_docs_validation.log"
+  },
+  "final_diff": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/Users/berkunsal/Desktop/urban-ray-tracer",
+    "exit_code": 0,
+    "seconds": 0.0711592499865219,
+    "completed_at": "2026-10-05T18:26:08.093335+00:00",
+    "log": "/tmp/atom-w1-shipping-qualification/final_diff.log"
+  }
+}

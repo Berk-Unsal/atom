@@ -1,0 +1,34 @@
+{
+  "concept": "8C",
+  "phase": "post-change accessibility evidence",
+  "implementation": {
+    "ordinaryModes": "Named Map interaction mode group; text labels; aria-pressed state plus check glyph; focusable native buttons.",
+    "phoneModeDisclosure": "Accessible name includes the current interaction mode; aria-expanded and aria-controls expose its menu state.",
+    "viewDisclosure": "Named Map view options button with aria-expanded and aria-controls; labelled Result visualization and View context groups.",
+    "layersDisclosure": "Named Map layers button with aria-expanded and aria-controls; Escape returns focus to the trigger.",
+    "selectors": "Radio-quality metric, Ray scope, and Map focus remain native labelled select controls.",
+    "specialMode": "role=status with polite live announcement, descriptive mode name, map action instruction, and explicit Finish/Cancel controls where applicable.",
+    "mapKey": "Named Map key region; native disclosure button; collapsed contents carry the hidden attribute and CSS explicitly respects it.",
+    "inspect": "Entity identity and facts remain available in the named contextual inspector; removal of the legacy Cell popup does not remove inspector identity.",
+    "tooltips": "Remaining icon-only map actions have accessible names and title text; Inspect and Select cells remain text-labelled."
+  },
+  "keyboardEvidence": [
+    {
+      "test": "WorkspaceChrome unit tests",
+      "assertion": "Escape closes the View group and restores focus to Map view options; menu focus behavior is exercised."
+    },
+    {
+      "test": "E2E keyboard map inspection",
+      "assertion": "Enter activates conditional Inspect focused cell, inspector receives focus, Escape closes it, and focus returns to Map view options."
+    },
+    {
+      "test": "E2E keyboard disclosure navigation without RF work",
+      "assertion": "Existing disclosure/keyboard workflow remains available without starting RF requests."
+    }
+  ],
+  "responsiveEvidence": "At 390px, current mode, View, and Layers remain visible in one 42px toolbar row; the interaction menu exposes Select cells and Draw area. Evidence is in concept-8c-responsive-evidence.json and its linked captures.",
+  "limits": [
+    "Automated DOM, accessibility-role, keyboard, and focus-return checks were run; no manual screen-reader certification was performed.",
+    "Map features retain the existing interaction/accessibility model; Concept 8C does not add keyboard navigation among Leaflet features."
+  ]
+}

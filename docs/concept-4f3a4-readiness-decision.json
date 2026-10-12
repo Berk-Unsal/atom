@@ -1,0 +1,267 @@
+{
+  "building_base_readiness": {
+    "known_height_building_count": 6074,
+    "status": "diagnostic source-local base spread only; footprint-inside/near/open labels are not truth"
+  },
+  "canonical_invariance": {
+    "after_snapshots": {
+      "canonical_28_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 90.72271631710674,
+          "signal_dbm": -35.722716317106745,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -72.1,
+          "blocked_pct": 12.5,
+          "max_range_m": 100,
+          "min_range_m": 72.3
+        }
+      },
+      "canonical_2_6_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 70.07902264967872,
+          "signal_dbm": -15.07902264967872,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -43,
+          "blocked_pct": 0,
+          "max_range_m": 100,
+          "min_range_m": 100
+        }
+      },
+      "research_sub_thz_140_ghz": {
+        "composition": "FSPL + max(wall_event_count, 0) * 80 dB; unchanged research-only profile",
+        "endpoint": "POST /api/simulate",
+        "model_id": "research_sub_thz",
+        "stats": {
+          "avg_rx_dbm": -123.6,
+          "blocked_pct": 87.5,
+          "max_range_m": 100,
+          "min_range_m": 17.6
+        }
+      }
+    },
+    "before_snapshots": {
+      "canonical_28_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 90.72271631710674,
+          "signal_dbm": -35.722716317106745,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -72.1,
+          "blocked_pct": 12.5,
+          "max_range_m": 100,
+          "min_range_m": 72.3
+        }
+      },
+      "canonical_2_6_ghz": {
+        "endpoint": "POST /api/simulate",
+        "first_feature": {
+          "distance_m": 25,
+          "los_state": "los",
+          "path_loss_db": 70.07902264967872,
+          "signal_dbm": -15.07902264967872,
+          "wall_loss_db": 0
+        },
+        "model_id": "urban_short_range",
+        "stats": {
+          "avg_rx_dbm": -43,
+          "blocked_pct": 0,
+          "max_range_m": 100,
+          "min_range_m": 100
+        }
+      },
+      "research_sub_thz_140_ghz": {
+        "composition": "FSPL + max(wall_event_count, 0) * 80 dB; unchanged research-only profile",
+        "endpoint": "POST /api/simulate",
+        "model_id": "research_sub_thz",
+        "stats": {
+          "avg_rx_dbm": -123.6,
+          "blocked_pct": 87.5,
+          "max_range_m": 100,
+          "min_range_m": 17.6
+        }
+      }
+    },
+    "canonical_manifest_sha256_at_audit": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+    "explicitly_not_changed": [
+      "LOS/NLOS",
+      "P.526",
+      "P.1411",
+      "reflection",
+      "building entry",
+      "interference",
+      "radio quality",
+      "optimizer",
+      "scenario fingerprints"
+    ],
+    "model_changes": [],
+    "snapshot_equality": {
+      "canonical_28_ghz": true,
+      "canonical_2_6_ghz": true,
+      "research_sub_thz_140_ghz": true
+    },
+    "status": "unchanged_by_construction; no RF code path or canonical dataset was modified",
+    "target_statuses": {
+      "4F.1 interference and radio quality": "unchanged_by_construction",
+      "4H.2 disabled and enabled optimization": "unchanged_by_construction",
+      "P.1411 diagnostic": "unchanged_by_construction",
+      "P.526 diagnostic": "unchanged_by_construction",
+      "building entry": "unchanged_by_construction",
+      "canonical 2.6 GHz simulation": "unchanged_by_construction",
+      "canonical 28 GHz simulation": "unchanged_by_construction",
+      "height-aware LOS/NLOS classification": "unchanged_by_construction",
+      "reflection diagnostic": "unchanged_by_construction",
+      "research sub-THz 140 GHz simulation": "unchanged_by_construction",
+      "scenario fingerprints": "unchanged_by_construction"
+    },
+    "targets": [
+      "canonical 2.6 GHz simulation",
+      "canonical 28 GHz simulation",
+      "research sub-THz 140 GHz simulation",
+      "height-aware LOS/NLOS classification",
+      "P.526 diagnostic",
+      "P.1411 diagnostic",
+      "reflection diagnostic",
+      "building entry",
+      "4F.1 interference and radio quality",
+      "4H.2 disabled and enabled optimization",
+      "scenario fingerprints"
+    ],
+    "terrain_activation": false,
+    "terrain_status": "terrain_unavailable"
+  },
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.4",
+  "decision": {
+    "code": "C",
+    "label": "NO-GO — correct the clearance implementation and re-audit before 4F.3B",
+    "reason": "The existing 4F.3A.3 432/432 result is explained by an inverted signed clearance. The corrected diagnostic yields source-local sampled candidates, but NASADEM remains dem_unspecified, no open local orthometric point-control set was joined, FABDEM is research-only, and no uncertainty margin is approved."
+  },
+  "geometry_readiness": {
+    "curvature": {
+      "comparison": "At 400 m the geometric sagitta is about 3.14 mm and the k=4/3 effective-earth diagnostic is about 2.35 mm; both are far below the source-scale and documented DEM limitations.",
+      "difference_between_k1_and_k4_3_m": 0.0007848063760994462,
+      "distance_m": 400.0,
+      "earth_radius_m": 6371000.0,
+      "effective_earth_bulge_m": 0.0023544184586407157,
+      "effective_k_factor": 1.3333333333333333,
+      "model_change": "Diagnostic magnitude only; no curvature or refraction term is added to the canonical or 4F.3A.4 clearance model.",
+      "small_angle_approximation_m": 0.0031392246115209545,
+      "unmodeled_geometric_bulge_m": 0.003139224834740162
+    },
+    "exact_obstruction": "not established; a 30 m sampled profile can miss a crest between samples and does not model diffraction",
+    "source_local_profiles": "available for complete sampled paths",
+    "spacing_and_interpolation": "must remain explicit classifier inputs"
+  },
+  "los_nlos_implication": {
+    "current_canonical_terrain_status": "terrain_unavailable",
+    "note": "The corrected diagnostic must not change the existing height-aware LOS/NLOS classifications in 4F.1.",
+    "status": "no canonical implication"
+  },
+  "next_gate": "Fix the equation in an isolated diagnostic implementation, rerun the same baseline comparison, select a defensible uncertainty policy, and obtain/join local control before proposing any 4F.3B behavior.",
+  "p526_implication": {
+    "allowed_next_step": "A future P.526 phase may use a qualified terrain profile as an input candidate after exact clearance, source, uncertainty, and diffraction policy approval.",
+    "corrected_source_local_candidates": {
+      "fabdem": 19,
+      "nasadem": 50
+    },
+    "forbidden_now": "No terrain diffraction term, edge count, or path-loss change is added.",
+    "status": "diagnostic implication only"
+  },
+  "phase_boundary": "Read-only audit complete; no 4F.3B terrain activation or RF coupling",
+  "reflection_implication": {
+    "allowed": "Use source-local ground as a labeled diagnostic anchor for a future facade-height investigation.",
+    "blockers": [
+      "DEM ground semantics",
+      "datum/uncertainty policy",
+      "materials",
+      "roughness",
+      "visibility",
+      "no canonical RF activation"
+    ],
+    "status": "diagnostic facade/base anchor only; not ready"
+  },
+  "representative_profile_artifact": "concept-4f3a4-representative-profiles.json",
+  "resolved_432_explanation": {
+    "correct_endpoint_identity": "Tx = 25 m and Rx = 1.5 m when endpoint ground samples are valid",
+    "correct_formula": "terrain_clearance = radio_line - terrain",
+    "corrected_strict_zero_candidate_counts": {
+      "fabdem": 19,
+      "nasadem": 50
+    },
+    "endpoint_identity": "Tx: terrain - (terrain + 25 m) = -25 m; Rx: terrain - (terrain + 1.5 m) = -1.5 m",
+    "legacy_decision": "min(terrain - radio_line) < 0",
+    "legacy_formula": "terrain_clearance = terrain - radio_line"
+  },
+  "schema_version": 1,
+  "source_readiness": {
+    "datum_reconciliation": "defensible frame transformation H96 + N96 - N08 with official NGA-derived PROJ grids; transformation is not accuracy correction",
+    "fabdem": "research-only comparator under CC BY-NC-SA 4.0; not a production dependency or truth source",
+    "local_control": {
+      "decision": "No local control point set was used. The audit does not invent a DEM accuracy margin from model metadata or from a GNSS station page.",
+      "sources": [
+        {
+          "availability": "1 arc-minute WCS requires public-institution application; 5 arc-minute version is offered for education/demo use",
+          "name": "Turkish General Directorate of Mapping TG-20",
+          "reason": "No open downloadable Ankara point coordinates were acquired; a coarse model is not a point-control set.",
+          "role": "model/control evidence",
+          "url": "https://www.harita.gov.tr/jeo/tg20.php",
+          "usable_as_open_point_control_here": false
+        },
+        {
+          "availability": "Published GPS/leveling benchmark analysis; point coordinates are not an open machine-readable control file in this workspace",
+          "name": "Turkish National Vertical Control Network literature",
+          "reason": "Literature evidence cannot be joined to the tile samples without the underlying benchmark coordinates and datum realization.",
+          "role": "published validation evidence",
+          "url": "https://ascelibrary.org/doi/10.1061/(ASCE)0733-9453(2006)132:1(15)",
+          "usable_as_open_point_control_here": false
+        },
+        {
+          "availability": "Station metadata and RINEX links are public",
+          "name": "ANK200TUR IGS station",
+          "reason": "The station page is not an orthometric terrain-control point set; ellipsoidal/GNSS processing and datum conversion would still be required.",
+          "role": "open GNSS metadata",
+          "url": "https://network.igs.org/ANK200TUR",
+          "usable_as_open_point_control_here": false
+        },
+        {
+          "availability": "Service and station network information are public; data use is agreement-controlled",
+          "name": "TUSAGA-Aktif",
+          "reason": "No unrestricted, ready-to-join Ankara orthometric control table was available for this audit.",
+          "role": "national GNSS infrastructure",
+          "url": "https://tusaga-aktif.gov.tr/",
+          "usable_as_open_point_control_here": false
+        }
+      ],
+      "usable_open_orthometric_point_control_found": false
+    },
+    "nasadem": "primary legally reusable diagnostic candidate, but dem_unspecified and not validated as authoritative bare-earth ground"
+  },
+  "uncertainty_policy": {
+    "approved_margin_m": null,
+    "classification": "Use the four-state contract only after a future phase selects and documents a source/terrain uncertainty policy; do not invent a NASADEM ±X m value from national summary statistics.",
+    "diagnostic_margins_m": [
+      0.0,
+      1.0,
+      2.0,
+      5.0
+    ],
+    "source_accuracy_semantics": "NASADEM documentation reports product validation statistics and known vegetation/terrain limitations; those statistics are not an Ankara guarantee."
+  }
+}

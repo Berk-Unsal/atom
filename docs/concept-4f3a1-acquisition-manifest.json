@@ -1,0 +1,1126 @@
+{
+  "active_aoi": {
+    "bounds_west_south_east_north": [
+      32.45,
+      39.55,
+      33.25,
+      40.25
+    ],
+    "crs": "EPSG:4326",
+    "dataset_id": "ankara-open-planning",
+    "dataset_manifest": "data-pipeline/manifest.json",
+    "dataset_version": "2026.07",
+    "region_filter": "Turkey",
+    "selection_rule": "select only source tiles whose Bing quadkey bounds intersect the exact active AOI"
+  },
+  "artifact": "acquisition-manifest",
+  "auxiliary_height_coverage_index": {
+    "bytes": 22192231,
+    "cache_path": "/tmp/globml-2026-08-13-ankara/buildings-with-height-coverage.geojson",
+    "feature_count": 66510,
+    "features_intersecting_active_aoi": 0,
+    "invalid_features": 0,
+    "reused_cached_file": true,
+    "semantics": "auxiliary public height-coverage index; not used as a match source",
+    "sha256": "52f98781d0938d42f24769af1cb87c3c38b7d60746c98fa0c96f4a4cbbab01ab",
+    "status": "checked",
+    "url": "https://minedbuildings.z5.web.core.windows.net/global-buildings/buildings-with-height-coverage.geojson"
+  },
+  "captured_at": "2026-09-19",
+  "concept": "4F.3A.1",
+  "footprint_area_distribution_m2": {
+    "bins": {
+      "10-50m2": 101268,
+      "1000-5000m2": 18856,
+      "200-1000m2": 157475,
+      "50-200m2": 158611,
+      "5000-20000m2": 1692,
+      "<10m2": 2174,
+      ">=20000m2": 97
+    },
+    "count": 440173,
+    "max": 81176.59808375558,
+    "mean": 318.7342706495478,
+    "median": 148.75845755465377,
+    "min": 5.853271476948753,
+    "p01": 11.16664947361141,
+    "p10": 23.028292723554202,
+    "p90": 641.7254521452118,
+    "p99": 2769.1579790549094
+  },
+  "height_distribution": {
+    "bins_m": {
+      "0-5m": 0,
+      "10-20m": 0,
+      "100-250m": 0,
+      "20-30m": 0,
+      "250-500m": 0,
+      "30-50m": 0,
+      "5-10m": 0,
+      "50-100m": 0,
+      ">=500m": 0
+    },
+    "positive_heights_m": {
+      "count": 0
+    }
+  },
+  "input_qa": {
+    "confidence_invalid": 0,
+    "confidence_missing": 0,
+    "confidence_unknown_minus_one": 440173,
+    "confidence_valid_0_to_1": 0,
+    "duplicate_geometry": 0,
+    "duplicate_source_ids": 0,
+    "empty_geometry": 0,
+    "extreme_height_over_500m": 0,
+    "huge_footprints_over_50000m2": 9,
+    "invalid_geometry": 0,
+    "invalid_geometry_outside_aoi_not_spatially_classified": 0,
+    "invalid_height": 0,
+    "invalid_json": 0,
+    "missing_height_sentinel": 440173,
+    "multipart_footprints": 6,
+    "nonpositive_height_excluding_missing_sentinel": 0,
+    "positive_height_records": 0,
+    "raw_records_all_selected_tiles": 624354,
+    "records_intersecting_active_aoi": 440173,
+    "records_outside_active_aoi": 184181,
+    "repaired_geometry": 7,
+    "self_intersection": 7,
+    "tiny_footprints_under_4m2": 0,
+    "unsupported_geometry": 0
+  },
+  "normalization": {
+    "adapter": "microsoft-globalmlbuildingfootprints-v1",
+    "canonical_rf_activation": false,
+    "normalized_feature_count": 0,
+    "numeric_pilot_status": "not_run_no_positive_heights",
+    "output": "docs/concept-4f3a1-normalized-external-heights.geojson",
+    "output_contract": "GeoJSON FeatureCollection with EPSG:4326 geometry and properties.height_agl_m"
+  },
+  "raw_storage": {
+    "directory": "/tmp/globml-2026-08-13-ankara/raw",
+    "mode": "external_to_repository",
+    "reason": "raw source objects are large and remain reproducible through URLs, release, link-table hash, and tile hashes",
+    "repository_committed": false
+  },
+  "reproducibility": {
+    "command": "python data-pipeline/external_height_pilot.py --manifest data-pipeline/manifest.json --buildings data-pipeline/ankara_buildings.geojson --links-url https://bfppub.blob.core.windows.net/%24web/2026-08-13/dataset-links.csv --version 2026-08-13 --raw-dir /tmp/globml-2026-08-13-ankara/raw --output-dir docs --download",
+    "fingerprint_inputs": {
+      "accepted_match_set": [],
+      "link_table_sha256": "de61b569b0c23c364d61173632d8c5487ea30bf20912c55b9fa1ab4a89d01148",
+      "matching_policy": {
+        "centroid_gate": "candidate-support-only",
+        "exact_id_match": true,
+        "high_confidence_iou": 0.6,
+        "maximum_centroid_distance_m": 30.0,
+        "multiple_plausible_candidates": "ambiguous",
+        "split_merge_policy": "only-defensible-one-to-one-matches-accepted",
+        "version": "footprint-height-match-v1"
+      },
+      "normalization_adapter": "microsoft-globalmlbuildingfootprints-v1",
+      "raw_tile_sha256": [
+        {
+          "quadkey": "122101112",
+          "sha256": "1ca4afd9d5e1ef35d8c4ad8143b80e7597ddf9f8e03f1df96474a8712cad93a4"
+        },
+        {
+          "quadkey": "122101113",
+          "sha256": "2d5e7b323df0495495cad3a85658c82326cd319274ecc3f37e542746f0f57aac"
+        },
+        {
+          "quadkey": "122101130",
+          "sha256": "9f1e50ef9cc2817b827f15cb9dbcd7c207e3a0941383ee1b2f18b9cda62e5087"
+        },
+        {
+          "quadkey": "122101131",
+          "sha256": "2fe24b68da2f3357a80f53919335f4d40ebfb0b4cd0b513edafd4302c7562874"
+        }
+      ],
+      "release": "2026-08-13",
+      "source": "Microsoft GlobalMLBuildingFootprints"
+    },
+    "policy_fingerprint": "pilot-ed25b1f6a5e7c27e44e987f0e7c67f2d8d3b55936b386ce5106b6536ae46eb92",
+    "ui_state_excluded_from_fingerprint": true
+  },
+  "schema_version": 1,
+  "selected_tiles": [
+    {
+      "bytes": 24479567,
+      "link_table_size": "23.3MB",
+      "local_path": "/tmp/globml-2026-08-13-ankara/raw/122101112.csv.gz",
+      "qa_counts": {
+        "aoi_records": 248596,
+        "out_of_aoi": 29025,
+        "records": 277621,
+        "repaired_geometry": 2
+      },
+      "quadkey": "122101112",
+      "records": 277621,
+      "records_intersecting_aoi": 248596,
+      "records_outside_aoi": 29025,
+      "region": "Turkey",
+      "reused_cached_file": true,
+      "sha256": "1ca4afd9d5e1ef35d8c4ad8143b80e7597ddf9f8e03f1df96474a8712cad93a4",
+      "tile_bounds": [
+        32.34375,
+        39.909736234537185,
+        33.046875,
+        40.44694705960049
+      ],
+      "upload_date": "2026-08-13",
+      "url": "https://bfppub.z5.web.core.windows.net/2026-08-13/global-buildings.geojsonl/RegionName=Turkey/quadkey=122101112/part-00008-110f5303-ff85-4c71-a2bf-c6070024fec8.c000.csv.gz"
+    },
+    {
+      "bytes": 6013840,
+      "link_table_size": "5.7MB",
+      "local_path": "/tmp/globml-2026-08-13-ankara/raw/122101113.csv.gz",
+      "qa_counts": {
+        "aoi_records": 35467,
+        "out_of_aoi": 38454,
+        "records": 73921
+      },
+      "quadkey": "122101113",
+      "records": 73921,
+      "records_intersecting_aoi": 35467,
+      "records_outside_aoi": 38454,
+      "region": "Turkey",
+      "reused_cached_file": true,
+      "sha256": "2d5e7b323df0495495cad3a85658c82326cd319274ecc3f37e542746f0f57aac",
+      "tile_bounds": [
+        33.046875,
+        39.909736234537185,
+        33.75,
+        40.44694705960049
+      ],
+      "upload_date": "2026-08-13",
+      "url": "https://bfppub.z5.web.core.windows.net/2026-08-13/global-buildings.geojsonl/RegionName=Turkey/quadkey=122101113/part-00088-110f5303-ff85-4c71-a2bf-c6070024fec8.c000.csv.gz"
+    },
+    {
+      "bytes": 15145651,
+      "link_table_size": "14.4MB",
+      "local_path": "/tmp/globml-2026-08-13-ankara/raw/122101130.csv.gz",
+      "qa_counts": {
+        "aoi_records": 144040,
+        "out_of_aoi": 31505,
+        "records": 175545,
+        "repaired_geometry": 2
+      },
+      "quadkey": "122101130",
+      "records": 175545,
+      "records_intersecting_aoi": 144040,
+      "records_outside_aoi": 31505,
+      "region": "Turkey",
+      "reused_cached_file": true,
+      "sha256": "9f1e50ef9cc2817b827f15cb9dbcd7c207e3a0941383ee1b2f18b9cda62e5087",
+      "tile_bounds": [
+        32.34375,
+        39.36827914916013,
+        33.046875,
+        39.909736234537185
+      ],
+      "upload_date": "2026-08-13",
+      "url": "https://bfppub.z5.web.core.windows.net/2026-08-13/global-buildings.geojsonl/RegionName=Turkey/quadkey=122101130/part-00180-110f5303-ff85-4c71-a2bf-c6070024fec8.c000.csv.gz"
+    },
+    {
+      "bytes": 7938484,
+      "link_table_size": "7.6MB",
+      "local_path": "/tmp/globml-2026-08-13-ankara/raw/122101131.csv.gz",
+      "qa_counts": {
+        "aoi_records": 12070,
+        "out_of_aoi": 85197,
+        "records": 97267,
+        "repaired_geometry": 3
+      },
+      "quadkey": "122101131",
+      "records": 97267,
+      "records_intersecting_aoi": 12070,
+      "records_outside_aoi": 85197,
+      "region": "Turkey",
+      "reused_cached_file": true,
+      "sha256": "2fe24b68da2f3357a80f53919335f4d40ebfb0b4cd0b513edafd4302c7562874",
+      "tile_bounds": [
+        33.046875,
+        39.36827914916013,
+        33.75,
+        39.909736234537185
+      ],
+      "upload_date": "2026-08-13",
+      "url": "https://bfppub.z5.web.core.windows.net/2026-08-13/global-buildings.geojsonl/RegionName=Turkey/quadkey=122101131/part-00107-110f5303-ff85-4c71-a2bf-c6070024fec8.c000.csv.gz"
+    }
+  ],
+  "source": {
+    "confidence_semantics": "footprint detection confidence only; not height-estimate accuracy",
+    "format": "line-delimited GeoJSON features in .csv.gz objects",
+    "height_semantics": "model-estimated mean height within a building polygon, above ground, in metres; -1 means no height estimate",
+    "license": "CDLA Permissive 2.0",
+    "license_url": "https://cdla.dev/permissive-2-0/",
+    "link_table_reused_cached_file": true,
+    "link_table_sha256": "de61b569b0c23c364d61173632d8c5487ea30bf20912c55b9fa1ab4a89d01148",
+    "link_table_url": "https://bfppub.blob.core.windows.net/%24web/2026-08-13/dataset-links.csv",
+    "provider": "Microsoft GlobalMLBuildingFootprints",
+    "readme": "https://raw.githubusercontent.com/microsoft/GlobalMLBuildingFootprints/main/README.md",
+    "release": "2026-08-13",
+    "repository": "https://github.com/microsoft/GlobalMLBuildingFootprints",
+    "source_crs": "EPSG:4326"
+  },
+  "spatial_qa_grid": {
+    "cell_size_degrees": 0.1,
+    "cells": [
+      {
+        "bounds": [
+          32.35,
+          39.55,
+          32.45,
+          39.65
+        ],
+        "cell": "-1,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1
+      },
+      {
+        "bounds": [
+          32.35,
+          39.75,
+          32.45,
+          39.849999999999994
+        ],
+        "cell": "-1,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 5
+      },
+      {
+        "bounds": [
+          32.35,
+          39.949999999999996,
+          32.45,
+          40.05
+        ],
+        "cell": "-1,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1
+      },
+      {
+        "bounds": [
+          32.45,
+          39.55,
+          32.550000000000004,
+          39.65
+        ],
+        "cell": "0,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1341
+      },
+      {
+        "bounds": [
+          32.45,
+          39.65,
+          32.550000000000004,
+          39.75
+        ],
+        "cell": "0,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1614
+      },
+      {
+        "bounds": [
+          32.45,
+          39.75,
+          32.550000000000004,
+          39.849999999999994
+        ],
+        "cell": "0,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3167
+      },
+      {
+        "bounds": [
+          32.45,
+          39.849999999999994,
+          32.550000000000004,
+          39.949999999999996
+        ],
+        "cell": "0,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3441
+      },
+      {
+        "bounds": [
+          32.45,
+          39.949999999999996,
+          32.550000000000004,
+          40.05
+        ],
+        "cell": "0,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 10200
+      },
+      {
+        "bounds": [
+          32.45,
+          40.05,
+          32.550000000000004,
+          40.15
+        ],
+        "cell": "0,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2233
+      },
+      {
+        "bounds": [
+          32.45,
+          40.15,
+          32.550000000000004,
+          40.25
+        ],
+        "cell": "0,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1511
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          39.449999999999996,
+          32.650000000000006,
+          39.55
+        ],
+        "cell": "1,-1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          39.55,
+          32.650000000000006,
+          39.65
+        ],
+        "cell": "1,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 971
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          39.65,
+          32.650000000000006,
+          39.75
+        ],
+        "cell": "1,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1326
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          39.75,
+          32.650000000000006,
+          39.849999999999994
+        ],
+        "cell": "1,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 4223
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          39.849999999999994,
+          32.650000000000006,
+          39.949999999999996
+        ],
+        "cell": "1,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 12905
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          39.949999999999996,
+          32.650000000000006,
+          40.05
+        ],
+        "cell": "1,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 21977
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          40.05,
+          32.650000000000006,
+          40.15
+        ],
+        "cell": "1,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 5753
+      },
+      {
+        "bounds": [
+          32.550000000000004,
+          40.15,
+          32.650000000000006,
+          40.25
+        ],
+        "cell": "1,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3618
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          39.449999999999996,
+          32.75,
+          39.55
+        ],
+        "cell": "2,-1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 7
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          39.55,
+          32.75,
+          39.65
+        ],
+        "cell": "2,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3608
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          39.65,
+          32.75,
+          39.75
+        ],
+        "cell": "2,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 7412
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          39.75,
+          32.75,
+          39.849999999999994
+        ],
+        "cell": "2,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 15150
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          39.849999999999994,
+          32.75,
+          39.949999999999996
+        ],
+        "cell": "2,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 21776
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          39.949999999999996,
+          32.75,
+          40.05
+        ],
+        "cell": "2,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 15406
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          40.05,
+          32.75,
+          40.15
+        ],
+        "cell": "2,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2954
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          40.15,
+          32.75,
+          40.25
+        ],
+        "cell": "2,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 7997
+      },
+      {
+        "bounds": [
+          32.650000000000006,
+          40.25,
+          32.75,
+          40.349999999999994
+        ],
+        "cell": "2,7",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 4
+      },
+      {
+        "bounds": [
+          32.75,
+          39.449999999999996,
+          32.85,
+          39.55
+        ],
+        "cell": "3,-1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2
+      },
+      {
+        "bounds": [
+          32.75,
+          39.55,
+          32.85,
+          39.65
+        ],
+        "cell": "3,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3347
+      },
+      {
+        "bounds": [
+          32.75,
+          39.65,
+          32.85,
+          39.75
+        ],
+        "cell": "3,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 6883
+      },
+      {
+        "bounds": [
+          32.75,
+          39.75,
+          32.85,
+          39.849999999999994
+        ],
+        "cell": "3,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 13281
+      },
+      {
+        "bounds": [
+          32.75,
+          39.849999999999994,
+          32.85,
+          39.949999999999996
+        ],
+        "cell": "3,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 24666
+      },
+      {
+        "bounds": [
+          32.75,
+          39.949999999999996,
+          32.85,
+          40.05
+        ],
+        "cell": "3,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 32456
+      },
+      {
+        "bounds": [
+          32.75,
+          40.05,
+          32.85,
+          40.15
+        ],
+        "cell": "3,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 7604
+      },
+      {
+        "bounds": [
+          32.75,
+          40.15,
+          32.85,
+          40.25
+        ],
+        "cell": "3,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2701
+      },
+      {
+        "bounds": [
+          32.75,
+          40.25,
+          32.85,
+          40.349999999999994
+        ],
+        "cell": "3,7",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1
+      },
+      {
+        "bounds": [
+          32.85,
+          39.449999999999996,
+          32.95,
+          39.55
+        ],
+        "cell": "4,-1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1
+      },
+      {
+        "bounds": [
+          32.85,
+          39.55,
+          32.95,
+          39.65
+        ],
+        "cell": "4,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2021
+      },
+      {
+        "bounds": [
+          32.85,
+          39.65,
+          32.95,
+          39.75
+        ],
+        "cell": "4,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 4447
+      },
+      {
+        "bounds": [
+          32.85,
+          39.75,
+          32.95,
+          39.849999999999994
+        ],
+        "cell": "4,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 5918
+      },
+      {
+        "bounds": [
+          32.85,
+          39.849999999999994,
+          32.95,
+          39.949999999999996
+        ],
+        "cell": "4,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 39641
+      },
+      {
+        "bounds": [
+          32.85,
+          39.949999999999996,
+          32.95,
+          40.05
+        ],
+        "cell": "4,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 37821
+      },
+      {
+        "bounds": [
+          32.85,
+          40.05,
+          32.95,
+          40.15
+        ],
+        "cell": "4,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 8017
+      },
+      {
+        "bounds": [
+          32.85,
+          40.15,
+          32.95,
+          40.25
+        ],
+        "cell": "4,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3319
+      },
+      {
+        "bounds": [
+          32.95,
+          39.55,
+          33.050000000000004,
+          39.65
+        ],
+        "cell": "5,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 723
+      },
+      {
+        "bounds": [
+          32.95,
+          39.65,
+          33.050000000000004,
+          39.75
+        ],
+        "cell": "5,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2092
+      },
+      {
+        "bounds": [
+          32.95,
+          39.75,
+          33.050000000000004,
+          39.849999999999994
+        ],
+        "cell": "5,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 2676
+      },
+      {
+        "bounds": [
+          32.95,
+          39.849999999999994,
+          33.050000000000004,
+          39.949999999999996
+        ],
+        "cell": "5,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 13916
+      },
+      {
+        "bounds": [
+          32.95,
+          39.949999999999996,
+          33.050000000000004,
+          40.05
+        ],
+        "cell": "5,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 11897
+      },
+      {
+        "bounds": [
+          32.95,
+          40.05,
+          33.050000000000004,
+          40.15
+        ],
+        "cell": "5,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 9157
+      },
+      {
+        "bounds": [
+          32.95,
+          40.15,
+          33.050000000000004,
+          40.25
+        ],
+        "cell": "5,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 13994
+      },
+      {
+        "bounds": [
+          32.95,
+          40.25,
+          33.050000000000004,
+          40.349999999999994
+        ],
+        "cell": "5,7",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 8
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          39.449999999999996,
+          33.150000000000006,
+          39.55
+        ],
+        "cell": "6,-1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 3
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          39.55,
+          33.150000000000006,
+          39.65
+        ],
+        "cell": "6,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1955
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          39.65,
+          33.150000000000006,
+          39.75
+        ],
+        "cell": "6,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1468
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          39.75,
+          33.150000000000006,
+          39.849999999999994
+        ],
+        "cell": "6,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 712
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          39.849999999999994,
+          33.150000000000006,
+          39.949999999999996
+        ],
+        "cell": "6,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1928
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          39.949999999999996,
+          33.150000000000006,
+          40.05
+        ],
+        "cell": "6,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 6756
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          40.05,
+          33.150000000000006,
+          40.15
+        ],
+        "cell": "6,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 6741
+      },
+      {
+        "bounds": [
+          33.050000000000004,
+          40.15,
+          33.150000000000006,
+          40.25
+        ],
+        "cell": "6,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 4899
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          39.55,
+          33.25,
+          39.65
+        ],
+        "cell": "7,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1929
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          39.65,
+          33.25,
+          39.75
+        ],
+        "cell": "7,1",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1316
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          39.75,
+          33.25,
+          39.849999999999994
+        ],
+        "cell": "7,2",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 905
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          39.849999999999994,
+          33.25,
+          39.949999999999996
+        ],
+        "cell": "7,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 7335
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          39.949999999999996,
+          33.25,
+          40.05
+        ],
+        "cell": "7,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 6387
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          40.05,
+          33.25,
+          40.15
+        ],
+        "cell": "7,5",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1341
+      },
+      {
+        "bounds": [
+          33.150000000000006,
+          40.15,
+          33.25,
+          40.25
+        ],
+        "cell": "7,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1288
+      },
+      {
+        "bounds": [
+          33.25,
+          39.55,
+          33.35,
+          39.65
+        ],
+        "cell": "8,0",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 4
+      },
+      {
+        "bounds": [
+          33.25,
+          39.849999999999994,
+          33.35,
+          39.949999999999996
+        ],
+        "cell": "8,3",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 6
+      },
+      {
+        "bounds": [
+          33.25,
+          39.949999999999996,
+          33.35,
+          40.05
+        ],
+        "cell": "8,4",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 8
+      },
+      {
+        "bounds": [
+          33.25,
+          40.15,
+          33.35,
+          40.25
+        ],
+        "cell": "8,6",
+        "normalized_records": 0,
+        "positive_height_records": 0,
+        "raw_records": 1
+      }
+    ],
+    "cells_with_records": 71
+  },
+  "title": "Ankara external building-height acquisition manifest"
+}

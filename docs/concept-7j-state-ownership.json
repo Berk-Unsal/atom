@@ -1,0 +1,120 @@
+{
+  "concept": "7J",
+  "status": "implemented ownership map after Concept 7J extraction",
+  "maximumMajorBoundaries": 4,
+  "globalStoreDecision": {
+    "decision": "No global store",
+    "reason": "Existing Project/Run/Artifact repositories and feature hooks already own durable state. App-level composition can keep transient cross-feature state explicit without a demonstrated correctness problem requiring a new state library."
+  },
+  "owners": [
+    {
+      "owner": "App composition root",
+      "type": "application composition and cross-feature coordination",
+      "state": [
+        "active Project/Scenario and workspace lineage selectors",
+        "current working plan inputs and Inventory used by multiple tools",
+        "dataset switch/revision and bootstrap state",
+        "top-level tool/drawer navigation and cross-panel selection/focus, including selectedArtifactId",
+        "map presentation state that also enters Project snapshots",
+        "analysis outputs, rendered layers and cross-feature result/freshness inputs",
+        "application/action errors and navigation notices"
+      ],
+      "source": "React source state plus useProjectWorkspace, API bootstrap and result-producing workflows",
+      "mutationApi": "App transaction handlers and existing domain/repository hooks; feature components receive explicit actions",
+      "lifecycle": "App lifetime; workspace values hydrate from the selected Project/Scenario; RF edits invalidate rendered result data but retain the current Run identity for stale lineage; Scenario/Project transitions clear current association where required",
+      "rationale": "These values cross Inventory, RF execution, map, result lineage and navigation. Moving them only to reduce App size would hide ownership."
+    },
+    {
+      "owner": "useProjectWorkspace (existing)",
+      "type": "durable Project/Scenario/Version repository boundary",
+      "state": [
+        "workspace projects",
+        "active Project ID",
+        "loaded/persistence status",
+        "repository error"
+      ],
+      "source": "LocalRepository plus Project compatibility/domain operations",
+      "mutationApi": "saveDraft, saveScenario, saveScenarioVersion, activateScenario, branchScenario, duplicateScenario, continueFromScenarioRevision, applyHistoricalOptimization, project CRUD/import/export",
+      "lifecycle": "IndexedDB workspace hydration and saves; durable Project/Scenario/Version lineage",
+      "rationale": "This hook already owns the actual repository boundary; a second pass-through workspace controller is rejected. App continues to own guard, restore and navigation transactions."
+    },
+    {
+      "owner": "useRunExecution",
+      "type": "shared Run record and successful current-result association lifecycle",
+      "state": [
+        "currentResultRun association",
+        "Run-history persistence warning",
+        "latest optimization Run ref used for selected-solution metadata"
+      ],
+      "source": "useRunHistory, domain/runCapture.js and domain/run.js plus current Project/Scenario/settings snapshot",
+      "mutationApi": "beginRun, finishRun, persistRun, selectParetoSolution, clearCurrentResult, clearRunHistoryWarning",
+      "lifecycle": "queued → running → succeeded/failed/cancelled; successful ordinary simulation/optimization Run becomes the current result association; cancelled/failed work does not replace it; historical rerun persists a new Run without replacing the current association",
+      "rationale": "Simulation and optimization share durable Run capture/persistence but keep distinct result payloads and capture functions. API request building and RF result mutations stay with their semantic workflows."
+    },
+    {
+      "owner": "useReportWorkflow",
+      "type": "report definition and artifact workflow coordination",
+      "state": [
+        "report warning",
+        "derived report definitions and current-report-compatible Run selection"
+      ],
+      "source": "current report input snapshot, useProjectWorkspace.saveReportDefinition, useRunHistory and useReportArtifacts",
+      "mutationApi": "exportCurrentMarkdown, exportCurrentHtml, generateHistoricalReport, regenerateArtifact, downloadArtifact, deleteArtifact, createPlanningReport",
+      "lifecycle": "on action dynamically load report implementation, create source-bound definition, generate bytes, attempt local retention, then expose download/open behavior; selectedArtifactId remains App navigation state; historical Run source stays explicit",
+      "rationale": "Implemented as a cohesive workflow coordinator. It uses existing pure report and artifact repository boundaries and does not eagerly import heavy report code."
+    },
+    {
+      "owner": "useRequestCoordinator (existing)",
+      "type": "in-flight request cancellation and latest-request identity",
+      "state": [
+        "AbortController instances and sequence IDs held in refs"
+      ],
+      "source": "request begin/cancel calls from App workflows",
+      "mutationApi": "begin(channel), cancel(channel), finish()",
+      "lifecycle": "per request channel; aborts superseded requests and all in-flight work on unmount",
+      "rationale": "Keep runtime request refs out of durable state; App chooses existing cancellation channels."
+    },
+    {
+      "owner": "LazyFeatureBoundary and owning lazy feature components (existing)",
+      "type": "feature activation/loading/error and feature-local transient state",
+      "state": [
+        "feature load status/error; local research inputs and panel-only selections"
+      ],
+      "source": "dynamic import on user activation and local React component state",
+      "mutationApi": "explicit feature props/actions; component-local state",
+      "lifecycle": "first open loads; collapse/reopen preserves mounted feature state; failed feature load is isolated",
+      "rationale": "Do not introduce a new controller import that statically pulls specialized 7I modules into the cold graph."
+    }
+  ],
+  "rejectedBoundaries": [
+    {
+      "name": "useWorkspaceController pass-through wrapper",
+      "reason": "useProjectWorkspace already owns repository state and domain operations. Wrapping it without owning hydration/transition semantics adds indirection but no lifecycle ownership."
+    },
+    {
+      "name": "useMapWorkspaceState",
+      "reason": "Some map fields are persisted plan inputs; selection and result association participate in RF invalidation, map inspection, Scenario snapshots and cross-feature navigation. A presentation-only controller would split a real shared lifecycle."
+    },
+    {
+      "name": "global store / context / state library",
+      "reason": "No demonstrated correctness problem requires it; explicit App composition and focused hooks are sufficient."
+    },
+    {
+      "name": "generic executeAnything operation",
+      "reason": "Simulation, optimization, network evaluation and historical replay have intentionally different request, result and lineage semantics. Share Run-record primitives only."
+    },
+    {
+      "name": "separate useResultController and useMapWorkspaceState hooks",
+      "reason": "Result freshness and invalidation currently span App-level RF output, map overlays, plan edits, Scenario/Version transitions and navigation. A new hook would either pass through App setters or split Concept 7G source identity from rendered state without a cohesive independent lifecycle."
+    }
+  ],
+  "implementedMajorBoundaries": [
+    "App composition root",
+    "useProjectWorkspace (existing)",
+    "useRunExecution",
+    "useReportWorkflow",
+    "useRequestCoordinator (existing)",
+    "lazy feature components and LazyFeatureBoundary (existing)"
+  ],
+  "invalidationContract": "App invalidatePlanResults remains authoritative: cancel dependent requests, clear rendered result artifacts, mark the plan dirty, and preserve currentResultRun as the historical source identity until an explicit workspace transition clears it."
+}

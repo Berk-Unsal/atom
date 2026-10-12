@@ -1,0 +1,269 @@
+{
+  "concept": "8D",
+  "priority_definitions": {
+    "PRIMARY": "Required to complete the tool’s core task or understand its main output.",
+    "SECONDARY": "Common context/refinement useful during the task.",
+    "TERTIARY": "Rare specialist, provenance, or implementation evidence retained behind an explicit details action."
+  },
+  "tools": [
+    {
+      "tool": "Command bar",
+      "PRIMARY": [
+        "Project/Scenario/Version/draft identity",
+        "active technology/frequency",
+        "status/freshness",
+        "active explicit compute action"
+      ],
+      "SECONDARY": [
+        "TX power/radius in RF details"
+      ],
+      "TERTIARY": [
+        "Long hashes and internal IDs"
+      ]
+    },
+    {
+      "tool": "Setup",
+      "PRIMARY": [
+        "Single/Network mode",
+        "technology/profile",
+        "global RF model and power",
+        "plan cell set/readiness"
+      ],
+      "SECONDARY": [
+        "Advanced model applicability"
+      ],
+      "TERTIARY": [
+        "Full model contract/provenance; Scenario management moves out"
+      ]
+    },
+    {
+      "tool": "Inventory",
+      "PRIMARY": [
+        "Cell browse/search",
+        "selected cell identity",
+        "editable RF profile and validation",
+        "place/import/duplicate/delete actions"
+      ],
+      "SECONDARY": [
+        "Source type and common profile defaults"
+      ],
+      "TERTIARY": [
+        "Pack/file hashes and full source evidence"
+      ]
+    },
+    {
+      "tool": "Scenarios (proposed Plan tool)",
+      "PRIMARY": [
+        "Scenario list/current draft",
+        "Save Version",
+        "Version history/Continue/Branch"
+      ],
+      "SECONDARY": [
+        "Version comparison and associated Run/Report counts"
+      ],
+      "TERTIARY": [
+        "Fingerprint, full lineage IDs, engine/dataset evidence"
+      ]
+    },
+    {
+      "tool": "Propagation",
+      "PRIMARY": [
+        "Ray count/radius/azimuth/beam width",
+        "Optimize Sector / Run Sector"
+      ],
+      "SECONDARY": [
+        "Optimization priority rows/constraints in network mode",
+        "Path profile"
+      ],
+      "TERTIARY": [
+        "Sub-THz/P.1411 references and long assumptions"
+      ]
+    },
+    {
+      "tool": "Optimization priorities",
+      "PRIMARY": [
+        "Objective label, direction, active weight/slider",
+        "validation and feasibility constraints"
+      ],
+      "SECONDARY": [
+        "One short always-visible meaning/help per objective"
+      ],
+      "TERTIARY": [
+        "Long scoring contract/normalized weights"
+      ]
+    },
+    {
+      "tool": "Experiments",
+      "PRIMARY": [
+        "Sweep dimensions/units",
+        "Queue matrix",
+        "idle/queued/running/completed state"
+      ],
+      "SECONDARY": [
+        "Progress, chart/table comparison"
+      ],
+      "TERTIARY": [
+        "Full definition/fingerprint/download after generated"
+      ]
+    },
+    {
+      "tool": "Signal surface",
+      "PRIMARY": [
+        "Generate/current status",
+        "surface visualization controls"
+      ],
+      "SECONDARY": [
+        "Threshold/opacity/export"
+      ],
+      "TERTIARY": [
+        "Grid metadata and calculation details"
+      ]
+    },
+    {
+      "tool": "Interference",
+      "PRIMARY": [
+        "Applicability",
+        "network requirements",
+        "Analyze action",
+        "current result summary"
+      ],
+      "SECONDARY": [
+        "SINR/RSRP/RSRQ selector and model controls"
+      ],
+      "TERTIARY": [
+        "Full model assumptions/source Run detail"
+      ]
+    },
+    {
+      "tool": "RF Diagnostics",
+      "PRIMARY": [
+        "Open current canonical RF result",
+        "Open vertical path profile",
+        "Research/Reference boundary"
+      ],
+      "SECONDARY": [
+        "One selected internal view: Validation, Materials, or Reflection"
+      ],
+      "TERTIARY": [
+        "Detailed standards/material coefficients and validation evidence"
+      ]
+    },
+    {
+      "tool": "Building Entry",
+      "PRIMARY": [
+        "Scope/limitations",
+        "one estimate action",
+        "one empty/result state"
+      ],
+      "SECONDARY": [
+        "Representative building and current service metrics"
+      ],
+      "TERTIARY": [
+        "Per-building evidence ledger and full diagnostics"
+      ]
+    },
+    {
+      "tool": "5G Core",
+      "PRIMARY": [
+        "Applicability, overlay toggle, connection state"
+      ],
+      "SECONDARY": [
+        "Path/scenario summary and action"
+      ],
+      "TERTIARY": [
+        "Verbose events and container-start command"
+      ]
+    },
+    {
+      "tool": "Results RF/Interference",
+      "PRIMARY": [
+        "Result kind/freshness/source",
+        "key outcome metrics",
+        "map/source identity"
+      ],
+      "SECONDARY": [
+        "More metrics and a small explanation"
+      ],
+      "TERTIARY": [
+        "Hashes, full engine/model provenance"
+      ]
+    },
+    {
+      "tool": "Results Optimization",
+      "PRIMARY": [
+        "Network evaluation vs optimization label",
+        "score and feasibility",
+        "four primary objectives",
+        "recommended/selected state"
+      ],
+      "SECONDARY": [
+        "More metrics, per-cell configuration deltas, explanation"
+      ],
+      "TERTIARY": [
+        "Source fingerprint, optimizer contract, engine IDs"
+      ]
+    },
+    {
+      "tool": "Run History",
+      "PRIMARY": [
+        "Run filters/list and selected Run status/type/time/source"
+      ],
+      "SECONDARY": [
+        "Retained summary, rerun/report/source actions"
+      ],
+      "TERTIARY": [
+        "Fingerprints, model contract, raw summary, public solution metadata"
+      ]
+    },
+    {
+      "tool": "Data",
+      "PRIMARY": [
+        "Data quality",
+        "Buildings/POI demand/Residential summary",
+        "active dataset name/version"
+      ],
+      "SECONDARY": [
+        "Installed packs and QA",
+        "Measurements & calibration as a distinct explicit evidence workflow"
+      ],
+      "TERTIARY": [
+        "Model/app versions, hashes/licenses/full sources/CLI; keep developer commands behind Developer details"
+      ]
+    },
+    {
+      "tool": "Reports",
+      "PRIMARY": [
+        "Report source context",
+        "PDF/Print and Markdown actions",
+        "created/stored reports"
+      ],
+      "SECONDARY": [
+        "Selected artifact and source Run/Version"
+      ],
+      "TERTIARY": [
+        "Byte hashes, generator IDs, storage detail"
+      ]
+    },
+    {
+      "tool": "Contextual inspector",
+      "PRIMARY": [
+        "Selected entity header",
+        "3–6 key facts",
+        "exact current/stale/historical source",
+        "1–3 contextual actions"
+      ],
+      "SECONDARY": [
+        "Relevant current result facts/explanation"
+      ],
+      "TERTIARY": [
+        "Details/Provenance disclosure"
+      ]
+    }
+  ],
+  "empty_state_contract": [
+    "State what is missing.",
+    "State why it is missing or unavailable.",
+    "Offer one safe next action.",
+    "Do not show a second empty detail panel that asks the user to select an item when no items exist."
+  ]
+}

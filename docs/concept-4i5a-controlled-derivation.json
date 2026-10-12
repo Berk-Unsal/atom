@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "concept": "4I.5A",
+  "title": "Controlled 140 GHz specular reflection geometry and composition derivation",
+  "artifact": "controlled-derivation",
+  "captured_at": "2026-09-18",
+  "purpose": "Audit-only equations and numerical fixtures. This file is not a runtime evaluator and contains no production reflection implementation.",
+  "constants": {
+    "frequency_ghz": 140,
+    "frequency_hz": 140000000000,
+    "speed_of_light_m_per_s": 299792458,
+    "wavelength_m": 0.0021413747,
+    "wavelength_mm": 2.1413747,
+    "phase_change_per_mm_deg": 168.11630397986863,
+    "phase_change_per_cm_deg": 1681.1630397986864
+  },
+  "references": [
+    {
+      "name": "ITU-R P.2040-4",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf",
+      "use": "complex interface/slab coefficients and TE/TM conventions"
+    },
+    {
+      "name": "ITU-R P.525-5",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf",
+      "use": "free-space field/power spreading"
+    },
+    {
+      "name": "ITU-R P.1410-4",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.1410-4-200702-S!!PDF-E.pdf",
+      "use": "official single-bounce urban reflection and separate diffuse-scatter analogue"
+    },
+    {
+      "name": "ITU Radiocommunication Handbook",
+      "url": "https://www.itu.int/dms_pub/itu-r/opb/hdb/R-HDB-27-1996-PDF-E.pdf",
+      "use": "Rayleigh roughness criterion"
+    }
+  ],
+  "geometry_derivation": {
+    "coordinate_system": "local ENU metres; facade is a vertical plane",
+    "plane": "n·(x-p0)=0, with unit normal n and a point p0 on the facade",
+    "mirror_source": "Tx_i = Tx - 2 n [n·(Tx-p0)]",
+    "intersection_parameter": "t = -n·(Tx_i-p0) / n·(Rx-Tx_i)",
+    "intersection": "S = Tx_i + t (Rx-Tx_i)",
+    "path_lengths": {
+      "incident": "d1 = |Tx-S|",
+      "reflected": "d2 = |S-Rx|",
+      "total": "L = d1+d2 = |Tx_i-Rx|"
+    },
+    "validity_gates": [
+      "n·(Tx-p0) > 0 and n·(Rx-p0) > 0 for the selected exterior side",
+      "denominator is finite and non-zero",
+      "0 <= t <= 1",
+      "horizontal S lies within the selected finite edge parameter [0,1]",
+      "vertical S lies within [base_z, top_z] with known or explicitly declared bounds",
+      "both legs pass independent visibility/obstruction checks"
+    ],
+    "angle_invariant": "theta_i = acos(|k_i·n|), theta_r = acos(|k_r·n|), and theta_i=theta_r for the image construction",
+    "test_evidence": "backend-go/raytracer/concept_4i5a_reflection_audit_test.go"
+  },
+  "spreading_comparison": {
+    "candidate_a_two_fspl": {
+      "formula": "FSPL(d1)+FSPL(d2)",
+      "decision": "rejected for ideal infinite/large planar specular reflection with dimensionless Gamma",
+      "field_power_issue": "It applies two independent point-to-point power factors and has no finite-area/RCS normalization; it also duplicates the 4pi/lambda constants.",
+      "controlled_value_db": 224.72008795761664
+    },
+    "candidate_b_image_path": {
+      "formula": "FSPL(d1+d2)=20 log10(4 pi L/lambda)",
+      "decision": "selected for the ideal-planar reference branch",
+      "field_form": "E_ref proportional to Gamma exp(-j k L)/L",
+      "controlled_value_db": 118.38064389208795
+    },
+    "candidate_c_image_source": {
+      "formula": "virtual Tx image and one spherical wave over L=|Tx_i-Rx|",
+      "decision": "geometry and field representation underlying candidate B",
+      "field_factor": 0.0000012049466133850177,
+      "limitation": "finite facade size and edge diffraction are not automatically captured"
+    },
+    "candidate_d_finite_facet_or_rcs": {
+      "formula": "finite physical-optics, aperture, BRDF, or RCS model with explicit area/shape/statistics",
+      "decision": "deferred and not interchangeable with candidate B",
+      "limitation": "requires reflector extent, roughness/correlation, observation geometry, and a sourced model"
+    },
+    "controlled_difference": {
+      "two_fspl_minus_image_fspl_db": 106.3394440655287,
+      "naive_two_leg_field_product": 0.000000000005807585364432093,
+      "interpretation": "The two-FSPL result is not a harmless alternative rounding; it is a different physical model and is rejected for the ideal mirror contract."
+    }
+  },
+  "p2040_composition": {
+    "field_contract": "E_ref = E_propagation(L) * Gamma_{TE/TM} * exp(-j k L) * directional_terms",
+    "power_contract": "P_ref = P_propagation(L) * |Gamma_{TE/TM}|^2 * Gt(direction) * Gr(direction) * other_declared_power_terms",
+    "once_only_rule": "The complex Gamma is applied once in field form, or |Gamma|^2 once in power form. Do not apply a reflection coefficient and then subtract a separate reflection-loss dB term again.",
+    "interface_mode": "Use the front-interface coefficient r_TE or r_TM for a declared semi-infinite/opaque surface or when rear-interface coherence cannot be supported.",
+    "slab_mode": "Use P.2040 total R_TE or R_TM only with explicit thickness, rear medium, layer stack, phase/coherence, angle and polarization evidence.",
+    "unknown_mode": "Return slab_coherence_unknown or interface_only with qualification; never silently choose a slab.",
+    "power_conservation_note": "P.2040 reflected/transmitted power accounting requires the appropriate impedance/flux correction; the reflected-path reference uses the reflected field coefficient and does not add slab transmission."
+  },
+  "direction_and_polarization": {
+    "tx_direction": "k_departure = normalize(S-Tx)",
+    "rx_direction": "k_arrival = normalize(S-Rx) for the receiver look direction toward the reflector; the propagation direction after reflection is normalize(Rx-S)",
+    "antenna_rule": "Evaluate Tx and Rx patterns at these reflected directions independently. Direct-path bearing and attenuation must not be reused.",
+    "incidence_plane": "span(k_incident, n), where k_incident=normalize(S-Tx)",
+    "te_basis": "s = normalize(cross(n,k_incident)) up to deterministic sign",
+    "tm_basis": "p = normalize(cross(s,k_incident)) or the equivalent tangential p basis",
+    "normal_incidence": "The incidence plane is not unique; choose a deterministic projected global ENU basis and note that TE/TM amplitudes are equal at normal incidence.",
+    "user_polarization": "H/V cannot be mapped directly to TE/TM. Arbitrary polarization needs vector decomposition and transport; first 4I.5B scope should require explicit TE or TM.",
+    "existing_4g1_boundary": "Current analytic pattern APIs are scalar horizontal/vertical attenuation helpers, not a measured 3D 140 GHz aperture/codebook. A future adapter must preserve true departure/arrival direction."
+  },
+  "facade_and_visibility": {
+    "footprint_edge_provides": ["2D tangent", "2D candidate normal", "finite horizontal segment bounds"],
+    "footprint_edge_does_not_prove": ["vertical wall plane", "base elevation", "top elevation", "setback/overhang/openings", "surface material", "thickness", "roughness", "reflecting side in a complex multipart facade"],
+    "normal_orientation": "For local ENU shoelace area A>0 (CCW exterior), outward edge normal is (dy,-dx); for A<0 (CW exterior), outward is (-dy,dx). Validate against an interior point and reject ambiguous rings. Holes are not exterior facade segments; each MultiPolygon component is treated separately.",
+    "vertical_point": "A vertical plane preserves z during mirroring; S.z is obtained from the 3D intersection and must be inside an evidence-backed base/top interval.",
+    "self_obstruction": "The reflecting building may be exempted only at the endpoint S. Positive-length penetration behind S, an unrelated edge, or a non-endpoint tangent/grazing contact remains blocking under deterministic conservative rules.",
+    "visibility": "Check Tx->S and S->Rx separately; do not use direct-path visibility as a substitute."
+  },
+  "controlled_fixtures": [
+    {
+      "id": "A",
+      "name": "symmetric normal-incidence reflection",
+      "inputs": "plane x=0, normal +x, Tx=(20,0,5), Rx=(40,0,5), segment y/z includes (0,0,5)",
+      "expected": "S=(0,0,5), theta_i=theta_r=0°, finite segment and height pass"
+    },
+    {
+      "id": "B",
+      "name": "symmetric oblique reflection",
+      "inputs": "plane x=0, normal +x, Tx=(50,-50,10), Rx=(50,50,10), segment y∈[-10,10], z∈[0,20]",
+      "expected": "S=(0,0,10), d1=d2=70.710678 m, theta_i=theta_r=45°"
+    },
+    {
+      "id": "C",
+      "name": "reflection point outside segment",
+      "inputs": "fixture B with finite segment y∈[1,10]",
+      "expected": "inapplicable; reason specular_point_outside_facade_segment"
+    },
+    {
+      "id": "D",
+      "name": "wall too short vertically",
+      "inputs": "fixture B with top_z=5 m",
+      "expected": "inapplicable; reason specular_point_outside_vertical_extent"
+    },
+    {
+      "id": "E",
+      "name": "unknown wall height",
+      "inputs": "fixture B with no trusted/user-declared top_z",
+      "expected": "unknown; reason vertical_extent_unknown; no fallback height"
+    },
+    {
+      "id": "F",
+      "name": "blocked first leg",
+      "inputs": "fixture B plus an independent opaque obstacle crossing Tx->S at positive distance from S",
+      "expected": "blocked; reason first_leg_obstructed; reflecting endpoint exemption does not apply to the obstacle"
+    },
+    {
+      "id": "G",
+      "name": "blocked second leg",
+      "inputs": "fixture B plus an independent opaque obstacle crossing S->Rx at positive distance from S",
+      "expected": "blocked; reason second_leg_obstructed"
+    },
+    {
+      "id": "H",
+      "name": "TE/TM material difference",
+      "inputs": "lossless air-to-epsilon_r=4 interface at 45°",
+      "expected": "TE |Gamma|^2=0.20377661238703051; TM |Gamma|^2=0.04152490775593412"
+    },
+    {
+      "id": "I",
+      "name": "zero/near-zero reflection material",
+      "inputs": "identical air media, epsilon_r=1",
+      "expected": "Gamma_TE=Gamma_TM=0; reflected power is zero/inapplicable as a useful path"
+    },
+    {
+      "id": "J",
+      "name": "high-reflection material",
+      "inputs": "lossless air-to-epsilon_r=100 interface at 45°",
+      "expected": "large nonzero TE reflection coefficient; no claim that this is an Ankara facade"
+    }
+  ],
+  "hand_checkable_140ghz_example": {
+    "declaration": "Controlled ideal planar facade; not Ankara geometry and not a calibrated material claim.",
+    "frequency_ghz": 140,
+    "tx_power_dbm": 30,
+    "antenna_gains_dbi": {"tx": 0, "rx": 0},
+    "polarization": ["TE", "TM"],
+    "facade": {
+      "plane": "x=0",
+      "normal": [1, 0, 0],
+      "exterior_half_space": "x>0",
+      "horizontal_segment": "y∈[-10,10] m",
+      "vertical_extent": "z∈[0,20] m",
+      "material_declaration": "lossless semi-infinite epsilon_r=4, air on incident side",
+      "coefficient_mode": "front interface, not finite slab"
+    },
+    "tx": [50, -50, 10],
+    "rx": [50, 50, 10],
+    "mirrored_tx": [-50, -50, 10],
+    "reflection_point": [0, 0, 10],
+    "d1_m": 70.71067811865476,
+    "d2_m": 70.71067811865476,
+    "total_path_m": 141.4213562373095,
+    "incidence_angle_deg": 45,
+    "reflection_angle_deg": 45,
+    "p525_fspl_total_path_db": 118.38064389208795,
+    "p525_fspl_each_leg_db": 112.36004397880832,
+    "two_leg_fspl_sum_db_rejected": 224.72008795761664,
+    "te": {
+      "cos_incident": 0.7071067811865476,
+      "cos_transmitted": 0.9354143466934853,
+      "gamma": -0.4514162296451364,
+      "reflected_power_fraction": 0.20377661238703051,
+      "reflection_loss_db": 6.9084566181195415,
+      "single_reflected_path_rx_dbm": -95.28910051020749
+    },
+    "tm": {
+      "cos_incident": 0.7071067811865476,
+      "cos_transmitted": 0.9354143466934853,
+      "gamma": 0.20377661238703063,
+      "reflected_power_fraction": 0.04152490775593412,
+      "reflection_loss_db": 13.81691323623908,
+      "single_reflected_path_rx_dbm": -102.19755712832702
+    },
+    "equation": "Pr_ref_dBm = Pt_dBm + Gt_dBi + Gr_dBi - 20log10(4piL/lambda) + 10log10(|Gamma|^2)",
+    "interpretation": "This is an isolated reflected-path reference power. It is not direct-plus-reflected total power, not a whole-building loss, and not a validated Ankara result."
+  },
+  "fresnel_and_reflector_scale": {
+    "first_fresnel_radius_formula": "r_F = sqrt(lambda*d1*d2/(d1+d2))",
+    "representative_values_m": [
+      {"d1_m": 50, "d2_m": 50, "r_f_m": 0.23137495002700703},
+      {"d1_m": 100, "d2_m": 100, "r_f_m": 0.3272135923215905},
+      {"d1_m": 200, "d2_m": 200, "r_f_m": 0.46274990005401406},
+      {"d1_m": 30, "d2_m": 70, "r_f_m": 0.2120586444830769},
+      {"d1_m": 10, "d2_m": 90, "r_f_m": 0.13882497001620422}
+    ],
+    "policy": "Use the Fresnel footprint as a qualification/evidence check, not an invented universal minimum facade width or height. A finite-facet model is required when the facade does not cover the relevant zone."
+  },
+  "roughness": {
+    "criterion": "g = 4 pi sigma_h/lambda * sin(grazing_angle) = 4 pi sigma_h/lambda * cos(incidence_angle)",
+    "smooth_reference": "g<0.3",
+    "maximum_rms_height_for_g_lt_0p3_m": [
+      {"incidence_angle_deg": 0, "sigma_h_m": 0.000051121555277538665},
+      {"incidence_angle_deg": 45, "sigma_h_m": 0.00007229679680310105},
+      {"incidence_angle_deg": 60, "sigma_h_m": 0.0001022431105550773},
+      {"incidence_angle_deg": 75, "sigma_h_m": 0.00019751852209055527}
+    ],
+    "required_evidence": ["RMS height within relevant Fresnel zone", "incidence angle", "surface correlation length/texture where diffuse partition matters", "surface tilt/curvature and construction variation"],
+    "unknown_policy": "specularity_evidence=unknown and qualified result; never invent an Ankara roughness value"
+  },
+  "far_field": {
+    "antenna_bound": "R_ff ≈ 2D^2/lambda",
+    "bounds_at_140ghz_m": [
+      {"aperture_d_m": 0.1, "far_field_range_m": 9.33979466554826},
+      {"aperture_d_m": 0.2, "far_field_range_m": 37.35917866219304},
+      {"aperture_d_m": 0.3, "far_field_range_m": 84.05815198993432}
+    ],
+    "unknown_aperture": "Antenna far-field validity cannot be proven from gain alone; do not manufacture D from gain.",
+    "surface_assumption": "The facade must also be locally planar and sufficiently extended for the selected image/GO approximation; curvature and finite aperture are separate evidence gates."
+  },
+  "composition": {
+    "atmosphere": "If future input supplies P.676/P.838/P.840 specific losses, integrate leg 1 and leg 2 separately; for homogeneous conditions A_atm_total=A_leg1+A_leg2=gamma_specific*(d1+d2).",
+    "p1411": "Alternative statistical branch; do not add its median to this path.",
+    "p526": "Alternative diffraction diagnostic; do not add its loss to this path.",
+    "research_sub_thz": "Alternative FSPL plus 80 dB/event compatibility branch; do not add it.",
+    "coherent_sum": "Excluded from first scope. If authorized later, E_total=E_direct+E_reflected requires complex phase, antenna phase, reflection phase, polarization vector, coherence and bandwidth handling.",
+    "bandwidth_example": "A 1 GHz bandwidth has a free-space coherence-length scale of about c/B=0.3 m; any averaging policy must be explicit."
+  },
+  "decision": {
+    "path_spreading_unambiguous": true,
+    "gamma_composition_clean": true,
+    "single_reflected_path_reference_defensible": true,
+    "canonical_coherent_multipath_defensible": false,
+    "4i5b_recommendation": "go_with_gates_for_reference_only",
+    "4i5b_scope": "one planar vertical facade, one finite segment, one isolated reflected path, explicit height/material/thickness or interface mode, explicit TE/TM, direction-aware antenna terms, two-leg visibility, no diffuse scattering, no direct-plus-reflected sum, no network coupling"
+  }
+}

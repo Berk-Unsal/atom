@@ -1,0 +1,145 @@
+{
+  "reproducedWorkflow": "Six Cells / Evaluate / Interference / Optimize / Save Version / UI download",
+  "beforeBytes": 31156171,
+  "beforeCompactJSONBytes": 14935989,
+  "afterBytes": 2744530,
+  "beforeStructure": {
+    "nodes": 578091,
+    "depth": 15,
+    "largestArray": 6542,
+    "largestObject": 48
+  },
+  "afterStructure": {
+    "nodes": 84327,
+    "depth": 32,
+    "largestArray": 3153,
+    "largestObject": 48
+  },
+  "composition": [
+    {
+      "name": "Project metadata",
+      "bytes": 180,
+      "percentage": 0.0005777346645067521
+    },
+    {
+      "name": "Project working draft / input state",
+      "bytes": 4976,
+      "percentage": 0.01597115383658666
+    },
+    {
+      "name": "Scenario metadata, summary, dataset/model provenance",
+      "bytes": 695,
+      "percentage": 0.0022306977324010706
+    },
+    {
+      "name": "Scenario network / inventory inputs",
+      "bytes": 5343,
+      "percentage": 0.017149090624775425
+    },
+    {
+      "name": "Scenario RF request",
+      "bytes": 10109,
+      "percentage": 0.032446220686104206
+    },
+    {
+      "name": "Versions / embedded domain metadata",
+      "bytes": 24004,
+      "percentage": 0.07704412714900044
+    },
+    {
+      "name": "Merged per-Cell ray features (geometry + scientific properties)",
+      "bytes": 30908955,
+      "percentage": 99.20652637321832
+    },
+    {
+      "name": "RF statistics",
+      "bytes": 177,
+      "percentage": 0.0005681057534316395
+    },
+    {
+      "name": "Optimization baseline",
+      "bytes": 20344,
+      "percentage": 0.06529685563736314
+    },
+    {
+      "name": "Public Pareto alternatives",
+      "bytes": 135446,
+      "percentage": 0.4347324964932308
+    },
+    {
+      "name": "Other optimization result / evidence",
+      "bytes": 44102,
+      "percentage": 0.14155141207820435
+    },
+    {
+      "name": "Interference (cleared by optimization in this workflow)",
+      "bytes": 297,
+      "percentage": 0.000953262196436141
+    },
+    {
+      "name": "Other retained artifacts",
+      "bytes": 171,
+      "percentage": 0.0005488479312814146
+    },
+    {
+      "name": "JSON keys, containers, separators and remaining whitespace",
+      "bytes": 1372,
+      "percentage": 0.0044036219983514665
+    }
+  ],
+  "rayDetails": {
+    "features": 6542,
+    "perCell": {
+      "26390": 706,
+      "9664790": 1004,
+      "9664791": 1250,
+      "9664794": 1250,
+      "9664795": 1239,
+      "9664800": 1093
+    },
+    "geometryFragmentBytes": 2535770,
+    "losClassification": {
+      "occurrences": 6542,
+      "distinctValues": 2242
+    },
+    "linkBudget": {
+      "occurrences": 6542,
+      "distinctValues": 3339
+    }
+  },
+  "benchmark": {
+    "runtime": "v26.8.1",
+    "samples": [
+      {
+        "oldPrettyExportMs": 35.92904200000001,
+        "packedExportMs": 424.685083,
+        "completeImportMs": 282.15370799999994,
+        "oldBytes": 31156171
+      },
+      {
+        "oldPrettyExportMs": 30.396208,
+        "packedExportMs": 398.70329200000003,
+        "completeImportMs": 284.497208,
+        "oldBytes": 31156171
+      },
+      {
+        "oldPrettyExportMs": 28.44724999999994,
+        "packedExportMs": 379.99695899999983,
+        "completeImportMs": 277.393916,
+        "oldBytes": 31156171
+      },
+      {
+        "oldPrettyExportMs": 28.43641600000001,
+        "packedExportMs": 377.3912500000001,
+        "completeImportMs": 275.5060840000001,
+        "oldBytes": 31156171
+      },
+      {
+        "oldPrettyExportMs": 28.196082999999817,
+        "packedExportMs": 394.1384579999999,
+        "completeImportMs": 285.8427920000004,
+        "oldBytes": 31156171
+      }
+    ]
+  }
+}

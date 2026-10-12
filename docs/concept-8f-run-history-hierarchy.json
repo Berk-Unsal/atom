@@ -1,0 +1,31 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "model": "One drawer with list and selected Run detail states.",
+  "list": [
+    "filters",
+    "compact type/status/time/Scenario-Version row and useful short ID",
+    "one actionable empty state"
+  ],
+  "detail": [
+    "Back to Run history",
+    "status/type/date/source summary",
+    "retained result",
+    "applicable actions",
+    "exact Run public optimization solutions",
+    "Details / Provenance"
+  ],
+  "focus": "Detail Back returns focus to the selected Run row.",
+  "emptyState": {
+    "title": "No saved Runs yet",
+    "description": "Run a simulation or optimization to create one."
+  },
+  "actionRules": [
+    "Run again only when a canonical input snapshot is available and dataset guards pass.",
+    "Generate Report only for eligible successful Runs with a source Version.",
+    "Apply only to applicable retained optimization solutions and existing Version/branch guards.",
+    "Delete remains subject to existing reference protections."
+  ],
+  "persistence": "Run record schema, ordering, identity, historical rerun, solution IDs, and report source binding are unchanged."
+}

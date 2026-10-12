@@ -1,0 +1,79 @@
+{
+  "concept": "4H.1",
+  "title": "Interference and radio-quality contract post-change canonical audit",
+  "artifact": "post-change-comparison",
+  "captured_at": "2026-09-18",
+  "scenario_fingerprint": "interference-e744d8d2b53e26bb922c39386858db95",
+  "command": "ATOM_DATASET_DIR=/Users/berkunsal/Desktop/urban-ray-tracer/data-pipeline ATOM_RUN_CANONICAL_4H1=1 go test ./raytracer -run TestCanonicalAnkaraInterferenceContractAfterChange -count=1 -v",
+  "canonical_six_cell_28ghz": {
+    "tower_ids": ["LTE-35084", "LTE-35104", "LTE-35877", "LTE-313100", "LTE-313110", "LTE-322828"],
+    "measurement_family": "nr_ss",
+    "resource_blocks": 66,
+    "noise_bandwidth_hz": 120000,
+    "noise_bandwidth_source": "subcarrier_spacing_resource",
+    "signal_samples": 205,
+    "no_signal_count": 1351,
+    "serviceable_samples": 181,
+    "serviceable_pct": 11.6,
+    "serviceable_fraction": 0.9,
+    "avg_rsrp_dbm": -88.3,
+    "p10_rsrp_dbm": -117.4,
+    "avg_sinr_db": 24.9,
+    "p10_sinr_db": -1.2,
+    "median_sinr_db": 31.1,
+    "avg_rsrq_db": -13.1,
+    "p10_rsrq_db": -14.4,
+    "interference_limited_count": 0,
+    "demand_candidates": 996,
+    "affected_demand_buildings": 835,
+    "affected_demand": 16321,
+    "outage_by_reason": {
+      "no_eligible_carrier": 991,
+      "rsrp_below_threshold": 24,
+      "rsrq_below_threshold": 20,
+      "sinr_below_threshold": 21,
+      "serving_cell_unavailable": 360
+    }
+  },
+  "contract": {
+    "co_channel_eligibility_rule": "exact channel_id, frequency_ghz, bandwidth_mhz, and technology match",
+    "rsrp_conversion_id": "uniform-carrier-to-reference-resource-v1",
+    "serving_selection_mode": "automatic_strongest_eligible",
+    "optimization_coupling": "diagnostic-only; no radio-quality KPI feeds canonical optimization",
+    "serving_admission_rule": "serving selection requires strict received_carrier_power_dbm > the effective per-cell receiver sensitivity; finite non-serving signals are still eligible for co-channel interference",
+    "interference_horizon_source": "effective_cell_profile.radius_m",
+    "interference_horizon_meters": [400, 400, 400, 400, 400, 400]
+  },
+  "sub_sensitivity_interference": {
+    "samples_with_contribution": 27,
+    "samples_with_only_sub_sensitivity": 27,
+    "removed_loaded_interference_mw": 1.7117269467633715e-14,
+    "max_interference_dbm": -146.55402909039054,
+    "max_sinr_delta_db": 0.004008664477083812
+  },
+  "canonical_optimizer_invariance": {
+    "baseline": {
+      "demand": 185,
+      "residential": 28,
+      "propagation_reach": 16013.3051,
+      "overlap": 0.098361,
+      "score": 33.7894
+    },
+    "optimized": {
+      "demand": 555,
+      "residential": 43,
+      "propagation_reach": 19548.691,
+      "overlap": 0,
+      "score": 41.1715
+    },
+    "recommended_solution_id": "70.0,20.0,130.0,160.0,290.0,110.0",
+    "pareto_frontier_size": 6,
+    "unchanged_from_canonical_baseline": true
+  },
+  "compatibility_assessment": {
+    "canonical_optimizer": "exact stored baseline/optimized metrics and Pareto recommendation retained",
+    "propagation_and_raw_surfaces": "unchanged code path; no radio-quality value feeds canonical propagation scoring",
+    "receiver_sensitivity": "remains a strict raw-carrier admission gate and is not added to the SINR denominator",
+    "pre_change_reference": "docs/concept-4h1-pre-change-baseline.json and the preceding Concept 4G.2 worktree baseline; aggregate counts are not treated as a direct 4H-only diff because the pre-change worktree already contained Concept 4G.2 changes"
+  }
+}

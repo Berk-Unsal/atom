@@ -1,0 +1,681 @@
+{
+  "audit_version": "concept-5d-audit-v1",
+  "five_b_is_opt_in": true,
+  "five_c_is_opt_in": true,
+  "legacy_default_after": {
+    "scenario_fingerprint": "network-e467f206675585a31b59d66233481d5c",
+    "scenario_schema_version": "atom-scenario-v1",
+    "optimization_run_id": "network-opt-9931e1e39973738e46533aae",
+    "baseline_azimuths": [
+      0,
+      180
+    ],
+    "optimized_azimuths": [
+      70,
+      260
+    ],
+    "baseline_score": 67.0833,
+    "optimized_score": 91.25,
+    "baseline_raw_metrics": {
+      "served_weighted_demand": 8,
+      "served_demand_weight": 8,
+      "total_weighted_demand": 30,
+      "relevant_demand_weight": 30,
+      "residential_covered": 5,
+      "residential_total": 12,
+      "relevant_residential_total": 12,
+      "coverage_reach_score": 2000,
+      "coverage_reach_maximum": 2000,
+      "propagation_reach_score": 2000,
+      "propagation_reach_maximum": 2000,
+      "covered_units": 5,
+      "overlap_buildings": 0,
+      "overlap_ratio": 0,
+      "radio_quality_total_samples": 0,
+      "radio_quality_serviceable_samples": 0,
+      "radio_quality_serviceable_fraction": 0
+    },
+    "optimized_raw_metrics": {
+      "served_weighted_demand": 27,
+      "served_demand_weight": 27,
+      "total_weighted_demand": 30,
+      "relevant_demand_weight": 30,
+      "residential_covered": 9,
+      "residential_total": 12,
+      "relevant_residential_total": 12,
+      "coverage_reach_score": 2000,
+      "coverage_reach_maximum": 2000,
+      "propagation_reach_score": 2000,
+      "propagation_reach_maximum": 2000,
+      "covered_units": 9,
+      "overlap_buildings": 0,
+      "overlap_ratio": 0,
+      "radio_quality_total_samples": 0,
+      "radio_quality_serviceable_samples": 0,
+      "radio_quality_serviceable_fraction": 0
+    },
+    "recommended_id": "70.0,260.0",
+    "pareto_ids": [
+      "70.0,260.0",
+      "70.0,270.0",
+      "70.0,280.0",
+      "80.0,260.0"
+    ],
+    "pareto_scores": [
+      91.25,
+      91.25,
+      91.25,
+      91.25
+    ],
+    "pareto_raw_metrics": [
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      },
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      },
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      },
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      }
+    ],
+    "optimization_domain": {
+      "source": "selected_cell_radius_union",
+      "selected_cell_count": 2,
+      "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+      "envelope_radii_meters": [
+        125,
+        125
+      ],
+      "relevant_building_entities": 12,
+      "relevant_demand_entities": 12,
+      "relevant_residential_entities": 12
+    },
+    "optimization_outcome": {
+      "objectives": [
+        {
+          "id": "demand",
+          "weight": 25
+        },
+        {
+          "id": "residential",
+          "weight": 25
+        },
+        {
+          "id": "coverage",
+          "weight": 25
+        },
+        {
+          "id": "overlap",
+          "weight": 25
+        },
+        {
+          "id": "radio_quality",
+          "weight": 0
+        }
+      ],
+      "configured_priorities": {
+        "coverage": 25,
+        "demand": 25,
+        "overlap": 25,
+        "radio_quality": 0,
+        "residential": 25
+      },
+      "normalized_weights": {
+        "coverage": 0.25,
+        "demand": 0.25,
+        "overlap": 0.25,
+        "radio_quality": 0,
+        "residential": 0.25
+      },
+      "effective_weights": {
+        "coverage": 0.25,
+        "demand": 0.25,
+        "overlap": 0.25,
+        "radio_quality": 0,
+        "residential": 0.25
+      },
+      "objective_status": {
+        "coverage": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 1,
+          "contribution": 0.25
+        },
+        "demand": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 0.9,
+          "contribution": 0.225
+        },
+        "overlap": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 1,
+          "contribution": 0.25
+        },
+        "radio_quality": {
+          "available": false,
+          "reason": "disabled",
+          "configured_priority": 0,
+          "effective_weight": 0,
+          "utility": null,
+          "contribution": null
+        },
+        "residential": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 0.75,
+          "contribution": 0.1875
+        }
+      },
+      "constraints": {},
+      "objective_score": 11300000,
+      "composite_score": 0.9125,
+      "score": 91.25,
+      "recommended_solution_id": "70.0,260.0",
+      "constraints_satisfied": true,
+      "recommended": true,
+      "violations": [],
+      "adjusted_parameters": [
+        "azimuth"
+      ],
+      "radio_quality": {
+        "enabled": false,
+        "available": false,
+        "reason": "disabled",
+        "radio_quality_domain_description": "Deterministic union grid of per-cell effective-radius disks; fixed before azimuth scoring and sampled, not a continuous-area integral",
+        "radio_quality_sample_spacing_m": 40,
+        "radio_quality_sample_ordering": "row-major grid row then column",
+        "radio_quality_domain_source": "interference_compatibility_grid_union",
+        "interference_horizon_mode": "per_cell_effective_radius",
+        "interference_horizon_description": "finite per-cell interference-analysis horizon; outside_radius means the point is beyond that cell's configured radius and is not physical zero RF power or a receiver-sensitivity result",
+        "interference_horizon_meters": [
+          125,
+          125
+        ],
+        "radio_quality_policy_id": "planning-default-v1",
+        "radio_quality_rsrp_threshold_dbm": -110,
+        "radio_quality_rsrq_threshold_db": -20,
+        "radio_quality_serviceability_rule": "serviceable = RSRP \u003e= threshold AND SINR \u003e= threshold AND RSRQ \u003e= threshold",
+        "radio_quality_serving_selection_mode": "automatic_strongest_eligible",
+        "radio_quality_serving_selection_metric": "rsrp_dbm",
+        "radio_quality_co_channel_eligibility_rule": "exact channel_id, frequency_ghz, bandwidth_mhz, and technology match",
+        "interference_horizon_bounded": true
+      }
+    },
+    "rf_contract": {
+      "model_id": "fspl-walls-2p5d-v3",
+      "model_description": "Legacy FSPL with frequency-dependent footprint wall-event loss",
+      "applied_model_id": "fspl-walls-2p5d-v3",
+      "model_family": "free-space path loss plus footprint wall events",
+      "scenario": "legacy planning compatibility",
+      "model_status": "compatibility baseline",
+      "reference": "A.T.O.M. legacy deterministic planning model",
+      "applicability": "positive finite frequency and non-negative finite link distance",
+      "fallback_model_id": "legacy_fspl_walls",
+      "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+      "los_classification_rule": "2D footprint rule: outdoor-to-outdoor paths with no footprint boundary event are LOS; one or more boundary events are NLOS; indoor transmitter/receiver and missing footprint data are not urban-applicable",
+      "building_height_note": "building height is not used by the urban baseline; only known Tx/Rx heights are used, and uncertain building height remains a separate data limitation",
+      "deterministic": true,
+      "propagation_dimensions": "2D footprint propagation with Tx/Rx height-aware FSPL",
+      "uses_terrain": false,
+      "uses_building_height": false,
+      "uses_diffraction": false,
+      "uses_reflection": false,
+      "wall_model": "frequency-dependent, material-agnostic building-boundary loss",
+      "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration",
+      "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+      "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+      "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+      "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+      "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+      "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+      "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+      "antenna_pattern_id": "ideal-sector",
+      "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+      "antenna_pattern_uses_hard_beam": true,
+      "absolute_terms": [
+        "conducted transmit power",
+        "absolute TX boresight gain",
+        "receive antenna gain",
+        "system loss",
+        "global calibration offset"
+      ],
+      "relative_attenuation_terms": [
+        "horizontal antenna attenuation",
+        "vertical antenna attenuation"
+      ],
+      "propagation_terms": [
+        "FSPL",
+        "building/wall-event loss"
+      ],
+      "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+      "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+      "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+      "building_service_threshold_dbm": -100,
+      "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+      "propagation_reach_definition": "usable receiver-power reach",
+      "surface_definition": "raw single-cell received-power surface",
+      "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+      "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+      "interference_rsrp_threshold_dbm": -110,
+      "interference_sinr_threshold_db": 0,
+      "interference_rsrq_threshold_db": -20,
+      "calibration_offset_db": 0,
+      "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+      "endpoint_scope": "canonical network RF evaluation"
+    }
+  },
+  "legacy_default_before": {
+    "scenario_fingerprint": "network-e467f206675585a31b59d66233481d5c",
+    "scenario_schema_version": "atom-scenario-v1",
+    "optimization_run_id": "network-opt-9931e1e39973738e46533aae",
+    "baseline_azimuths": [
+      0,
+      180
+    ],
+    "optimized_azimuths": [
+      70,
+      260
+    ],
+    "baseline_score": 67.0833,
+    "optimized_score": 91.25,
+    "baseline_raw_metrics": {
+      "served_weighted_demand": 8,
+      "served_demand_weight": 8,
+      "total_weighted_demand": 30,
+      "relevant_demand_weight": 30,
+      "residential_covered": 5,
+      "residential_total": 12,
+      "relevant_residential_total": 12,
+      "coverage_reach_score": 2000,
+      "coverage_reach_maximum": 2000,
+      "propagation_reach_score": 2000,
+      "propagation_reach_maximum": 2000,
+      "covered_units": 5,
+      "overlap_buildings": 0,
+      "overlap_ratio": 0,
+      "radio_quality_total_samples": 0,
+      "radio_quality_serviceable_samples": 0,
+      "radio_quality_serviceable_fraction": 0
+    },
+    "optimized_raw_metrics": {
+      "served_weighted_demand": 27,
+      "served_demand_weight": 27,
+      "total_weighted_demand": 30,
+      "relevant_demand_weight": 30,
+      "residential_covered": 9,
+      "residential_total": 12,
+      "relevant_residential_total": 12,
+      "coverage_reach_score": 2000,
+      "coverage_reach_maximum": 2000,
+      "propagation_reach_score": 2000,
+      "propagation_reach_maximum": 2000,
+      "covered_units": 9,
+      "overlap_buildings": 0,
+      "overlap_ratio": 0,
+      "radio_quality_total_samples": 0,
+      "radio_quality_serviceable_samples": 0,
+      "radio_quality_serviceable_fraction": 0
+    },
+    "recommended_id": "70.0,260.0",
+    "pareto_ids": [
+      "70.0,260.0",
+      "70.0,270.0",
+      "70.0,280.0",
+      "80.0,260.0"
+    ],
+    "pareto_scores": [
+      91.25,
+      91.25,
+      91.25,
+      91.25
+    ],
+    "pareto_raw_metrics": [
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      },
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      },
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      },
+      {
+        "served_weighted_demand": 27,
+        "served_demand_weight": 27,
+        "total_weighted_demand": 30,
+        "relevant_demand_weight": 30,
+        "residential_covered": 9,
+        "residential_total": 12,
+        "relevant_residential_total": 12,
+        "coverage_reach_score": 2000,
+        "coverage_reach_maximum": 2000,
+        "propagation_reach_score": 2000,
+        "propagation_reach_maximum": 2000,
+        "covered_units": 9,
+        "overlap_buildings": 0,
+        "overlap_ratio": 0,
+        "radio_quality_total_samples": 0,
+        "radio_quality_serviceable_samples": 0,
+        "radio_quality_serviceable_fraction": 0
+      }
+    ],
+    "optimization_domain": {
+      "source": "selected_cell_radius_union",
+      "selected_cell_count": 2,
+      "radius_policy": "cell_rf_profile_radius_m_else_request_radius_m",
+      "envelope_radii_meters": [
+        125,
+        125
+      ],
+      "relevant_building_entities": 12,
+      "relevant_demand_entities": 12,
+      "relevant_residential_entities": 12
+    },
+    "optimization_outcome": {
+      "objectives": [
+        {
+          "id": "demand",
+          "weight": 25
+        },
+        {
+          "id": "residential",
+          "weight": 25
+        },
+        {
+          "id": "coverage",
+          "weight": 25
+        },
+        {
+          "id": "overlap",
+          "weight": 25
+        },
+        {
+          "id": "radio_quality",
+          "weight": 0
+        }
+      ],
+      "configured_priorities": {
+        "coverage": 25,
+        "demand": 25,
+        "overlap": 25,
+        "radio_quality": 0,
+        "residential": 25
+      },
+      "normalized_weights": {
+        "coverage": 0.25,
+        "demand": 0.25,
+        "overlap": 0.25,
+        "radio_quality": 0,
+        "residential": 0.25
+      },
+      "effective_weights": {
+        "coverage": 0.25,
+        "demand": 0.25,
+        "overlap": 0.25,
+        "radio_quality": 0,
+        "residential": 0.25
+      },
+      "objective_status": {
+        "coverage": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 1,
+          "contribution": 0.25
+        },
+        "demand": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 0.9,
+          "contribution": 0.225
+        },
+        "overlap": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 1,
+          "contribution": 0.25
+        },
+        "radio_quality": {
+          "available": false,
+          "reason": "disabled",
+          "configured_priority": 0,
+          "effective_weight": 0,
+          "utility": null,
+          "contribution": null
+        },
+        "residential": {
+          "available": true,
+          "configured_priority": 25,
+          "effective_weight": 0.25,
+          "utility": 0.75,
+          "contribution": 0.1875
+        }
+      },
+      "constraints": {},
+      "objective_score": 11300000,
+      "composite_score": 0.9125,
+      "score": 91.25,
+      "recommended_solution_id": "70.0,260.0",
+      "constraints_satisfied": true,
+      "recommended": true,
+      "violations": [],
+      "adjusted_parameters": [
+        "azimuth"
+      ],
+      "radio_quality": {
+        "enabled": false,
+        "available": false,
+        "reason": "disabled",
+        "radio_quality_domain_description": "Deterministic union grid of per-cell effective-radius disks; fixed before azimuth scoring and sampled, not a continuous-area integral",
+        "radio_quality_sample_spacing_m": 40,
+        "radio_quality_sample_ordering": "row-major grid row then column",
+        "radio_quality_domain_source": "interference_compatibility_grid_union",
+        "interference_horizon_mode": "per_cell_effective_radius",
+        "interference_horizon_description": "finite per-cell interference-analysis horizon; outside_radius means the point is beyond that cell's configured radius and is not physical zero RF power or a receiver-sensitivity result",
+        "interference_horizon_meters": [
+          125,
+          125
+        ],
+        "radio_quality_policy_id": "planning-default-v1",
+        "radio_quality_rsrp_threshold_dbm": -110,
+        "radio_quality_rsrq_threshold_db": -20,
+        "radio_quality_serviceability_rule": "serviceable = RSRP \u003e= threshold AND SINR \u003e= threshold AND RSRQ \u003e= threshold",
+        "radio_quality_serving_selection_mode": "automatic_strongest_eligible",
+        "radio_quality_serving_selection_metric": "rsrp_dbm",
+        "radio_quality_co_channel_eligibility_rule": "exact channel_id, frequency_ghz, bandwidth_mhz, and technology match",
+        "interference_horizon_bounded": true
+      }
+    },
+    "rf_contract": {
+      "model_id": "fspl-walls-2p5d-v3",
+      "model_description": "Legacy FSPL with frequency-dependent footprint wall-event loss",
+      "applied_model_id": "fspl-walls-2p5d-v3",
+      "model_family": "free-space path loss plus footprint wall events",
+      "scenario": "legacy planning compatibility",
+      "model_status": "compatibility baseline",
+      "reference": "A.T.O.M. legacy deterministic planning model",
+      "applicability": "positive finite frequency and non-negative finite link distance",
+      "fallback_model_id": "legacy_fspl_walls",
+      "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+      "los_classification_rule": "2D footprint rule: outdoor-to-outdoor paths with no footprint boundary event are LOS; one or more boundary events are NLOS; indoor transmitter/receiver and missing footprint data are not urban-applicable",
+      "building_height_note": "building height is not used by the urban baseline; only known Tx/Rx heights are used, and uncertain building height remains a separate data limitation",
+      "deterministic": true,
+      "propagation_dimensions": "2D footprint propagation with Tx/Rx height-aware FSPL",
+      "uses_terrain": false,
+      "uses_building_height": false,
+      "uses_diffraction": false,
+      "uses_reflection": false,
+      "wall_model": "frequency-dependent, material-agnostic building-boundary loss",
+      "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration",
+      "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+      "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+      "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+      "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+      "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+      "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+      "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+      "antenna_pattern_id": "ideal-sector",
+      "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+      "antenna_pattern_uses_hard_beam": true,
+      "absolute_terms": [
+        "conducted transmit power",
+        "absolute TX boresight gain",
+        "receive antenna gain",
+        "system loss",
+        "global calibration offset"
+      ],
+      "relative_attenuation_terms": [
+        "horizontal antenna attenuation",
+        "vertical antenna attenuation"
+      ],
+      "propagation_terms": [
+        "FSPL",
+        "building/wall-event loss"
+      ],
+      "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+      "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+      "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+      "building_service_threshold_dbm": -100,
+      "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+      "propagation_reach_definition": "usable receiver-power reach",
+      "surface_definition": "raw single-cell received-power surface",
+      "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+      "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+      "interference_rsrp_threshold_dbm": -110,
+      "interference_sinr_threshold_db": 0,
+      "interference_rsrq_threshold_db": -20,
+      "calibration_offset_db": 0,
+      "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+      "endpoint_scope": "canonical network RF evaluation"
+    }
+  },
+  "legacy_default_snapshot_equal_before_after_opt_ins": true,
+  "objective_and_pareto_semantics_changed": false,
+  "opt_in_search_metadata_present": true,
+  "production_search_files_modified": [],
+  "rf_objective_semantics_unchanged": true,
+  "scenario_fingerprint_unchanged_by_search_policy": true
+}

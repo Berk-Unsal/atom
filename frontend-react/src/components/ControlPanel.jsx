@@ -1,5 +1,8 @@
 import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
+import { MAX_NETWORK_CELLS } from "../utils/networkSelection.js";
+import { defaultPropagationModelForFrequency } from "../utils/rfProfile.js";
+import OptimizationOperationFeedback from "./OptimizationOperationFeedback.jsx";
 
 export default function ControlPanel({
   activeTool,
@@ -12,9 +15,13 @@ export default function ControlPanel({
   onPlanningModeChange,
   isLoading,
   isOptimizing,
+  networkOptimizationOperation = null,
   isAnalyzingInterference,
   interferenceApplicable,
+  optimizationConfigValid = true,
   networkSelectionCount,
+  isSelectingCellsOnMap = false,
+  isDrawingSelection = false,
   planningMode,
   selectionNotice,
 }) {
@@ -26,12 +33,14 @@ export default function ControlPanel({
     onChange((current) => ({
       ...current,
       frequencyGHz: option.frequencyGHz,
+      propagationModelID: defaultPropagationModelForFrequency(option.frequencyGHz),
       interferenceBandwidthMHz: option.defaultBandwidthMHz ?? current.interferenceBandwidthMHz,
     }));
   };
 
   const activeTechnology = NETWORK_TECH_OPTIONS.find((option) => option.frequencyGHz === settings.frequencyGHz);
   const bandwidthOptions = activeTechnology?.bandwidthsMHz ?? [];
+  const advancedInterferenceCount = Number(Number(settings.noiseFigureDb) !== 7) + Number(Number(settings.sampleSpacingMeters) !== 40);
 
   if (activeTool === "setup") {
     return (
@@ -74,17 +83,34 @@ export default function ControlPanel({
                 aria-pressed={settings.frequencyGHz === option.frequencyGHz}
                 onClick={() => updateNetworkTech(option)}
               >
-                <span>{option.label}</span>
+                <span>{option.id === "6g" ? "6G research" : option.label}</span>
                 <small>{option.frequencyGHz} GHz</small>
               </button>
             ))}
           </div>
         </div>
 
+        <label className="input-row select-row">
+          <span className="input-label">Propagation model</span>
+          <span className="number-wrap">
+            <select
+              aria-label="Propagation model"
+              value={settings.propagationModelID ?? defaultPropagationModelForFrequency(settings.frequencyGHz)}
+              onChange={(event) => update("propagationModelID", event.target.value)}
+            >
+              <option value="urban_short_range">Urban short-range (UMa)</option>
+              <option value="legacy_fspl_walls">Legacy FSPL + walls</option>
+              <option value="research_sub_thz">Research sub-THz</option>
+            </select>
+          </span>
+        </label>
+        <p className="selection-note">Urban is the default at 2.6/28 GHz; 140 GHz is research-only.</p>
+
         <NumberField
           icon={<Zap size={18} />}
-          label="Transmit power"
+          label="Conducted TX power"
           suffix="dBm"
+          showRange
           min={0}
           max={60}
           step={1}
@@ -95,15 +121,21 @@ export default function ControlPanel({
         {planningMode === "network" ? (
           <div className="network-selection-tools">
             <div className="selection-summary-row">
-              <span>Selected cluster</span>
-              <strong>{networkSelectionCount} / 6 cells</strong>
+              <span>Selected network</span>
+              <strong>{networkSelectionCount} of {MAX_NETWORK_CELLS} cells selected</strong>
             </div>
-            {selectionNotice ? <p className="selection-note">{selectionNotice}</p> : null}
-            <p className="selection-note">Select cells directly on the map or use the area tool.</p>
-            <button type="button" className="selection-map-action" onClick={onFocusMap}>
-              <MapPin size={15} />
-              <span>Select cells on map</span>
-            </button>
+            <p className="selection-minimum-note">Minimum 2 · Maximum {MAX_NETWORK_CELLS}</p>
+            {isDrawingSelection ? (
+              <p className="selection-map-mode" role="status">Drawing selection area…</p>
+            ) : isSelectingCellsOnMap ? (
+              <p className="selection-map-mode" role="status">Selecting cells on map…</p>
+            ) : (
+              <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                <MapPin size={15} />
+                <span>Select cells on map</span>
+              </button>
+            )}
+            {selectionNotice ? <p className="selection-note map-selection-feedback" role="status">{selectionNotice}</p> : null}
           </div>
         ) : null}
       </section>
@@ -136,7 +168,7 @@ export default function ControlPanel({
         <RangeField
           icon={<Compass size={18} />}
           label="Azimuth"
-          suffix="deg"
+          suffix="°"
           min={0}
           max={360}
           step={1}
@@ -146,7 +178,7 @@ export default function ControlPanel({
         <RangeField
           icon={<SlidersHorizontal size={18} />}
           label="Beam width"
-          suffix="deg"
+          suffix="°"
           min={10}
           max={360}
           step={10}
@@ -170,20 +202,33 @@ export default function ControlPanel({
               type="button"
               className="optimize-button network"
               onClick={onOptimizeNetwork}
-              disabled={isLoading || isOptimizing || isAnalyzingInterference || networkSelectionCount < 2}
+              aria-busy={isOptimizing}
+              disabled={isLoading || isOptimizing || isAnalyzingInterference || networkSelectionCount < 2 || !optimizationConfigValid}
             >
-              <Sparkles size={16} className={isOptimizing ? "spin" : ""} />
-              <span>{isOptimizing ? "Optimizing..." : "Optimize Network"}</span>
+              <Sparkles size={16} aria-hidden="true" />
+              <span>{isOptimizing ? "Optimizing network…" : "Optimize Network"}</span>
             </button>
           )}
+          {planningMode === "network" ? (
+            <div className="optimization-operation-slot">
+              {networkOptimizationOperation ? <OptimizationOperationFeedback key={networkOptimizationOperation.startedAt} operation={networkOptimizationOperation} /> : null}
+            </div>
+          ) : null}
           {planningMode === "network" && networkSelectionCount < 2 ? (
             <>
               <p className="selection-note">Select at least two cells before optimization.</p>
-              <button type="button" className="selection-map-action" onClick={onFocusMap}>
-                <MapPin size={15} />
-                <span>Select cells on map</span>
-              </button>
+              {isSelectingCellsOnMap ? (
+                <p className="selection-map-mode" role="status">Selecting cells on map…</p>
+              ) : (
+                <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                  <MapPin size={15} />
+                  <span>Select cells on map</span>
+                </button>
+              )}
             </>
+          ) : null}
+          {planningMode === "network" && networkSelectionCount >= 2 && !optimizationConfigValid ? (
+            <p className="selection-note">Set an optimization priority above 0 before running.</p>
           ) : null}
         </div>
       </section>
@@ -195,7 +240,7 @@ export default function ControlPanel({
       return (
         <ToolReadinessState
           actionLabel="Switch to Network mode"
-          description="Interference compares serving and co-channel cells, so it needs a network cluster of two to six cells."
+          description="Interference compares serving and co-channel cells, so it needs a network cluster of two to eight cells."
           onAction={() => onPlanningModeChange("network")}
           title="Network mode required"
         />
@@ -207,15 +252,16 @@ export default function ControlPanel({
       return (
         <ToolReadinessState
           actionLabel="Use 5G mmWave"
-          description="The current 6G mode is a propagation research overlay and does not expose SINR, RSRP, or RSRQ analysis."
+          description="The current 6G research profile is a 140 GHz propagation planning overlay and does not expose SINR, RSRP, or RSRQ analysis."
           onAction={() => updateNetworkTech(nrOption)}
-          title="Not available in 6G mode"
+          title="Radio quality · UNSUPPORTED for 6G research profile"
         />
       );
     }
 
     return (
       <section className="control-panel focused-control-panel interference-control" aria-label="Interference controls">
+            <p className="data-note">Propagation results describe received power and coverage. Radio-quality analysis separately estimates load-adjusted RSRP, SINR, and RSRQ across the selected cells.</p>
             <label className="input-row select-row">
               <span className="input-label">Bandwidth</span>
               <span className="number-wrap">
@@ -257,7 +303,7 @@ export default function ControlPanel({
               </div>
             </div>
             <details className="advanced-settings">
-              <summary>Advanced assumptions</summary>
+              <summary>Advanced assumptions{advancedInterferenceCount > 0 ? ` · ${advancedInterferenceCount} configured` : " · No additional configuration"}</summary>
               <NumberField
                 icon={<Activity size={18} />}
                 label="Noise figure"
@@ -292,10 +338,14 @@ export default function ControlPanel({
               {networkSelectionCount < 2 ? (
                 <>
                   <p className="selection-note">Requires at least two selected cells.</p>
-                  <button type="button" className="selection-map-action" onClick={onFocusMap}>
-                    <MapPin size={15} />
-                    <span>Select cells on map</span>
-                  </button>
+                  {isSelectingCellsOnMap ? (
+                    <p className="selection-map-mode" role="status">Selecting cells on map…</p>
+                  ) : (
+                    <button type="button" className="selection-map-action" onClick={onFocusMap}>
+                      <MapPin size={15} />
+                      <span>Select cells on map</span>
+                    </button>
+                  )}
                 </>
               ) : null}
             </div>
@@ -319,7 +369,7 @@ function ToolReadinessState({ actionLabel, description, onAction, title }) {
   );
 }
 
-function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
+function NumberField({ icon, label, suffix, min, max, step, value, onChange, showRange = false }) {
   return (
     <label className="input-row">
       <span className="input-label">{icon}{label}</span>
@@ -335,6 +385,7 @@ function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
         />
         <small>{suffix}</small>
       </span>
+      {showRange ? <span className="field-support">Valid range: {min}–{max} {suffix}</span> : null}
     </label>
   );
 }
@@ -342,7 +393,7 @@ function NumberField({ icon, label, suffix, min, max, step, value, onChange }) {
 function RangeField({ icon, label, suffix, min, max, step, value, onChange }) {
   return (
     <label className="range-row">
-      <span className="input-label">{icon}{label}<strong>{value}{suffix ? ` ${suffix}` : ""}</strong></span>
+      <span className="input-label">{icon}{label}<strong>{formatValueWithSuffix(value, suffix)}</strong></span>
       <input
         type="range"
         min={min}
@@ -354,4 +405,9 @@ function RangeField({ icon, label, suffix, min, max, step, value, onChange }) {
       />
     </label>
   );
+}
+
+function formatValueWithSuffix(value, suffix) {
+  if (!suffix) return value;
+  return `${value}${suffix === "°" || suffix === "%" ? "" : " "}${suffix}`;
 }

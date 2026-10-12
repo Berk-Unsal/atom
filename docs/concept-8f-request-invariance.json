@@ -1,0 +1,32 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "changedFiles": "No request payload builder, RF domain math, backend route, or API schema file is changed in this phase.",
+  "automatedEquivalence": {
+    "command": "cd frontend-react && npm test -- --run src/domain/requestEquivalence.test.js",
+    "cases": [
+      "canonical 2.6 GHz simulation payload",
+      "canonical 28 GHz simulation payload",
+      "optimization and interference payloads including per-cell azimuths"
+    ],
+    "result": "3 tests pass; new and legacy payload objects are deeply equal."
+  },
+  "otherWorkflowCoverage": [
+    "Material and specular-reflection endpoint requests retain existing body assertions.",
+    "Building Entry and Path Profile remain independently owned diagnostic workflows.",
+    "Optimization values/constraints are covered by existing App workflow tests."
+  ],
+  "invariants": [
+    "RF equations and results",
+    "building-entry physics",
+    "interference semantics",
+    "optimizer objective and score",
+    "search policy and Pareto IDs",
+    "request values",
+    "ScenarioRevision and ProjectV2",
+    "Run lifecycle and source binding",
+    "fingerprints and freshness",
+    "dataset parsing/loading"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "artifact_safety_ceiling_bytes": 67108864,
+  "artifact_safety_ceiling": "64 MiB local safety ceiling for one retained artifact; intentionally much larger than Run History records and not a report-size eviction policy",
+  "usage_warning_ratio": 0.8,
+  "usage_warning": "navigator.storage.estimate usage plus the candidate artifact reaches 80 percent of quota",
+  "quota_policy": "warn when the browser exposes quota, fail explicitly when projected usage reaches quota, and never delete older evidence automatically",
+  "metadata_listing_policy": "listArtifacts reads only metadata envelopes; bytes are hydrated only for explicit inspect/download verification",
+  "fixture_measurement": {
+    "source": "frontend-react/src/utils/reportArtifact.test.js",
+    "formats": ["markdown", "html"],
+    "measurement": "artifact bytes are generated from the same report model; exact byte sizes remain content and locale dependent",
+    "large_rf_arrays": "not persisted"
+  },
+  "browser_variance": "Quota and usage are optional browser APIs; unavailable estimates do not block a valid artifact write."
+}

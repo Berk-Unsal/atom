@@ -1,0 +1,143 @@
+{
+  "concept": "7F",
+  "artifact": "bundle-audit",
+  "capturedOn": "2026-09-22",
+  "build": {
+    "command": "cd frontend-react && npm run build",
+    "status": "passed",
+    "tool": "Vite 6.4",
+    "warning": "Some chunks are larger than 500 kB after minification. Consider code-splitting via dynamic import().",
+    "outputFiles": [
+      {
+        "file": "frontend-react/dist/assets/index-oHxw5LEU.js",
+        "reportedRaw": "921.62 kB",
+        "reportedGzip": "252.89 kB",
+        "filesystemApproxBytes": 944762,
+        "role": "single eager application JavaScript chunk"
+      },
+      {
+        "file": "frontend-react/dist/assets/index-CYzsGwqW.css",
+        "reportedRaw": "137.77 kB",
+        "reportedGzip": "26.63 kB",
+        "role": "single application CSS chunk"
+      },
+      {
+        "file": "frontend-react/dist/index.html",
+        "reportedRaw": "0.50 kB",
+        "reportedGzip": "0.32 kB",
+        "role": "application entry"
+      }
+    ],
+    "chunkShape": "One main JS chunk and one main CSS chunk; no product-boundary chunks were emitted."
+  },
+  "sourceLevelContributors": [
+    {
+      "group": "Map/GIS",
+      "modules": ["leaflet", "react-leaflet", "MapCanvas.jsx", "geojson and ray visualization helpers"],
+      "evidence": "MapCanvas imports Leaflet, react-leaflet, GeoJSON, image overlays, markers, polygons, polylines, and map events.",
+      "confidence": "high",
+      "productBoundary": "Map is core and should remain eager unless measured otherwise."
+    },
+    {
+      "group": "Workspace orchestrator",
+      "modules": ["App.jsx", "WorkspaceChrome.jsx", "all active hooks and domain adapters"],
+      "evidence": "App.jsx imports and conditionally renders every major panel and owns cross-tool state.",
+      "confidence": "high",
+      "productBoundary": "Core shell; split by tool only with state-safe loading."
+    },
+    {
+      "group": "Research/reference panels",
+      "modules": ["PathProfilePanel.jsx", "SubTHZReferencePanel.jsx", "P1411CandidatePanel.jsx", "MaterialReferencePanel.jsx", "SpecularReflectionReferencePanel.jsx"],
+      "evidence": "All are statically imported by App.jsx and rendered in Propagation or RF Diagnostics.",
+      "confidence": "high",
+      "productBoundary": "Strong lazy-load candidate; rare/advanced use."
+    },
+    {
+      "group": "Validation and lab",
+      "modules": ["MeasurementValidationPanel.jsx", "BuildingEntryPanel.jsx", "Core Lab components"],
+      "evidence": "Specialized validation and lab panels are statically imported into the main shell.",
+      "confidence": "medium-high",
+      "productBoundary": "Strong lazy-load candidate; separate operational contexts."
+    },
+    {
+      "group": "Experiments and Pareto",
+      "modules": ["ExperimentPanel.jsx", "experimentMatrix.js", "Pareto chart helpers"],
+      "evidence": "Experiment tooling is statically imported despite being an optional specialized workflow.",
+      "confidence": "high",
+      "productBoundary": "Lazy-load when Experiments is opened."
+    },
+    {
+      "group": "Report/export/artifact",
+      "modules": ["reportExport.js", "reportArtifact.js", "ReportArtifactsPanel.jsx", "sha256.js"],
+      "evidence": "Report generation, SVG/map export, artifact retention, and integrity code are statically imported by App.jsx.",
+      "confidence": "high",
+      "productBoundary": "Lazy-load when Report is opened or export is requested."
+    },
+    {
+      "group": "Icon library",
+      "modules": ["lucide-react"],
+      "evidence": "Many panels import icons directly; final contribution was not separately attributed.",
+      "confidence": "medium",
+      "productBoundary": "Measure tree-shaking before changing import strategy."
+    }
+  ],
+  "largestModuleEvidence": {
+    "exactAttribution": "Not generated in Concept 7F; the build warning and source import graph were inspected instead.",
+    "why": "The audit objective is product/UX prioritization. A precise module treemap would be useful for a later performance phase but is not needed to establish that rare workflows are eagerly loaded.",
+    "doNotClaim": "This artifact does not claim that one named dependency is the numerically largest module."
+  },
+  "perceivedPerformance": {
+    "initialLoad": "Potentially heavier than a conventional CRUD app because map/GIS, all panel code, RF visualization, research, validation, reports, and local persistence are loaded in one application chunk.",
+    "mapLoad": "Map is central and should remain prioritized; dataset and building overlays can make first meaningful map interaction feel expensive.",
+    "datasetSwitch": "Visible dataset/status messaging exists, but there is no single shared progress model across map load, dataset switch, and panel readiness.",
+    "simulationStart": "Strong explicit status vocabulary: Evaluating, Simulating, Optimizing, Analyzing, and related states.",
+    "optimizationStart": "Explicit activity states exist; result/Pareto transition is dense rather than silent.",
+    "scenarioSwitch": "Snapshot restoration and rerun requirements are communicated in some flows; the lifecycle is not persistently visible.",
+    "runHistoryOpen": "Local records should be fast, but detail metadata is dense and lacks a compact skeleton/summary state.",
+    "reportsOpen": "Report generation is explicit; export and retained-artifact code is eager even before the Report tool is opened."
+  },
+  "classification": {
+    "verdict": "worth code splitting",
+    "severity": "measurable startup issue, not an emergency",
+    "primaryConcept7G": false,
+    "reason": "The warning is real and a single 252.89 kB gzip JS payload is meaningful, but the higher-risk user problem is current/stale/historical lineage. Performance work should follow a safe product-boundary decision."
+  },
+  "codeSplittingCandidates": [
+    {
+      "candidate": "Research/reference panels",
+      "rank": 1,
+      "safeBoundary": "Load only when Propagation reference or RF Diagnostics reference is opened.",
+      "preserve": ["explicit loading state", "panel-local errors", "form draft state", "canonical RF result state"],
+      "risk": "Incorrectly unloading a form could lose unsaved reference inputs."
+    },
+    {
+      "candidate": "Report export and retained artifact tooling",
+      "rank": 2,
+      "safeBoundary": "Load when Review > Report opens or a report export action is requested.",
+      "preserve": ["source Version/Run binding", "download behavior", "artifact failure messaging"],
+      "risk": "Export needs a clear loading/error state and must not change report semantics."
+    },
+    {
+      "candidate": "Experiments/Pareto",
+      "rank": 3,
+      "safeBoundary": "Load when Experiments or an experiment result is opened.",
+      "preserve": ["queued job status", "cancel behavior", "Pareto selection"],
+      "risk": "Results navigation must still be immediate when an experiment result exists."
+    },
+    {
+      "candidate": "Core Lab and measurement validation",
+      "rank": 4,
+      "safeBoundary": "Load only when the specialized Analyze tool is opened.",
+      "preserve": ["campaign draft", "synthetic control", "lab error/status copy"],
+      "risk": "Users should not interpret the loading boundary as data unavailability."
+    }
+  ],
+  "recommendedFollowUpMeasurement": [
+    "Generate a production module treemap before changing imports.",
+    "Measure first contentful map interaction and time to usable Run controls.",
+    "Measure Scenario switch restore time with and without retained map artifacts.",
+    "Compare Report/Experiments opening cost before and after safe dynamic imports.",
+    "Record whether code splitting changes result/state persistence behavior."
+  ],
+  "scopeGuard": "No bundle optimization or code splitting was implemented in Concept 7F."
+}

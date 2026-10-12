@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "concept": "6A.1.1",
+  "artifact": "bandwidth-audit",
+  "band": "LTE B7",
+  "earfcn": 3200,
+  "b7_cell_snapshot_rows": 29,
+  "normalized_source_bandwidth": {
+    "present_rows": 0,
+    "missing_rows": 29,
+    "exact_source_observation_assignments": 0
+  },
+  "raw_cell_identity_bandwidth": {
+    "raw_value_counts": {
+      "2147483647": 29
+    },
+    "android_semantics": "UNAVAILABLE sentinel",
+    "usable_measurements": 0
+  },
+  "service_state_context": {
+    "event_rows_on_channel_3200": 35,
+    "subscription_id": "1",
+    "nonempty_bandwidth_vectors_khz": 18,
+    "empty_bandwidth_vectors": 17,
+    "common_values_khz": [
+      10000
+    ],
+    "exact_cell_identity_matches_to_b7_pcis_276_or_296": 0,
+    "exact_source_context_assignments": 0,
+    "classification": "ambiguous",
+    "reason": "ServiceState bandwidth vectors are current-service context, but their nested CellIdentity lacks an exact unmasked CI/PCI matching the candidate B7 snapshots. Channel and subscription alone do not disambiguate two same-channel candidate identities, and cell snapshots report connection_status=NONE."
+  },
+  "signal_callback_association": {
+    "exact_identity_present": false,
+    "bandwidth_assignments": 0
+  },
+  "final_classification": {
+    "per_b7_cell_snapshot": "unavailable",
+    "service_state_context": "ambiguous",
+    "assigned_measured_bandwidth_mhz": null,
+    "configured_A_T_O_M_bandwidth_used": false
+  },
+  "source_reference": "Android CellIdentityLte.getBandwidth returns a value in kHz or UNAVAILABLE; Android ServiceState.getCellBandwidths describes currently camped cells. See Android CellIdentityLte and ServiceState APIs."
+}

@@ -1,0 +1,51 @@
+{
+  "concept": "8B",
+  "groups": [
+    {
+      "name": "Workspace",
+      "selector": ".command-workspace",
+      "role": "group",
+      "ariaLabel": "Workspace",
+      "persistent": ["Project", "Scenario", "Version or No Version", "draft state"],
+      "details": "Workspace lineage disclosure includes the full field values and explains browser-local draft persistence separately from immutable Version creation."
+    },
+    {
+      "name": "RF context",
+      "selector": ".command-rf-context",
+      "role": "group",
+      "ariaLabel": "RF context",
+      "persistent": ["planning mode/cell count", "technology", "frequency"],
+      "details": ["TX power", "planning radius", "model-limits link"]
+    },
+    {
+      "name": "Status",
+      "selector": ".command-status",
+      "role": "group",
+      "ariaLabel": "Status",
+      "persistent": ["operation/readiness state", "result freshness and short source Run when present", "saving or save error when present"],
+      "freshnessVocabulary": ["CURRENT", "STALE", "HISTORICAL", "UNAVAILABLE", "UNSUPPORTED"],
+      "sourceAction": "compact result source button opens Results"
+    },
+    {
+      "name": "Primary action",
+      "selector": ".command-primary-action",
+      "role": "group",
+      "ariaLabel": "Primary action",
+      "visibleTools": ["setup", "inventory", "propagation"],
+      "existingLabels": ["Run Sector", "Add N cells", "Running…", "Evaluate Network", "Evaluating…"],
+      "readiness": "existing selection/loading/restoration/profile gating unchanged"
+    }
+  ],
+  "removedFromGlobalBar": ["detailed result metric card", "peer-item context layout"],
+  "metricLocations": ["Results internal views", "scientific map legend"],
+  "mobileStatus": {
+    "operationStateIsText": true,
+    "resultFreshnessIsText": true,
+    "sourceRunVisible": true,
+    "unlabeledDotOnlyState": false,
+    "resultAndOperationOverlap": false,
+    "workspaceSummaryUsesCompactDraftCopy": true,
+    "accessibleWorkspaceNameRetainsFullFields": true
+  },
+  "semanticInvariants": ["resolveRunFreshness unchanged", "buildResultContext unchanged", "primary run request path unchanged"]
+}

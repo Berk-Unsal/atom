@@ -1,0 +1,811 @@
+{
+  "before_artifact": "docs/concept-4f3a2-pre-change-baseline.json",
+  "concept": "4F.3A.2",
+  "p1411": {
+    "after_by_policy": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "reason": "No terrain, morphology taxonomy, or below-rooftop proof is introduced by GBA.Height.",
+        "status": "not_ready"
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "reason": "No terrain, morphology taxonomy, or below-rooftop proof is introduced by GBA.Height.",
+        "status": "not_ready"
+      }
+    },
+    "before": {
+      "audited_paths": 432,
+      "both_below_rooftop_provable": false,
+      "fully_automatic_paths": 0,
+      "morphology_taxonomy_present": false,
+      "reference": "docs/concept-4i2b-p1411-applicability.json",
+      "status": "not_ready",
+      "terrain_available": false
+    },
+    "canonical_coupling": false,
+    "diagnostic_effect": "height evidence alone does not establish morphology or rooftop relation; remains not_ready"
+  },
+  "p526": {
+    "after_by_policy": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "diffraction_availability": {
+          "blocked_only_by_unknown_height": 0,
+          "diagnostic_eligible": 429,
+          "geometric_los": 34,
+          "multiple_known_candidate_edges": 403,
+          "one_known_candidate_edge": 0,
+          "paths": 432,
+          "unknown_height_ineligible": 3
+        },
+        "height_aware_transitions": {
+          "paths": 432,
+          "transitions": {
+            "los_to_los": 29,
+            "nlos_to_los": 5,
+            "nlos_to_nlos": 243,
+            "unknown_to_unknown": 155
+          }
+        },
+        "height_evidence_audit": {
+          "ExplicitHeightCount": 152422,
+          "ExplicitHeightPct": 94.21,
+          "FallbackOnlyCount": 4396,
+          "FallbackOnlyPct": 2.72,
+          "LevelsDerivedHeightCount": 4966,
+          "LevelsDerivedHeightPct": 3.07,
+          "TotalFootprints": 161784,
+          "UnavailableHeightCount": 0,
+          "UnavailableHeightPct": 0
+        },
+        "reflection_readiness": {
+          "building_footprints": 161784,
+          "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+          "candidates_with_terrain_anchored_vertical_span": 0,
+          "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+          "geometry_only_candidates_with_flat_datum_vertical_span": 3506,
+          "geometry_only_candidates_with_height_evidence": 3506,
+          "geometry_only_candidates_with_material_evidence": 0,
+          "geometry_only_specular_candidates": 3520,
+          "material_evidence_footprints": 0,
+          "outer_facade_segments_geometric_only": 936651,
+          "sample_cells": 6,
+          "sample_paths": 432,
+          "sample_rays_per_cell": 72,
+          "segments_attached_to_trusted_height_buildings": 909357,
+          "terrain_available": false,
+          "trusted_height_footprints": 157388,
+          "unique_buildings_with_specular_candidate": 1576,
+          "unique_paths_with_specular_candidate": 426
+        }
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "diffraction_availability": {
+          "blocked_only_by_unknown_height": 0,
+          "diagnostic_eligible": 429,
+          "geometric_los": 34,
+          "multiple_known_candidate_edges": 403,
+          "one_known_candidate_edge": 0,
+          "paths": 432,
+          "unknown_height_ineligible": 3
+        },
+        "height_aware_transitions": {
+          "paths": 432,
+          "transitions": {
+            "los_to_los": 29,
+            "nlos_to_los": 5,
+            "nlos_to_nlos": 243,
+            "unknown_to_unknown": 155
+          }
+        },
+        "height_evidence_audit": {
+          "ExplicitHeightCount": 157331,
+          "ExplicitHeightPct": 97.25,
+          "FallbackOnlyCount": 4396,
+          "FallbackOnlyPct": 2.72,
+          "LevelsDerivedHeightCount": 57,
+          "LevelsDerivedHeightPct": 0.04,
+          "TotalFootprints": 161784,
+          "UnavailableHeightCount": 0,
+          "UnavailableHeightPct": 0
+        },
+        "reflection_readiness": {
+          "building_footprints": 161784,
+          "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+          "candidates_with_terrain_anchored_vertical_span": 0,
+          "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+          "geometry_only_candidates_with_flat_datum_vertical_span": 3423,
+          "geometry_only_candidates_with_height_evidence": 3423,
+          "geometry_only_candidates_with_material_evidence": 0,
+          "geometry_only_specular_candidates": 3437,
+          "material_evidence_footprints": 0,
+          "outer_facade_segments_geometric_only": 936651,
+          "sample_cells": 6,
+          "sample_paths": 432,
+          "sample_rays_per_cell": 72,
+          "segments_attached_to_trusted_height_buildings": 909357,
+          "terrain_available": false,
+          "trusted_height_footprints": 157388,
+          "unique_buildings_with_specular_candidate": 1564,
+          "unique_paths_with_specular_candidate": 426
+        }
+      }
+    },
+    "before": {
+      "blocked_only_by_unknown_height": 338,
+      "canonical_propagation_coupling": false,
+      "diagnostic_eligible": 29,
+      "diagnostic_id": "p526-single-edge-v1",
+      "geometric_los": 29,
+      "paths": 432,
+      "unknown_height_ineligible": 403
+    },
+    "canonical_coupling": false,
+    "diagnostic_go_runs": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "canonical_coupling": false,
+        "command": "go test ./raytracer -run TestCanonicalAnkara|TestConcept4I5AAnkara -count=1 -v",
+        "dataset_root": "/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+        "log": "7 110 6.4686763e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313100 300 3.273407e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313110 240 1.8941865e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-322828 100 1.5622213e+07 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}}]\n--- PASS: TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled (59.81s)\n=== RUN   TestCanonicalAnkaraOptimizationFixtureIsStable\n    optimization_benchmark_test.go:49: canonical disabled-semantics fingerprint=network-def2ab8c875ff267a6e7969d297216f0\n--- PASS: TestCanonicalAnkaraOptimizationFixtureIsStable (0.00s)\n=== RUN   TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled\n    optimization_benchmark_test.go:55: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara dataset regression\n--- SKIP: TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled\n    optimization_benchmark_test.go:148: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara explanation regression\n--- SKIP: TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraInterferenceContractAfterChange\n    radio_quality_contract_test.go:360: set ATOM_RUN_CANONICAL_4H1=1 to capture the canonical Concept 4H.1 comparison\n--- SKIP: TestCanonicalAnkaraInterferenceContractAfterChange (0.00s)\n=== RUN   TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled\n    radio_quality_optimization_test.go:254: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RADIO_QUALITY=1 to run the enabled Ankara radio-quality experiment\n--- SKIP: TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled\n    receiver_noise_test.go:489: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RECEIVER_COMPARISON=1 to run the Ankara receiver comparison\n--- SKIP: TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled (0.00s)\nPASS\nok  \tankara-5g-raytracer/raytracer\t65.237s\n",
+        "return_code": 0,
+        "status": "passed",
+        "summary": {
+          "diffraction_availability": {
+            "blocked_only_by_unknown_height": 0,
+            "diagnostic_eligible": 429,
+            "geometric_los": 34,
+            "multiple_known_candidate_edges": 403,
+            "one_known_candidate_edge": 0,
+            "paths": 432,
+            "unknown_height_ineligible": 3
+          },
+          "height_aware_transitions": {
+            "paths": 432,
+            "transitions": {
+              "los_to_los": 29,
+              "nlos_to_los": 5,
+              "nlos_to_nlos": 243,
+              "unknown_to_unknown": 155
+            }
+          },
+          "height_evidence_audit": {
+            "ExplicitHeightCount": 152422,
+            "ExplicitHeightPct": 94.21,
+            "FallbackOnlyCount": 4396,
+            "FallbackOnlyPct": 2.72,
+            "LevelsDerivedHeightCount": 4966,
+            "LevelsDerivedHeightPct": 3.07,
+            "TotalFootprints": 161784,
+            "UnavailableHeightCount": 0,
+            "UnavailableHeightPct": 0
+          },
+          "reflection_readiness": {
+            "building_footprints": 161784,
+            "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+            "candidates_with_terrain_anchored_vertical_span": 0,
+            "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+            "geometry_only_candidates_with_flat_datum_vertical_span": 3506,
+            "geometry_only_candidates_with_height_evidence": 3506,
+            "geometry_only_candidates_with_material_evidence": 0,
+            "geometry_only_specular_candidates": 3520,
+            "material_evidence_footprints": 0,
+            "outer_facade_segments_geometric_only": 936651,
+            "sample_cells": 6,
+            "sample_paths": 432,
+            "sample_rays_per_cell": 72,
+            "segments_attached_to_trusted_height_buildings": 909357,
+            "terrain_available": false,
+            "trusted_height_footprints": 157388,
+            "unique_buildings_with_specular_candidate": 1576,
+            "unique_paths_with_specular_candidate": 426
+          }
+        }
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "canonical_coupling": false,
+        "command": "go test ./raytracer -run TestCanonicalAnkara|TestConcept4I5AAnkara -count=1 -v",
+        "dataset_root": "/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+        "log": "7 110 6.4686763e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313100 300 3.273407e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313110 240 1.8941865e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-322828 100 1.5622213e+07 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}}]\n--- PASS: TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled (52.72s)\n=== RUN   TestCanonicalAnkaraOptimizationFixtureIsStable\n    optimization_benchmark_test.go:49: canonical disabled-semantics fingerprint=network-def2ab8c875ff267a6e7969d297216f0\n--- PASS: TestCanonicalAnkaraOptimizationFixtureIsStable (0.00s)\n=== RUN   TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled\n    optimization_benchmark_test.go:55: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara dataset regression\n--- SKIP: TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled\n    optimization_benchmark_test.go:148: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara explanation regression\n--- SKIP: TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraInterferenceContractAfterChange\n    radio_quality_contract_test.go:360: set ATOM_RUN_CANONICAL_4H1=1 to capture the canonical Concept 4H.1 comparison\n--- SKIP: TestCanonicalAnkaraInterferenceContractAfterChange (0.00s)\n=== RUN   TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled\n    radio_quality_optimization_test.go:254: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RADIO_QUALITY=1 to run the enabled Ankara radio-quality experiment\n--- SKIP: TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled\n    receiver_noise_test.go:489: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RECEIVER_COMPARISON=1 to run the Ankara receiver comparison\n--- SKIP: TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled (0.00s)\nPASS\nok  \tankara-5g-raytracer/raytracer\t57.526s\n",
+        "return_code": 0,
+        "status": "passed",
+        "summary": {
+          "diffraction_availability": {
+            "blocked_only_by_unknown_height": 0,
+            "diagnostic_eligible": 429,
+            "geometric_los": 34,
+            "multiple_known_candidate_edges": 403,
+            "one_known_candidate_edge": 0,
+            "paths": 432,
+            "unknown_height_ineligible": 3
+          },
+          "height_aware_transitions": {
+            "paths": 432,
+            "transitions": {
+              "los_to_los": 29,
+              "nlos_to_los": 5,
+              "nlos_to_nlos": 243,
+              "unknown_to_unknown": 155
+            }
+          },
+          "height_evidence_audit": {
+            "ExplicitHeightCount": 157331,
+            "ExplicitHeightPct": 97.25,
+            "FallbackOnlyCount": 4396,
+            "FallbackOnlyPct": 2.72,
+            "LevelsDerivedHeightCount": 57,
+            "LevelsDerivedHeightPct": 0.04,
+            "TotalFootprints": 161784,
+            "UnavailableHeightCount": 0,
+            "UnavailableHeightPct": 0
+          },
+          "reflection_readiness": {
+            "building_footprints": 161784,
+            "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+            "candidates_with_terrain_anchored_vertical_span": 0,
+            "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+            "geometry_only_candidates_with_flat_datum_vertical_span": 3423,
+            "geometry_only_candidates_with_height_evidence": 3423,
+            "geometry_only_candidates_with_material_evidence": 0,
+            "geometry_only_specular_candidates": 3437,
+            "material_evidence_footprints": 0,
+            "outer_facade_segments_geometric_only": 936651,
+            "sample_cells": 6,
+            "sample_paths": 432,
+            "sample_rays_per_cell": 72,
+            "segments_attached_to_trusted_height_buildings": 909357,
+            "terrain_available": false,
+            "trusted_height_footprints": 157388,
+            "unique_buildings_with_specular_candidate": 1564,
+            "unique_paths_with_specular_candidate": 426
+          }
+        }
+      }
+    }
+  },
+  "path_432": {
+    "after_by_policy": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "paths": 432,
+        "transitions": {
+          "los_to_los": 29,
+          "nlos_to_los": 5,
+          "nlos_to_nlos": 243,
+          "unknown_to_unknown": 155
+        }
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "paths": 432,
+        "transitions": {
+          "los_to_los": 29,
+          "nlos_to_los": 5,
+          "nlos_to_nlos": 243,
+          "unknown_to_unknown": 155
+        }
+      }
+    },
+    "before": {
+      "cells": 6,
+      "frequency_ghz": 28,
+      "paths": 432,
+      "radius_m": 400,
+      "rays_per_cell": 72,
+      "rx_height_m": 1.5,
+      "terrain_status": "terrain_unavailable",
+      "transitions": {
+        "los_to_los": 29,
+        "los_to_nlos": 0,
+        "nlos_to_los": 0,
+        "nlos_to_nlos": 248,
+        "other": 0,
+        "unknown_to_unknown": 155
+      },
+      "tx_height_m": 25
+    },
+    "canonical_coupling": false,
+    "diagnostic_go_runs": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "canonical_coupling": false,
+        "command": "go test ./raytracer -run TestCanonicalAnkara|TestConcept4I5AAnkara -count=1 -v",
+        "dataset_root": "/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+        "log": "7 110 6.4686763e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313100 300 3.273407e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313110 240 1.8941865e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-322828 100 1.5622213e+07 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}}]\n--- PASS: TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled (59.81s)\n=== RUN   TestCanonicalAnkaraOptimizationFixtureIsStable\n    optimization_benchmark_test.go:49: canonical disabled-semantics fingerprint=network-def2ab8c875ff267a6e7969d297216f0\n--- PASS: TestCanonicalAnkaraOptimizationFixtureIsStable (0.00s)\n=== RUN   TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled\n    optimization_benchmark_test.go:55: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara dataset regression\n--- SKIP: TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled\n    optimization_benchmark_test.go:148: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara explanation regression\n--- SKIP: TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraInterferenceContractAfterChange\n    radio_quality_contract_test.go:360: set ATOM_RUN_CANONICAL_4H1=1 to capture the canonical Concept 4H.1 comparison\n--- SKIP: TestCanonicalAnkaraInterferenceContractAfterChange (0.00s)\n=== RUN   TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled\n    radio_quality_optimization_test.go:254: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RADIO_QUALITY=1 to run the enabled Ankara radio-quality experiment\n--- SKIP: TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled\n    receiver_noise_test.go:489: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RECEIVER_COMPARISON=1 to run the Ankara receiver comparison\n--- SKIP: TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled (0.00s)\nPASS\nok  \tankara-5g-raytracer/raytracer\t65.237s\n",
+        "return_code": 0,
+        "status": "passed",
+        "summary": {
+          "diffraction_availability": {
+            "blocked_only_by_unknown_height": 0,
+            "diagnostic_eligible": 429,
+            "geometric_los": 34,
+            "multiple_known_candidate_edges": 403,
+            "one_known_candidate_edge": 0,
+            "paths": 432,
+            "unknown_height_ineligible": 3
+          },
+          "height_aware_transitions": {
+            "paths": 432,
+            "transitions": {
+              "los_to_los": 29,
+              "nlos_to_los": 5,
+              "nlos_to_nlos": 243,
+              "unknown_to_unknown": 155
+            }
+          },
+          "height_evidence_audit": {
+            "ExplicitHeightCount": 152422,
+            "ExplicitHeightPct": 94.21,
+            "FallbackOnlyCount": 4396,
+            "FallbackOnlyPct": 2.72,
+            "LevelsDerivedHeightCount": 4966,
+            "LevelsDerivedHeightPct": 3.07,
+            "TotalFootprints": 161784,
+            "UnavailableHeightCount": 0,
+            "UnavailableHeightPct": 0
+          },
+          "reflection_readiness": {
+            "building_footprints": 161784,
+            "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+            "candidates_with_terrain_anchored_vertical_span": 0,
+            "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+            "geometry_only_candidates_with_flat_datum_vertical_span": 3506,
+            "geometry_only_candidates_with_height_evidence": 3506,
+            "geometry_only_candidates_with_material_evidence": 0,
+            "geometry_only_specular_candidates": 3520,
+            "material_evidence_footprints": 0,
+            "outer_facade_segments_geometric_only": 936651,
+            "sample_cells": 6,
+            "sample_paths": 432,
+            "sample_rays_per_cell": 72,
+            "segments_attached_to_trusted_height_buildings": 909357,
+            "terrain_available": false,
+            "trusted_height_footprints": 157388,
+            "unique_buildings_with_specular_candidate": 1576,
+            "unique_paths_with_specular_candidate": 426
+          }
+        }
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "canonical_coupling": false,
+        "command": "go test ./raytracer -run TestCanonicalAnkara|TestConcept4I5AAnkara -count=1 -v",
+        "dataset_root": "/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+        "log": "7 110 6.4686763e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313100 300 3.273407e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313110 240 1.8941865e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-322828 100 1.5622213e+07 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}}]\n--- PASS: TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled (52.72s)\n=== RUN   TestCanonicalAnkaraOptimizationFixtureIsStable\n    optimization_benchmark_test.go:49: canonical disabled-semantics fingerprint=network-def2ab8c875ff267a6e7969d297216f0\n--- PASS: TestCanonicalAnkaraOptimizationFixtureIsStable (0.00s)\n=== RUN   TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled\n    optimization_benchmark_test.go:55: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara dataset regression\n--- SKIP: TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled\n    optimization_benchmark_test.go:148: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara explanation regression\n--- SKIP: TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraInterferenceContractAfterChange\n    radio_quality_contract_test.go:360: set ATOM_RUN_CANONICAL_4H1=1 to capture the canonical Concept 4H.1 comparison\n--- SKIP: TestCanonicalAnkaraInterferenceContractAfterChange (0.00s)\n=== RUN   TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled\n    radio_quality_optimization_test.go:254: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RADIO_QUALITY=1 to run the enabled Ankara radio-quality experiment\n--- SKIP: TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled\n    receiver_noise_test.go:489: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RECEIVER_COMPARISON=1 to run the Ankara receiver comparison\n--- SKIP: TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled (0.00s)\nPASS\nok  \tankara-5g-raytracer/raytracer\t57.526s\n",
+        "return_code": 0,
+        "status": "passed",
+        "summary": {
+          "diffraction_availability": {
+            "blocked_only_by_unknown_height": 0,
+            "diagnostic_eligible": 429,
+            "geometric_los": 34,
+            "multiple_known_candidate_edges": 403,
+            "one_known_candidate_edge": 0,
+            "paths": 432,
+            "unknown_height_ineligible": 3
+          },
+          "height_aware_transitions": {
+            "paths": 432,
+            "transitions": {
+              "los_to_los": 29,
+              "nlos_to_los": 5,
+              "nlos_to_nlos": 243,
+              "unknown_to_unknown": 155
+            }
+          },
+          "height_evidence_audit": {
+            "ExplicitHeightCount": 157331,
+            "ExplicitHeightPct": 97.25,
+            "FallbackOnlyCount": 4396,
+            "FallbackOnlyPct": 2.72,
+            "LevelsDerivedHeightCount": 57,
+            "LevelsDerivedHeightPct": 0.04,
+            "TotalFootprints": 161784,
+            "UnavailableHeightCount": 0,
+            "UnavailableHeightPct": 0
+          },
+          "reflection_readiness": {
+            "building_footprints": 161784,
+            "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+            "candidates_with_terrain_anchored_vertical_span": 0,
+            "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+            "geometry_only_candidates_with_flat_datum_vertical_span": 3423,
+            "geometry_only_candidates_with_height_evidence": 3423,
+            "geometry_only_candidates_with_material_evidence": 0,
+            "geometry_only_specular_candidates": 3437,
+            "material_evidence_footprints": 0,
+            "outer_facade_segments_geometric_only": 936651,
+            "sample_cells": 6,
+            "sample_paths": 432,
+            "sample_rays_per_cell": 72,
+            "segments_attached_to_trusted_height_buildings": 909357,
+            "terrain_available": false,
+            "trusted_height_footprints": 157388,
+            "unique_buildings_with_specular_candidate": 1564,
+            "unique_paths_with_specular_candidate": 426
+          }
+        }
+      }
+    }
+  },
+  "inspector": {
+    "after": "unchanged; GBA.Height is not attached to the active pack or inspector ledger",
+    "before": "GET /api/spatial-evidence and GET /api/spatial-evidence/buildings/:id remain diagnostic-only",
+    "canonical_activation": false
+  },
+  "reflection": {
+    "after_by_policy": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "building_footprints": 161784,
+        "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+        "candidates_with_terrain_anchored_vertical_span": 0,
+        "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+        "geometry_only_candidates_with_flat_datum_vertical_span": 3506,
+        "geometry_only_candidates_with_height_evidence": 3506,
+        "geometry_only_candidates_with_material_evidence": 0,
+        "geometry_only_specular_candidates": 3520,
+        "material_evidence_footprints": 0,
+        "outer_facade_segments_geometric_only": 936651,
+        "sample_cells": 6,
+        "sample_paths": 432,
+        "sample_rays_per_cell": 72,
+        "segments_attached_to_trusted_height_buildings": 909357,
+        "terrain_available": false,
+        "trusted_height_footprints": 157388,
+        "unique_buildings_with_specular_candidate": 1576,
+        "unique_paths_with_specular_candidate": 426
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "building_footprints": 161784,
+        "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+        "candidates_with_terrain_anchored_vertical_span": 0,
+        "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+        "geometry_only_candidates_with_flat_datum_vertical_span": 3423,
+        "geometry_only_candidates_with_height_evidence": 3423,
+        "geometry_only_candidates_with_material_evidence": 0,
+        "geometry_only_specular_candidates": 3437,
+        "material_evidence_footprints": 0,
+        "outer_facade_segments_geometric_only": 936651,
+        "sample_cells": 6,
+        "sample_paths": 432,
+        "sample_rays_per_cell": 72,
+        "segments_attached_to_trusted_height_buildings": 909357,
+        "terrain_available": false,
+        "trusted_height_footprints": 157388,
+        "unique_buildings_with_specular_candidate": 1564,
+        "unique_paths_with_specular_candidate": 426
+      }
+    },
+    "before": {
+      "candidates_with_height_evidence": 777,
+      "candidates_with_terrain_anchored_vertical_span": 0,
+      "geometry_only_specular_candidates": 6368,
+      "material_evidence_footprints": 0,
+      "reference": "docs/concept-4i5a-ankara-readiness.json",
+      "sample_paths": 432,
+      "status": "not_ready"
+    },
+    "canonical_coupling": false,
+    "diagnostic_go_runs": {
+      "policy_a_explicit_levels_gba_fallback": {
+        "canonical_coupling": false,
+        "command": "go test ./raytracer -run TestCanonicalAnkara|TestConcept4I5AAnkara -count=1 -v",
+        "dataset_root": "/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+        "log": "7 110 6.4686763e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313100 300 3.273407e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313110 240 1.8941865e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-322828 100 1.5622213e+07 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}}]\n--- PASS: TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled (59.81s)\n=== RUN   TestCanonicalAnkaraOptimizationFixtureIsStable\n    optimization_benchmark_test.go:49: canonical disabled-semantics fingerprint=network-def2ab8c875ff267a6e7969d297216f0\n--- PASS: TestCanonicalAnkaraOptimizationFixtureIsStable (0.00s)\n=== RUN   TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled\n    optimization_benchmark_test.go:55: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara dataset regression\n--- SKIP: TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled\n    optimization_benchmark_test.go:148: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara explanation regression\n--- SKIP: TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraInterferenceContractAfterChange\n    radio_quality_contract_test.go:360: set ATOM_RUN_CANONICAL_4H1=1 to capture the canonical Concept 4H.1 comparison\n--- SKIP: TestCanonicalAnkaraInterferenceContractAfterChange (0.00s)\n=== RUN   TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled\n    radio_quality_optimization_test.go:254: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RADIO_QUALITY=1 to run the enabled Ankara radio-quality experiment\n--- SKIP: TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled\n    receiver_noise_test.go:489: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RECEIVER_COMPARISON=1 to run the Ankara receiver comparison\n--- SKIP: TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled (0.00s)\nPASS\nok  \tankara-5g-raytracer/raytracer\t65.237s\n",
+        "return_code": 0,
+        "status": "passed",
+        "summary": {
+          "diffraction_availability": {
+            "blocked_only_by_unknown_height": 0,
+            "diagnostic_eligible": 429,
+            "geometric_los": 34,
+            "multiple_known_candidate_edges": 403,
+            "one_known_candidate_edge": 0,
+            "paths": 432,
+            "unknown_height_ineligible": 3
+          },
+          "height_aware_transitions": {
+            "paths": 432,
+            "transitions": {
+              "los_to_los": 29,
+              "nlos_to_los": 5,
+              "nlos_to_nlos": 243,
+              "unknown_to_unknown": 155
+            }
+          },
+          "height_evidence_audit": {
+            "ExplicitHeightCount": 152422,
+            "ExplicitHeightPct": 94.21,
+            "FallbackOnlyCount": 4396,
+            "FallbackOnlyPct": 2.72,
+            "LevelsDerivedHeightCount": 4966,
+            "LevelsDerivedHeightPct": 3.07,
+            "TotalFootprints": 161784,
+            "UnavailableHeightCount": 0,
+            "UnavailableHeightPct": 0
+          },
+          "reflection_readiness": {
+            "building_footprints": 161784,
+            "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+            "candidates_with_terrain_anchored_vertical_span": 0,
+            "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_a_explicit_levels_gba_fallback",
+            "geometry_only_candidates_with_flat_datum_vertical_span": 3506,
+            "geometry_only_candidates_with_height_evidence": 3506,
+            "geometry_only_candidates_with_material_evidence": 0,
+            "geometry_only_specular_candidates": 3520,
+            "material_evidence_footprints": 0,
+            "outer_facade_segments_geometric_only": 936651,
+            "sample_cells": 6,
+            "sample_paths": 432,
+            "sample_rays_per_cell": 72,
+            "segments_attached_to_trusted_height_buildings": 909357,
+            "terrain_available": false,
+            "trusted_height_footprints": 157388,
+            "unique_buildings_with_specular_candidate": 1576,
+            "unique_paths_with_specular_candidate": 426
+          }
+        }
+      },
+      "policy_b_explicit_gba_levels_fallback": {
+        "canonical_coupling": false,
+        "command": "go test ./raytracer -run TestCanonicalAnkara|TestConcept4I5AAnkara -count=1 -v",
+        "dataset_root": "/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+        "log": "7 110 6.4686763e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313100 300 3.273407e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-313110 240 1.8941865e+06 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}} {LTE-322828 100 1.5622213e+07 {1 5g urban_short_range 28 NR n257 100 CH-1 tdd 30 25 0 0 0 400 120 25 0 0 0 ideal-sector flat 0.7 1 <nil> 1.5 -115 manual 1e+08 channel_bandwidth_approximation 7 3 0} {manual -115 <nil> <nil> not_applicable <nil> <nil> <nil> <nil> <nil> [receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated network interference is evaluated separately through RSRP, SINR, and RSRQ] manual noise-limited receiver threshold for deterministic planning}}]\n--- PASS: TestCanonicalAnkaraHeightAwareClassificationAuditWhenDatasetIsEnabled (52.72s)\n=== RUN   TestCanonicalAnkaraOptimizationFixtureIsStable\n    optimization_benchmark_test.go:49: canonical disabled-semantics fingerprint=network-def2ab8c875ff267a6e7969d297216f0\n--- PASS: TestCanonicalAnkaraOptimizationFixtureIsStable (0.00s)\n=== RUN   TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled\n    optimization_benchmark_test.go:55: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara dataset regression\n--- SKIP: TestCanonicalAnkaraOptimizationIsDeterministicWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled\n    optimization_benchmark_test.go:148: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_BENCHMARK=1 to run the Ankara explanation regression\n--- SKIP: TestCanonicalAnkaraCellExplanationMatchesIndependentEvaluationWhenDatasetIsEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraInterferenceContractAfterChange\n    radio_quality_contract_test.go:360: set ATOM_RUN_CANONICAL_4H1=1 to capture the canonical Concept 4H.1 comparison\n--- SKIP: TestCanonicalAnkaraInterferenceContractAfterChange (0.00s)\n=== RUN   TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled\n    radio_quality_optimization_test.go:254: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RADIO_QUALITY=1 to run the enabled Ankara radio-quality experiment\n--- SKIP: TestCanonicalAnkaraRadioQualityOptimizationIsDeterministicWhenEnabled (0.00s)\n=== RUN   TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled\n    receiver_noise_test.go:489: set ATOM_DATASET_DIR and ATOM_RUN_CANONICAL_RECEIVER_COMPARISON=1 to run the Ankara receiver comparison\n--- SKIP: TestCanonicalAnkaraReceiverSensitivityComparisonWhenDatasetIsEnabled (0.00s)\nPASS\nok  \tankara-5g-raytracer/raytracer\t57.526s\n",
+        "return_code": 0,
+        "status": "passed",
+        "summary": {
+          "diffraction_availability": {
+            "blocked_only_by_unknown_height": 0,
+            "diagnostic_eligible": 429,
+            "geometric_los": 34,
+            "multiple_known_candidate_edges": 403,
+            "one_known_candidate_edge": 0,
+            "paths": 432,
+            "unknown_height_ineligible": 3
+          },
+          "height_aware_transitions": {
+            "paths": 432,
+            "transitions": {
+              "los_to_los": 29,
+              "nlos_to_los": 5,
+              "nlos_to_nlos": 243,
+              "unknown_to_unknown": 155
+            }
+          },
+          "height_evidence_audit": {
+            "ExplicitHeightCount": 157331,
+            "ExplicitHeightPct": 97.25,
+            "FallbackOnlyCount": 4396,
+            "FallbackOnlyPct": 2.72,
+            "LevelsDerivedHeightCount": 57,
+            "LevelsDerivedHeightPct": 0.04,
+            "TotalFootprints": 161784,
+            "UnavailableHeightCount": 0,
+            "UnavailableHeightPct": 0
+          },
+          "reflection_readiness": {
+            "building_footprints": 161784,
+            "candidate_interpretation": "Geometry-only image intersections in a fixed 6-cell/72-ray/400 m readiness sample. Counts are not viable reflected links; no roughness, material, visibility, terrain, antenna, atmospheric, or coherent-field gate is evaluated.",
+            "candidates_with_terrain_anchored_vertical_span": 0,
+            "dataset_root": "/private/tmp/atom-gba-height-2026/diagnostic-packs/policy_b_explicit_gba_levels_fallback",
+            "geometry_only_candidates_with_flat_datum_vertical_span": 3423,
+            "geometry_only_candidates_with_height_evidence": 3423,
+            "geometry_only_candidates_with_material_evidence": 0,
+            "geometry_only_specular_candidates": 3437,
+            "material_evidence_footprints": 0,
+            "outer_facade_segments_geometric_only": 936651,
+            "sample_cells": 6,
+            "sample_paths": 432,
+            "sample_rays_per_cell": 72,
+            "segments_attached_to_trusted_height_buildings": 909357,
+            "terrain_available": false,
+            "trusted_height_footprints": 157388,
+            "unique_buildings_with_specular_candidate": 1564,
+            "unique_paths_with_specular_candidate": 426
+          }
+        }
+      }
+    },
+    "remaining_blockers": [
+      "terrain",
+      "material",
+      "roughness"
+    ]
+  },
+  "schema_version": 1,
+  "selected_extraction_policy": {
+    "candidates": [
+      {
+        "agreement_score": 29.967777193600718,
+        "score": 30.27154956100945,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "max",
+        "strategy": "pixel_center_inside",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 29.967777193600718,
+        "score": 30.27154956100945,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "max",
+        "strategy": "robust_interior_quantile",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 30.01705684049845,
+        "score": 30.569870171358527,
+        "single_pixel_support_rate": 0.0028133308600754342,
+        "statistic": "max",
+        "strategy": "all_intersecting",
+        "usable_external_height": 161730
+      },
+      {
+        "agreement_score": 31.364582409782784,
+        "score": 31.518354777191515,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "p90",
+        "strategy": "pixel_center_inside",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 31.364582409782784,
+        "score": 31.518354777191515,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "p90",
+        "strategy": "robust_interior_quantile",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 31.28542898286682,
+        "score": 31.671484644041303,
+        "single_pixel_support_rate": 0.036055661174482466,
+        "statistic": "max",
+        "strategy": "inward_buffered",
+        "usable_external_height": 151488
+      },
+      {
+        "agreement_score": 31.720988760733864,
+        "score": 32.12380209159394,
+        "single_pixel_support_rate": 0.0028133308600754342,
+        "statistic": "p90",
+        "strategy": "all_intersecting",
+        "usable_external_height": 161730
+      },
+      {
+        "agreement_score": 32.51359060488613,
+        "score": 32.74964626606061,
+        "single_pixel_support_rate": 0.036055661174482466,
+        "statistic": "p90",
+        "strategy": "inward_buffered",
+        "usable_external_height": 151488
+      },
+      {
+        "agreement_score": 33.31428062151746,
+        "score": 33.36805298892619,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "p75",
+        "strategy": "pixel_center_inside",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 33.31428062151746,
+        "score": 33.36805298892619,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "p75",
+        "strategy": "robust_interior_quantile",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 33.918490327641734,
+        "score": 34.05454598881621,
+        "single_pixel_support_rate": 0.036055661174482466,
+        "statistic": "p75",
+        "strategy": "inward_buffered",
+        "usable_external_height": 151488
+      },
+      {
+        "agreement_score": 33.8346939352825,
+        "score": 34.13750726614258,
+        "single_pixel_support_rate": 0.0028133308600754342,
+        "statistic": "p75",
+        "strategy": "all_intersecting",
+        "usable_external_height": 161730
+      },
+      {
+        "agreement_score": 36.53987676436914,
+        "score": 36.62593242554362,
+        "single_pixel_support_rate": 0.036055661174482466,
+        "statistic": "median",
+        "strategy": "inward_buffered",
+        "usable_external_height": 151488
+      },
+      {
+        "agreement_score": 37.54132117381123,
+        "score": 37.545093541219956,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "median",
+        "strategy": "pixel_center_inside",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 37.54132117381123,
+        "score": 37.545093541219956,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "median",
+        "strategy": "robust_interior_quantile",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 37.797251934549905,
+        "score": 37.98330759572438,
+        "single_pixel_support_rate": 0.036055661174482466,
+        "statistic": "mean",
+        "strategy": "inward_buffered",
+        "usable_external_height": 151488
+      },
+      {
+        "agreement_score": 39.0083863752582,
+        "score": 39.11215874266693,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "mean",
+        "strategy": "pixel_center_inside",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 39.0083863752582,
+        "score": 39.11215874266693,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "mean",
+        "strategy": "robust_interior_quantile",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 39.227471512644954,
+        "score": 39.48028484350503,
+        "single_pixel_support_rate": 0.0028133308600754342,
+        "statistic": "median",
+        "strategy": "all_intersecting",
+        "usable_external_height": 161730
+      },
+      {
+        "agreement_score": 40.62903175748267,
+        "score": 40.98184508834275,
+        "single_pixel_support_rate": 0.0028133308600754342,
+        "statistic": "mean",
+        "strategy": "all_intersecting",
+        "usable_external_height": 161730
+      },
+      {
+        "agreement_score": 50.01987608322686,
+        "score": 50.30593174440134,
+        "single_pixel_support_rate": 0.036055661174482466,
+        "statistic": "min",
+        "strategy": "inward_buffered",
+        "usable_external_height": 151488
+      },
+      {
+        "agreement_score": 55.454752087016736,
+        "score": 55.65852445442547,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "min",
+        "strategy": "pixel_center_inside",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 55.454752087016736,
+        "score": 55.65852445442547,
+        "single_pixel_support_rate": 0.003772367408731045,
+        "statistic": "min",
+        "strategy": "robust_interior_quantile",
+        "usable_external_height": 161172
+      },
+      {
+        "agreement_score": 57.67453831802191,
+        "score": 58.12735164888199,
+        "single_pixel_support_rate": 0.0028133308600754342,
+        "statistic": "min",
+        "strategy": "all_intersecting",
+        "usable_external_height": 161730
+      }
+    ],
+    "rationale": "Selected after the explicit/levels source-agreement study using agreement error, single-pixel support penalty, and edge-strategy/statistic robustness.  OSM is a comparison source rather than ground truth; the policy is diagnostic and does not activate canonical RF.",
+    "statistic": "max",
+    "status": "selected",
+    "strategy": "pixel_center_inside",
+    "version": "gba-height-extraction-v1"
+  },
+  "title": "Ankara GBA.Height readiness impact"
+}

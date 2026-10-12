@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.3.0-0f766e?style=for-the-badge)](VERSION)
+[![Version](https://img.shields.io/badge/version-0.12.1-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -18,41 +18,74 @@
 
 ## Overview
 
-A.T.O.M is a full-stack spatial planning engine for visualizing and evaluating cellular networks across multiple generations (4G LTE, 5G mmWave, and an experimental 6G Sub-THz mode) in dense urban environments. Built on OpenStreetMap (OSM) and OpenCellID-derived data, it combines deterministic RF estimation with interactive geospatial analysis so telecommunications engineers and students can compare coverage, antenna configurations, interference, demand impact, and network topology in Ankara, Turkey.
+A.T.O.M is a full-stack spatial planning engine for visualizing and evaluating cellular networks across multiple generations (4G LTE, 5G mmWave, and an experimental 6G research profile at 140 GHz) in dense urban environments. Built on OpenStreetMap (OSM) and OpenCellID-derived data, it combines deterministic RF estimation with interactive geospatial analysis so telecommunications engineers and students can compare coverage, antenna configurations, interference, demand impact, and network topology in Ankara, Turkey.
 
 The engine combines bounded Go worker pools, spatial indexing, deterministic ray tracing, and demand-aware search to evaluate urban RF planning scenarios. Results are planning estimates derived from static OSM and OpenCellID data; they are not drive-test, UE, or PHY measurements.
 
 ---
 
+## Current Version: 0.12.1
+
+Version **0.12.1** adds a light/dark appearance toggle to the documentation site, follows the shared browser preference by default, and refreshes the release screenshots. It includes the qualified eight-cell planning and bounded, verified RF follow-ups introduced in 0.12.0.
+
+| Workflow | Current scope |
+|----------|---------------|
+| Sector propagation and auto-optimization | One active cell |
+| Network evaluation, interference, and azimuth optimization | Two to eight selected cells; interference is available for 4G/5G |
+| Candidate cell recommendations | Up to five existing cells in the input network |
+| Measurement validation | One to six cells and up to 5,000 4G/5G RSRP samples |
+
+The eight-cell operational qualification covers the Ankara2026.07 dataset at 120 rays, 400 m radius, 30 dBm, a 120° beam, and 2.6/28 GHz with the legacy two-pass search on Profile A (2 CPUs, 4 GiB, Go 1.26.6 Linux/arm64). Capacity at heavier settings or on other datasets and hardware depends on the workload. See the [qualification report](docs/eight-cell-product-cap-promotion.md) for the measured scope.
+
+---
+
 ## Key Features
 
-- **Focused Map Workspace**: Organizes setup, propagation, interference, 5G Core, results, data assumptions, and reports in a compact workflow rail while keeping the map primary.
+- **Map-First Workflow**: Four stages—**Plan**, **Simulate**, **Analyze**, and **Review**—organize cells, scenarios, propagation, diagnostics, results, and reports around the map. Separate **Inspect** and **Select cells** modes provide contextual cell, building, and interference-sample details.
 
-- **Multi-Generation Planning Presets**: Evaluates 4G (2.6 GHz), 5G (28 GHz), and experimental 6G (140 GHz) scenarios using Free-Space Path Loss (FSPL) with frequency-dependent attenuation.
+- **Light, Dark, and System Appearance**: Persists local appearance preferences, with Alidade Smooth light/dark basemaps, selectable OpenStreetMap, and consistent RF palettes.
 
-- **Segmented Heatmap Raytracing**: Generates GeoJSON ray segments that change color based on modeled signal strength (Rx dBm), providing interactive visual feedback on coverage quality.
+- **Multi-Generation Planning Presets**: Evaluates 4G (2.6 GHz) and 5G (28 GHz) with the explicit `urban_short_range` LOS/NLOS baseline, keeps `legacy_fspl_walls` selectable, and labels 6G (140 GHz) as the `research_sub_thz` planning profile.
 
-- **Frequency-Dependent Penetration**: 4G rays penetrate concrete buildings with Cumulative Wall Loss calculations, while 5G/6G rays experience heavy attenuation or immediate blockage, reflecting real-world propagation behavior.
+- **Signal Surfaces and Diagnostic Rays**: Displays received-power surfaces independently from segmented GeoJSON rays colored by modeled Rx dBm. Show all, selected, or hidden rays and focus a cell without launching new RF work.
 
-- **Sector Planning**: Sector antenna simulation with adjustable azimuth and beam width. Version 1 uses hard beam eligibility and does not model sidelobes, fading, diffraction, or MIMO scheduling.
+- **Explainable Propagation Modes**: Shared model dispatch, applicability checks, deterministic height-aware footprint LOS/NLOS classification with explicit height provenance, conservative unknown-height handling, terrain status, explicit legacy fallback, and per-response model identity keep urban NLOS path loss separate from legacy wall-event loss.
+
+- **Sector Planning**: Fast sector simulation with adjustable azimuth and beam width. The sector engine uses analytic antenna presets and does not model reflection-heavy multipath, fading, multiple-edge diffraction, or MIMO scheduling.
+
+- **2.5D Path Profiles**: Optional COG/GeoTIFF terrain, building-height obstruction, LOS/Fresnel evidence, selected single knife-edge diffraction, inspectable fidelity components, and a vertical cross section. P.526/path-profile diffraction and terrain evidence are diagnostic and do not add loss to canonical urban RF evaluation.
+
+- **Experiments and Surfaces**: Asynchronous reproducible parameter matrices, Pareto evidence, regular coverage rasters/isolines, and GeoTIFF/GeoJSON/CSV interchange.
+
+- **Per-Cell RF Inventory**: Places, drags, duplicates, imports, validates, and persists cells with independent technology, band/channel, duplex, power, gain/loss, antenna geometry and patterns, load/reuse, PCI, and receiver assumptions.
+
+- **Inspectable Link Budgets and Receiver Thresholds**: Distinguishes conducted power, EIRP, absolute antenna gain, pattern attenuation, receiver gain, and polarization loss. Manual sensitivity remains available alongside opt-in thermal-noise-derived per-cell thresholds, separate from building-service and interference criteria.
 
 - **Interference Analysis**: Produces planning-grade RSRP, SINR, RSRQ, RSSI, serving-cell, and strongest-interferer surfaces for selected 4G and 5G cells.
 
-- **Deterministic Network Optimization**: Sweeps candidate azimuths and scores sectors or two-to-six-cell clusters using POI demand, residential-density demand, coverage, and overlap penalties.
+- **Deterministic Network Optimization**: Optimizes sectors or two-to-eight-cell networks using POI demand, residential demand, propagation reach, and overlap. Network results include a normalized 0–100 score, configurable priorities and constraints, feasible Pareto solutions, baseline impact, and per-cell explanations. Optional multistart and Pareto-archive search policies and a 4G/5G radio-quality objective support deeper analysis.
 
-- **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam that fall below usable service quality, helping planners see underserved residential and POI targets instead of only raw ray distance.
+- **Coverage Gap Finder**: Flags demand-weighted buildings inside the active beam whose raw received power does not exceed the separate `-100 dBm` building-service threshold, helping planners see underserved residential and POI targets instead of only raw ray distance.
+
+- **Building Entry Analysis**: Estimates deterministic 2.6/28 GHz low-loss and high-loss service immediately inside representative building facades with one batched request, optional material evidence, and no indoor or whole-building claim.
 
 - **5G Communication Paths**: Separately visualizes direct Xn-C/Xn-U coordination, N2 fallback through AMF, and N3 user-plane routing through UPF when the optional 5G Core Lab overlay is enabled.
 
-- **Operational Safeguards**: Uses request cancellation, latest-response protection, bounded worker pools, request-size limits, readiness probes, and explicit `429` overload responses.
+- **Operational Safeguards**: Uses request cancellation, latest-response protection, bounded worker pools, request-size limits, readiness probes, and explicit `429` overload responses. The request budget retains 20 ordinary attempts per client IP per 60 seconds, with up to eight shared, input-bound verified follow-up units for eligible network-map and azimuth refreshes.
 
-- **Local Projects and Scenario Comparison**: Autosaves planning drafts in IndexedDB, exports versioned project files, retains reproducibility metadata, and compares two saved RF scenarios without adding another workspace tool.
+- **Local Projects, Scenario Versions, and Run History**: Autosaves drafts in IndexedDB, saves immutable scenario Versions, supports branching and input comparisons, and retains Run lineage with explicit current, stale, and historical result context. Project schema-v3 exports preserve retained results and provenance, with valid v1/v2 imports supported. Imports retain a 16 MiB file ceiling and decoded-content limits; large ray-bearing exports can still exceed those guards.
 
-- **Candidate Cell Recommendations**: Ranks known, unselected planning records inside a drawn search area by marginal coverage, POI/residential demand, and overlap. Recommendations do not claim site availability, cost, backhaul, or permitting feasibility.
+- **Reproducible Planning Reports**: Generates local Markdown/HTML report artifacts from current or historical Runs, with exact scenario Version/Run lineage, SHA-256 verification, baseline/Pareto evidence, and offline downloads.
 
-- **Measurement Validation**: Imports up to 5,000 4G/5G RSRP samples, maps model residuals, reports MAE/RMSE/bias, and offers an explicitly labeled holdout-checked global dB correction when enough valid samples exist.
+- **Candidate Cell Recommendations**: Ranks known, unselected 4G/5G planning records inside a drawn search area by marginal coverage, POI/residential demand, and overlap, using up to five existing cells. Recommendations do not claim site availability, cost, backhaul, or permitting feasibility.
 
-- **Validated Dataset Packs**: Loads a manifest-driven tower/building pack through `ATOM_DATASET_DIR`, verifies EPSG:4326 metadata and SHA-256 hashes, and exposes active dataset/model identity through `/api/meta`.
+- **Measurement Validation**: Evaluates up to 5,000 4G/5G RSRP samples against one to six cells, maps residuals, and reports MAE/RMSE/bias, spatially blocked validation, and uncertainty evidence. An explicitly labeled holdout-checked global dB correction is available when enough valid samples exist.
+
+- **Research and Reference Diagnostics**: Provides isolated applicability-gated sub-THz atmospheric, P.1411, material/facade, measurement-evidence, and single-bounce reflection reference workflows. These tools expose their provenance and limits without automatically changing canonical network RF.
+
+- **Dataset Pack Studio**: Inspects, repairs, reprojects, crops, and packages arbitrary-region local data into schema-v2 packs with hashes, licenses, confidence, coverage/field QA, and optional terrain, clutter, height, and material layers.
+
+- **Validated Dataset Switching**: Lists only packs installed beneath `ATOM_DATASETS_ROOT` and atomically activates a fully validated pack by manifest ID, retaining the current immutable pack if validation fails.
 
 ---
 
@@ -63,7 +96,7 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 | **Backend** | Go (Golang) | Bounded RF worker execution, validation, resource controls, and in-memory R-Tree spatial queries |
 | **Frontend** | React + Leaflet | GeoJSON and canvas-backed map layers with interactive simulation controls |
 | **Data Pipeline** | Python + OSMnx | Local tower/building extraction and demand-surface enrichment |
-| **Runtime Data** | Manifest + GeoJSON + CSV | Validated local dataset packs loaded into memory at startup; no database required |
+| **Runtime Data** | Schema-v2 manifest + geospatial files | Validated local dataset packs loaded into immutable in-memory snapshots; no database required |
 | **Deployment** | Docker | Multi-stage build compiling both React and Go into a single, lightweight Alpine container |
 
 ---
@@ -72,11 +105,12 @@ The engine combines bounded Go worker pools, spatial indexing, deterministic ray
 
 ```text
 backend-go/       Go API, in-memory R-tree, ray tracing, azimuth optimization
+core-lab-adapter/ Optional 5G Core Lab status and scenario bridge
 frontend-react/   React/Vite/Leaflet dashboard and RF heatmap UI
 policy/           Canonical Core Lab, RF default, technology, and validation policy
 data-pipeline/    Python scripts for local tower/building data generation
-docs/             GitHub Pages documentation, search index, references, screenshots
-assets/           Source screenshots used by README/docs
+docs/             GitHub Pages documentation, search index, references, canonical assets
+examples/         Importable local planning projects
 Dockerfile        Production multi-stage build for the static in-memory app
 ```
 
@@ -86,29 +120,37 @@ Runtime policy bindings are generated from `policy/rf-policy.json`. After changi
 
 ---
 
-## Focused Workspace
+## Workspace Gallery
 
-![A.T.O.M focused map workspace](./docs/assets/focused-workspace.jpg)
+The screenshots below show the **0.12.0** workspace on the Ankara dataset with the 5G mmWave preset at 28 GHz.
 
-The current interface uses a compact command bar, workflow rail, overlay tool drawer, contextual result summary, independent map layers, and persistent inspectors. Radio-parameter edits mark existing results as stale without submitting hidden requests, while **Run Sector**, **Evaluate Network**, and tool-specific analysis actions keep execution visible.
+### Eight-Cell Network Workspace
 
----
+![A.T.O.M 0.12.0 dark workspace with eight selected cells, propagation rays, and the map key](./docs/assets/v0.12.0/network-workspace.png)
 
-## Propagation Visualization
+Eight selected cells, their antenna directions, the planning area, and received-power ray colors remain visible alongside the command bar and map key.
 
-### 4G Coverage
-![4G Propagation](./assets/4g.png)
+The current interface uses a compact command bar, workflow rail, overlay tool drawer, contextual result summary, independent map layers, and persistent inspectors. The map's RF controls separate the received-power surface from diagnostic rays, with explicit all/selected/hidden ray scope and a map-focus cell that is independent from Pareto solution inspection. Radio-parameter edits mark existing results as stale without submitting hidden requests, while **Run Sector**, **Evaluate Network**, and tool-specific analysis actions keep execution visible.
 
-### 5G Coverage
-![5G Propagation](./assets/5g.png)
+### Network Propagation Controls
 
-### 6G Sub-THz Coverage
-![6G Propagation](./assets/6g.png)
+![Network propagation drawer with ray count, radius, azimuth, beam width, and Optimize Network controls](./docs/assets/v0.12.0/network-propagation.png)
 
-### Auto-Optimized 5G Beamforming
-![5G Auto-Optimized](./assets/5g-auto-optimized.png)
+The **Simulate** stage keeps ray count, radius, azimuth, and beam width in Planning, with specialist options under **Advanced analysis** and **Research / reference**.
 
-*Visualizing multi-generation RF propagation patterns and deterministic antenna-placement recommendations in urban environments.*
+### Optimization Results and Impact
+
+![Network optimization results with a normalized score, demand and residential impact, propagation reach, overlap, and radio-quality evidence](./docs/assets/v0.12.0/network-optimization-results.png)
+
+The **Review** stage shows the recommendation's score, baseline deltas, raw metrics, feasible non-dominated solutions, and source Run. Values in this screenshot belong to the illustrated scenario.
+
+### Single-Sector Planning
+
+![Single-cell 5G sector propagation with editable antenna geometry and Auto-Optimize Sector action](./docs/assets/v0.12.0/single-sector-propagation.png)
+
+Single mode provides **Run Sector** and **Auto-Optimize Sector** actions for the active cell, with the same propagation controls and diagnostic disclosures.
+
+4G uses the 2.6 GHz planning preset; 6G uses the experimental 140 GHz `research_sub_thz` profile. Interference, building-entry analysis, recommendations, and standard measurement validation remain restricted to 4G/5G. See the [capability reference](docs/features.html) and [model limitations](docs/modeling-limits.html) for workflow-specific applicability.
 
 ---
 
@@ -125,8 +167,8 @@ The 111 MB Ankara building dataset is managed by Git LFS, so clone the repositor
 
 ```bash
 git lfs install
-git clone https://github.com/Berk-Unsal/urban-ray-tracer.git
-cd urban-ray-tracer
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
 git lfs pull
 docker compose up --build -d atom
 ```
@@ -142,17 +184,18 @@ cd backend-go
 go run ./cmd/validate-dataset ../data-pipeline
 ```
 
-To use another prepared geography, mount its manifest and GeoJSON files and set `ATOM_DATASET_DIR` before startup. Dataset changes require a restart.
+To build another geography, use the local [Dataset Pack Studio](docs/dataset-pack-studio.html), validate its output, and set `ATOM_DATASET_DIR` to the initial pack. Mount a parent directory as `ATOM_DATASETS_ROOT` to list and safely switch among installed packs from the Data tool without restarting.
 
 ### Optional Core Lab Mode
 
 Core Lab Mode is opt-in. The default app does **not** start any 5G Core containers or require Open5GS.
 
 ```bash
+export CORE_LAB_API_KEY="$(openssl rand -hex 32)"
 docker compose -f docker-compose.yml -f docker-compose.core-lab.yml --profile core-lab up --build
 ```
 
-This starts A.T.O.M with `CORE_LAB_ENABLED=true` and a lightweight `core-lab-adapter` sidecar at port `8090`. The adapter exposes stable Core Lab JSON for AMF, SMF, UPF, UDM/UDR, AUSF, PCF, NRF, and NSSF status. If no Open5GS endpoint is configured, scenario effects are marked as a deterministic `simulated_overlay`; point `OPEN5GS_STATUS_URL` or `OPEN5GS_METRICS_URL` at a real Open5GS lab to bridge external emulator state.
+This starts A.T.O.M with `CORE_LAB_ENABLED=true` and a lightweight `core-lab-adapter` sidecar reachable only over the Compose service network. Scenario mutation requires `CORE_LAB_API_KEY`; a same-origin gateway should inject the key for browser requests instead of exposing it to JavaScript. The adapter runs as a non-root user with a read-only filesystem and exposes stable Core Lab JSON for AMF, SMF, UPF, UDM/UDR, AUSF, PCF, NRF, and NSSF status. If no Open5GS endpoint is configured, scenario effects are marked as a deterministic `simulated_overlay`; point `OPEN5GS_STATUS_URL` or `OPEN5GS_METRICS_URL` at a real Open5GS lab to bridge external emulator state.
 
 Suggested Docker memory allocation:
 
@@ -172,7 +215,7 @@ Start with the static [documentation hub](docs/index.html), then use:
 - [Product compass](planning/product-compass.md) for enduring product strengths, capability horizons, feature-admission criteria, and deliberate non-goals.
 - [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
-- [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), and [model limitations](docs/modeling-limits.html) for implementation details.
+- [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), [Dataset Pack Studio](docs/dataset-pack-studio.html), and [model limitations](docs/modeling-limits.html) for implementation details.
 - [Map interpretation guide](docs/visualization.html) for reading propagation and radio-quality evidence.
 
 ## Versions and Release Notes

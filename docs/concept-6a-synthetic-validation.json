@@ -1,0 +1,2629 @@
+{
+  "artifact": "synthetic-validation",
+  "audit_version": "concept-6a-canonical-rf-validation-v1",
+  "concept": "6A",
+  "fixtures": [
+    {
+      "expected": {
+        "calibration": {
+          "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+          "frequency_specific": true,
+          "los_stratified": false,
+          "promoted": false,
+          "status": "calibration_candidate",
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 3,
+              "validation_count": 3,
+              "bias_db": 0,
+              "uncalibrated_baseline": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "heldout_constant_bias": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "stable": true
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 3,
+              "validation_count": 3,
+              "bias_db": 0,
+              "uncalibrated_baseline": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "heldout_constant_bias": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "stable": true
+            }
+          ],
+          "notes": [
+            "Bias is a frequency-specific diagnostic candidate only; LOS/NLOS-specific calibration and production promotion are disabled in Concept 6A."
+          ]
+        },
+        "counts": {
+          "total": 6,
+          "applicable": 6,
+          "censored": 0,
+          "inapplicable": 0,
+          "insufficient_metadata": 0,
+          "quantity_incompatible": 0,
+          "unresolved_transmitter": 0,
+          "deterministic_mismatch": 0,
+          "excluded_reason": {}
+        },
+        "holdout": {
+          "method": "leave_one_site_out",
+          "primary": false,
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05"
+              ],
+              "validation_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04"
+              ],
+              "calibration_sites": [
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 3,
+              "validation_count": 3,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04"
+              ],
+              "validation_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05"
+              ],
+              "calibration_sites": [
+                "site-a"
+              ],
+              "validation_sites": [
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 3,
+              "validation_count": 3,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            }
+          ]
+        },
+        "readiness": "validation_only",
+        "summary": {
+          "overall": [
+            {
+              "key": "received_power_dbm",
+              "quantity": "received_power_dbm",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ],
+          "by_frequency": [
+            {
+              "key": "received_power_dbm|28GHz",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ],
+          "by_los_nlos": [
+            {
+              "key": "received_power_dbm|los",
+              "quantity": "received_power_dbm",
+              "los_nlos": "los",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            },
+            {
+              "key": "received_power_dbm|nlos",
+              "quantity": "received_power_dbm",
+              "los_nlos": "nlos",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ],
+          "by_distance": [
+            {
+              "key": "received_power_dbm|10-50m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "10-50m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|400m+",
+              "quantity": "received_power_dbm",
+              "distance_bin": "400m+",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            },
+            {
+              "key": "received_power_dbm|50-100m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "50-100m",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            }
+          ],
+          "by_site": [
+            {
+              "key": "received_power_dbm|site-a",
+              "quantity": "received_power_dbm",
+              "site_id": "site-a",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            },
+            {
+              "key": "received_power_dbm|site-b",
+              "quantity": "received_power_dbm",
+              "site_id": "site-b",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ],
+          "by_campaign": [
+            {
+              "key": "received_power_dbm|campaign-1",
+              "quantity": "received_power_dbm",
+              "campaign_id": "campaign-1",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ]
+        }
+      },
+      "id": "exact_canonical_residual_zero",
+      "purpose": "Measured value is generated by the same canonical production primitive; all uncensored residuals must be zero."
+    },
+    {
+      "expected": {
+        "calibration": {
+          "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+          "frequency_specific": true,
+          "los_stratified": false,
+          "promoted": false,
+          "status": "calibration_candidate",
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 4,
+              "validation_count": 4,
+              "bias_db": 5,
+              "uncalibrated_baseline": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              },
+              "heldout_constant_bias": {
+                "n": 4,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "stable": true
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 4,
+              "validation_count": 4,
+              "bias_db": 5,
+              "uncalibrated_baseline": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              },
+              "heldout_constant_bias": {
+                "n": 4,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "stable": true
+            }
+          ],
+          "notes": [
+            "Bias is a frequency-specific diagnostic candidate only; LOS/NLOS-specific calibration and production promotion are disabled in Concept 6A."
+          ]
+        },
+        "counts": {
+          "total": 8,
+          "applicable": 8,
+          "censored": 0,
+          "inapplicable": 0,
+          "insufficient_metadata": 0,
+          "quantity_incompatible": 0,
+          "unresolved_transmitter": 0,
+          "deterministic_mismatch": 0,
+          "excluded_reason": {}
+        },
+        "holdout": {
+          "method": "leave_one_site_out",
+          "primary": false,
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05",
+                "obs-07"
+              ],
+              "validation_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04",
+                "obs-06"
+              ],
+              "calibration_sites": [
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 4,
+              "validation_count": 4,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04",
+                "obs-06"
+              ],
+              "validation_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05",
+                "obs-07"
+              ],
+              "calibration_sites": [
+                "site-a"
+              ],
+              "validation_sites": [
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 4,
+              "validation_count": 4,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            }
+          ]
+        },
+        "readiness": "validation_only",
+        "summary": {
+          "overall": [
+            {
+              "key": "received_power_dbm",
+              "quantity": "received_power_dbm",
+              "metric": {
+                "n": 8,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 4.999999999999999,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ],
+          "by_frequency": [
+            {
+              "key": "received_power_dbm|28GHz",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "metric": {
+                "n": 8,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 4.999999999999999,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ],
+          "by_los_nlos": [
+            {
+              "key": "received_power_dbm|los",
+              "quantity": "received_power_dbm",
+              "los_nlos": "los",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|nlos",
+              "quantity": "received_power_dbm",
+              "los_nlos": "nlos",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ],
+          "by_distance": [
+            {
+              "key": "received_power_dbm|10-50m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "10-50m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|100-200m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "100-200m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|400m+",
+              "quantity": "received_power_dbm",
+              "distance_bin": "400m+",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|50-100m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "50-100m",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5,
+                "small_group": true
+              }
+            }
+          ],
+          "by_site": [
+            {
+              "key": "received_power_dbm|site-a",
+              "quantity": "received_power_dbm",
+              "site_id": "site-a",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|site-b",
+              "quantity": "received_power_dbm",
+              "site_id": "site-b",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ],
+          "by_campaign": [
+            {
+              "key": "received_power_dbm|campaign-1",
+              "quantity": "received_power_dbm",
+              "campaign_id": "campaign-1",
+              "metric": {
+                "n": 8,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 4.999999999999999,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ]
+        }
+      },
+      "id": "known_plus_5_db_offset",
+      "purpose": "A controlled +5 dB measurement offset must be recovered by an isolated held-out constant-bias diagnostic, never activated in production."
+    },
+    {
+      "expected": {
+        "calibration": {
+          "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+          "frequency_specific": true,
+          "los_stratified": false,
+          "promoted": false,
+          "status": "calibration_unstable",
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 6,
+              "validation_count": 6,
+              "bias_db": 10,
+              "uncalibrated_baseline": {
+                "n": 6,
+                "mean_bias_db": 9.25,
+                "median_bias_db": 8.25,
+                "mae_db": 9.25,
+                "rmse_db": 11.771257366993554,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 8.25,
+                "p90_abs_error_db": 18,
+                "p95_abs_error_db": 18.375,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.825,
+                "p10_residual_db": 1.5,
+                "p90_residual_db": 18,
+                "p99_residual_db": 18.675,
+                "max_residual_db": 18.75
+              },
+              "heldout_constant_bias": {
+                "n": 6,
+                "mean_bias_db": -0.75,
+                "median_bias_db": -1.75,
+                "mae_db": 7,
+                "rmse_db": 7.318640584152224,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 7.5,
+                "p90_abs_error_db": 9,
+                "p95_abs_error_db": 9.125,
+                "min_residual_db": -9.25,
+                "p01_residual_db": -9.174999999999999,
+                "p10_residual_db": -8.5,
+                "p90_residual_db": 8,
+                "p99_residual_db": 8.675,
+                "max_residual_db": 8.75
+              },
+              "stable": false
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 6,
+              "validation_count": 6,
+              "bias_db": 9.25,
+              "uncalibrated_baseline": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 9,
+                "mae_db": 10,
+                "rmse_db": 12.36931687685298,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 9,
+                "p90_abs_error_db": 18.75,
+                "p95_abs_error_db": 19.125,
+                "min_residual_db": 1.5,
+                "p01_residual_db": 1.5749999999999997,
+                "p10_residual_db": 2.25,
+                "p90_residual_db": 18.75,
+                "p99_residual_db": 19.425,
+                "max_residual_db": 19.5
+              },
+              "heldout_constant_bias": {
+                "n": 6,
+                "mean_bias_db": 0.75,
+                "median_bias_db": -0.25,
+                "mae_db": 7,
+                "rmse_db": 7.318640584152224,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 7,
+                "p90_abs_error_db": 9.5,
+                "p95_abs_error_db": 9.875,
+                "min_residual_db": -7.75,
+                "p01_residual_db": -7.675,
+                "p10_residual_db": -7,
+                "p90_residual_db": 9.5,
+                "p99_residual_db": 10.175,
+                "max_residual_db": 10.25
+              },
+              "stable": false
+            }
+          ],
+          "notes": [
+            "Constant-bias stability is not established across independent folds; no correction is active."
+          ]
+        },
+        "counts": {
+          "total": 12,
+          "applicable": 12,
+          "censored": 0,
+          "inapplicable": 0,
+          "insufficient_metadata": 0,
+          "quantity_incompatible": 0,
+          "unresolved_transmitter": 0,
+          "deterministic_mismatch": 0,
+          "excluded_reason": {}
+        },
+        "holdout": {
+          "method": "leave_one_site_out",
+          "primary": false,
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05",
+                "obs-07",
+                "obs-09",
+                "obs-11"
+              ],
+              "validation_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04",
+                "obs-06",
+                "obs-08",
+                "obs-10"
+              ],
+              "calibration_sites": [
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 6,
+              "validation_count": 6,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04",
+                "obs-06",
+                "obs-08",
+                "obs-10"
+              ],
+              "validation_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05",
+                "obs-07",
+                "obs-09",
+                "obs-11"
+              ],
+              "calibration_sites": [
+                "site-a"
+              ],
+              "validation_sites": [
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 6,
+              "validation_count": 6,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            }
+          ]
+        },
+        "readiness": "calibration_unstable",
+        "summary": {
+          "overall": [
+            {
+              "key": "received_power_dbm",
+              "quantity": "received_power_dbm",
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 9.625,
+                "median_bias_db": 8.625,
+                "mae_db": 9.625,
+                "rmse_db": 12.07399064104325,
+                "std_db": 7.289761655911667,
+                "p50_abs_error_db": 8.625,
+                "p90_abs_error_db": 18.675,
+                "p95_abs_error_db": 19.0875,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.8325,
+                "p10_residual_db": 1.575,
+                "p90_residual_db": 18.675,
+                "p99_residual_db": 19.4175,
+                "max_residual_db": 19.5
+              }
+            }
+          ],
+          "by_frequency": [
+            {
+              "key": "received_power_dbm|28GHz",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 9.625,
+                "median_bias_db": 8.625,
+                "mae_db": 9.625,
+                "rmse_db": 12.07399064104325,
+                "std_db": 7.289761655911667,
+                "p50_abs_error_db": 8.625,
+                "p90_abs_error_db": 18.675,
+                "p95_abs_error_db": 19.0875,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.8325,
+                "p10_residual_db": 1.575,
+                "p90_residual_db": 18.675,
+                "p99_residual_db": 19.4175,
+                "max_residual_db": 19.5
+              }
+            }
+          ],
+          "by_los_nlos": [
+            {
+              "key": "received_power_dbm|los",
+              "quantity": "received_power_dbm",
+              "los_nlos": "los",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 9.25,
+                "median_bias_db": 8.25,
+                "mae_db": 9.25,
+                "rmse_db": 11.771257366993554,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 8.25,
+                "p90_abs_error_db": 18,
+                "p95_abs_error_db": 18.375,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.825,
+                "p10_residual_db": 1.5,
+                "p90_residual_db": 18,
+                "p99_residual_db": 18.675,
+                "max_residual_db": 18.75
+              }
+            },
+            {
+              "key": "received_power_dbm|nlos",
+              "quantity": "received_power_dbm",
+              "los_nlos": "nlos",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 9,
+                "mae_db": 10,
+                "rmse_db": 12.36931687685298,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 9,
+                "p90_abs_error_db": 18.75,
+                "p95_abs_error_db": 19.125,
+                "min_residual_db": 1.5,
+                "p01_residual_db": 1.5749999999999997,
+                "p10_residual_db": 2.25,
+                "p90_residual_db": 18.75,
+                "p99_residual_db": 19.425,
+                "max_residual_db": 19.5
+              }
+            }
+          ],
+          "by_distance": [
+            {
+              "key": "received_power_dbm|10-50m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "10-50m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 0.75,
+                "median_bias_db": 0.75,
+                "mae_db": 0.75,
+                "rmse_db": 0.75,
+                "std_db": 0,
+                "p50_abs_error_db": 0.75,
+                "p90_abs_error_db": 0.75,
+                "p95_abs_error_db": 0.75,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.75,
+                "p10_residual_db": 0.75,
+                "p90_residual_db": 0.75,
+                "p99_residual_db": 0.75,
+                "max_residual_db": 0.75,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|100-200m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "100-200m",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 3.75,
+                "median_bias_db": 3.75,
+                "mae_db": 3.75,
+                "rmse_db": 3.799671038392666,
+                "std_db": 0.6123724356957945,
+                "p50_abs_error_db": 3.75,
+                "p90_abs_error_db": 4.35,
+                "p95_abs_error_db": 4.425,
+                "min_residual_db": 3,
+                "p01_residual_db": 3.015,
+                "p10_residual_db": 3.1500000000000004,
+                "p90_residual_db": 4.35,
+                "p99_residual_db": 4.485,
+                "max_residual_db": 4.5
+              }
+            },
+            {
+              "key": "received_power_dbm|400m+",
+              "quantity": "received_power_dbm",
+              "distance_bin": "400m+",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 16.625,
+                "median_bias_db": 17.625,
+                "mae_db": 16.625,
+                "rmse_db": 16.823532625462466,
+                "std_db": 2.576941016011038,
+                "p50_abs_error_db": 17.625,
+                "p90_abs_error_db": 19.125,
+                "p95_abs_error_db": 19.3125,
+                "min_residual_db": 12.75,
+                "p01_residual_db": 12.7875,
+                "p10_residual_db": 13.125,
+                "p90_residual_db": 19.125,
+                "p99_residual_db": 19.4625,
+                "max_residual_db": 19.5
+              }
+            },
+            {
+              "key": "received_power_dbm|50-100m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "50-100m",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 1.875,
+                "median_bias_db": 1.875,
+                "mae_db": 1.875,
+                "rmse_db": 1.9121323175972944,
+                "std_db": 0.375,
+                "p50_abs_error_db": 1.875,
+                "p90_abs_error_db": 2.175,
+                "p95_abs_error_db": 2.2125,
+                "min_residual_db": 1.5,
+                "p01_residual_db": 1.5074999999999998,
+                "p10_residual_db": 1.5750000000000002,
+                "p90_residual_db": 2.175,
+                "p99_residual_db": 2.2425,
+                "max_residual_db": 2.25,
+                "small_group": true
+              }
+            }
+          ],
+          "by_site": [
+            {
+              "key": "received_power_dbm|site-a",
+              "quantity": "received_power_dbm",
+              "site_id": "site-a",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 9.25,
+                "median_bias_db": 8.25,
+                "mae_db": 9.25,
+                "rmse_db": 11.771257366993554,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 8.25,
+                "p90_abs_error_db": 18,
+                "p95_abs_error_db": 18.375,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.825,
+                "p10_residual_db": 1.5,
+                "p90_residual_db": 18,
+                "p99_residual_db": 18.675,
+                "max_residual_db": 18.75
+              }
+            },
+            {
+              "key": "received_power_dbm|site-b",
+              "quantity": "received_power_dbm",
+              "site_id": "site-b",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 9,
+                "mae_db": 10,
+                "rmse_db": 12.36931687685298,
+                "std_db": 7.280109889280518,
+                "p50_abs_error_db": 9,
+                "p90_abs_error_db": 18.75,
+                "p95_abs_error_db": 19.125,
+                "min_residual_db": 1.5,
+                "p01_residual_db": 1.5749999999999997,
+                "p10_residual_db": 2.25,
+                "p90_residual_db": 18.75,
+                "p99_residual_db": 19.425,
+                "max_residual_db": 19.5
+              }
+            }
+          ],
+          "by_campaign": [
+            {
+              "key": "received_power_dbm|campaign-1",
+              "quantity": "received_power_dbm",
+              "campaign_id": "campaign-1",
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 9.625,
+                "median_bias_db": 8.625,
+                "mae_db": 9.625,
+                "rmse_db": 12.07399064104325,
+                "std_db": 7.289761655911667,
+                "p50_abs_error_db": 8.625,
+                "p90_abs_error_db": 18.675,
+                "p95_abs_error_db": 19.0875,
+                "min_residual_db": 0.75,
+                "p01_residual_db": 0.8325,
+                "p10_residual_db": 1.575,
+                "p90_residual_db": 18.675,
+                "p99_residual_db": 19.4175,
+                "max_residual_db": 19.5
+              }
+            }
+          ]
+        }
+      },
+      "id": "distance_dependent_error_constant_bias_fails",
+      "purpose": "A distance-dependent residual structure must remain after a scalar offset and be classified as calibration-unstable."
+    },
+    {
+      "expected": {
+        "calibration": {
+          "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+          "frequency_specific": true,
+          "los_stratified": false,
+          "promoted": false,
+          "status": "calibration_unstable",
+          "folds": [
+            {
+              "fold_id": "fold-001-8883:5602",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 6,
+              "validation_count": 6,
+              "bias_db": 10,
+              "uncalibrated_baseline": {
+                "n": 6,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              },
+              "heldout_constant_bias": {
+                "n": 6,
+                "mean_bias_db": -10,
+                "median_bias_db": -10,
+                "mae_db": 10,
+                "rmse_db": 10,
+                "std_db": 0,
+                "p50_abs_error_db": 10,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": -10,
+                "p01_residual_db": -10,
+                "p10_residual_db": -10,
+                "p90_residual_db": -10,
+                "p99_residual_db": -10,
+                "max_residual_db": -10
+              },
+              "stable": false
+            },
+            {
+              "fold_id": "fold-002-8883:5603",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 6,
+              "validation_count": 6,
+              "bias_db": 0,
+              "uncalibrated_baseline": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 10,
+                "mae_db": 10,
+                "rmse_db": 10,
+                "std_db": 0,
+                "p50_abs_error_db": 10,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 10,
+                "p01_residual_db": 10,
+                "p10_residual_db": 10,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              },
+              "heldout_constant_bias": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 10,
+                "mae_db": 10,
+                "rmse_db": 10,
+                "std_db": 0,
+                "p50_abs_error_db": 10,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 10,
+                "p01_residual_db": 10,
+                "p10_residual_db": 10,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              },
+              "stable": false
+            }
+          ],
+          "notes": [
+            "Constant-bias stability is not established across independent folds; no correction is active."
+          ]
+        },
+        "counts": {
+          "total": 12,
+          "applicable": 12,
+          "censored": 0,
+          "inapplicable": 0,
+          "insufficient_metadata": 0,
+          "quantity_incompatible": 0,
+          "unresolved_transmitter": 0,
+          "deterministic_mismatch": 0,
+          "excluded_reason": {}
+        },
+        "holdout": {
+          "method": "spatial_blocks",
+          "primary": true,
+          "spatial_cell_size_m": 500,
+          "folds": [
+            {
+              "fold_id": "fold-001-8883:5602",
+              "method": "spatial_blocks",
+              "calibration_ids": [
+                "obs-06",
+                "obs-07",
+                "obs-08",
+                "obs-09",
+                "obs-10",
+                "obs-11"
+              ],
+              "validation_ids": [
+                "obs-00",
+                "obs-01",
+                "obs-02",
+                "obs-03",
+                "obs-04",
+                "obs-05"
+              ],
+              "calibration_sites": [
+                "site-a",
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a",
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 6,
+              "validation_count": 6,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic spatial_blocks groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            },
+            {
+              "fold_id": "fold-002-8883:5603",
+              "method": "spatial_blocks",
+              "calibration_ids": [
+                "obs-00",
+                "obs-01",
+                "obs-02",
+                "obs-03",
+                "obs-04",
+                "obs-05"
+              ],
+              "validation_ids": [
+                "obs-06",
+                "obs-07",
+                "obs-08",
+                "obs-09",
+                "obs-10",
+                "obs-11"
+              ],
+              "calibration_sites": [
+                "site-a",
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a",
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 6,
+              "validation_count": 6,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic spatial_blocks groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            }
+          ]
+        },
+        "readiness": "calibration_unstable",
+        "summary": {
+          "overall": [
+            {
+              "key": "received_power_dbm",
+              "quantity": "received_power_dbm",
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            }
+          ],
+          "by_frequency": [
+            {
+              "key": "received_power_dbm|28GHz",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            }
+          ],
+          "by_los_nlos": [
+            {
+              "key": "received_power_dbm|los",
+              "quantity": "received_power_dbm",
+              "los_nlos": "los",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            },
+            {
+              "key": "received_power_dbm|nlos",
+              "quantity": "received_power_dbm",
+              "los_nlos": "nlos",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            }
+          ],
+          "by_distance": [
+            {
+              "key": "received_power_dbm|10-50m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "10-50m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|100-200m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "100-200m",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            },
+            {
+              "key": "received_power_dbm|400m+",
+              "quantity": "received_power_dbm",
+              "distance_bin": "400m+",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 10,
+                "mae_db": 10,
+                "rmse_db": 10,
+                "std_db": 0,
+                "p50_abs_error_db": 10,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 10,
+                "p01_residual_db": 10,
+                "p10_residual_db": 10,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            },
+            {
+              "key": "received_power_dbm|50-100m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "50-100m",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            }
+          ],
+          "by_site": [
+            {
+              "key": "received_power_dbm|site-a",
+              "quantity": "received_power_dbm",
+              "site_id": "site-a",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            },
+            {
+              "key": "received_power_dbm|site-b",
+              "quantity": "received_power_dbm",
+              "site_id": "site-b",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            }
+          ],
+          "by_campaign": [
+            {
+              "key": "received_power_dbm|campaign-1",
+              "quantity": "received_power_dbm",
+              "campaign_id": "campaign-1",
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 7.0710678118654755,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              }
+            }
+          ]
+        }
+      },
+      "id": "spatial_error_holdout_failure",
+      "purpose": "An offset confined to a held-out spatial region must not be hidden by a random row split or in-sample calibration."
+    },
+    {
+      "expected": {
+        "calibration": {
+          "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+          "frequency_specific": true,
+          "los_stratified": false,
+          "promoted": false,
+          "status": "calibration_unstable",
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 6,
+              "validation_count": 6,
+              "bias_db": -5,
+              "uncalibrated_baseline": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              },
+              "heldout_constant_bias": {
+                "n": 6,
+                "mean_bias_db": 10,
+                "median_bias_db": 10,
+                "mae_db": 10,
+                "rmse_db": 10,
+                "std_db": 0,
+                "p50_abs_error_db": 10,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": 10,
+                "p01_residual_db": 10,
+                "p10_residual_db": 10,
+                "p90_residual_db": 10,
+                "p99_residual_db": 10,
+                "max_residual_db": 10
+              },
+              "stable": false
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 6,
+              "validation_count": 6,
+              "bias_db": 5,
+              "uncalibrated_baseline": {
+                "n": 6,
+                "mean_bias_db": -5,
+                "median_bias_db": -5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": -5,
+                "p99_residual_db": -5,
+                "max_residual_db": -5
+              },
+              "heldout_constant_bias": {
+                "n": 6,
+                "mean_bias_db": -10,
+                "median_bias_db": -10,
+                "mae_db": 10,
+                "rmse_db": 10,
+                "std_db": 0,
+                "p50_abs_error_db": 10,
+                "p90_abs_error_db": 10,
+                "p95_abs_error_db": 10,
+                "min_residual_db": -10,
+                "p01_residual_db": -10,
+                "p10_residual_db": -10,
+                "p90_residual_db": -10,
+                "p99_residual_db": -10,
+                "max_residual_db": -10
+              },
+              "stable": false
+            }
+          ],
+          "notes": [
+            "Constant-bias stability is not established across independent folds; no correction is active."
+          ]
+        },
+        "counts": {
+          "total": 12,
+          "applicable": 12,
+          "censored": 0,
+          "inapplicable": 0,
+          "insufficient_metadata": 0,
+          "quantity_incompatible": 0,
+          "unresolved_transmitter": 0,
+          "deterministic_mismatch": 0,
+          "excluded_reason": {}
+        },
+        "holdout": {
+          "method": "leave_one_site_out",
+          "primary": false,
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05",
+                "obs-07",
+                "obs-09",
+                "obs-11"
+              ],
+              "validation_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04",
+                "obs-06",
+                "obs-08",
+                "obs-10"
+              ],
+              "calibration_sites": [
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 6,
+              "validation_count": 6,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-00",
+                "obs-02",
+                "obs-04",
+                "obs-06",
+                "obs-08",
+                "obs-10"
+              ],
+              "validation_ids": [
+                "obs-01",
+                "obs-03",
+                "obs-05",
+                "obs-07",
+                "obs-09",
+                "obs-11"
+              ],
+              "calibration_sites": [
+                "site-a"
+              ],
+              "validation_sites": [
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 6,
+              "validation_count": 6,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            }
+          ]
+        },
+        "readiness": "calibration_unstable",
+        "summary": {
+          "overall": [
+            {
+              "key": "received_power_dbm",
+              "quantity": "received_power_dbm",
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ],
+          "by_frequency": [
+            {
+              "key": "received_power_dbm|28GHz",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ],
+          "by_los_nlos": [
+            {
+              "key": "received_power_dbm|los",
+              "quantity": "received_power_dbm",
+              "los_nlos": "los",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|nlos",
+              "quantity": "received_power_dbm",
+              "los_nlos": "nlos",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": -5,
+                "median_bias_db": -5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": -5,
+                "p99_residual_db": -5,
+                "max_residual_db": -5
+              }
+            }
+          ],
+          "by_distance": [
+            {
+              "key": "received_power_dbm|10-50m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "10-50m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|100-200m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "100-200m",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": -1.6666666666666667,
+                "median_bias_db": -5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 4.714045207910317,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": 3.0000000000000004,
+                "p99_residual_db": 4.8,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|400m+",
+              "quantity": "received_power_dbm",
+              "distance_bin": "400m+",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|50-100m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "50-100m",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -4.9,
+                "p10_residual_db": -4,
+                "p90_residual_db": 4,
+                "p99_residual_db": 4.9,
+                "max_residual_db": 5,
+                "small_group": true
+              }
+            }
+          ],
+          "by_site": [
+            {
+              "key": "received_power_dbm|site-a",
+              "quantity": "received_power_dbm",
+              "site_id": "site-a",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": 5,
+                "median_bias_db": 5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": 5,
+                "p01_residual_db": 5,
+                "p10_residual_db": 5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            },
+            {
+              "key": "received_power_dbm|site-b",
+              "quantity": "received_power_dbm",
+              "site_id": "site-b",
+              "metric": {
+                "n": 6,
+                "mean_bias_db": -5,
+                "median_bias_db": -5,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 0,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": -5,
+                "p99_residual_db": -5,
+                "max_residual_db": -5
+              }
+            }
+          ],
+          "by_campaign": [
+            {
+              "key": "received_power_dbm|campaign-1",
+              "quantity": "received_power_dbm",
+              "campaign_id": "campaign-1",
+              "metric": {
+                "n": 12,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 5,
+                "rmse_db": 5,
+                "std_db": 5,
+                "p50_abs_error_db": 5,
+                "p90_abs_error_db": 5,
+                "p95_abs_error_db": 5,
+                "min_residual_db": -5,
+                "p01_residual_db": -5,
+                "p10_residual_db": -5,
+                "p90_residual_db": 5,
+                "p99_residual_db": 5,
+                "max_residual_db": 5
+              }
+            }
+          ]
+        }
+      },
+      "id": "los_nlos_differential_scalar_inadequate",
+      "purpose": "Opposite LOS and NLOS offsets must remain visible in separate strata; Concept 6A does not fit LOS/NLOS-specific calibration."
+    },
+    {
+      "expected": {
+        "calibration": {
+          "policy": "constant_bias_from_calibration_groups_applied_only_to_heldout_diagnostics",
+          "frequency_specific": true,
+          "los_stratified": false,
+          "promoted": false,
+          "status": "calibration_unstable",
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 2,
+              "validation_count": 2,
+              "bias_db": 0,
+              "uncalibrated_baseline": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              },
+              "heldout_constant_bias": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              },
+              "stable": false
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "calibration_count": 2,
+              "validation_count": 2,
+              "bias_db": 0,
+              "uncalibrated_baseline": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              },
+              "heldout_constant_bias": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              },
+              "stable": false
+            }
+          ],
+          "notes": [
+            "Constant-bias stability is not established across independent folds; no correction is active."
+          ]
+        },
+        "counts": {
+          "total": 5,
+          "applicable": 4,
+          "censored": 1,
+          "inapplicable": 0,
+          "insufficient_metadata": 0,
+          "quantity_incompatible": 0,
+          "unresolved_transmitter": 0,
+          "deterministic_mismatch": 0,
+          "excluded_reason": {
+            "explicit_censoring_not_exact_observation": 1
+          }
+        },
+        "holdout": {
+          "method": "leave_one_site_out",
+          "primary": false,
+          "folds": [
+            {
+              "fold_id": "fold-001-site-a",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-01",
+                "obs-03"
+              ],
+              "validation_ids": [
+                "obs-02",
+                "obs-04"
+              ],
+              "calibration_sites": [
+                "site-b"
+              ],
+              "validation_sites": [
+                "site-a"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 2,
+              "validation_count": 2,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            },
+            {
+              "fold_id": "fold-002-site-b",
+              "method": "leave_one_site_out",
+              "calibration_ids": [
+                "obs-02",
+                "obs-04"
+              ],
+              "validation_ids": [
+                "obs-01",
+                "obs-03"
+              ],
+              "calibration_sites": [
+                "site-a"
+              ],
+              "validation_sites": [
+                "site-b"
+              ],
+              "calibration_campaigns": [
+                "campaign-1"
+              ],
+              "validation_campaigns": [
+                "campaign-1"
+              ],
+              "calibration_count": 2,
+              "validation_count": 2,
+              "minimum_separation_m": 0,
+              "no_leak_evidence": "deterministic leave_one_site_out groups are disjoint; calibration observations within 0.0 m of validation observations are excluded; no random row split is used"
+            }
+          ]
+        },
+        "readiness": "calibration_unstable",
+        "summary": {
+          "overall": [
+            {
+              "key": "received_power_dbm",
+              "quantity": "received_power_dbm",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ],
+          "by_frequency": [
+            {
+              "key": "received_power_dbm|28GHz",
+              "quantity": "received_power_dbm",
+              "frequency_ghz": 28,
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ],
+          "by_los_nlos": [
+            {
+              "key": "received_power_dbm|los",
+              "quantity": "received_power_dbm",
+              "los_nlos": "los",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|nlos",
+              "quantity": "received_power_dbm",
+              "los_nlos": "nlos",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            }
+          ],
+          "by_distance": [
+            {
+              "key": "received_power_dbm|400m+",
+              "quantity": "received_power_dbm",
+              "distance_bin": "400m+",
+              "metric": {
+                "n": 3,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            },
+            {
+              "key": "received_power_dbm|50-100m",
+              "quantity": "received_power_dbm",
+              "distance_bin": "50-100m",
+              "metric": {
+                "n": 1,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            }
+          ],
+          "by_site": [
+            {
+              "key": "received_power_dbm|site-a",
+              "quantity": "received_power_dbm",
+              "site_id": "site-a",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            },
+            {
+              "key": "received_power_dbm|site-b",
+              "quantity": "received_power_dbm",
+              "site_id": "site-b",
+              "metric": {
+                "n": 2,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0,
+                "small_group": true
+              }
+            }
+          ],
+          "by_campaign": [
+            {
+              "key": "received_power_dbm|campaign-1",
+              "quantity": "received_power_dbm",
+              "campaign_id": "campaign-1",
+              "metric": {
+                "n": 4,
+                "mean_bias_db": 0,
+                "median_bias_db": 0,
+                "mae_db": 0,
+                "rmse_db": 0,
+                "std_db": 0,
+                "p50_abs_error_db": 0,
+                "p90_abs_error_db": 0,
+                "p95_abs_error_db": 0,
+                "min_residual_db": 0,
+                "p01_residual_db": 0,
+                "p10_residual_db": 0,
+                "p90_residual_db": 0,
+                "p99_residual_db": 0,
+                "max_residual_db": 0
+              }
+            }
+          ]
+        }
+      },
+      "id": "censored_floor_not_exact_residual",
+      "purpose": "A below-detection floor is counted as censored and excluded from ordinary residual metrics; it is never treated as an exact -120 dBm sample."
+    }
+  ],
+  "not_real_measurement_evidence": true,
+  "schema_version": 1,
+  "source_type": "synthetic_controlled"
+}

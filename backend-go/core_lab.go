@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -21,6 +23,7 @@ type coreLabConfig struct {
 	Enabled    bool
 	AdapterURL string
 	Timeout    time.Duration
+	APIKey     string
 }
 
 type coreLabScenarioRequest struct {
@@ -43,6 +46,7 @@ func loadCoreLabConfig() coreLabConfig {
 		Enabled:    envBool("CORE_LAB_ENABLED", false),
 		AdapterURL: strings.TrimRight(getenv("CORE_LAB_ADAPTER_URL", "http://localhost:8090"), "/"),
 		Timeout:    envDurationMS("CORE_LAB_TIMEOUT_MS", defaultCoreLabTimeout),
+		APIKey:     strings.TrimSpace(os.Getenv("CORE_LAB_API_KEY")),
 	}
 }
 
@@ -62,7 +66,8 @@ func proxyCoreLabGET(config coreLabConfig, adapterPath string, disabledPayload f
 		}
 		payload, err := requestCoreLabAdapter(c.Request.Context(), config, http.MethodGet, targetPath, nil)
 		if err != nil {
-			c.JSON(http.StatusOK, disconnectedPayload(err.Error()))
+			log.Printf("Core Lab adapter GET %s failed: %v", adapterPath, redactedCoreLabError(err))
+			c.JSON(http.StatusOK, disconnectedPayload("Core Lab adapter is unavailable"))
 			return
 		}
 		c.Data(http.StatusOK, "application/json; charset=utf-8", payload)
@@ -71,9 +76,19 @@ func proxyCoreLabGET(config coreLabConfig, adapterPath string, disabledPayload f
 
 func proxyCoreLabScenario(config coreLabConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if config.Enabled {
+			if config.APIKey == "" {
+				c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Core Lab scenario mutation requires CORE_LAB_API_KEY"})
+				return
+			}
+			if !validAPIKey(c, config.APIKey) {
+				c.Header("WWW-Authenticate", `Bearer realm="A.T.O.M Core Lab API"`)
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "valid Core Lab API key required"})
+				return
+			}
+		}
 		var req coreLabScenarioRequest
-		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid core scenario JSON: " + err.Error()})
+		if !bindJSON(c, &req, "core scenario") {
 			return
 		}
 		req.Scenario = strings.TrimSpace(req.Scenario)
@@ -107,11 +122,12 @@ func proxyCoreLabScenario(config coreLabConfig) gin.HandlerFunc {
 		}
 		payload, err := requestCoreLabAdapter(c.Request.Context(), config, http.MethodPost, "/scenario", body)
 		if err != nil {
+			log.Printf("Core Lab adapter scenario request failed: %v", redactedCoreLabError(err))
 			c.JSON(http.StatusOK, gin.H{
 				"mode":       "open5gs",
 				"state":      "disconnected",
 				"scenario":   req.Scenario,
-				"message":    err.Error(),
+				"message":    "Core Lab adapter is unavailable",
 				"updated_at": time.Now().UTC().Format(time.RFC3339),
 			})
 			return
@@ -134,6 +150,9 @@ func requestCoreLabAdapter(parent context.Context, config coreLabConfig, method 
 	}
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
+	}
+	if method == http.MethodPost && config.APIKey != "" {
+		req.Header.Set("X-API-Key", config.APIKey)
 	}
 
 	response, err := http.DefaultClient.Do(req)
@@ -161,10 +180,15 @@ type coreLabAdapterError struct {
 }
 
 func (err *coreLabAdapterError) Error() string {
-	if strings.TrimSpace(err.Body) == "" {
-		return "core lab adapter returned status " + strconv.Itoa(err.Status)
+	return "core lab adapter returned status " + strconv.Itoa(err.Status)
+}
+
+func redactedCoreLabError(err error) error {
+	var adapterErr *coreLabAdapterError
+	if errors.As(err, &adapterErr) {
+		return &coreLabAdapterError{Status: adapterErr.Status}
 	}
-	return "core lab adapter returned status " + strconv.Itoa(err.Status) + ": " + err.Body
+	return err
 }
 
 func coreLabDisabledStatus() gin.H {

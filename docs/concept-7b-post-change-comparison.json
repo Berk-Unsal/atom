@@ -1,0 +1,27 @@
+{
+  "artifact": "concept-7b-post-change-comparison",
+  "artifact_version": "1.0.0",
+  "captured_on": "2026-09-21",
+  "concept": "7B",
+  "outcome": "domain architecture changed; current local-first planning behavior is preserved",
+  "comparisons": {
+    "indexeddb_path": { "before": "atom-planning-workspace/workspace/current, version 1", "after": "atom-planning-workspace/workspace/current, version 1", "equal": true },
+    "localstorage_fallback": { "before": "atom.planning.workspace.v1 after IndexedDB write failure", "after": "same; repository delegates to projectStore", "equal": true },
+    "supported_imports": { "before": [1, 2, "legacy-single-project"], "after": [1, 2, "legacy-single-project"], "equal": true },
+    "workspace_compaction": { "before": "newest five cached scenario artifacts retained", "after": "same; authoritative ScenarioRevision inputs are not compacted", "behavior_preserved": true },
+    "scenario_fingerprint": { "before_schema": "atom-scenario-v1", "after_schema": "atom-scenario-v1", "backend_source_changed": false, "equal": true },
+    "simulation_request": { "representative_cases": ["2.6 GHz", "28 GHz"], "result": "equivalent frontend payloads" },
+    "optimization_request": { "representative_case": "network optimization with priorities and azimuth overrides", "result": "equivalent frontend payloads" },
+    "interference_request": { "representative_case": "network interference with load, reuse, noise, and sample spacing", "result": "equivalent frontend payloads" },
+    "optimizer_result": { "production_optimizer_changed": false, "public_pareto_identity_changed": false, "result": "unchanged by scope; no backend optimizer code modified" },
+    "rf_outputs": { "production_rf_code_changed": false, "result": "unchanged by scope; no backend RF code modified" },
+    "concept_6_readiness": { "changed": false, "reason": "No Concept 6 source or dataset runtime files changed" }
+  },
+  "new_boundary": {
+    "domain_modules": ["frontend-react/src/domain"],
+    "repository_modules": ["frontend-react/src/repository"],
+    "hook_seam": "useProjectWorkspace no longer imports projectStore directly",
+    "compatibility_storage": "ProjectV2 remains the physical compatibility envelope"
+  },
+  "stop_conditions": { "saved_workspaces_round_trip": true, "atom_scenario_v1_changed": false, "physical_indexeddb_migration_required": false, "missing_rf_inputs_guessed": false, "old_imports_unreadable": false }
+}

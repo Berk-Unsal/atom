@@ -1,0 +1,84 @@
+{
+  "concept": "8D",
+  "risks": [
+    {
+      "id": "map-click-dual-action",
+      "severity": "high",
+      "evidence": "TowerMarkersLayer calls map-focus selection, selectedMapObject and selectTower for one click; Network mode toggles cluster membership and invalidates results.",
+      "mitigation": "A small explicit Inspect / Select-cells choice; edit modes (area draw/place/path endpoint) take priority. Inspector open must not mutate plan selection."
+    },
+    {
+      "id": "drawer-replacement-task-loss",
+      "severity": "high",
+      "evidence": "drawerMode=inspector replaces ToolDrawer content and remembers one previousTool; changing tool clears selectedMapObject.",
+      "mitigation": "Separate right inspector state from active tool/drawer state; preserve both independently; Close clears only inspected entity."
+    },
+    {
+      "id": "dual-pane-map-shrink",
+      "severity": "high",
+      "evidence": "Actual rail/drawer widths leave 672px map corridor at 1440 and 526px with two panels at 1280.",
+      "mitigation": "Push only at 1600+; 1440 opposite-edge overlay; 1280/1024 replace drawer; 768/390 one bottom sheet. Validate with live map interaction."
+    },
+    {
+      "id": "duplicated-cell-editing",
+      "severity": "high",
+      "evidence": "Inventory owns detailed cell fields and validation; current TowerInspector only shows identity/network/cluster/coordinates.",
+      "mitigation": "Read-only inspector; Edit in Inventory direct action; no duplicate form or update path."
+    },
+    {
+      "id": "inspector-stale-snapshot",
+      "severity": "high",
+      "evidence": "RF invalidation clears rendered analysis while retaining current result Run identity; sample payload may outlive its layer.",
+      "mitigation": "Keep exact source Run/freshness; show STALE with frozen snapshot only where retained, otherwise UNAVAILABLE; no silent recompute."
+    },
+    {
+      "id": "selection-identity-leakage",
+      "severity": "high",
+      "evidence": "selectedMapCellId is used for map Focus while selectedTower and selectedNetworkTowerIds affect planning.",
+      "mitigation": "Use distinct state and language for plan selection, map Focus, inspected entity, and selected Pareto solution."
+    },
+    {
+      "id": "scenario-switch-old-entity",
+      "severity": "high",
+      "evidence": "openSavedScenario clears Run focus but does not explicitly clear selectedMapObject before restoring a different Scenario.",
+      "mitigation": "Clear inspector identity before Project/Scenario switch; reject late async detail responses from the previous entity."
+    },
+    {
+      "id": "mobile-sheet-conflict",
+      "severity": "high",
+      "evidence": "Existing phone uses a full-width bottom ToolDrawer sheet and bottom stage rail.",
+      "mitigation": "Use the same single sheet host for tool chooser/drawer/inspector; only one open, explicit Back/Close and focus return."
+    },
+    {
+      "id": "lazy-load-regression",
+      "severity": "medium-high",
+      "evidence": "Concept 7I uses explicit dynamic imports for research, Experiments, Core Lab, Run History and Reports.",
+      "mitigation": "Inspector resolves existing loaded entity data; never mount unrelated lazy tools or trigger compute; keep RF Diagnostics subview chunks lazy."
+    },
+    {
+      "id": "pareto-state-duplication",
+      "severity": "medium-high",
+      "evidence": "selectedSolutionId and exact selected optimization Run are already App/Results-owned; Pareto detail includes Apply and no recompute.",
+      "mitigation": "Keep Pareto selection/detail in Results, not inspector; exact source Run test remains required."
+    },
+    {
+      "id": "direct-navigation-regression",
+      "severity": "medium",
+      "evidence": "Current MapInspector returns to previous tool; path profile and source Run links explicitly change tool.",
+      "mitigation": "Preserve the exact active tool/context and route only on explicit action; Back restores the prior tool state."
+    },
+    {
+      "id": "measurement-domain-leakage",
+      "severity": "medium",
+      "evidence": "Data calibration, RF Diagnostics validation, material and reflection outputs are isolated evidence workflows.",
+      "mitigation": "Inspector presents evidence only; calibration and model changes remain explicit actions in their owner workflow."
+    },
+    {
+      "id": "focus-stealing-and-announcement-noise",
+      "severity": "medium",
+      "evidence": "ToolDrawer focuses heading on focusKey/open; map pointer clicks can be frequent.",
+      "mitigation": "Pointer inspection does not steal focus or announce hover; keyboard Inspect action moves focus to named inspector heading."
+    }
+  ],
+  "implementation_boundary": "8E must remain frontend orchestration/presentation only: no changes to RF requests, optimizer, Run/Report/Scenario domain schemas, artifact bytes/integrity, freshness rules, ProjectV2, data packs, backend APIs, routes, or global state framework."
+}

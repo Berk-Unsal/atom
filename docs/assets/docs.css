@@ -1,3 +1,5 @@
+@import url("./app-theme.css");
+
 :root {
   --bg: #edf2f3;
   --surface: #ffffff;
@@ -1748,7 +1750,7 @@ td strong {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1120px) {
   :root {
     --header-height: 106px;
   }
@@ -2030,4 +2032,104 @@ td strong {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Documentation roles resolve against the application's generated dark palette. */
+:root[data-theme="dark"] {
+  --surface: var(--panel);
+  --surface-strong: var(--panel-strong);
+  --ink-soft: var(--ink);
+  --teal: var(--ui-accent);
+  --teal-dark: var(--ui-accent-strong);
+  --blue: var(--ui-info);
+  --amber: var(--ui-warning);
+  --rose: var(--ui-danger);
+  --code: var(--bg);
+  --code-ink: var(--ink);
+  scrollbar-color: var(--line-strong) var(--panel);
+}
+/* Two-state switch: initial System preference remains active until toggled. */
+.docs-theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex: 0 0 auto;
+  width: 80px;
+  height: 44px;
+  margin-left: 14px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--surface-muted);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.docs-theme-toggle:hover { border-color: var(--teal-dark); }
+.docs-theme-toggle:focus-visible {
+  outline: 2px solid var(--focus, #155e75);
+  outline-offset: 3px;
+}
+.theme-toggle-thumb {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 1px 3px var(--elevation-tint, rgb(15 23 42 / 12%));
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.docs-theme-toggle[aria-checked="true"] .theme-toggle-thumb { transform: translateX(36px); }
+.docs-theme-toggle svg { position: relative; width: 18px; height: 18px; pointer-events: none; }
+.docs-theme-toggle[aria-checked="false"] .theme-toggle-sun,
+.docs-theme-toggle[aria-checked="true"] .theme-toggle-moon { color: var(--teal-dark); }
+.theme-preview-dark,
+:root[data-theme="dark"] .theme-preview-light { display: none; }
+:root[data-theme="dark"] .theme-preview-dark { display: block; }
+
+:root[data-theme="dark"] .site-header { background: var(--panel-strong); }
+:root[data-theme="dark"] .hero-preview { background: var(--surface); }
+:root[data-theme="dark"] code:not(pre code) { color: var(--ink); background: var(--surface-muted); }
+:root[data-theme="dark"] .docs-search-control input::placeholder { color: var(--muted); }
+:root[data-theme="dark"] .docs-search-result mark { background: var(--surface-muted); }
+:root[data-theme="dark"] .docs-search-panel { box-shadow: 0 6px 8px var(--elevation-tint); }
+:root[data-theme="dark"] :is(button, a, summary, select):focus-visible {
+  outline-color: var(--focus);
+}
+:root[data-theme="dark"] .docs-search-control:focus-within { outline-color: var(--focus); }
+:root[data-theme="dark"] ::selection { color: var(--ink); background: var(--teal-soft); }
+:root[data-theme="dark"] input { caret-color: var(--ink); }
+:root[data-theme="dark"] :is(.button.primary, .site-nav .nav-cta, .skip-link, .info-icon) {
+  color: var(--on-action);
+  background: var(--action-positive);
+  border-color: var(--ui-accent);
+}
+:root[data-theme="dark"] :is(.button.primary:hover, .site-nav .nav-cta:hover, .site-nav .nav-cta[aria-current="page"]) {
+  color: var(--on-action);
+  background: var(--action-positive-hover);
+  border-color: var(--ui-accent);
+}
+:root[data-theme="dark"] .button.blue { color: var(--on-action); background: var(--action-info); border-color: var(--ui-info); }
+:root[data-theme="dark"] .warning .info-icon { background: var(--action-warning); }
+:root[data-theme="dark"] .limit .info-icon { background: var(--action-danger); }
+:root[data-theme="dark"] :is(.info-band, .install-primary, .code-block) { border-color: var(--line-strong); }
+:root[data-theme="dark"] :is(.info-band.warning, .diagram-node.data) { border-color: var(--ui-warning); }
+:root[data-theme="dark"] :is(.info-band.limit, .diagram-node.core) { border-color: var(--ui-danger); }
+:root[data-theme="dark"] .diagram-node.frontend { border-color: var(--ui-accent); }
+:root[data-theme="dark"] .diagram-node.engine { border-color: var(--ui-info); }
+:root[data-theme="dark"] .button:hover { border-color: var(--ui-accent); }
+:root[data-theme="dark"] .copy-button { color: var(--ink); background: var(--panel-strong); border-color: var(--line-strong); }
+:root[data-theme="dark"] .copy-button:hover { background: var(--surface-muted); border-color: var(--ui-accent); }
+
+@media (max-width: 1280px) and (min-width: 1121px) {
+  .site-brand small { display: none; }
+  .docs-search { min-width: 190px; margin-left: 18px; }
+  .site-nav a { padding-inline: 7px; }
+}
+@media (max-width: 1120px) {
+  .docs-theme-toggle { margin-left: auto; }
+  .nav-toggle { margin-left: 0; }
 }

@@ -9,6 +9,7 @@ import {
   migrateWorkspace,
   normalizeWorkspace,
   PROJECT_SCHEMA_VERSION,
+  MAX_PROJECT_FILE_BYTES,
   resolveWorkspaceData,
   saveProjectWorkspace,
   updateProjectDraft,
@@ -28,6 +29,36 @@ describe("projectStore", () => {
     expect(imported.scenarios[0].summary.networkScore).toBe(10);
   });
 
+  it("rejects oversized and deeply nested project imports", () => {
+    expect(() => importProjectFile("x".repeat(MAX_PROJECT_FILE_BYTES + 1))).toThrow(/no larger/i);
+
+    const project = createProjectWorkspace().projects[0];
+    let nested = {};
+    project.draft = { plan: nested };
+    for (let depth = 0; depth < 50; depth += 1) {
+      nested.child = {};
+      nested = nested.child;
+    }
+    expect(() => importProjectFile(JSON.stringify({ schemaVersion: PROJECT_SCHEMA_VERSION, project })))
+      .toThrow(/deeply/i);
+  });
+
+  it("rejects malformed nested snapshots and excessive scenario counts", () => {
+    const malformed = createProjectWorkspace().projects[0];
+    malformed.scenarios = [{ id: "scenario-1", name: "Bad", artifacts: [] }];
+    expect(() => importProjectFile(JSON.stringify({ schemaVersion: PROJECT_SCHEMA_VERSION, project: malformed })))
+      .toThrow(/schema/i);
+
+    const crowded = createProjectWorkspace().projects[0];
+    crowded.scenarios = Array.from({ length: 101 }, (_, index) => ({
+      id: `scenario-${index}`,
+      name: `Scenario ${index}`,
+      artifacts: null,
+    }));
+    expect(() => importProjectFile(JSON.stringify({ schemaVersion: PROJECT_SCHEMA_VERSION, project: crowded })))
+      .toThrow(/schema/i);
+  });
+
   it("assigns fresh nested scenario ids when duplicating a project", () => {
     const project = createProjectWorkspace().projects[0];
     const scenario = createScenario("Baseline", { plan: { settings: { rays: 60 } } });
@@ -43,16 +74,39 @@ describe("projectStore", () => {
 
   it("keeps an active scenario only while the autosaved draft still matches it", () => {
     const project = createProjectWorkspace().projects[0];
-    const scenario = createScenario("Baseline", { plan: { settings: { rays: 60 } } });
+    const scenario = createScenario("Baseline", { plan: { settings: { rays: 60, power: 30 } } });
     project.scenarios.push(scenario);
     project.activeScenarioId = scenario.id;
 
-    const matching = updateProjectDraft(project, { plan: { settings: { rays: 60 } } });
-    const changed = updateProjectDraft(matching, { plan: { settings: { rays: 120 } } });
+    const matching = updateProjectDraft(project, { plan: { settings: { power: 30, rays: 60 } } });
+    const changed = updateProjectDraft(matching, { plan: { settings: { power: 30, rays: 120 } } });
 
     expect(matching.activeScenarioId).toBe(scenario.id);
     expect(changed.activeScenarioId).toBeNull();
     expect(changed.draft.requiresRerun).toBe(true);
+  });
+
+  it("keeps Map Focus and ray Scope out of Scenario identity", () => {
+    const project = createProjectWorkspace().projects[0];
+    const scenario = createScenario("Baseline", {
+      plan: {
+        settings: { rays: 60 },
+        selectedMapCellId: "cell-2",
+        rayScope: "all",
+      },
+    });
+    project.scenarios.push(scenario);
+    project.activeScenarioId = scenario.id;
+
+    const mapOnlyChange = updateProjectDraft(project, {
+      plan: { settings: { rays: 60 }, selectedMapCellId: "cell-3", rayScope: "selected" },
+    });
+    const rfInputChange = updateProjectDraft(mapOnlyChange, {
+      plan: { settings: { rays: 120 }, selectedMapCellId: "cell-3", rayScope: "selected" },
+    });
+
+    expect(mapOnlyChange.activeScenarioId).toBe(scenario.id);
+    expect(rfInputChange.activeScenarioId).toBeNull();
   });
 
   it("rejects unsupported future schemas", () => {
@@ -66,6 +120,17 @@ describe("projectStore", () => {
     expect(migrated.activeProjectId).toBe(project.id);
     expect(normalizeWorkspace({ project }).projects).toHaveLength(1);
   });
+
+	it("migrates schema v1 workspaces and project files without losing inventory", () => {
+		const workspace = createProjectWorkspace();
+		workspace.schemaVersion = 1;
+		workspace.projects[0].draft = { plan: { inventory: [{ id: "manual-1", coordinates: [32.85, 39.92] }] } };
+		const migrated = normalizeWorkspace(workspace);
+		expect(migrated.schemaVersion).toBe(PROJECT_SCHEMA_VERSION);
+		expect(migrated.projects[0].draft.plan.inventory[0].id).toBe("manual-1");
+		const imported = importProjectFile(JSON.stringify({ schemaVersion: 1, project: workspace.projects[0] }));
+		expect(imported.draft.plan.inventory[0].id).toBe("manual-1");
+	});
 
   it("detects dataset version and hash drift", () => {
     const project = { datasetRef: { id: "ankara", version: "1", hashes: { towers: "abc" } } };
@@ -195,6 +260,23 @@ describe("projectStore", () => {
     expect(secondSaved.persistence.revision).toBeGreaterThan(firstSaved.persistence.revision);
   });
 
+  it("reuses the workspace connection for Undo writes and releases it on a version change", async () => {
+    vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() });
+    const indexedDB = controlledIndexedDB();
+    const open = vi.spyOn(indexedDB, "open");
+    vi.stubGlobal("indexedDB", indexedDB);
+    const workspace = createProjectWorkspace();
+    await saveProjectWorkspace(workspace);
+    await saveProjectWorkspace(workspace);
+    expect(open).toHaveBeenCalledOnce();
+    const database = indexedDB.state.databases[0];
+    database.onversionchange();
+    expect(database.close).toHaveBeenCalledOnce();
+    await saveProjectWorkspace(workspace);
+    expect(open).toHaveBeenCalledTimes(2);
+    expect(indexedDB.state.writes).toHaveLength(3);
+  });
+
   it("removes duplicate recommendation properties from persisted scenario artifacts", async () => {
     vi.stubGlobal("localStorage", { getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() });
     const indexedDB = controlledIndexedDB();
@@ -232,7 +314,7 @@ describe("projectStore", () => {
 });
 
 function controlledIndexedDB({ failWrites = false, writeDelay = 0 } = {}) {
-  const state = { activeWrites: 0, maxActiveWrites: 0, writes: [] };
+  const state = { activeWrites: 0, maxActiveWrites: 0, writes: [], databases: [] };
   return {
     state,
     open() {
@@ -262,6 +344,7 @@ function controlledIndexedDB({ failWrites = false, writeDelay = 0 } = {}) {
           return transaction;
         },
       };
+      state.databases.push(database);
       queueMicrotask(() => {
         request.result = database;
         request.onsuccess?.();

@@ -1,0 +1,92 @@
+{
+  "concept": "8E",
+  "state_owners": {
+    "selectedMapObject": "App local React state; transient {type, payload}; selection identity and copied feature payload are coupled.",
+    "selectedMapCellId": "App local map Focus state; serialized in Scenario snapshots as selectedMapCellId. It controls ray-cell display/selection and marker styling.",
+    "selectedTower": "App local plan state; active transmitter in Single mode and legacy anchor in Network mode; serialized as plan.selectedTowerId.",
+    "selectedNetworkTowerIds": "App local plan state; ordered Network cluster membership; serialized in workspace draft and Scenario plan.",
+    "selectedSolutionId": "Results-local/derived Pareto alternative identity; not used by map selection.",
+    "drawerMode": "App local panel mode; currently tool or inspector, both share one ToolDrawer.",
+    "previousTool": "App local return target for current inspector-drawer replacement; updated by inspect and tool-navigation actions."
+  },
+  "click_flows": [
+    {
+      "entity": "Tower / Cell",
+      "implementation": "MapCanvas.jsx TowerMarkersLayer CircleMarker click -> onSelectMapCell -> onSelectMapObject({type:'tower',payload}) -> onSelectTower.",
+      "current_order": [
+        "If area selection is active, return so the map click can draw a polygon point.",
+        "Stop original DOM propagation.",
+        "Set selectedMapCellId (Map Focus).",
+        "Save tower payload as selectedMapObject and replace the ToolDrawer with inspector mode.",
+        "Call selectTower: Single sets the active transmitter; Network toggles ordered cluster membership and updates the active anchor."
+      ],
+      "side_effects": ["Plan selection", "Map Focus", "inspected object", "invalidatePlanResults", "clear dependent artifacts/cancel requests"],
+      "risk": "One ordinary marker click mixes four roles; isDrawingSelection is the only edit-mode guard in this handler."
+    },
+    {
+      "entity": "Building",
+      "implementation": "ViewportBuildingLayer loads viewport features from /api/collections/buildings/items; GeoJSON feature click calls onSelectMapObject({type:'building',payload:{feature}}).",
+      "side_effects": ["stores full selected feature payload", "opens the shared inspector ToolDrawer; no plan mutation from the layer handler"],
+      "lazy_evidence": "BuildingInspector mounts only when drawerMode is inspector and then requests /api/spatial-evidence/buildings/{id}; AbortController cancels on unmount/change.",
+      "risk": "Inspector presentation is coupled to drawer replacement; evidence UI currently renders a tall all-fields grid and diagnostic-only note."
+    },
+    {
+      "entity": "Interference sample",
+      "implementation": "InterferenceLayer creates GeoJSON sample features with stable properties.sample_id; click stores properties, coordinates, and model through onSelectMapObject.",
+      "side_effects": ["opens the shared inspector ToolDrawer", "does not call an analysis function from the layer click"],
+      "risk": "MapInspector lacks exact Run/freshness identity; InterferenceInspector renders roughly twenty datum rows plus model/explanation at equal weight."
+    },
+    {
+      "entity": "Coverage gap",
+      "implementation": "CoverageGapLayer click stores properties and coordinates; selected styling keys by building_id.",
+      "side_effects": ["opens the shared inspector ToolDrawer"],
+      "identity": "building_id when present; currently no explicit generic entity identity field."
+    },
+    {
+      "entity": "Communication path",
+      "implementation": "CommunicationPathLayer click stores route; marker/polyline identity is from + to + route_type + status.",
+      "side_effects": ["opens the shared inspector ToolDrawer"],
+      "identity": "source route pair and type; current inspector shows route/status/from/to/reason."
+    },
+    {
+      "entity": "Measurement sample",
+      "implementation": "MeasurementLayer click stores properties and coordinates; selected style uses properties.id.",
+      "side_effects": ["opens the shared inspector ToolDrawer"],
+      "identity": "properties.id; inspector displays measured/predicted RSRP and residual fields if present."
+    },
+    {
+      "entity": "Site recommendation",
+      "implementation": "RecommendationLayer click stores properties and coordinates; selected style uses properties.id.",
+      "side_effects": ["opens the shared inspector ToolDrawer"],
+      "identity": "properties.id when present; Results owns candidate scoring and Apply."
+    }
+  ],
+  "map_focus": {
+    "state": "selectedMapCellId",
+    "writers": ["TowerMarkersLayer through onSelectMapCell", "selectTower", "MapToolbar Focus dropdown", "ray-cell selection/normalization"],
+    "readers": ["tower marker Focus styling", "ray visualization", "coverage-surface per-cell selection", "MapToolbar Focus dropdown"],
+    "semantic_issue": "Name sounds like Plan selection although the value drives map emphasis/ray display. Tower click currently changes it before plan selection."
+  },
+  "plan_selection": {
+    "single": "selectTower sets selectedTower and invalidates plan results.",
+    "network": "selectTower toggles selectedNetworkTowerIds, changes/retains anchor selectedTower, removes network azimuth when deselecting, and invalidates plan results.",
+    "mode_entry": "Setup/Propagation/Interference ControlPanel uses the explicit 'Select cells on map' action, currently wired to closeDrawer('map') without an interaction-mode state."
+  },
+  "special_map_modes": {
+    "area_draw": "SelectionPolygonLayer consumes map clicks; TowerMarkersLayer returns early when isDrawingSelection.",
+    "cell_placement": "CellPlacementLayer consumes MapContainer clicks while isPlacingCell; TowerMarkersLayer has no isPlacingCell guard.",
+    "path_endpoint": "PathEndpointSelectionLayer consumes map clicks while isSelectingPathEndpoint; TowerMarkersLayer has no endpoint-mode guard.",
+    "eraser": "MapToolbar Clear selected cells is an immediate plan-selection clear action, not a persistent click mode; it remains a plan edit.",
+    "priority_gap": "Non-cell map feature layers do not receive edit-mode state and stop event propagation before selecting an inspector object."
+  },
+  "inspector_ownership": {
+    "open": "selectMapObject records previousTool, sets selectedMapObject, drawerMode='inspector', drawerOpen=true.",
+    "render": "One ToolDrawer is rendered. Inspector mode replaces the active tool subtree; conditional tool children unmount, so local disclosure/transient component state is not protected.",
+    "close": "returnFromInspector clears selectedMapObject, restores previousTool, sets drawerMode='tool', and opens the drawer.",
+    "tool_switch": "selectWorkspaceTool/openResults clear selectedMapObject; inspection is lost on tool switch.",
+    "keyboard": "Escape prioritizes stage chooser, layer menu, path endpoint mode, area selection, then closes ToolDrawer. ToolDrawer auto-focuses its heading whenever open/focusKey changes, so pointer-open inspector can steal focus.",
+    "project_scenario": "Project switch wrappers do not explicitly clear selectedMapObject; some Scenario open/revision flows clear or replace panel state inconsistently."
+  },
+  "selected_solution": "selectedParetoSolutionId and derived selectedSolutionId remain in Results; no MapInspector renderer exists for Pareto, Run, or Report.",
+  "baseline_conclusion": "Cell inspection currently changes Plan selection and Map Focus, invalidates current results, and replaces the task drawer. Other map entities replace the task drawer but do not call compute from their click handler."
+}

@@ -1,0 +1,151 @@
+{
+  "concept": "8A",
+  "title": "Navigation, Workspace Chrome & Information-Density Audit",
+  "capturedDate": "2026-09-23",
+  "purpose": "Record the pre-8B UI and baseline measurements. No product redesign was implemented.",
+  "startingWorktree": {
+    "status": "## main...origin/main",
+    "porcelainStatus": "",
+    "branch": "main",
+    "commit": "fc81741771699da7af95fb20b846f893950585db",
+    "commitTime": "2026-09-23T14:05:36+03:00",
+    "dirtyTree": false,
+    "version": "0.9.0",
+    "sourcePath": "frontend-react",
+    "productCodeChanged": false
+  },
+  "captureMethod": {
+    "frontend": "Vite development server started from the checked-out frontend source on 127.0.0.1:5173",
+    "api": "Already-running local API on localhost:8080",
+    "browser": "Playwright Chromium headless",
+    "browserContexts": "Disposable contexts; no persistent browser profile or saved workspace was used",
+    "consolePageErrors": 0,
+    "screenshots": "Viewport screenshots at device scale factor 1, compressed to JPEG quality 82",
+    "resultStatePreparation": "A single RF simulation, a 2-cell 5G interference analysis, one TX-power edit, and inspection of the generated Run were performed in disposable browser contexts to capture CURRENT, STALE, and HISTORICAL UI states. These sample records were not written to a durable workspace."
+  },
+  "initialWorkspaceState": {
+    "project": "Ankara Plan",
+    "scenario": "Working draft",
+    "version": "No saved Version",
+    "draftState": "Unsaved changes",
+    "localDraftPersistence": "Draft saved locally",
+    "planningMode": "Single",
+    "selectedCell": "26380",
+    "technology": "5G mmWave",
+    "frequencyGHz": 28.0,
+    "txPowerDbm": 30,
+    "radiusMeters": 400,
+    "initialResult": "No current result"
+  },
+  "viewportMeasurements": [
+    {
+      "viewport": "1440x900",
+      "commandBar": { "x": 0, "y": 0, "width": 1440, "height": 56, "brandColumn": 248, "contextColumn": 700, "actionColumn": 436 },
+      "rail": { "x": 0, "y": 56, "width": 88, "height": 844, "itemCount": 4 },
+      "drawer": { "x": 88, "y": 56, "width": 360, "height": 844, "headerHeight": 62, "toolRowHeight": 51 },
+      "map": { "x": 88, "y": 56, "width": 1352, "height": 844, "unobscuredViewportWidth": 992 },
+      "mapToolbar": { "x": 460, "y": 68, "width": 968, "height": 42 },
+      "mapLegend": { "x": 1248, "y": 778, "width": 180, "height": 98 },
+      "toolRow": { "naturalWidthForAnalyzeAndReview": 513, "visibleWidth": 359, "horizontalOverflow": true }
+    },
+    {
+      "viewport": "1280x800",
+      "commandBar": { "x": 0, "y": 0, "width": 1280, "height": 56, "brandColumn": 248, "contextColumn": 540, "actionColumn": 436 },
+      "rail": { "x": 0, "y": 56, "width": 88, "height": 744, "itemCount": 4 },
+      "drawer": { "x": 88, "y": 56, "width": 345.6, "height": 744, "headerHeight": 62, "toolRowHeight": 51 },
+      "map": { "x": 88, "y": 56, "width": 1192, "height": 744, "unobscuredViewportWidth": 846.4 },
+      "mapToolbar": { "x": 460, "y": 68, "width": 808, "height": 42 },
+      "toolRow": { "naturalWidthForAnalyzeAndReview": 513, "visibleWidth": 344.6, "horizontalOverflow": true }
+    },
+    {
+      "viewport": "1024x768",
+      "commandBar": { "x": 0, "y": 0, "width": 1024, "height": 56, "brandColumn": 196, "contextColumn": 465, "actionColumn": 319 },
+      "rail": { "x": 0, "y": 56, "width": 88, "height": 712, "itemCount": 4 },
+      "drawer": { "x": 88, "y": 56, "width": 320, "height": 712, "headerHeight": 62, "toolRowHeight": 51 },
+      "map": { "x": 88, "y": 56, "width": 936, "height": 712, "unobscuredViewportWidth": 616 },
+      "mapToolbar": { "x": 460, "y": 68, "width": 552, "height": 42 },
+      "toolRow": { "naturalWidthForAnalyzeAndReview": 513, "visibleWidth": 319, "horizontalOverflow": true },
+      "cssCompression": "At max-width 1120, brand subtitle, plan scalar summary, and local-save text are hidden."
+    },
+    {
+      "viewport": "768x1024",
+      "commandBar": { "x": 0, "y": 0, "width": 768, "height": 56, "brandColumn": 170, "contextColumn": 353, "actionColumn": 201 },
+      "rail": { "x": 0, "y": 56, "width": 88, "height": 968, "itemCount": 4, "orientation": "vertical" },
+      "drawer": { "x": 88, "y": 56, "width": 320, "height": 968, "headerHeight": 62, "toolRowHeight": 51 },
+      "map": { "x": 88, "y": 56, "width": 680, "height": 968, "unobscuredViewportWidth": 360 },
+      "mapToolbar": { "x": 460, "y": 68, "width": 296, "height": 42 },
+      "toolRow": { "naturalWidthForAnalyzeAndReview": 513, "visibleWidth": 319, "horizontalOverflow": true },
+      "cssCompression": "At 641–900 px, result summary is hidden; the brand subtitle, plan scalar summary, and local-save text are also hidden."
+    },
+    {
+      "viewport": "390x844",
+      "commandBar": { "x": 0, "y": 0, "width": 390, "height": 52, "brandIconWidth": 30, "contextColumn": 203, "actionColumn": 125 },
+      "rail": { "x": 0, "y": 780, "width": 390, "height": 64, "itemCount": 4, "orientation": "bottom" },
+      "drawer": { "x": 0, "y": 189, "width": 390, "height": 591, "headerHeight": 65, "toolRowHeight": 59, "heightRule": "min(70vh, 620px)" },
+      "map": { "x": 0, "y": 52, "width": 390, "height": 728, "unobscuredHeightAboveDrawer": 137 },
+      "mapToolbar": { "x": 42, "y": 62, "width": 340, "height": 201 },
+      "mapLegend": { "x": 202, "y": 604, "width": 180, "height": 98 },
+      "toolRow": { "naturalWidthForAnalyzeAndReview": 513, "visibleWidth": 390, "horizontalOverflow": true, "scrollbar": "hidden"},
+      "documentHorizontalOverflow": false,
+      "observedVisualFailure": "Workspace/result fields overlap in the 52 px command bar; current operation status is reduced to a dot, local-save text and RF scalar summary are hidden, and Project becomes an icon-only trigger."
+    }
+  ],
+  "drawerDensity": {
+    "measurementDefinition": "Vertical offset from the drawer top to the first listed task control or primary action. It includes the 62 px drawer header, tool-row navigation, introductions, and any disclosure header above that element.",
+    "persistentChrome": { "drawerHeaderPx": 62, "toolRowPxDesktop": 51, "toolRowPxPhone": 59, "totalBeforeBodyDesktopPx": 113, "netSavingIfToolRowIsRemovedDesktopPx": 51, "netSavingIfToolRowIsRemovedPhonePx": 59 },
+    "screens": [
+      { "tool": "Setup", "firstTaskControl": "Single sector mode", "offsetFromDrawerTopPx": 236, "primaryAction": "Run Sector is in global bar" },
+      { "tool": "Inventory", "firstTaskControl": "Place new cell", "offsetFromDrawerTopPx": 237 },
+      { "tool": "Propagation", "firstTaskControl": "Ray count", "offsetFromDrawerTopPx": 238, "primaryAction": "Auto-Optimize Sector at 462 px" },
+      { "tool": "Experiments", "firstTaskControl": "Experiment name input", "offsetFromDrawerTopPx": 273, "primaryAction": "Queue matrix at 506 px" },
+      { "tool": "Signal surface", "firstTaskControl": "Raster cell-size selector", "offsetFromDrawerTopPx": 288, "primaryAction": "Generate raster + contours at 592 px" },
+      { "tool": "RF Diagnostics", "firstTaskControl": "Open current RF result / Open vertical path profile", "offsetFromDrawerTopPx": 189, "researchDisclosureOffsetPx": 245 },
+      { "tool": "Building entry", "firstTaskControl": "Run building-entry estimate", "offsetFromDrawerTopPx": 321 },
+      { "tool": "5G Core", "firstTaskControl": "Enable overlay checkbox", "offsetFromDrawerTopPx": 150 },
+      { "tool": "Results, no result", "firstTaskControl": "RF result-view selector", "offsetFromDrawerTopPx": 129 },
+      { "tool": "Run history, no record", "firstTaskControl": "Run-history scope/type/status selectors", "offsetFromDrawerTopPx": 249 },
+      { "tool": "Data", "firstTaskControl": "Planning data disclosure", "offsetFromDrawerTopPx": 148 },
+      { "tool": "Report", "firstTaskControl": "PDF / Print export", "offsetFromDrawerTopPx": 343 }
+    ],
+    "interpretation": "These are not uniform workflow delays: some first actions are navigational, some are required inputs, and some are compute buttons after configuration. The shared tool row adds exactly 51/59 px to each."
+  },
+  "resultStatesCaptured": [
+    { "state": "CURRENT", "setup": "Single 5G mmWave sector simulation; run source visible in header, Results card, and map legend.", "screenshot": "assets/concept-8a/1440-results-current.jpg" },
+    { "state": "STALE", "setup": "Changed conducted TX power from 30 to 31 dBm after the Run; stale status and Run-again action visible.", "screenshots": ["assets/concept-8a/1440-results-stale.jpg", "assets/concept-8a/390-results-stale.jpg"] },
+    { "state": "HISTORICAL", "setup": "Inspected the generated Run in Run history; retained source details and unavailable historical Report status visible.", "screenshot": "assets/concept-8a/1440-run-history-historical.jpg" },
+    { "state": "Interference result", "setup": "Selected two 5G cells and ran the explicit Analyze Interference action; result summary and SINR legend captured.", "screenshots": ["assets/concept-8a/1440-interference-ready.jpg", "assets/concept-8a/1440-interference-result.jpg"] }
+  ],
+  "screenshots": [
+    { "id": "plan_setup_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-setup.jpg" },
+    { "id": "plan_inventory_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-inventory.jpg" },
+    { "id": "simulate_propagation_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-propagation.jpg" },
+    { "id": "simulate_experiments_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-experiments.jpg" },
+    { "id": "simulate_signal_surface_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-signal-surface.jpg" },
+    { "id": "analyze_interference_ready_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-interference-ready.jpg" },
+    { "id": "analyze_interference_result_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-interference-result.jpg" },
+    { "id": "analyze_rf_diagnostics_collapsed_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-rf-diagnostics-collapsed.jpg" },
+    { "id": "analyze_rf_diagnostics_research_expanded_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-rf-diagnostics-expanded.jpg" },
+    { "id": "analyze_building_entry_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-building-entry.jpg" },
+    { "id": "analyze_core_lab_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-core.jpg" },
+    { "id": "review_results_empty_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-results-empty.jpg" },
+    { "id": "review_results_current_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-results-current.jpg" },
+    { "id": "review_results_stale_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-results-stale.jpg" },
+    { "id": "review_run_history_historical_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-run-history-historical.jpg" },
+    { "id": "review_data_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-data.jpg" },
+    { "id": "review_report_1440", "viewport": "1440x900", "path": "assets/concept-8a/1440-report.jpg" },
+    { "id": "plan_setup_1280", "viewport": "1280x800", "path": "assets/concept-8a/1280-setup.jpg" },
+    { "id": "plan_setup_1024", "viewport": "1024x768", "path": "assets/concept-8a/1024-setup.jpg" },
+    { "id": "plan_setup_768", "viewport": "768x1024", "path": "assets/concept-8a/768-setup.jpg" },
+    { "id": "plan_setup_390", "viewport": "390x844", "path": "assets/concept-8a/390-setup.jpg" },
+    { "id": "review_results_stale_390", "viewport": "390x844", "path": "assets/concept-8a/390-results-stale.jpg" },
+    { "id": "rf_diagnostics_390", "viewport": "390x844", "path": "assets/concept-8a/390-rf-diagnostics.jpg" }
+  ],
+  "baselineConclusions": [
+    "Plan, Simulate, Analyze, and Review are valid stage concepts and keep the map visible.",
+    "The rail is stage-only. Tool tabs are sibling navigation, not a duplicate of tool availability or action content.",
+    "Analyze and Review tool rows have more natural width than the drawer at all tested viewports.",
+    "The map remains continuous, but the drawer covers an increasing share of the visible map at tablet widths and nearly all map height at phone width.",
+    "The command bar hides context instead of grouping it at narrow widths; at 390 px workspace/result fields overlap and operation status loses its text.",
+    "The result model already distinguishes CURRENT, STALE, and HISTORICAL; result context appears in multiple locations."
+  ]
+}

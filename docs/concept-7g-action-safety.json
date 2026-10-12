@@ -1,0 +1,88 @@
+{
+  "concept": "7G",
+  "artifact": "action-safety",
+  "capturedOn": "2026-09-22",
+  "actions": [
+    {
+      "action": "View Run",
+      "class": "inspect/navigate",
+      "source": "Exact current or historical Run identity.",
+      "destination": "Run History detail.",
+      "guard": "Opening history does not activate or mutate the current Scenario/draft.",
+      "compute": "No RF compute."
+    },
+    {
+      "action": "Run again from a stale current result",
+      "class": "recompute",
+      "source": "No source Run input is substituted; action builds the request from the current working plan.",
+      "destination": "New current Run.",
+      "guard": "Explicit user action; no automatic rerun.",
+      "compute": "Runs the current plan."
+    },
+    {
+      "action": "Run again from historical Run",
+      "class": "recompute",
+      "source": "The selected Run's exact retained canonical_input_snapshot.request.",
+      "destination": "New Run with a new ID, same source Scenario/Version context, and normal lifecycle.",
+      "guard": "Disabled/rejected when exact request is missing, dataset is not active, or Run type is unsupported.",
+      "compute": "Recomputes from the historical request; does not replace current result association or mutate current plan/map state."
+    },
+    {
+      "action": "Apply current optimization solution",
+      "class": "apply",
+      "source": "Current successful Optimization Run and selected public solution.",
+      "destination": "Create a new Version or create a branch.",
+      "guard": "Confirmation names source Scenario/Version/Run/solution and destination. Requires retained source Version and compatible dataset.",
+      "compute": "Does not rerank or change Pareto membership; resulting plan requires a fresh RF Run."
+    },
+    {
+      "action": "Apply historical optimization solution",
+      "class": "apply",
+      "source": "Exact selected historical Run and public solution ID.",
+      "destination": "New Version or new branch from the exact source Scenario/Version.",
+      "guard": "Confirmation names both source and destination; disabled when exact source Version or dataset is unavailable.",
+      "compute": "Does not substitute current optimization state or current priorities."
+    },
+    {
+      "action": "Generate Report from historical Run",
+      "class": "report",
+      "source": "Exact historical Run and retained source ScenarioRevision.",
+      "destination": "New Report bound to that ScenarioRevision/Run.",
+      "guard": "Confirmation names source Scenario/Version/Run and current workspace. Action is unavailable if exact source Version is not retained.",
+      "compute": "No RF rerun."
+    },
+    {
+      "action": "Generate Report from current unsaved plan",
+      "class": "report",
+      "source": "Current working plan; explicitly called Current unsaved plan when not tied to immutable Version.",
+      "destination": "Report without inventing a saved Version binding.",
+      "guard": "Show that the Report was not tied to a saved Version.",
+      "compute": "Report generation only; no implicit RF rerun."
+    },
+    {
+      "action": "Save Version while a result is stale",
+      "class": "persist current plan",
+      "source": "Current working plan.",
+      "destination": "New immutable Version.",
+      "guard": "Copy states that the current plan is saved and the stale Run remains tied to the input that produced it.",
+      "compute": "Does not attach the stale Run to the new Version."
+    },
+    {
+      "action": "Download stored Report",
+      "class": "inspect/export",
+      "source": "Selected Report bytes and preserved source metadata.",
+      "destination": "Local download.",
+      "guard": "Disabled if bytes are missing/unreadable; regenerating is a separate explicit action.",
+      "compute": "Does not rerun RF."
+    },
+    {
+      "action": "Open source Version",
+      "class": "navigate",
+      "source": "Exact retained ScenarioRevision identity.",
+      "destination": "Source Scenario Version inspector, focused on that exact Version while the active Version plan remains unchanged.",
+      "guard": "The exact source revision must still be retained. If it is missing, keep the user in history/report context and explain UNAVAILABLE. If navigation would discard an unsaved draft, block the Scenario switch and keep the draft until the user saves it as a Version.",
+      "compute": "No RF compute."
+    }
+  ],
+  "invariants": ["No stale map overlay is restored to look current.", "No action silently switches the current draft to a historical source.", "Scenario navigation is blocked before it can discard an unsaved draft.", "Opening a source Version inspects that exact revision; Continue from Version remains the separate draft-changing action.", "Run and Report identities/source bindings are not rewritten.", "Missing data is UNAVAILABLE, not UNSUPPORTED."]
+}

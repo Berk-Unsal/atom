@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "concept": "4I.4",
+  "title": "Controlled P.2040-4 material slab fixtures",
+  "artifact": "controlled-fixtures",
+  "model_id": "p2040_material_slab_reference_v1",
+  "revision": "ITU-R P.2040-4 (2025-09)",
+  "reference_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf",
+  "common_inputs": {
+    "incident_medium": {"name": "air", "relative_permittivity": 1, "conductivity_s_per_m": 0},
+    "exit_medium": {"name": "air", "relative_permittivity": 1, "conductivity_s_per_m": 0},
+    "incidence_angle_deg": 0,
+    "polarization": "TE",
+    "thickness_provenance": "controlled_reference_fixture",
+    "free_space_spreading_included": false,
+    "network_simulation_composition": false
+  },
+  "equation_fixture_values": [
+    {
+      "material_id": "concrete_110_330",
+      "frequency_ghz": 140,
+      "thickness_m": 0.2,
+      "relative_permittivity": 5.17,
+      "conductivity_s_per_m": 3.16699633747,
+      "interface_reflection_power_fraction": 0.152271056331,
+      "reflected_power_fraction": 0.152271056331,
+      "transmitted_power_fraction": 2.00813891434e-46,
+      "transmission_loss_db": 456.972062479,
+      "status": "applicable"
+    },
+    {
+      "material_id": "brick_110_330",
+      "frequency_ghz": 140,
+      "thickness_m": 0.2,
+      "relative_permittivity": 4.15,
+      "conductivity_s_per_m": 1.41301775863,
+      "interface_reflection_power_fraction": 0.116876554737,
+      "reflected_power_fraction": 0.116876554737,
+      "transmitted_power_fraction": 1.5649126663e-23,
+      "transmission_loss_db": 228.055098943,
+      "status": "applicable"
+    },
+    {
+      "material_id": "glass_100_400",
+      "frequency_ghz": 140,
+      "thickness_m": 0.01,
+      "relative_permittivity": 6.5767,
+      "conductivity_s_per_m": 1.71137672053,
+      "interface_reflection_power_fraction": 0.192810421772,
+      "reflected_power_fraction": 0.169165335093,
+      "transmitted_power_fraction": 0.054364652502,
+      "absorbed_power_fraction": 0.776470012406,
+      "transmission_loss_db": 12.6468338363,
+      "status": "applicable"
+    },
+    {
+      "material_id": "wood_110_330",
+      "frequency_ghz": 140,
+      "thickness_m": 0.1,
+      "relative_permittivity": 1.82,
+      "conductivity_s_per_m": 0.815658507851,
+      "interface_reflection_power_fraction": 0.0224089681762,
+      "reflected_power_fraction": 0.0224089681762,
+      "transmitted_power_fraction": 1.23024541615e-10,
+      "transmission_loss_db": 99.1000824446,
+      "status": "applicable"
+    }
+  ],
+  "legacy_4i1_fixture_comparison": {
+    "source": "docs/concept-4i1-140ghz-controlled-fixtures.json",
+    "role": "comparison_only; not accepted as 4I.4 equation goldens",
+    "reason": "The earlier independent audit fixture reported a different signed-complex slab result. 4I.4 records the P.2040 εr″ conversion and complex Fresnel/slab ledger explicitly so the discrepancy is visible rather than silently normalized.",
+    "legacy_transmission_loss_db": {
+      "concrete_110_330_0p2m": 453.397911,
+      "brick_110_330_0p2m": 224.962784,
+      "glass_100_400_0p01m": 8.555582,
+      "wood_110_330_0p1m": 97.796134
+    },
+    "difference_4i4_minus_legacy_db": {
+      "concrete_110_330_0p2m": 3.574151479,
+      "brick_110_330_0p2m": 3.092314943,
+      "glass_100_400_0p01m": 4.091251836,
+      "wood_110_330_0p1m": 1.303948445
+    }
+  },
+  "frequency_sweep": [
+    {"material_id": "glass_0p1_100", "frequency_ghz": 28, "thickness_m": 0.01, "transmission_loss_db": 4.18404293433, "status": "applicable"},
+    {"material_id": "glass_0p1_100", "frequency_ghz": 60, "thickness_m": 0.01, "transmission_loss_db": 7.0148956985, "status": "applicable"},
+    {"material_id": "glass_100_400", "frequency_ghz": 100, "thickness_m": 0.01, "transmission_loss_db": 8.24632573431, "status": "applicable"},
+    {"material_id": "glass_100_400", "frequency_ghz": 140, "thickness_m": 0.01, "transmission_loss_db": 12.6468338363, "status": "applicable"},
+    {"material_id": "glass_100_400", "frequency_ghz": 200, "thickness_m": 0.01, "transmission_loss_db": 20.3002279986, "status": "applicable"},
+    {"material_id": "brick_1_40", "frequency_ghz": 60, "thickness_m": 0.2, "status": "material_frequency_out_of_range", "no_extrapolation": true}
+  ],
+  "thickness_sweep_140ghz_glass": [
+    {"thickness_m": 0.001, "transmission_loss_db": 3.9740962809, "status": "applicable"},
+    {"thickness_m": 0.005, "transmission_loss_db": 6.83242877775, "status": "applicable"},
+    {"thickness_m": 0.01, "transmission_loss_db": 12.6468338363, "status": "applicable"},
+    {"thickness_m": 0.05, "transmission_loss_db": 56.458210647, "status": "applicable"},
+    {"thickness_m": 0.1, "transmission_loss_db": 111.057146266, "status": "applicable"},
+    {"thickness_m": 0.2, "transmission_loss_db": 220.255015221, "status": "applicable"}
+  ],
+  "angle_sweep_140ghz_glass_10mm": [
+    {"angle_deg": 0, "te_loss_db": 12.6468338363, "tm_loss_db": 12.6468338363, "te_reflected_power": 0.169165335093, "tm_reflected_power": 0.169165335093},
+    {"angle_deg": 15, "te_loss_db": 12.8758637687, "tm_loss_db": 12.6577912842, "te_reflected_power": 0.191671280984, "tm_reflected_power": 0.171638921648},
+    {"angle_deg": 30, "te_loss_db": 13.6518181126, "tm_loss_db": 12.6454514178, "te_reflected_power": 0.266315035285, "tm_reflected_power": 0.170227458354},
+    {"angle_deg": 45, "te_loss_db": 14.3542531018, "tm_loss_db": 12.161809864, "te_reflected_power": 0.276745820023, "tm_reflected_power": 0.0824504825131},
+    {"angle_deg": 60, "te_loss_db": 16.7491422637, "tm_loss_db": 11.8204643709, "te_reflected_power": 0.463907402102, "tm_reflected_power": 0.0267473138157},
+    {"angle_deg": 75, "te_loss_db": 20.6778708989, "tm_loss_db": 12.0201032428, "te_reflected_power": 0.635969073446, "tm_reflected_power": 0.0261720155402}
+  ],
+  "user_property_sensitivity": [
+    {"relative_permittivity": 2, "conductivity_s_per_m": 0.15, "frequency_ghz": 140, "thickness_m": 0.01, "transmitted_power_fraction": 0.637191957888, "transmission_loss_db": 1.95729714143, "classification": "user_assumption"},
+    {"relative_permittivity": 4, "conductivity_s_per_m": 0.15, "frequency_ghz": 140, "thickness_m": 0.01, "transmitted_power_fraction": 0.552652375042, "transmission_loss_db": 2.57547959242, "classification": "user_assumption"},
+    {"relative_permittivity": 8, "conductivity_s_per_m": 0.15, "frequency_ghz": 140, "thickness_m": 0.01, "transmitted_power_fraction": 0.358996016499, "transmission_loss_db": 4.44910370424, "classification": "user_assumption"}
+  ],
+  "numeric_and_boundary_fixtures": [
+    {"case": "zero_thickness_identical_air_media", "thickness_m": 0, "expected": "R=0, T=1, A=0 within tolerance"},
+    {"case": "very_thick_concrete", "material_id": "concrete_110_330", "frequency_ghz": 140, "thickness_m": 10, "expected_status": "below_numeric_floor", "expected": "no NaN/Inf; lower-bound transmission loss only"},
+    {"case": "unsupported_metal", "frequency_ghz": 140, "expected_status": "material_frequency_out_of_range", "expected": "no preset and no extrapolation"},
+    {"case": "geometry_derived_without_normal", "expected": "validation error"},
+    {"case": "geometry_derived_with_surveyed_normal", "expected": "accepted with facade-normal provenance"}
+  ],
+  "comparison_boundary": {
+    "historical_research_sub_thz_heuristic_db_per_event": 80,
+    "combined": false,
+    "sum_into_network_simulation": false,
+    "interpretation": "A declared material slab and the historical 80 dB/event planning heuristic are separate ledgers; neither is a universal building-entry value."
+  }
+}

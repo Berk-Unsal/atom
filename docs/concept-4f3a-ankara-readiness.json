@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "concept": "4F.3A",
+  "title": "Ankara spatial-evidence readiness",
+  "artifact": "ankara-readiness",
+  "captured_at": "2026-09-19",
+  "dataset": {
+    "id": "ankara-open-planning",
+    "version": "2026.07",
+    "manifest": "data-pipeline/manifest.json",
+    "crs": "EPSG:4326",
+    "tower_cells": 451,
+    "building_features": 161626,
+    "loader_visible_footprints": 161784,
+    "outer_ring_policy": "MultiPolygon outer rings become parts and preserve logical IDs; holes are not exterior facade evidence."
+  },
+  "terrain": {
+    "coverage_pct": 0.0,
+    "layer_present": false,
+    "kind": "dem_unspecified",
+    "vertical_datum_kind": "unknown",
+    "authoritative_ground": false,
+    "base_elevation_ready": false,
+    "reason": "No terrain raster is present in the active pack."
+  },
+  "building_height": {
+    "explicit_height_count": 1108,
+    "explicit_height_pct": 0.684945,
+    "levels_derived_count": 4966,
+    "levels_derived_pct": 3.070759,
+    "trusted_height_count": 1108,
+    "qualified_height_count": 4966,
+    "trusted_or_qualified_count": 6074,
+    "trusted_or_qualified_pct": 3.754389,
+    "fallback_only_count": 155710,
+    "fallback_only_pct": 96.245611,
+    "unavailable_count": 0,
+    "external_height_records_activated": 0,
+    "absolute_roof_elevation_count": 0
+  },
+  "candidate_source_readiness": {
+    "copernicus_glo30": {"coverage_candidate": true, "installed": false, "kind": "dsm", "status": "surface_diagnostic_only_until_dtm_or_vegetation_derivation"},
+    "nasadem_srtm": {"coverage_candidate": true, "installed": false, "kind": "dem_unspecified", "status": "datum_and_local_ground_validation_required"},
+    "aster_gdem_v3": {"coverage_candidate": true, "installed": false, "kind": "dem_unspecified", "status": "fallback_candidate_only"},
+    "microsoft_globalml": {"turkey_link_table_coverage": true, "ankara_tile_acquired": false, "records_matched": 0, "status": "qualified_candidate_not_activated"},
+    "national_turkiye_products": {"authorized_access_possible": true, "repository_redistribution_cleared": false, "status": "institutional_or_paid_access_gate"}
+  },
+  "path_readiness": {
+    "cells": 6,
+    "rays_per_cell": 72,
+    "paths": 432,
+    "los_to_los": 29,
+    "los_to_nlos": 0,
+    "nlos_to_los": 0,
+    "nlos_to_nlos": 248,
+    "unknown_to_unknown": 155,
+    "p526_diagnostic_eligible": 29,
+    "p526_unknown_height_ineligible": 403,
+    "p526_blocked_only_by_unknown_height": 338
+  },
+  "p1411": {
+    "fully_automatic_paths": 0,
+    "morphology_taxonomy_present": false,
+    "both_below_rooftop_provable": false,
+    "status": "not_ready",
+    "note": "Height/terrain evidence alone cannot infer the required P.1411 morphology and rooftop relation."
+  },
+  "reflection": {
+    "geometry_only_specular_candidates": 6368,
+    "candidates_with_height_evidence": 777,
+    "candidates_with_flat_datum_vertical_span": 777,
+    "candidates_with_terrain_anchored_vertical_span": 0,
+    "material_evidence_footprints": 0,
+    "status": "not_ready"
+  },
+  "promotion_gate": {
+    "terrain": "Require a declared DTM kind, explicit compatible vertical datum/geoid, checksummed coverage, no-data QA, and deterministic local validation.",
+    "height": "Require matched external records with exact/high-confidence overlap, source terms, acquisition/version metadata, and disagreement statistics against OSM.",
+    "impact": "Require a non-trivial reduction in fallback-only buildings and a reviewed 432-path transition matrix before any canonical consideration.",
+    "rf": "Require a separate before/after canonical artifact proving equations, LOS/NLOS defaults, optimizer objectives, and scenario fingerprints remain unchanged until explicit promotion."
+  },
+  "conclusion": "Current Ankara readiness is foundation-ready but data-source-blocked: terrain coverage is 0%, absolute roof elevation coverage is 0, and height evidence remains 3.75% observed-or-levels. No new source has been promoted."
+}

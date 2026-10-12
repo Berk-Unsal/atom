@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "concept": "4I.5B",
+  "title": "Single-bounce specular reflection controlled fixtures",
+  "artifact": "controlled-fixtures",
+  "captured_at": "2026-09-19",
+  "model_id": "single_bounce_specular_reflection_reference_v1",
+  "readiness": "reference_only",
+  "references": {
+    "p2040": {
+      "revision": "ITU-R P.2040-4 (2025-09)",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf",
+      "use": "complex TE/TM interface and finite-slab reflection coefficients"
+    },
+    "p525": {
+      "revision": "ITU-R P.525-5 (2024-11)",
+      "url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.525-5-202411-I!!PDF-E.pdf",
+      "use": "single physical reflected-path free-space spreading"
+    }
+  },
+  "base_request": {
+    "schema_version": 1,
+    "frequency_ghz": 140,
+    "coordinate_frame": {"mode": "local_enu"},
+    "tx": {
+      "position": {"x": 50, "y": -50, "z": 10},
+      "antenna": {"mode": "isotropic", "absolute_gain_dbi": 0}
+    },
+    "rx": {
+      "position": {"x": 50, "y": 50, "z": 10},
+      "antenna": {"mode": "isotropic", "absolute_gain_dbi": 0}
+    },
+    "facade": {
+      "start": {"x": 0, "y": -10, "z": 0},
+      "end": {"x": 0, "y": 10, "z": 0},
+      "plane_point": {"x": 0, "y": 0, "z": 0},
+      "outward_normal": {"x": 1, "y": 0, "z": 0},
+      "geometry_provenance": "controlled_reference_fixture",
+      "normal_provenance": "user_declared",
+      "height_provenance": "controlled_reference_fixture",
+      "base_z": 0,
+      "top_z": 20
+    },
+    "material": {
+      "mode": "interface",
+      "material_source": "user_defined",
+      "user_material": {
+        "name": "lossless epsilon 4",
+        "property_source": "user_declared",
+        "relative_permittivity": 4,
+        "conductivity_s_per_m": 0
+      },
+      "incident_medium": {"name": "air", "relative_permittivity": 1, "conductivity_s_per_m": 0, "property_source": "user_declared"},
+      "exit_medium": {"name": "air", "relative_permittivity": 1, "conductivity_s_per_m": 0, "property_source": "user_declared"}
+    },
+    "terrain": {"mode": "flat_ground_relative_datum", "provenance": "controlled_reference_fixture"},
+    "link_budget": {"pt_conducted_dbm": 30},
+    "rms_roughness_m": null,
+    "obstructions": []
+  },
+  "geometry_expected": {
+    "mirrored_tx_enu": [-50, -50, 10],
+    "reflection_point_enu": [0, 0, 10],
+    "d1_m": 70.71067811865476,
+    "d2_m": 70.71067811865476,
+    "total_reflected_path_length_m": 141.4213562373095,
+    "incidence_angle_deg": 45,
+    "reflection_angle_deg": 45,
+    "specular_equality_error_max": 1e-8,
+    "vertical_extent_status": "known",
+    "segment_parameter": 0.5
+  },
+  "spreading_expected": {
+    "wavelength_m": 0.0021413747,
+    "formula": "FSPL(L)=20log10(4πL/λ), L=d1+d2=|Tx_image−Rx|",
+    "fspl_reflected_path_db": 118.38064389208795,
+    "fspl_each_leg_db": 112.36004397880832,
+    "two_leg_fspl_sum_db_rejected": 224.72008795761664,
+    "two_leg_fspl_composition": false
+  },
+  "polarization_fixtures": [
+    {
+      "id": "controlled_140ghz_te",
+      "polarization": "TE",
+      "expected_status": "qualified_reference",
+      "expected_gamma_real": -0.4514162296451364,
+      "expected_gamma_imaginary": 0,
+      "expected_gamma_power_fraction": 0.20377661238703051,
+      "expected_reflection_loss_db": 6.9084566181195415,
+      "expected_reflected_path_reference_power_dbm": -95.28910051020749,
+      "qualification_reasons": ["roughness_unknown", "antenna_far_field_unknown", "visibility_assumed_for_local_enu"]
+    },
+    {
+      "id": "controlled_140ghz_tm",
+      "polarization": "TM",
+      "expected_status": "qualified_reference",
+      "expected_gamma_real": 0.20377661238703063,
+      "expected_gamma_imaginary": 0,
+      "expected_gamma_power_fraction": 0.04152490775593412,
+      "expected_reflection_loss_db": 13.81691323623908,
+      "expected_reflected_path_reference_power_dbm": -102.19755712832702,
+      "qualification_reasons": ["roughness_unknown", "antenna_far_field_unknown", "visibility_assumed_for_local_enu"]
+    }
+  ],
+  "gate_fixtures": [
+    {"id": "outside_horizontal_segment", "mutation": "facade y range [1,10]", "expected_status": "inapplicable", "expected_reason": "specular_point_outside_facade_segment"},
+    {"id": "outside_vertical_extent", "mutation": "facade top_z=5", "expected_status": "inapplicable", "expected_reason": "specular_point_outside_vertical_extent"},
+    {"id": "unknown_vertical_extent", "mutation": "facade top_z omitted", "expected_status": "inapplicable", "expected_reason": "vertical_extent_unknown"},
+    {"id": "blocked_first_leg", "mutation": "opaque positive-length obstacle crosses Tx-to-S", "expected_status": "inapplicable", "expected_reason": "leg1_blocked"},
+    {"id": "reflector_endpoint_exemption", "mutation": "reflector touches S only at zero-length endpoint", "expected_status": "qualified_reference", "expected_reason": "endpoint contact is exempt"},
+    {"id": "reflector_positive_penetration", "mutation": "reflector polygon has positive-length leg penetration", "expected_status": "inapplicable", "expected_reason": "leg1_blocked"},
+    {"id": "zero_reflection", "mutation": "user material epsilon_r=1 in air", "expected_status": "inapplicable", "expected_reason": "reflection_coefficient_zero_or_below_numeric_floor", "finite_json": true},
+    {"id": "slab_without_coherence", "mutation": "mode finite_slab without thickness or phase_coherence", "expected_validation_error": true},
+    {"id": "generic_polarization", "mutation": "polarization H", "expected_validation_error": true}
+  ],
+  "isolation_assertions": {
+    "promoted": false,
+    "production_candidate": false,
+    "canonical": false,
+    "network_coupled": false,
+    "multipath_combined": false,
+    "coherent_multipath_combined": false,
+    "direct_path_calculated": false,
+    "atmosphere_composition_supported": false,
+    "diffuse_scattering_modelled": false,
+    "p1411_composition": false,
+    "p526_composition": false,
+    "research_sub_thz_wall_addition": false
+  }
+}

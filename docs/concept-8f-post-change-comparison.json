@@ -1,0 +1,265 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:53:57.293Z",
+  "baseline": {
+    "commit": "0e4f624a1e08826e4381bc3ff11747eae140bd66",
+    "branch": "main",
+    "version": "0.9.1",
+    "checks": {
+      "frontendUnitWorkflow": {
+        "command": "cd frontend-react && npm test",
+        "status": "passed",
+        "files": 56,
+        "tests": 301
+      },
+      "frontendLint": {
+        "command": "cd frontend-react && npm run lint",
+        "status": "passed"
+      },
+      "frontendProductionBuild": {
+        "command": "cd frontend-react && npm run build",
+        "status": "passed",
+        "javascriptChunkCount": 12,
+        "initialJavaScript": {
+          "file": "index-CPWkdou9.js",
+          "rawBytes": 801829,
+          "gzipBytes": 226624
+        },
+        "allJavaScript": {
+          "rawBytes": 998170,
+          "gzipBytes": 280609
+        },
+        "css": {
+          "rawBytes": 184311,
+          "gzipBytes": 33582
+        },
+        "warning": "Vite reports the initial JavaScript chunk exceeds 500 kB after minification."
+      },
+      "requestEquivalence": {
+        "command": "cd frontend-react && npm test -- src/domain/requestEquivalence.test.js",
+        "status": "passed",
+        "files": 1,
+        "tests": 3
+      },
+      "e2e": {
+        "command": "cd frontend-react && npm run test:e2e",
+        "status": "passed",
+        "total": 172,
+        "passed": 102,
+        "skipped": 70,
+        "failed": 0,
+        "projects": [
+          "desktop-1440",
+          "desktop-1024",
+          "tablet-768",
+          "mobile-390"
+        ],
+        "notes": "Default Playwright configuration skips project-gated cases and real-backend tests. Existing Concept 8B screenshot/evidence files rewritten by the capture workflow were restored byte-for-byte to the clean starting worktree."
+      },
+      "backendGo": {
+        "module": "backend-go",
+        "vet": {
+          "command": "cd backend-go && go vet ./...",
+          "status": "passed"
+        },
+        "race": {
+          "command": "cd backend-go && go test -race ./...",
+          "status": "passed",
+          "testedPackages": 2
+        }
+      },
+      "coreLabAdapter": {
+        "module": "core-lab-adapter",
+        "vet": {
+          "command": "cd core-lab-adapter && go vet ./...",
+          "status": "passed"
+        },
+        "race": {
+          "command": "cd core-lab-adapter && go test -race ./...",
+          "status": "passed",
+          "testedPackages": 1
+        }
+      }
+    }
+  },
+  "after": {
+    "version": "0.9.1",
+    "checks": {
+      "frontendUnitWorkflow": {
+        "files": 57,
+        "tests": 306,
+        "status": "passed"
+      },
+      "frontendLint": "passed",
+      "frontendProductionBuild": {
+        "javascriptChunkCount": 15,
+        "initialJavaScript": {
+          "file": "index-D-cGVw08.js",
+          "rawBytes": 803438,
+          "gzipBytes": 227842
+        },
+        "allJavaScript": {
+          "rawBytes": 1003121,
+          "gzipBytes": 284875
+        },
+        "css": {
+          "file": "index-KUfNh5W5.css",
+          "rawBytes": 194457,
+          "gzipBytes": 35199
+        }
+      },
+      "requestEquivalence": {
+        "files": 1,
+        "tests": 3,
+        "status": "passed"
+      },
+      "e2e": {
+        "total": 184,
+        "passed": 105,
+        "skipped": 79,
+        "failed": 0
+      },
+      "backendGo": {
+        "vet": "passed",
+        "race": "passed"
+      },
+      "coreLabAdapter": {
+        "vet": "passed",
+        "race": "passed"
+      },
+      "docsBuild": "passed",
+      "docsValidation": "passed",
+      "version": "passed",
+      "diffCheck": "passed"
+    }
+  },
+  "layout": [
+    {
+      "surface": "Setup with expanded Scenario Workspace",
+      "beforeScrollHeight": 1866,
+      "afterSurface": "Setup",
+      "afterScrollHeight": 778,
+      "note": "Scenario controls now live in a dedicated Scenarios tool."
+    },
+    {
+      "surface": "Scenarios list and selected-Version detail",
+      "beforeScrollHeight": null,
+      "afterListScrollHeight": 874,
+      "afterSelectedVersionScrollHeight": 920
+    },
+    {
+      "surface": "Optimization Priorities",
+      "beforeScrollHeight": 1917,
+      "afterScrollHeight": 1752
+    },
+    {
+      "surface": "RF Diagnostics research workflows",
+      "beforeScrollHeight": 2795,
+      "afterScrollHeightBySubview": {
+        "Validation": 1110,
+        "Materials": 945,
+        "Reflection": 1499
+      }
+    },
+    {
+      "surface": "Results optimization",
+      "beforeScrollHeight": 1077,
+      "afterScrollHeight": 905
+    },
+    {
+      "surface": "Run History list + detail combined",
+      "beforeScrollHeight": 1051,
+      "afterListScrollHeight": 766,
+      "afterDetailScrollHeight": 766
+    },
+    {
+      "surface": "Data primary",
+      "beforeScrollHeight": 832,
+      "afterScrollHeight": 778
+    }
+  ],
+  "responsive": {
+    "viewports": [
+      1440,
+      1024,
+      768,
+      390
+    ],
+    "documentOverflowX": "0 or within 1 CSS pixel in tested focused states"
+  },
+  "changes": {
+    "newDependencies": 0,
+    "backendOrDomainChanges": 0,
+    "initialChunkRawDelta": 1609,
+    "initialChunkGzipDelta": 1218,
+    "javascriptChunkCountDelta": 3,
+    "allJavaScriptRawDelta": 4951,
+    "allJavaScriptGzipDelta": 4266,
+    "cssRawDelta": 10146,
+    "cssGzipDelta": 1617
+  },
+  "conclusion": "Tool interiors have clearer primary/secondary/tertiary structure. Scenario management has its own Plan destination. RF research workflows, Run History states, and Data disclosures are isolated by task. Measurements show state-specific density changes without imposing an arbitrary height target.",
+  "phase107Review": {
+    "inspectedAt": "2026-09-24T12:43:15.632Z",
+    "findings": [
+      {
+        "area": "Inventory browse/edit density",
+        "finding": "Cell search/list and a long per-cell RF editor share one tool. Profile includes many advanced values; search presents up to 250 cells. No bulk selection/editing workflow is surfaced.",
+        "evidence": [
+          "frontend-react/src/components/InventoryPanel.jsx",
+          "docs/assets/concept-8b/1440-inventory.jpg"
+        ],
+        "priority": "recommended next phase"
+      },
+      {
+        "area": "Report definition depth",
+        "finding": "Current Report surface leads with source and PDF/Print or Markdown; saved Reports and a single empty state remain clearly separated. No deeper definition-flow problem surfaced."
+      },
+      {
+        "area": "City-scale Cell marker density",
+        "finding": "MapCanvas renders one CircleMarker per tower. The Concept 8F mock has too few Cells to measure city-scale legibility or performance; Concept 8C audit remains relevant. Clustering is out of scope."
+      },
+      {
+        "area": "Command-bar edge cases",
+        "finding": "Current/stale Run status, source context, and primary action have existing responsive and stale-result coverage; no 8F-specific failure surfaced.",
+        "evidence": [
+          "frontend-react/e2e/workspace.spec.js"
+        ]
+      },
+      {
+        "area": "Application startup/bundle",
+        "finding": "Initial JS is 803438 raw / 227842 gzip bytes with the existing Vite >500 kB warning; +1609 / +1218 bytes versus baseline. This remains tracked product debt."
+      },
+      {
+        "area": "First-run onboarding",
+        "finding": "Current empty states explain what is absent and provide a next action. This review did not find measured evidence requiring a guided first-run flow."
+      },
+      {
+        "area": "Keyboard map access",
+        "finding": "Keyboard E2E verifies map focus-cell selection, inspector entry, Escape and focus return. Added Concept 8F keyboard flow covers save/version, research subviews, Results tab, Run action, and Run History focus return."
+      },
+      {
+        "area": "Accessibility",
+        "finding": "New primitives use semantic sections, headings, labeled groups/controls, status text, native buttons, aria-pressed and expanded state. E2E and component tests cover those controls. A manual screen-reader audit was not performed."
+      },
+      {
+        "area": "Measurement-campaign UX",
+        "finding": "Measurement Validation remains an isolated evidence workflow with explicit campaign inputs; campaign readiness and real Ankara data availability stay in existing scientific validation scope."
+      }
+    ],
+    "recommendation": {
+      "phase": "Concept 8G — Inventory & Bulk Editing UX",
+      "scope": [
+        "cell browse/search/selection hierarchy",
+        "per-cell edit density",
+        "safe multi-cell/bulk operations"
+      ],
+      "constraints": [
+        "preserve Inventory ownership of Cell editing",
+        "preserve RF request semantics and validation",
+        "keep map selection/inspection ownership intact",
+        "do not implement marker clustering in that phase"
+      ]
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "destination": "Plan > Scenarios",
+  "setup": [
+    "planning mode",
+    "technology and RF profile",
+    "propagation model",
+    "TX power",
+    "selected cluster readiness",
+    "Advanced model details"
+  ],
+  "scenariosPrimary": [
+    "active Scenario and working draft state",
+    "Save Version",
+    "Scenario list"
+  ],
+  "scenariosSecondary": [
+    "compact Version history",
+    "selected Version and input diff",
+    "Continue from Version",
+    "Branch",
+    "Duplicate Scenario",
+    "Compare Scenarios and Versions"
+  ],
+  "scenariosTertiary": [
+    "lineage",
+    "fingerprints",
+    "originating Run or solution",
+    "associated Runs and Reports",
+    "compatibility metadata"
+  ],
+  "behaviors": {
+    "saveVersion": "Available when the current draft can create a Version; no automatic Version creation.",
+    "currentScenarioSelection": "Selecting the current Scenario does not trigger the different-Scenario unsaved-draft guard.",
+    "differentScenarioWithUnsavedDraft": "Selection remains protected and the draft input is preserved.",
+    "sourceNavigation": "Run and Report source controls open Scenarios and select the exact source Version while retaining the active Version/draft."
+  },
+  "persistence": "ScenarioRevision, ProjectV2, local draft persistence, fingerprints, Run/Report links, and schemas are unchanged."
+}

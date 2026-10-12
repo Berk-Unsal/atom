@@ -1,0 +1,833 @@
+{
+  "batch_order": [
+    "B-science-0",
+    "A-science-0",
+    "C-science-0"
+  ],
+  "binary_sha256": "b0f94ef2dc32ac6f1022ccce19e1dfc68782527b3e64cf3f62ef77eca56d20fd",
+  "canonical_source_sha256": "1b1ae8c4fd0e59254a5e688c48d92c8549665c3ca396e28a1dbd1b3f60a98132",
+  "excluded_json_paths": [
+    "diagnostics.elapsed_ms"
+  ],
+  "gates": {
+    "W3_failure": "retain failures; outside certified interactive envelope does not invalidate W1/W2 if processes remain healthy",
+    "async": "worker1/queue16; initial actual worker active, nonzero temporal overlap per interactive request; sustained>=30s and >=95%50ms samples active during first30s, uncached jobs; no failed jobs/submissions",
+    "cancellation": "cancel expensiveOptimize at100ms, await handler completion, verify attempts charged and same/other clientEvaluate succeed, zero slots/active clients",
+    "cancellation_release_max_seconds": 2,
+    "concurrency": "two real distinctClientIP requests, both successful; no slot/client leak after every group",
+    "deadline_headroom_min_seconds": 15,
+    "http": "all planned interactive responses200, full streamed read, no60s deadline failure; cancellation first response exempt",
+    "incomplete": "missing/breached evidence ->NOT CERTIFIED, do not relax gates or replace cases",
+    "memory_max_events_allowed": 0,
+    "memory_peak_max_fraction_of_hard_limit": 0.75,
+    "memory_scope": "maximum kernel cgroup lifetime peak in W1/W2 and mixed batches, including startup and retained W2 state; W3/fresh separately disclosed",
+    "memory_signals_required": [
+      "memory.peak",
+      "memory.current",
+      "process RSS",
+      "Go heap",
+      "memory.events"
+    ],
+    "oom_events_allowed": 0,
+    "rationale_deadline": "reserve one quarter of existing60s safety deadline for environmental variability, transfer and contention;45s applies per protected request including client serialization/receive",
+    "rationale_memory": "retain at least25% hard memory headroom including dataset, Go runtime, client, async retained state and cgroup page cache; no reservation inferred from RSS",
+    "request_wall_max_seconds": 45,
+    "scientific": "all successful deterministic endpoint+request hashes identical across profiles, repetitions and scenarios; response runtime fields absent, diagnosticAuto not compared",
+    "throttle": "quota saturation is allowed; record usage/periods/throttle duration; pass requires unchanged wall/headroom gates"
+  },
+  "locked_at": "2026-10-05T12:18:22.116480+00:00",
+  "main_lock_sha256": "96e96a59445b9c94c39fc2bd88366a38eb25a9027ce0ac019d20985206274b0b",
+  "no_main_contract_mutation": true,
+  "plans": {
+    "A-science-0": [
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "medium-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "very-dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "very-dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "medium-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "very-dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      }
+    ],
+    "B-science-0": [
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "very-dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "medium-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "medium-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "sparse-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      }
+    ],
+    "C-science-0": [
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W3",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W3",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "sparse-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "very-dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 0
+      },
+      {
+        "fixture": "medium-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 1
+      },
+      {
+        "fixture": "medium-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "dense-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "sparse-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-2-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 2
+      },
+      {
+        "fixture": "very-dense-certification-2-28-W1",
+        "operation": "building-entry",
+        "repeat": 3
+      },
+      {
+        "fixture": "medium-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "sparse-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "very-dense-certification-1-28-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "sparse-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "very-dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "dense-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      },
+      {
+        "fixture": "medium-certification-1-2.6-W1",
+        "operation": "building-entry",
+        "repeat": 4
+      }
+    ]
+  },
+  "reason": "Raw Building Entry responses contain volatile diagnostics.elapsed_ms. Preserve every primary raw hash. Add science-only complete response comparisons removing only that exact field; RF values, fingerprints and array order retained. Supplemental latency/memory are excluded from primary performance scoring.",
+  "schema_version": 1,
+  "scope": "W1 and W3 Building Entry, all original ABC fixtures/repeats;156 real HTTP requests",
+  "source_sha256": "22c40b84930c4b956cb3645611a3a2ed27c78667a4ea2b4cc695ba7b615be994"
+}

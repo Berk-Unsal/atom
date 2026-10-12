@@ -1,0 +1,838 @@
+{
+  "audit_version": "concept-5a-audit-v1",
+  "cache_comparison": {
+    "diagnostic_memoized_control": {
+      "accepted_update_trace": [
+        {
+          "pass": 1,
+          "cell_index": 0,
+          "cell_id": "fixture-cell-1",
+          "previous_configuration": [
+            20,
+            80,
+            140,
+            200,
+            260,
+            320
+          ],
+          "chosen_configuration": [
+            0,
+            80,
+            140,
+            200,
+            260,
+            320
+          ],
+          "previous_state_key": "20.0,80.0,140.0,200.0,260.0,320.0",
+          "chosen_state_key": "0.0,80.0,140.0,200.0,260.0,320.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 0,
+          "chosen_score": 0.8931818181818182,
+          "previous_score_known": true,
+          "previous_score": 0.8931818181818182,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 37
+        },
+        {
+          "pass": 1,
+          "cell_index": 1,
+          "cell_id": "fixture-cell-2",
+          "previous_configuration": [
+            0,
+            80,
+            140,
+            200,
+            260,
+            320
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            140,
+            200,
+            260,
+            320
+          ],
+          "previous_state_key": "0.0,80.0,140.0,200.0,260.0,320.0",
+          "chosen_state_key": "0.0,60.0,140.0,200.0,260.0,320.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 60,
+          "chosen_score": 0.946590909090909,
+          "previous_score_known": true,
+          "previous_score": 0.8931818181818182,
+          "score_delta": 0.05340909090909085,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 73
+        },
+        {
+          "pass": 1,
+          "cell_index": 2,
+          "cell_id": "fixture-cell-3",
+          "previous_configuration": [
+            0,
+            60,
+            140,
+            200,
+            260,
+            320
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            200,
+            260,
+            320
+          ],
+          "previous_state_key": "0.0,60.0,140.0,200.0,260.0,320.0",
+          "chosen_state_key": "0.0,60.0,130.0,200.0,260.0,320.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 130,
+          "chosen_score": 0.946590909090909,
+          "previous_score_known": true,
+          "previous_score": 0.946590909090909,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 109
+        },
+        {
+          "pass": 1,
+          "cell_index": 3,
+          "cell_id": "fixture-cell-4",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            200,
+            260,
+            320
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            260,
+            320
+          ],
+          "previous_state_key": "0.0,60.0,130.0,200.0,260.0,320.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,260.0,320.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 170,
+          "chosen_score": 0.946590909090909,
+          "previous_score_known": true,
+          "previous_score": 0.946590909090909,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 145
+        },
+        {
+          "pass": 1,
+          "cell_index": 4,
+          "cell_id": "fixture-cell-5",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            260,
+            320
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            320
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,260.0,320.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,320.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 240,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 0.946590909090909,
+          "score_delta": 0.05340909090909096,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 181
+        },
+        {
+          "pass": 1,
+          "cell_index": 5,
+          "cell_id": "fixture-cell-6",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            320
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,320.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 310,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": true,
+          "requested_evaluations_end": 217
+        },
+        {
+          "pass": 2,
+          "cell_index": 0,
+          "cell_id": "fixture-cell-1",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 0,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 253
+        },
+        {
+          "pass": 2,
+          "cell_index": 1,
+          "cell_id": "fixture-cell-2",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 60,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 289
+        },
+        {
+          "pass": 2,
+          "cell_index": 2,
+          "cell_id": "fixture-cell-3",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 130,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 325
+        },
+        {
+          "pass": 2,
+          "cell_index": 3,
+          "cell_id": "fixture-cell-4",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 170,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 361
+        },
+        {
+          "pass": 2,
+          "cell_index": 4,
+          "cell_id": "fixture-cell-5",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 240,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 397
+        },
+        {
+          "pass": 2,
+          "cell_index": 5,
+          "cell_id": "fixture-cell-6",
+          "previous_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "chosen_configuration": [
+            0,
+            60,
+            130,
+            170,
+            240,
+            310
+          ],
+          "previous_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "chosen_state_key": "0.0,60.0,130.0,170.0,240.0,310.0",
+          "candidate_count": 36,
+          "chosen_azimuth_deg": 310,
+          "chosen_score": 1,
+          "previous_score_known": true,
+          "previous_score": 1,
+          "chosen_feasible": true,
+          "changed": false,
+          "requested_evaluations_end": 433
+        }
+      ],
+      "algorithm": "network_coordinate_descent",
+      "baseline_azimuths": [
+        20,
+        80,
+        140,
+        200,
+        260,
+        320
+      ],
+      "baseline_stats": {
+        "network_score": 427200,
+        "unique_demand_buildings": 18,
+        "unique_residential_buildings": 8,
+        "overlap_buildings": 0,
+        "demand_score": 340000,
+        "residential_score": 80000,
+        "coverage_score": 7200,
+        "overlap_penalty": 0,
+        "data_quality": "",
+        "raw_metrics": {
+          "served_weighted_demand": 34,
+          "served_demand_weight": 34,
+          "total_weighted_demand": 44,
+          "relevant_demand_weight": 44,
+          "residential_covered": 8,
+          "residential_total": 10,
+          "relevant_residential_total": 10,
+          "coverage_reach_score": 7200,
+          "coverage_reach_maximum": 7200,
+          "propagation_reach_score": 7200,
+          "propagation_reach_maximum": 7200,
+          "covered_units": 18,
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "radio_quality_total_samples": 0,
+          "radio_quality_serviceable_samples": 0,
+          "radio_quality_serviceable_fraction": 0
+        },
+        "objectives": {
+          "demand": 0.7727272727272727,
+          "residential": 0.8,
+          "coverage": 1,
+          "overlap": 1,
+          "radio_quality": 0
+        },
+        "composite_score": 0.8931818181818182,
+        "score": 89.31818181818181,
+        "objective_breakdown": {
+          "demand": {
+            "utility": 0.7727272727272727,
+            "weight": 0.25,
+            "contribution": 0.19318181818181818
+          },
+          "residential": {
+            "utility": 0.8,
+            "weight": 0.25,
+            "contribution": 0.2
+          },
+          "coverage": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "overlap": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "radio_quality": {
+            "utility": 0,
+            "weight": 0,
+            "contribution": 0
+          }
+        },
+        "objective_status": {
+          "coverage": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "demand": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 0.7727272727272727,
+            "contribution": 0.19318181818181818
+          },
+          "overlap": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "radio_quality": {
+            "available": false,
+            "reason": "disabled",
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": null,
+            "contribution": null
+          },
+          "residential": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 0.8,
+            "contribution": 0.2
+          }
+        }
+      },
+      "cache_hits": 48,
+      "cycle_detected": false,
+      "cycle_length": 0,
+      "duplicate_requested_states": 48,
+      "evaluated_candidates": 434,
+      "evaluated_state_set_fingerprint": "concept-5a-states-45444a31ff12d4a8",
+      "final_azimuths": [
+        0,
+        60,
+        130,
+        170,
+        240,
+        310
+      ],
+      "final_stats": {
+        "network_score": 547200,
+        "unique_demand_buildings": 22,
+        "unique_residential_buildings": 10,
+        "overlap_buildings": 0,
+        "demand_score": 440000,
+        "residential_score": 100000,
+        "coverage_score": 7200,
+        "overlap_penalty": 0,
+        "data_quality": "",
+        "raw_metrics": {
+          "served_weighted_demand": 44,
+          "served_demand_weight": 44,
+          "total_weighted_demand": 44,
+          "relevant_demand_weight": 44,
+          "residential_covered": 10,
+          "residential_total": 10,
+          "relevant_residential_total": 10,
+          "coverage_reach_score": 7200,
+          "coverage_reach_maximum": 7200,
+          "propagation_reach_score": 7200,
+          "propagation_reach_maximum": 7200,
+          "covered_units": 22,
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "radio_quality_total_samples": 0,
+          "radio_quality_serviceable_samples": 0,
+          "radio_quality_serviceable_fraction": 0
+        },
+        "objectives": {
+          "demand": 1,
+          "residential": 1,
+          "coverage": 1,
+          "overlap": 1,
+          "radio_quality": 0
+        },
+        "composite_score": 1,
+        "score": 100,
+        "objective_breakdown": {
+          "demand": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "residential": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "coverage": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "overlap": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "radio_quality": {
+            "utility": 0,
+            "weight": 0,
+            "contribution": 0
+          }
+        },
+        "objective_status": {
+          "coverage": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "demand": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "overlap": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "radio_quality": {
+            "available": false,
+            "reason": "disabled",
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": null,
+            "contribution": null
+          },
+          "residential": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          }
+        }
+      },
+      "fixed_point": true,
+      "label": "controlled-memoized-control",
+      "options": {
+        "label": "controlled-memoized-control",
+        "passes": 2,
+        "azimuth_step_deg": 10,
+        "cell_order_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "cell_order_ids": [
+          "fixture-cell-1",
+          "fixture-cell-2",
+          "fixture-cell-3",
+          "fixture-cell-4",
+          "fixture-cell-5",
+          "fixture-cell-6"
+        ],
+        "start_azimuths": [
+          20,
+          80,
+          140,
+          200,
+          260,
+          320
+        ],
+        "start_mode": "request_azimuths_normalized",
+        "memoize": true,
+        "search_behavior": "fixed_pass_coordinate_descent"
+      },
+      "pareto_ids": [
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,320.0",
+        "0.0,60.0,130.0,180.0,240.0,310.0",
+        "0.0,60.0,130.0,190.0,240.0,310.0",
+        "0.0,60.0,130.0,200.0,240.0,310.0",
+        "0.0,60.0,140.0,170.0,240.0,310.0",
+        "10.0,60.0,130.0,170.0,240.0,310.0",
+        "20.0,60.0,130.0,170.0,240.0,310.0",
+        "350.0,60.0,130.0,170.0,240.0,310.0"
+      ],
+      "passes_executed": 2,
+      "production_cache_behavior": false,
+      "recommended_id": "0.0,60.0,130.0,170.0,240.0,310.0",
+      "recommended_stats": {
+        "network_score": 547200,
+        "unique_demand_buildings": 22,
+        "unique_residential_buildings": 10,
+        "overlap_buildings": 0,
+        "demand_score": 440000,
+        "residential_score": 100000,
+        "coverage_score": 7200,
+        "overlap_penalty": 0,
+        "data_quality": "",
+        "raw_metrics": {
+          "served_weighted_demand": 44,
+          "served_demand_weight": 44,
+          "total_weighted_demand": 44,
+          "relevant_demand_weight": 44,
+          "residential_covered": 10,
+          "residential_total": 10,
+          "relevant_residential_total": 10,
+          "coverage_reach_score": 7200,
+          "coverage_reach_maximum": 7200,
+          "propagation_reach_score": 7200,
+          "propagation_reach_maximum": 7200,
+          "covered_units": 22,
+          "overlap_buildings": 0,
+          "overlap_ratio": 0,
+          "radio_quality_total_samples": 0,
+          "radio_quality_serviceable_samples": 0,
+          "radio_quality_serviceable_fraction": 0
+        },
+        "objectives": {
+          "demand": 1,
+          "residential": 1,
+          "coverage": 1,
+          "overlap": 1,
+          "radio_quality": 0
+        },
+        "composite_score": 1,
+        "score": 100,
+        "objective_breakdown": {
+          "demand": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "residential": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "coverage": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "overlap": {
+            "utility": 1,
+            "weight": 0.25,
+            "contribution": 0.25
+          },
+          "radio_quality": {
+            "utility": 0,
+            "weight": 0,
+            "contribution": 0
+          }
+        },
+        "objective_status": {
+          "coverage": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "demand": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "overlap": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          },
+          "radio_quality": {
+            "available": false,
+            "reason": "disabled",
+            "configured_priority": 0,
+            "effective_weight": 0,
+            "utility": null,
+            "contribution": null
+          },
+          "residential": {
+            "available": true,
+            "configured_priority": 25,
+            "effective_weight": 0.25,
+            "utility": 1,
+            "contribution": 0.25
+          }
+        }
+      },
+      "repeated_state_count": 6,
+      "scenario_fingerprint": "network-3d59480cdb2f8268a1f8b49da1499d9a",
+      "search_fingerprint": "concept-5a-search-c17a6f602a0e8d3efa039f75",
+      "state_trace": [
+        "20.0,80.0,140.0,200.0,260.0,320.0",
+        "0.0,80.0,140.0,200.0,260.0,320.0",
+        "0.0,60.0,140.0,200.0,260.0,320.0",
+        "0.0,60.0,130.0,200.0,260.0,320.0",
+        "0.0,60.0,130.0,170.0,260.0,320.0",
+        "0.0,60.0,130.0,170.0,240.0,320.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0",
+        "0.0,60.0,130.0,170.0,240.0,310.0"
+      ],
+      "termination": "fixed_pass_count",
+      "unique_states": 386
+    },
+    "diagnostic_memoized_error": null,
+    "production_cache": false,
+    "purpose": "memoized mode is a measurement control only; it is not production behavior"
+  },
+  "formula": "requested evaluations = 1 + passes * cells * floor(360 / step) + 1 for fixed-pass uncached production mode",
+  "runtime_is_not_in_search_fingerprint": true,
+  "scaling_runs": [
+    {
+      "cell_count": 1,
+      "expected_fixed_pass_formula": 74,
+      "recommendation": "130.0",
+      "requested_evaluations": 74,
+      "runtime_seconds": 0.039228958,
+      "search_fingerprint": "concept-5a-search-fccef5f4f9b8c81138bdf0c8",
+      "unique_states": 36
+    },
+    {
+      "cell_count": 2,
+      "expected_fixed_pass_formula": 146,
+      "recommendation": "130.0,310.0",
+      "requested_evaluations": 146,
+      "runtime_seconds": 0.146910334,
+      "search_fingerprint": "concept-5a-search-bbac765fa0fc1e86fe9511ca",
+      "unique_states": 106
+    },
+    {
+      "cell_count": 3,
+      "expected_fixed_pass_formula": 218,
+      "recommendation": "250.0,130.0,50.0",
+      "requested_evaluations": 218,
+      "runtime_seconds": 0.372744583,
+      "search_fingerprint": "concept-5a-search-c5eada866c9bff4dc52c4995",
+      "unique_states": 211
+    },
+    {
+      "cell_count": 4,
+      "expected_fixed_pass_formula": 290,
+      "recommendation": "0.0,100.0,170.0,260.0",
+      "requested_evaluations": 290,
+      "runtime_seconds": 0.685592083,
+      "search_fingerprint": "concept-5a-search-80f87de08032e8d43eaa98d6",
+      "unique_states": 246
+    },
+    {
+      "cell_count": 6,
+      "expected_fixed_pass_formula": 434,
+      "recommendation": "0.0,60.0,130.0,170.0,240.0,310.0",
+      "requested_evaluations": 434,
+      "runtime_seconds": 1.61375425,
+      "search_fingerprint": "concept-5a-search-8bee8a0143744b7de4c77f3f",
+      "unique_states": 386
+    }
+  ]
+}

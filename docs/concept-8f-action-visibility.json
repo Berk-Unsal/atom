@@ -1,0 +1,47 @@
+{
+  "concept": "8F",
+  "capturedAt": "2026-09-24T12:34:20.238Z",
+  "repositoryVersion": "0.9.1",
+  "rules": [
+    {
+      "tool": "Scenarios",
+      "action": "Save Version",
+      "visible": "Primary; disabled when no meaningful Scenario input changes can be saved."
+    },
+    {
+      "tool": "Scenarios",
+      "action": "Duplicate/Delete/Branch",
+      "visible": "Secondary disclosure or selected-Version state where relevant."
+    },
+    {
+      "tool": "Experiments",
+      "action": "Cancel",
+      "visible": "Only for active queued/running work where current job semantics allow cancellation."
+    },
+    {
+      "tool": "Experiments",
+      "action": "Download definition",
+      "visible": "Only after a definition exists."
+    },
+    {
+      "tool": "Experiments",
+      "action": "Queue matrix",
+      "visible": "Idle state only after the sweep dimensions are configured."
+    },
+    {
+      "tool": "Results",
+      "action": "Run current plan",
+      "visible": "Unavailable state with reason and next action."
+    },
+    {
+      "tool": "Run History",
+      "action": "Run again / Generate Report / Apply solution",
+      "visible": "Only when the selected Run, source Version, dataset, and solution state make the action applicable."
+    },
+    {
+      "tool": "Report",
+      "action": "Generate/Regenerate/Download",
+      "visible": "For the selected report/source lifecycle state."
+    }
+  ]
+}

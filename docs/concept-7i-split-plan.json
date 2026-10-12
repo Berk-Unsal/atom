@@ -1,0 +1,31 @@
+{
+  "concept": "7I",
+  "date": "2026-09-23",
+  "classifications": ["implemented", "deferred", "rejected", "keep-eager"],
+  "candidates": [
+    {"feature": "Propagation Research: Sub-THz and P.1411 references", "classification": "implemented", "boundary": "src/features/propagation-research/PropagationResearchFeature.jsx", "trigger": "Open Research / reference under Simulate > Propagation", "reason": "Collapsed research panel is not required by ordinary planning; shared local controls persist through disclosure collapse/reopen."},
+    {"feature": "RF Diagnostics Research: measurement, material, reflection", "classification": "implemented", "boundary": "src/features/rf-diagnostics/RFDiagnosticsResearchFeature.jsx", "trigger": "Open Research / reference under Analyze > RF Diagnostics", "reason": "Cohesive specialized diagnostics group; one chunk rather than a chunk per panel."},
+    {"feature": "Experiments", "classification": "implemented", "boundary": "src/components/ExperimentPanel.jsx", "trigger": "Select Simulate > Experiments", "reason": "Specialized matrix/experiment UI; ordinary optimization summary and public Pareto UI remain eager."},
+    {"feature": "Core Lab", "classification": "implemented", "boundary": "src/features/core-lab/CoreLabFeature.jsx", "trigger": "Select Analyze > 5G Core", "reason": "Specialized optional integration and clean extraction from inline App presentation."},
+    {"feature": "Run History display", "classification": "implemented", "boundary": "src/components/RunHistoryPanel.jsx", "trigger": "Select Review > Run History or an existing open-run action", "reason": "Review-only panel; history hooks/state stay in App and historical report generation owns its own import."},
+    {"feature": "Report display", "classification": "implemented", "boundary": "src/features/reports/ReportFeature.jsx", "trigger": "Select Review > Report", "reason": "Infrequent report UI separated from ordinary workspace."},
+    {"feature": "Report rendering/export", "classification": "implemented", "boundary": "src/utils/reportExport.js", "trigger": "Explicit export, report regeneration, or Run History > Generate report", "reason": "Largest lazy JS module; direct import from Run History preserves report action without visiting Report first."},
+    {"feature": "Report artifact construction", "classification": "implemented", "boundary": "src/utils/reportArtifact.js", "trigger": "Explicit Report persistence/regeneration", "reason": "Removed a baseline static App import path that pulled rendering code into startup."},
+    {"feature": "Stored artifact download/open helper", "classification": "implemented", "boundary": "src/utils/reportArtifactDownload.js", "trigger": "Explicit download of current or retained bytes", "reason": "Allows exact stored bytes to be downloaded without loading the report renderer."},
+    {"feature": "Ordinary Setup, Inventory and map shell", "classification": "keep-eager", "boundary": null, "trigger": "Initial startup", "reason": "Required for the first useful map-first planning workflow."},
+    {"feature": "Leaflet / react-leaflet", "classification": "keep-eager", "boundary": null, "trigger": "Initial startup", "reason": "A.T.O.M's primary workspace is the map; delaying it would make initial startup feel incomplete."},
+    {"feature": "PathProfilePanel and OptimizationGoalsPanel", "classification": "keep-eager", "boundary": null, "trigger": "Existing Propagation > Advanced analysis disclosure", "reason": "Advanced validation attention/focus and common analysis path are tightly connected; no exclusive heavy dependency was identified."},
+    {"feature": "Results, optimization summary, recommendations and Pareto solution inspection", "classification": "keep-eager", "boundary": null, "trigger": "Existing Results and Review surfaces", "reason": "These are ordinary simulation/optimization outputs; do not delay the core result path."},
+    {"feature": "Building entry, surfaces, inventory, data and ordinary diagnostics", "classification": "rejected for this phase", "boundary": null, "trigger": "Existing relevant tool action", "reason": "No measured unique dependency cost or cohesive split with enough initial delivery benefit was established."},
+    {"feature": "Global router, service worker, manual vendor chunks, blanket prefetch", "classification": "rejected", "boundary": null, "trigger": null, "reason": "Not needed; blanket loading would defeat intent-based delivery and larger platform changes are outside scope."},
+    {"feature": "One chunk per small form/button", "classification": "rejected", "boundary": null, "trigger": null, "reason": "Would create micro-chunks without meaningful user-facing delivery benefit."}
+  ],
+  "policy": {
+    "automaticStartupPrefetch": false,
+    "intentPreload": false,
+    "manualChunkRulesAdded": false,
+    "chunkWarningThresholdChanged": false,
+    "productionSourceMapPolicyChanged": false,
+    "newDependencies": []
+  }
+}

@@ -12,6 +12,7 @@ import (
 const (
 	MaxRecommendationCandidates  = 50
 	MaxRecommendationEvaluations = 12
+	MaxSearchPolygonCoordinates  = 256
 )
 
 type SiteRecommendationRequestInput struct {
@@ -35,11 +36,14 @@ type SiteRecommendationRequest struct {
 }
 
 type SiteRecommendationResponse struct {
-	Baseline            NetworkOptimizationStats        `json:"baseline"`
-	CandidatesEvaluated int                             `json:"candidates_evaluated"`
-	Recommendations     []SiteRecommendation            `json:"recommendations"`
-	GeoJSON             RecommendationFeatureCollection `json:"geojson"`
-	Notes               []string                        `json:"notes"`
+	Baseline              NetworkOptimizationStats        `json:"baseline"`
+	CandidatesEvaluated   int                             `json:"candidates_evaluated"`
+	Recommendations       []SiteRecommendation            `json:"recommendations"`
+	GeoJSON               RecommendationFeatureCollection `json:"geojson"`
+	Notes                 []string                        `json:"notes"`
+	RequestDefaults       RFRequestDefaults               `json:"request_defaults"`
+	EffectiveCellProfiles []EffectiveCellRFProfile        `json:"effective_cell_profiles"`
+	RFContract            RFContractMetadata              `json:"rf_contract"`
 }
 
 type SiteRecommendation struct {
@@ -51,6 +55,7 @@ type SiteRecommendation struct {
 	MarginalNetworkScore float64                  `json:"marginal_network_score"`
 	Stats                NetworkOptimizationStats `json:"stats"`
 	Reason               string                   `json:"reason"`
+	RFProfile            CellRFProfile            `json:"rf_profile"`
 }
 
 type RecommendationFeatureCollection struct {
@@ -110,6 +115,9 @@ func ValidateSiteRecommendationRequest(req SiteRecommendationRequest) string {
 	if len(req.SearchPolygon) < 3 {
 		return "search_polygon must contain at least 3 coordinates"
 	}
+	if len(req.SearchPolygon) > MaxSearchPolygonCoordinates {
+		return "search_polygon must contain no more than 256 coordinates"
+	}
 	for _, point := range req.SearchPolygon {
 		if point.Lon < MinLongitude || point.Lon > MaxLongitude || point.Lat < MinLatitude || point.Lat > MaxLatitude {
 			return "search_polygon contains an invalid coordinate"
@@ -147,6 +155,16 @@ func ValidateSiteRecommendationRequest(req SiteRecommendationRequest) string {
 		seen[tower.ID] = struct{}{}
 		if tower.TowerLon < MinLongitude || tower.TowerLon > MaxLongitude || tower.TowerLat < MinLatitude || tower.TowerLat > MaxLatitude {
 			return "each tower must include valid tower_lon and tower_lat coordinates"
+		}
+		profileRadius := req.Network.RadiusMeters
+		if tower.RFProfile.SchemaVersion != 0 {
+			if validationError := ValidateCellRFProfile(tower.RFProfile, false); validationError != "" {
+				return validationError
+			}
+			profileRadius = tower.RFProfile.RadiusMeters
+		}
+		if validationError := ValidateSimulationFeatureBudget(req.Network.Rays, profileRadius); validationError != "" {
+			return fmt.Sprintf("tower %q: %s", tower.ID, validationError)
 		}
 	}
 	return ""
@@ -217,6 +235,7 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 			TxPowerDBm:          req.Network.TxPowerDBm,
 			BeamWidthDeg:        req.Network.BeamWidthDeg,
 			CalibrationOffsetDB: req.Network.CalibrationOffsetDB,
+			RFProfile:           req.Network.RFProfile,
 		}
 		optimized, optimizeErr := OptimizeAzimuthContext(ctx, candidateRequest, buildings)
 		if optimizeErr != nil {
@@ -228,6 +247,7 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 			TowerLon:   candidate.tower.Lon,
 			TowerLat:   candidate.tower.Lat,
 			AzimuthDeg: optimized.OptimalAzimuth,
+			RFProfile:  req.Network.RFProfile,
 		})
 		candidateAzimuths := networkAzimuths(network)
 		stats, scoreErr := NetworkCoverageScoreBreakdownContext(ctx, network, candidateAzimuths, buildings)
@@ -244,6 +264,7 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 			MarginalNetworkScore: math.Round(delta*10) / 10,
 			Stats:                stats.rounded(),
 			Reason:               recommendationReason(stats, baseline),
+			RFProfile:            req.Network.RFProfile,
 		})
 	}
 	sort.SliceStable(recommendations, func(i, j int) bool {
@@ -264,10 +285,13 @@ func RecommendSitesContext(ctx context.Context, req SiteRecommendationRequest, t
 		})
 	}
 	return SiteRecommendationResponse{
-		Baseline:            baseline.rounded(),
-		CandidatesEvaluated: len(evaluationCandidates),
-		Recommendations:     recommendations,
-		GeoJSON:             RecommendationFeatureCollection{Type: "FeatureCollection", Features: features},
+		Baseline:              baseline.rounded(),
+		CandidatesEvaluated:   len(evaluationCandidates),
+		Recommendations:       recommendations,
+		GeoJSON:               RecommendationFeatureCollection{Type: "FeatureCollection", Features: features},
+		RequestDefaults:       networkRequestDefaults(req.Network),
+		EffectiveCellProfiles: effectiveCellRFProfiles(req.Network, azimuths),
+		RFContract:            rfContractForProfile(&req.Network.RFProfile, req.Network.CalibrationOffsetDB),
 		Notes: []string{
 			"Candidates are known planning records, not approved deployment sites.",
 			"Candidate scoring excludes interference; analyze SINR after applying a recommendation.",

@@ -1,0 +1,55 @@
+{
+  "concept": "8B.1",
+  "checks": [
+    {
+      "area": "Current tool",
+      "requirement": "aria-current=\"page\" remains on selected chooser option; visible Current text provides a non-color cue.",
+      "implementation": "WorkspaceChrome.jsx StageToolChoices; unit and workspace E2E assertions."
+    },
+    {
+      "area": "Unavailable tools",
+      "requirement": "Row stays visible, aria-disabled stays true, concise visible reason stays present, full original reason remains in aria-describedby.",
+      "implementation": "WorkspaceChrome.jsx StageToolChoices; WorkspaceChrome.test.jsx."
+    },
+    {
+      "area": "Stage trigger",
+      "requirement": "aria-expanded, aria-haspopup=\"dialog\", descriptive stage/attention text remain.",
+      "implementation": "WorkflowRail stage trigger; workspace E2E chooser tests."
+    },
+    {
+      "area": "Attention and results",
+      "requirement": "Short visible Attention/Result/run-count text supplements the retained accessible status description.",
+      "implementation": "StageToolChoices; unit test covers attention and history count."
+    },
+    {
+      "area": "Keyboard and focus",
+      "requirement": "Existing focus-visible outline retained; chooser Escape, Enter/Tab navigation, and drawer focus behavior remain covered by workspace E2E.",
+      "implementation": "styles.css and workspace.spec.js."
+    },
+    {
+      "area": "Touch targets",
+      "requirement": "Mobile chooser rows remain at least 58px.",
+      "implementation": "Playwright capture asserts all mobile rows >=58px; mobile workflow asserts destinations remain reachable."
+    },
+    {
+      "area": "Disclosures",
+      "requirement": "Research/Advanced disclosure expanded state and keyboard behavior unchanged.",
+      "implementation": "Existing disclosure E2E cases; only label presentation changed."
+    },
+    {
+      "area": "Reduced motion",
+      "requirement": "Chooser entrance animation is disabled under prefers-reduced-motion.",
+      "implementation": "styles.css @media (prefers-reduced-motion: reduce)."
+    },
+    {
+      "area": "Status",
+      "requirement": "Ready/stale/current/unsaved wording remains visible; semantic status is not conveyed by color only.",
+      "implementation": "CommandBar/status text and phone screenshot states."
+    }
+  ],
+  "automatedEvidence": {
+    "unit": "passed: frontend suite 55 files / 290 tests; WorkspaceChrome tests cover current state, unavailable reason, status description and row labels.",
+    "e2e": "passed: 77/77 non-skipped tests in final full matrix; stage chooser Escape, focus, keyboard/disclosure and responsive flows included.",
+    "capture": "passed: after-state capture checks full row width/layout, no truncation/scroll/desktop map-control overlap, and >=58px phone rows."
+  }
+}

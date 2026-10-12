@@ -1,0 +1,24 @@
+{
+  "concept": "7H",
+  "artifact": "responsive-evidence",
+  "capturedOn": "2026-09-23",
+  "panel": "Simulate → Propagation",
+  "checks": [
+    "Planning header visible and open",
+    "Advanced analysis header visible and closed by default",
+    "Research / reference header visible and closed by default",
+    "Global Run action visible",
+    "Drawer scrollWidth is no greater than clientWidth",
+    "Research header is inside the viewport",
+    "Document scrollWidth equals viewport width"
+  ],
+  "measurements": [
+    { "viewportWidth": 1440, "viewportHeight": 960, "drawerClientWidth": 359, "drawerScrollWidth": 359, "drawerClientHeight": 791, "drawerScrollHeight": 791, "documentClientWidth": 1440, "documentScrollWidth": 1440, "horizontalOverflow": false },
+    { "viewportWidth": 1280, "viewportHeight": 960, "drawerClientWidth": 345, "drawerScrollWidth": 345, "drawerClientHeight": 791, "drawerScrollHeight": 791, "documentClientWidth": 1280, "documentScrollWidth": 1280, "horizontalOverflow": false },
+    { "viewportWidth": 1024, "viewportHeight": 960, "drawerClientWidth": 319, "drawerScrollWidth": 319, "drawerClientHeight": 791, "drawerScrollHeight": 791, "documentClientWidth": 1024, "documentScrollWidth": 1024, "horizontalOverflow": false },
+    { "viewportWidth": 640, "viewportHeight": 844, "drawerClientWidth": 625, "drawerScrollWidth": 625, "drawerClientHeight": 466, "drawerScrollHeight": 627, "documentClientWidth": 640, "documentScrollWidth": 640, "horizontalOverflow": false },
+    { "viewportWidth": 390, "viewportHeight": 844, "drawerClientWidth": 375, "drawerScrollWidth": 375, "drawerClientHeight": 466, "drawerScrollHeight": 650, "documentClientWidth": 390, "documentScrollWidth": 390, "horizontalOverflow": false }
+  ],
+  "status": "All target-width responsive browser smoke checks passed. At 640/390 px the drawer remains vertically scrollable; this concept does not claim full planning functionality at narrow widths.",
+  "mapToolbar": "No map-toolbar change was made; no page or drawer horizontal overflow regression was observed."
+}

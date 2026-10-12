@@ -71,6 +71,71 @@ func TestNetworkInputPreservesStableTowerOrder(t *testing.T) {
 	if req.Towers[0].ID != "second" || req.Towers[1].ID != "first" {
 		t.Fatalf("tower order changed: %+v", req.Towers)
 	}
+	if len(req.Optimization.Objectives) != 5 || req.Optimization.Objectives[0].Weight != 50 || req.Optimization.Objectives[4].ID != "radio_quality" || req.Optimization.Objectives[4].Weight != 0 {
+		t.Fatalf("default optimization priorities = %+v, want four 50-point priorities plus disabled radio quality", req.Optimization.Objectives)
+	}
+}
+
+func TestNetworkInputCarriesOptInSearchPolicyAndBudgets(t *testing.T) {
+	lonA, latA := 32.85, 39.92
+	lonB, latB := 32.86, 39.93
+	input := NetworkOptimizationRequestInput{
+		Towers: []TowerRequestInput{
+			{ID: "a", TowerLon: &lonA, TowerLat: &latA},
+			{ID: "b", TowerLon: &lonB, TowerLat: &latB},
+		},
+		SearchPolicy:         DeterministicParetoArchiveSearchV1,
+		MaxSearchPasses:      3,
+		MaxUniqueEvaluations: 777,
+		MaxExpandedStates:    19,
+		MaxSearchRounds:      5,
+	}
+	req := input.ToRequest()
+	if req.SearchPolicy != DeterministicParetoArchiveSearchV1 || req.MaxSearchPasses != 3 || req.MaxUniqueEvaluations != 777 || req.MaxExpandedStates != 19 || req.MaxSearchRounds != 5 {
+		t.Fatalf("search controls not preserved: %+v", req)
+	}
+}
+
+func TestNetworkInputRejectsAllZeroOptimizationPriorities(t *testing.T) {
+	lonA, latA := 32.85, 39.92
+	lonB, latB := 32.86, 39.93
+	input := NetworkOptimizationRequestInput{
+		Towers: []TowerRequestInput{
+			{ID: "a", TowerLon: &lonA, TowerLat: &latA},
+			{ID: "b", TowerLon: &lonB, TowerLat: &latB},
+		},
+		Optimization: &OptimizationConfig{Objectives: []OptimizationObjective{
+			{ID: "demand", Weight: 0}, {ID: "residential", Weight: 0},
+			{ID: "coverage", Weight: 0}, {ID: "overlap", Weight: 0},
+		}},
+	}
+	if validationError := ValidateOptimizationConfig(input.ToRequest().Optimization); validationError == "" {
+		t.Fatal("all-zero priorities passed request validation")
+	}
+}
+
+func TestNetworkInputAppliesRFProfilePerTower(t *testing.T) {
+	lonA, latA := 32.85, 39.92
+	lonB, latB := 32.86, 39.93
+	frequencyA, frequencyB := 2.6, 28.0
+	techA, techB := "4g", "5g"
+	powerA, powerB := 43.0, 30.0
+	input := NetworkOptimizationRequestInput{Towers: []TowerRequestInput{
+		{ID: "lte", TowerLon: &lonA, TowerLat: &latA, RFProfile: &CellRFProfileInput{NetworkTech: &techA, FrequencyGHz: &frequencyA, TxPowerDBm: &powerA}},
+		{ID: "nr", TowerLon: &lonB, TowerLat: &latB, RFProfile: &CellRFProfileInput{NetworkTech: &techB, FrequencyGHz: &frequencyB, TxPowerDBm: &powerB}},
+	}}
+	req := input.ToRequest()
+	if req.Towers[0].RFProfile.NetworkTech != "4g" || req.Towers[0].RFProfile.TxPowerDBm != 43 {
+		t.Fatalf("LTE profile lost: %+v", req.Towers[0].RFProfile)
+	}
+	if req.Towers[1].RFProfile.NetworkTech != "5g" || req.Towers[1].RFProfile.FrequencyGHz != 28 {
+		t.Fatalf("NR profile lost: %+v", req.Towers[1].RFProfile)
+	}
+	for _, tower := range req.Towers {
+		if validationError := ValidateCellRFProfile(tower.RFProfile, false); validationError != "" {
+			t.Fatalf("%s profile invalid: %s", tower.ID, validationError)
+		}
+	}
 }
 
 func TestNetworkTechnologyUsesCanonicalFrequencyBoundaries(t *testing.T) {

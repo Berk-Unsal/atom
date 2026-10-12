@@ -1,0 +1,132 @@
+{
+  "concept": "8E",
+  "captured_at": "2026-09-24",
+  "state": {
+    "head": "b57b1efc98bda9ac37c75fe32d1d8b9618feea8c",
+    "branch": "main",
+    "version": "0.9.0",
+    "dirty": true,
+    "status_path_count": 31,
+    "diff_stat": {
+      "tracked_files": 6,
+      "insertions": 389,
+      "deletions": 73
+    },
+    "preexisting_modified": [
+      "frontend-react/e2e/workspace.spec.js",
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/components/ResearchReferenceBadge.jsx",
+      "frontend-react/src/components/WorkspaceChrome.jsx",
+      "frontend-react/src/components/WorkspaceChrome.test.jsx",
+      "frontend-react/src/styles.css"
+    ],
+    "preexisting_untracked": [
+      "docs/assets/concept-8b1/",
+      "docs/concept-8b1-accessibility-evidence.json",
+      "docs/concept-8b1-chrome-geometry.json",
+      "docs/concept-8b1-invariance.json",
+      "docs/concept-8b1-navigation-polish.json",
+      "docs/concept-8b1-post-change-comparison.json",
+      "docs/concept-8b1-pre-change-baseline.json",
+      "docs/concept-8b1-responsive-evidence.json",
+      "docs/concept-8b1-test-evidence.json",
+      "docs/concept-8b1-visual-polish.md",
+      "docs/concept-8b1-visual-principles.json",
+      "docs/concept-8d-8e-test-plan.json",
+      "docs/concept-8d-container-audit.json",
+      "docs/concept-8d-cvat-comparison.json",
+      "docs/concept-8d-decision.json",
+      "docs/concept-8d-implementation-risk.json",
+      "docs/concept-8d-information-priority.json",
+      "docs/concept-8d-inspector-candidates.json",
+      "docs/concept-8d-panel-coexistence.json",
+      "docs/concept-8d-pre-change-baseline.json",
+      "docs/concept-8d-role-classification.json",
+      "docs/concept-8d-selection-semantics.json",
+      "docs/concept-8d-tool-inventory.json",
+      "docs/concept-8d-wireframes.md",
+      "docs/concept-8d-workspace-roles-audit.md"
+    ],
+    "after_baseline_test_tree_check": "The test suite's existing Concept 8B screenshot test rewrote clean 8B screenshots and docs/concept-8b-responsive-evidence.json. Those test-generated changes were restored because the paths were clean at baseline. The 31 original dirty entries remain."
+  },
+  "validation": {
+    "frontend_unit_workflow": {
+      "command": "cd frontend-react && npm test",
+      "status": "passed",
+      "test_files_passed": 55,
+      "tests_passed": 290
+    },
+    "frontend_lint": {
+      "command": "cd frontend-react && npm run lint",
+      "status": "passed"
+    },
+    "production_build": {
+      "command": "cd frontend-react && npm run build",
+      "status": "passed",
+      "modules_transformed": 1705,
+      "javascript_chunks": 12,
+      "javascript_entry_raw_bytes": 778804,
+      "javascript_entry_vite_gzip_kb": 221.09,
+      "css_raw_bytes": 164880,
+      "css_vite_gzip_kb": 30.77,
+      "warning": "Existing Vite warning: initial JavaScript chunk exceeds 500 kB."
+    },
+    "responsive_e2e": {
+      "command": "cd frontend-react && npm run test:e2e",
+      "status": "known_intermittent_failures_in_parallel_run",
+      "total": 104,
+      "passed": 73,
+      "failed": 4,
+      "skipped": 27,
+      "workers": 5,
+      "failures": [
+        {
+          "test": "generates a historical Report from cold Run History without opening Report first",
+          "project": "desktop-1440",
+          "failure": "Timed out looking for the Generate report from button in the cold Run History state."
+        },
+        {
+          "test": "opens the exact Run source Version while keeping the current Version active",
+          "projects": ["desktop-1024", "tablet-768", "mobile-390"],
+          "failure": "Historical Run context displayed Working draft · No saved Version instead of Version 1."
+        }
+      ],
+      "serial_targeted_reruns": [
+        {
+          "command": "cd frontend-react && npx playwright test --grep \"opens the exact Run source Version while keeping the current Version active\" --workers=1",
+          "status": "passed",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "command": "cd frontend-react && npx playwright test --grep \"generates a historical Report from cold Run History without opening Report first\" --workers=1 --project=desktop-1440",
+          "status": "passed",
+          "passed": 1,
+          "failed": 0
+        }
+      ],
+      "context": "docs/concept-8b1-test-evidence.json already describes these same Run History cases as intermittent in parallel full runs and records serial or final full-suite passes. Historical-Version viewport flakiness is also documented in prior Concept 8B evidence."
+    },
+    "request_equivalence": {
+      "command": "cd frontend-react && npx vitest run src/domain/requestEquivalence.test.js",
+      "status": "passed",
+      "test_files_passed": 1,
+      "tests_passed": 3
+    },
+    "backend_go": {
+      "command": "cd backend-go && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "packages_with_tests": 2,
+      "packages_without_tests": 3
+    },
+    "core_lab_adapter": {
+      "command": "cd core-lab-adapter && go vet ./... && go test -race ./...",
+      "status": "passed",
+      "packages_with_tests": 1
+    }
+  },
+  "gate": {
+    "unexplained_new_failures": false,
+    "decision": "Proceed with implementation. All four full E2E failures match previously documented history flakiness and the five serial targeted reruns passed. Preserve this baseline as known instability and compare post-change behavior against it."
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "backend_tests": {
+    "command": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.8378956249798648,
+    "completed_at": "2026-10-07T12:16:01.736823+00:00"
+  },
+  "backend_race": {
+    "command": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.4239230419625528,
+    "completed_at": "2026-10-07T12:16:02.162789+00:00"
+  },
+  "backend_vet": {
+    "command": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.4232865829835646,
+    "completed_at": "2026-10-07T12:16:02.586840+00:00"
+  },
+  "frontend_tests": {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 33.9321649580379,
+    "completed_at": "2026-10-07T12:16:36.519773+00:00"
+  },
+  "frontend_lint": {
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 8.65397804195527,
+    "completed_at": "2026-10-07T12:16:45.174280+00:00"
+  },
+  "frontend_build": {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 2.6306272500078194,
+    "completed_at": "2026-10-07T12:16:47.805616+00:00"
+  },
+  "rf_budget_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/rf-budget.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "seconds": 17.463536541967187,
+    "completed_at": "2026-10-07T12:17:05.270010+00:00"
+  },
+  "rf_deadline_e2e": {
+    "command": [
+      "npx",
+      "playwright",
+      "test",
+      "e2e/network-deadline.spec.js",
+      "--project=desktop-1440",
+      "--workers=1"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {
+      "ATOM_REAL_E2E": "1"
+    },
+    "seconds": 22.665687458007596,
+    "completed_at": "2026-10-07T12:17:27.936632+00:00"
+  },
+  "auto_resource_profile_tests": {
+    "command": [
+      "go",
+      "test",
+      "./...",
+      "-run",
+      "ResourceProfile|AutoResource"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.47835983301047236,
+    "completed_at": "2026-10-07T12:17:28.415833+00:00"
+  },
+  "w1_preservation_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/w1-shipping-runtime-qualification",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.5938585419789888,
+    "completed_at": "2026-10-07T12:17:29.010197+00:00"
+  },
+  "audit_protocol_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/eight-cell-operational-audit",
+      "-p",
+      "test_*.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.563799542025663,
+    "completed_at": "2026-10-07T12:17:29.574455+00:00"
+  },
+  "docs_build": {
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 18.32616054196842,
+    "completed_at": "2026-10-07T12:17:47.901451+00:00"
+  },
+  "docs_validation": {
+    "command": [
+      "/tmp/atom-persistence-docs-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 1.1578882909961976,
+    "completed_at": "2026-10-07T12:17:49.060072+00:00"
+  },
+  "version_consistency": {
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.0947638750076294,
+    "completed_at": "2026-10-07T12:17:49.156031+00:00"
+  },
+  "diff_check": {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "required_test_executed": true,
+    "test_environment": {},
+    "seconds": 0.04938974999822676,
+    "completed_at": "2026-10-07T12:17:49.205932+00:00"
+  }
+}

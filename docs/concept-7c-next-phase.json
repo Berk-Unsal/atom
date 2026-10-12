@@ -1,0 +1,10 @@
+{
+  "current_concept": "7C",
+  "next_concept": "7D",
+  "title": "Report and artifact delivery UX",
+  "selected_candidate": "report_artifact",
+  "why": "Run history now has stable local identity, exact inputs, compact public optimization details, and lineage hooks. The next useful increment is user-facing report/export/artifact handling over those records.",
+  "explicit_non_goals": ["Postgres", "PostGIS", "object storage", "authentication", "remote job orchestration", "collaboration backend"],
+  "alternatives_not_selected": ["generic UX-only pass", "backend persistence migration"],
+  "entry_contract": ["Run.run_id", "ScenarioRevision.originating_run_id", "OptimizationSolution.optimization_solution_id", "artifact_references"]
+}

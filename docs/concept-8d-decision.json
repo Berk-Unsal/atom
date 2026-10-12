@@ -1,0 +1,70 @@
+{
+  "concept": "8D",
+  "decision_summary": {
+    "contextual_right_inspector": "ADOPT",
+    "inspector_model": "Read-only, contextual; actions navigate to existing owning tools.",
+    "inspector_purpose": "Inspect one map-linked spatial/result entity without replacing the active task drawer.",
+    "inspector_exclusions": [
+      "Global RF setup",
+      "Scenario/Version management",
+      "Run History",
+      "Report workflow",
+      "Dataset administration",
+      "optimization priorities",
+      "full Pareto detail"
+    ],
+    "first_class_entity_families": [
+      "Cell",
+      "Building",
+      "Interference/radio-quality sample"
+    ],
+    "pareto_solution": "Keep in Results master/detail; do not put in inspector.",
+    "state_owner": "App-level local React orchestration using a small typed entity reference; no new global state system.",
+    "map_inspect_select": "Introduce a minimal explicit Inspect / Select-cells boundary in the 8E cell pilot; armed map-edit modes take priority.",
+    "scenario_workspace": "Move to dedicated Plan > Scenarios tool.",
+    "rf_diagnostics_ia": "Keep one Analyze tool; canonical actions plus Research internal subviews Validation / Materials / Reflection, one visible at a time.",
+    "results": "Compact source-aware summary and progressive objective/configuration/explanation detail.",
+    "run_history": "Retain in Review; in-tool list/detail with Back, never global inspector.",
+    "data": "Compact planning summary, Data/Model/Provenance details; developer commands tucked away; keep measurement calibration evidence workflow explicit.",
+    "optimization_priorities": "Compact, scannable objective rows with visible meaning, direction, value and slider.",
+    "draft_guard": "Preserve destructive Scenario-switch protection; fix same-Scenario false trigger and improve recovery affordance; no unsupported Discard action.",
+    "stale_results": "Preserve freshness semantics and exact source identity; edits stay stale until current run; no silent recompute.",
+    "8e_scope": "Inspector foundation and current map inspector relocation, with designed Cell, Building and Interference sample families; preserve/reuse existing read-only feature renderers for other current map selections.",
+    "8c_timing": "Wait until 8D decisions and the 8E pilot interaction contract are accepted; use pilot evidence to scope the broader map-toolbar regrouping.",
+    "data_measurements": "Keep Data CSV residual/global-bias calibration separate from RF Diagnostics campaign validation. Data calibration may explicitly apply an eligible correction to the plan; RF Diagnostics Validation is an evidence ledger and does not promote or mutate a canonical model."
+  },
+  "per_viewport": {
+    "1920": "Dual push panels; 1152px map region.",
+    "1600": "Dual push panels; 832px map region.",
+    "1440": "Right inspector overlays opposite map edge; left task remains open; about 672px clear map corridor.",
+    "1280": "Inspector replaces/hides task drawer in one panel slot; back restores task; about 872px map region.",
+    "1024": "One inspector panel; about 616px map region.",
+    "768": "One full-width bottom sheet at a time; target max around 55vh.",
+    "390": "One full-width sheet at a time; visible map strip, scrollable inspector, bottom stage rail."
+  },
+  "scenario_and_stale_findings": {
+    "same_scenario_guard": "Potential bug: openSavedScenario blocks whenever a draft exists and activeScenarioId is null, without checking whether the clicked Scenario is already the current draft source. ScenarioPanel leaves the current row clickable. openScenarioRevision does guard same-current differently.",
+    "cross_scenario_guard": "Semantically valid for a destructive switch: the draft remains locally preserved and the user is told to save it as a Version first.",
+    "discard": "No discardDraft/clearDraft domain operation was found; do not offer Discard changes.",
+    "recovery": "Show the destination Scenario and draft being protected. Offer Save Version and Stay; after save, require an explicit Open destination action. Preserve the local draft and explain how to return.",
+    "stale": "RF-affecting edit invalidates rendered results and sets planDirty. Returning controls to a matching-looking value does not clear planDirty; current policy stays stale until a successful new Run/restore. Keep exact Run/source identity visible."
+  },
+  "concept8e_reason": "The existing App already has a local selectedMapObject and read-only MapInspector renderers. The high-value gap is placement/lifecycle, not a new entity framework. A cohesive conversion of existing map inspector content plus three representative spatial families exercises the shell, source/freshness and data-loading contracts while keeping Pareto, Run and Report as their existing owned workflows.",
+  "invariance_contract": [
+    "RF requests",
+    "Optimizer behavior",
+    "Fingerprints",
+    "ScenarioRevision",
+    "Run schema",
+    "Reports",
+    "artifact bytes/integrity",
+    "freshness semantics",
+    "ProjectV2",
+    "data packs",
+    "backend API"
+  ],
+  "evidence_limits": [
+    "Concept 8B.1 screenshots cover shell/drawer geometry and selected result views, not a paired inspector or all listed tools.",
+    "Base map tiles failed in supplied captures; map extent judgments remain qualitative and require live map verification during 8E."
+  ]
+}

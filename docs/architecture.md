@@ -44,7 +44,7 @@ The React application is organized around a map-first focused workspace:
 - **Project menu**: local projects, autosaved drafts, versioned import/export, and named scenario snapshots.
 - **Workflow rail**: Setup, Propagation, Interference, 5G Core, Results, Data, and Report.
 - **Overlay drawer**: opens one focused tool without resizing or recentering the map.
-- **MapCanvas**: renders towers, rays, coverage gaps, selection geometry, interference samples, measurement residuals, candidate records, and 5G communication paths.
+- **MapCanvas**: renders towers, the selected-cell received-power surface, scoped rays, coverage gaps, selection geometry, interference samples, measurement residuals, candidate records, and 5G communication paths.
 - **Inspector**: persistent details for towers, gaps, communication paths, and interference samples.
 - **Report assembly**: creates Markdown and printable HTML from current client state.
 
@@ -57,6 +57,8 @@ RF operations share one coordinated request channel:
 3. Results are committed only if the request remains current.
 4. RF-setting changes clear incompatible interference and optimization state.
 5. Per-cell network ray rendering runs sequentially to stay inside backend RF capacity.
+
+Map display controls are presentation-only: Signal/Rays visibility, All/Selected/Hidden ray scope, and map-focus cell selection filter already retained GeoJSON or toggle Leaflet layers; they do not start RF requests. Network simulations annotate each retained feature with its stable cell ID so selected-cell filtering cannot mix rays from different cells. Pareto solution inspection remains separate and never reassigns the map RF evidence.
 
 This prevents slow responses from replacing results produced by newer settings.
 
@@ -88,43 +90,61 @@ The Gin service provides:
 | GET | `/healthz` | Process liveness and loaded-data counts |
 | GET | `/readyz` | Building, tower, and frontend readiness |
 | GET | `/api/meta` | Application, model, build, and active dataset identity |
+| GET | `/api/datasets` | Installed local pack catalog and active pack ID |
+| POST | `/api/datasets/switch` | Validate and atomically activate an installed pack by ID |
 | GET | `/api/towers` | Tower GeoJSON |
 | GET | `/api/buildings` | Building GeoJSON |
 | GET | `/api/buildings/summary` | Demand and data-quality summary |
+| GET | `/api/collections/buildings/items` | Bounded/paged building GeoJSON or CSV |
 | POST | `/api/analyze-sector` | Shared propagation and coverage-gap analysis for one sector |
 | POST | `/api/simulate` | Segmented directional propagation |
 | POST | `/api/coverage-gaps` | Demand-weighted underserved buildings |
+| POST | `/api/path-profile` | 2.5D terrain/building vertical profile and component losses |
+| POST | `/api/sub-thz-reference` | Opt-in non-canonical P.525/P.676/P.838/P.840 atmospheric reference ledger |
+| POST | `/api/sub-thz-p1411-reference` | Isolated, applicability-gated ITU-R P.1411-13 Table 4 candidate rows and side-by-side comparisons |
+| POST | `/api/sub-thz-validation` | Isolated versioned measurement evidence, common-sample comparison, constant-bias diagnostics, and deterministic holdouts |
+| POST | `/api/sub-thz-material-reference` | Isolated P.2040-4 homogeneous-slab material/interface ledger; never dispatched by network simulation |
+| POST | `/api/coverage-surface` | Regular received-power raster, isolines, and GIS exports |
 | POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
 | POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
-| POST | `/api/optimize-network` | Optimize selected-cell azimuths with overlap penalty |
+| POST | `/api/optimize-network` | Optimize selected-cell azimuths with objectives, constraints, and Pareto evidence |
+| POST | `/api/explain-network-cell` | Lazily compare one inspected Pareto cell with its baseline-reverted counterfactual |
 | POST | `/api/interference` | RSRP, SINR, RSRQ, RSSI, and demand-quality analysis |
 | POST | `/api/recommend-sites` | Rank known candidate records inside a search polygon |
-| POST | `/api/measurements/evaluate` | RSRP residuals and holdout-checked global bias guidance |
+| POST | `/api/measurements/evaluate` | Spatially blocked RSRP residual validation and global bias guidance |
+| GET/POST/DELETE | `/api/processes/*`, `/api/jobs/*` | Bounded asynchronous batch experiment execution |
 | GET/POST | `/api/core/*` | Optional Core Lab proxy |
 
 ## Runtime Data and Spatial Index
 
-The offline data pipeline prepares the runtime files ahead of time:
+The offline data pipeline and Dataset Pack Studio prepare runtime files ahead of time:
 
 1. Extract building geometry and tower records from OSM/OpenCellID-derived sources.
 2. Normalize footprints and add POI, residential, and local-density demand signals.
-3. Write local GeoJSON/CSV artifacts and a versioned dataset manifest.
-4. Record EPSG:4326 bounds, provenance, licenses, filenames, and SHA-256 hashes.
+3. Inspect source CRS, missing fields, requested-area coverage, and invalid geometry; repair/reproject/crop vector layers to EPSG:4326.
+4. Write local GeoJSON/binary artifacts and a schema-v2 dataset manifest with geometry QA, layer metadata, provenance, licenses, confidence, filenames, and SHA-256 hashes.
 5. Store the large building GeoJSON through Git LFS.
-6. Validate the pack selected by `ATOM_DATASET_DIR`, then populate the in-memory R-tree during backend startup.
+6. Validate the initial pack selected by `ATOM_DATASET_DIR`, then populate the in-memory R-tree during backend startup.
+
+If `ATOM_DATASETS_ROOT` is configured, the server scans only that directory and its immediate children, resolves symlinks beneath the root, and indexes unique manifest IDs. Switching loads and validates a candidate outside the runtime read lock, then atomically replaces the immutable pack pointer. Requests that already captured the previous pointer complete against the old pack; failed validation leaves it active. The API never accepts a dataset filesystem path.
+
+Schema v2 can carry terrain, clutter, building-height, and material layers. The loader validates and exposes them, but the current propagation engines consume only cell and building data.
+
+Concept 4I.4's material reference is intentionally outside this runtime path. It accepts an explicit slab, thickness, angle, polarization, and incident/exit media through its own endpoint; it does not infer physics from the material layer, run per-ray, or contribute to canonical propagation, the research_sub_thz 80 dB/event heuristic, building entry, interference, radio quality, or optimization.
 
 Each RF engine first queries bounded candidates from the R-tree, then applies exact geometry, radius, sector, and intersection tests. This avoids scanning the complete building dataset for every ray or demand point.
 
 ## Propagation Engine
 
-For each sampled angle inside the active beam, the propagation engine:
+For each sampled angle inside the active per-cell beam/pattern, the propagation engine:
 
 1. Converts the requested geographic radius into ray segments.
 2. Queries candidate building bounds from the R-tree.
 3. Performs exact segment/polygon intersection tests.
-4. Calculates free-space path loss with meter/GHz units and antenna gain.
-5. Applies frequency-dependent cumulative wall loss.
-6. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
+4. Classifies the physical endpoint path as LOS, NLOS, indoor, or unknown using shared `footprint-height-los-v1` geometry, Tx/Rx heights, and explicit building-height evidence; unknown heights are conservative NLOS.
+5. Dispatches `urban_short_range`, `legacy_fspl_walls`, or `research_sub_thz` through the shared evaluator and records applicability/fallback metadata.
+6. Applies the selected model's decomposed link budget using slant distance, per-cell RF values, and relative analytic pattern attenuation.
+7. Emits signal-colored GeoJSON line segments and aggregate range/power statistics.
 
 Cells outside the configured radius or hard beam sector do not contribute. The current engine does not model sidelobes.
 
@@ -132,7 +152,7 @@ Cells outside the configured radius or hard beam sector do not contribute. The c
 
 ### Coverage Gaps
 
-Coverage-gap analysis filters demand-weighted building centroids by radius and sector, estimates received power, and returns buildings below the service threshold ordered by demand and signal severity.
+Coverage-gap analysis filters demand-weighted building centroids by radius and sector, estimates raw received power, and returns buildings that do not meet the building-service rule `raw P_rx > -100 dBm`, ordered by demand and signal severity. This threshold is distinct from per-cell receiver sensitivity.
 
 ### Single-Sector Optimization
 
@@ -146,13 +166,13 @@ The selected direction is deterministic for the same request and dataset.
 
 ### Network Evaluation and Optimization
 
-Network evaluation scores the supplied azimuth for each of two to six selected cells. Network optimization searches candidate azimuths and includes an overlap penalty. Both return network score, unique demand coverage, overlap, and per-cell azimuth records.
+Network evaluation scores the supplied azimuth for each of two to eight selected cells. Network optimization searches candidate azimuths and includes an overlap penalty. Both return network score, unique demand coverage, overlap, and per-cell azimuth records.
 
 The frontend renders selected-cell propagation with a sequential `/api/simulate` queue after the network score is returned.
 
 ### Candidate Cell Recommendation
 
-Recommendation accepts two to five selected cells and a drawn search polygon. It considers unselected records from the active dataset, prefilters up to 50 by nearby demand, evaluates at most 12, optimizes only the candidate azimuth, and returns the five strongest marginal network-score gains. Existing selected-cell azimuths remain fixed. Interference, cost, backhaul, permitting, and site availability are intentionally excluded.
+Recommendation accepts two to five selected cells and a drawn search polygon. It considers unselected records from the active dataset, prefilters up to 50 by nearby demand, evaluates at most 12, optimizes only the candidate azimuth, and returns the five strongest raw marginal compatibility deltas. Existing selected-cell azimuths remain fixed. Interference, cost, backhaul, permitting, and site availability are intentionally excluded.
 
 ## Interference Engine
 
@@ -160,11 +180,13 @@ Interference analysis supports selected 4G and 5G cells:
 
 1. Build the union of selected-cell coverage bounds.
 2. Start with the requested grid spacing and increase it when needed to keep the surface bounded.
-3. Evaluate eligible cells using FSPL, gain, beam/radius eligibility, and wall loss.
+3. Evaluate eligible cells using the shared propagation model, gain, and beam/radius eligibility.
 4. Choose the strongest modeled RSRP as the serving cell.
 5. Add receiver noise and load-scaled co-channel interference in linear power.
 6. Derive modeled RSRP, SINR, RSRQ, RSSI, quality class, and serviceability.
 7. Evaluate bounded demand-building centroids using the same radio assumptions.
+
+Interference serviceability is separate from ray termination and building service: a sample is serviceable only when RSRP is at least `-110 dBm`, SINR is at least `0 dB`, and RSRQ is at least `-20 dB`.
 
 Returned averages and P10 values are nullable when no valid signal samples exist.
 
@@ -172,7 +194,7 @@ These KPIs are deterministic planning estimates. They are not UE, drive-test, or
 
 ## Measurement Validation
 
-Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same radius, beam, FSPL, wall-intersection, resource-block, and serving-cell rules used by interference analysis, then returns per-point residuals plus MAE, RMSE, mean bias, median bias, and per-cell statistics. With at least 20 valid points, a deterministic 80/20 split estimates a robust median dB adjustment and reports holdout error before and after correction. The optional correction is a global path-loss offset, not full propagation calibration.
+Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same radius, beam, FSPL, wall-intersection, resource-block, and serving-cell rules used by interference analysis, then returns per-point residuals, aggregate uncertainty, per-cell/per-band statistics, distance/obstruction bins, and robust outliers. With at least 20 valid points and sufficient spatial diversity, five deterministic contiguous spatial blocks validate a robust median dB adjustment. The optional correction is a global path-loss offset, not full propagation calibration.
 
 ## Request Lifecycles
 
@@ -186,7 +208,11 @@ The browser captures a Before snapshot, requests `/api/optimize-azimuth`, reruns
 
 ### Evaluate or Optimize Network
 
-The backend first returns network scoring. The browser then simulates selected cells sequentially and merges their ray collections for map rendering.
+The backend evaluates network scoring in the prepared selected-cell domain. `optimize-network` retains the exact entering configuration and its baseline stats in the response, then returns the feasible Pareto frontier; the browser simulates the displayed optimized cells sequentially and merges their ray collections for map rendering. Priority changes re-rank the stored frontier locally.
+
+### Explain One Network Cell
+
+Per-cell explanation is a lazy follow-up to an optimization result. The browser sends the retained baseline, the currently inspected Pareto solution, and the selected cell only after the user clicks `Explain`. The backend reuses the stored actual metrics, prepares the same fixed target domain and denominators, then performs one counterfactual RF evaluation with only that cell restored to baseline. Raw results are cached by optimization run, solution, and cell; priority-only changes recompute score interpretation locally, while RF-affecting configuration, domain, selection, and hard-constraint changes clear the explanation cache. No all-cell batch or Pareto rerun is performed.
 
 ### Analyze Interference
 
@@ -240,7 +266,7 @@ The multi-stage Docker build:
 
 ### Optional Core Lab Profile
 
-The compose overlay sets `CORE_LAB_ENABLED=true`, points the backend at the adapter, and starts the adapter as a separate service. It does not start a full Open5GS deployment by itself.
+The compose overlay sets `CORE_LAB_ENABLED=true`, points the backend at the adapter, and starts the adapter as a non-root, read-only service without Linux capabilities or a host-published port. It does not start a full Open5GS deployment by itself.
 
 ## Trust and Model Boundaries
 

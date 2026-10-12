@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "concept": "4I.4",
+  "title": "P.2040-4 material and slab applicability contract",
+  "artifact": "material-applicability",
+  "model_id": "p2040_material_slab_reference_v1",
+  "model_version": "v1",
+  "recommendation": "ITU-R P.2040-4",
+  "revision": "2025-09",
+  "reference_url": "https://www.itu.int/rec/R-REC-P.2040-4-202509-I/en",
+  "pdf_url": "https://www.itu.int/dms_pubrec/itu-r/rec/p/R-REC-P.2040-4-202509-I!!PDF-E.pdf",
+  "range_note": "P.2040-4 covers 1 MHz–450 GHz, but each Table 3 row has its own enforced range. The evaluator does not extrapolate a row.",
+  "audited_sections_and_equations": {
+    "property_contract": ["Annex 1 §2.1.2 equations (9)–(16)", "Annex 1 §2.1.4 equations (28)–(29)", "§3 equations (57)–(59)"],
+    "interface_contract": ["Annex 1 §2.2.1 equations (30)–(38)"],
+    "slab_contract": ["Annex 1 §2.2.2.1 equations (39)–(42)", "§2.2.2.2 equations (43a)–(44)"],
+    "convention": "εrc = εr′ − jεr″ under exp(−jωt); εr″ = 17.98 σ/fGHz; tanδ = εr″/εr′."
+  },
+  "required_inputs": {
+    "frequency_ghz": "finite positive frequency within the selected row",
+    "material": "one P.2040 Table 3 row or one user-defined electrical-property form",
+    "thickness_m": "required, finite, non-negative; no universal default",
+    "incidence_angle_deg": "0° normal; [0°, 90°) only",
+    "polarization": ["TE", "TM"],
+    "incident_medium": "explicit relative permittivity, conductivity, and property provenance",
+    "exit_medium": "explicit relative permittivity, conductivity, and property provenance"
+  },
+  "property_derivation": {
+    "table_3": "εr′ = a fGHz^b; σ = c fGHz^d; εr″ = 17.98 σ/fGHz",
+    "user_conductivity": "εr″ = 17.98 σ/fGHz; tanδ = εr″/εr′",
+    "user_loss_tangent": "εr″ = εr′ tanδ; σ = 0.05563 εr′ tanδ fGHz",
+    "user_complex": "complex relative permittivity is supplied as real εr′ and positive imaginary-loss magnitude εr″; the evaluator stores εr′ − jεr″",
+    "redundancy_rule": "exactly one user electrical-property form is accepted"
+  },
+  "supported_table_3_rows": [
+    {"material_id": "concrete_1_100", "name": "Concrete", "frequency_range_ghz": [1, 100], "a": 5.24, "b": 0, "c": 0.0462, "d": 0.7822},
+    {"material_id": "concrete_110_330", "name": "Concrete", "frequency_range_ghz": [110, 330], "a": 5.17, "b": 0, "c": 0.0145, "d": 1.09},
+    {"material_id": "brick_1_40", "name": "Brick", "frequency_range_ghz": [1, 40], "a": 3.91, "b": 0, "c": 0.0238, "d": 0.16},
+    {"material_id": "brick_110_330", "name": "Brick", "frequency_range_ghz": [110, 330], "a": 4.15, "b": 0, "c": 0.0006, "d": 1.5712},
+    {"material_id": "plasterboard_1_100", "name": "Plasterboard", "frequency_range_ghz": [1, 100], "a": 2.73, "b": 0, "c": 0.0085, "d": 0.9395},
+    {"material_id": "plasterboard_110_330", "name": "Plasterboard", "frequency_range_ghz": [110, 330], "a": 2.56, "b": 0, "c": 0.0001, "d": 1.7799},
+    {"material_id": "plasterboard_100_400", "name": "Plasterboard", "frequency_range_ghz": [100, 400], "a": 2.65, "b": 0, "c": 0.0002, "d": 1.598},
+    {"material_id": "wood_0p001_100", "name": "Wood", "frequency_range_ghz": [0.001, 100], "a": 1.99, "b": 0, "c": 0.0047, "d": 1.0718},
+    {"material_id": "wood_110_330", "name": "Wood", "frequency_range_ghz": [110, 330], "a": 1.82, "b": 0, "c": 0.004, "d": 1.0761},
+    {"material_id": "wood_100_400", "name": "Wood", "frequency_range_ghz": [100, 400], "a": 2.1183, "b": 0, "c": 0.0055, "d": 1.1113},
+    {"material_id": "glass_0p1_100", "name": "Glass", "frequency_range_ghz": [0.1, 100], "a": 6.31, "b": 0, "c": 0.0036, "d": 1.3394},
+    {"material_id": "glass_220_450", "name": "Glass", "frequency_range_ghz": [220, 450], "a": 5.79, "b": 0, "c": 0.0004, "d": 1.658},
+    {"material_id": "glass_100_400", "name": "Glass", "frequency_range_ghz": [100, 400], "a": 6.5767, "b": 0, "c": 0.0012, "d": 1.4697},
+    {"material_id": "clear_acrylic_110_330", "name": "Clear acrylic", "frequency_range_ghz": [110, 330], "a": 2.58, "b": 0, "c": 0.0001, "d": 1.6524},
+    {"material_id": "ceiling_board_1_100", "name": "Ceiling board", "frequency_range_ghz": [1, 100], "a": 1.48, "b": 0, "c": 0.0011, "d": 1.075},
+    {"material_id": "ceiling_board_220_450", "name": "Ceiling board", "frequency_range_ghz": [220, 450], "a": 1.52, "b": 0, "c": 0.0029, "d": 1.029},
+    {"material_id": "ceiling_board_100_400", "name": "Ceiling board", "frequency_range_ghz": [100, 400], "a": 1.2567, "b": 0, "c": 0.00013, "d": 1.454},
+    {"material_id": "chipboard_1_100", "name": "Chipboard", "frequency_range_ghz": [1, 100], "a": 2.58, "b": 0, "c": 0.0217, "d": 0.78},
+    {"material_id": "chipboard_100_200", "name": "Chipboard", "frequency_range_ghz": [100, 200], "a": 2.16, "b": 0, "c": 0.0023, "d": 1.359},
+    {"material_id": "plywood_1_40", "name": "Plywood", "frequency_range_ghz": [1, 40], "a": 2.71, "b": 0, "c": 0.33, "d": 0},
+    {"material_id": "plywood_110_330", "name": "Plywood", "frequency_range_ghz": [110, 330], "a": 1.94, "b": 0, "c": 0.0067, "d": 0.9982},
+    {"material_id": "plywood_100_400", "name": "Plywood", "frequency_range_ghz": [100, 400], "a": 2.17, "b": 0, "c": 0.0063, "d": 1.045}
+  ],
+  "user_defined_policy": {
+    "classification": "user_assumption",
+    "accepted_property_sources": ["measured", "manufacturer", "user_declared", "inferred", "unknown"],
+    "frequency_range": "optional but enforced when supplied",
+    "osm_material_mapping": "disabled"
+  },
+  "excluded_or_deferred": [
+    {"item": "metal", "status": "material_frequency_out_of_range", "reason": "No selected Table 3 row is allowed without explicit 140 GHz coverage in this implementation."},
+    {"item": "multilayer construction", "status": "deferred", "reason": "Single homogeneous slab is the smallest auditable scope."},
+    {"item": "roughness, diffuse scattering, air gaps, frames, coatings, moisture", "status": "deferred", "reason": "No site or material evidence contract exists yet."},
+    {"item": "whole-building entry and P.2109 extrapolation", "status": "not_claimed", "reason": "This endpoint is a material/interface reference only."}
+  ],
+  "readiness": "reference_only",
+  "promotion": false
+}

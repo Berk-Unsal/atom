@@ -1,0 +1,604 @@
+{
+  "concept": "8D",
+  "observed_baseline": "Current uncommitted Concept 8B.1 worktree at b57b1ef; product code was read but not changed.",
+  "stages": [
+    "Plan",
+    "Simulate",
+    "Analyze",
+    "Review"
+  ],
+  "tools": [
+    {
+      "id": "setup",
+      "stage": "Plan",
+      "current_surface": "Setup left tool drawer; Planning disclosure open; Advanced model details and Scenario workspace disclosures below it.",
+      "primary_user_goal": "Choose single-cell or network planning and set the active RF profile and planning selection.",
+      "secondary_goals": [
+        "Review model applicability",
+        "Open Scenario and Version management"
+      ],
+      "inputs": [
+        "Planning mode",
+        "Technology/profile",
+        "Propagation model",
+        "Conducted TX power",
+        "Selected transmitter or network cell set"
+      ],
+      "outputs": [
+        "Active plan inputs",
+        "Selected-cell count/status",
+        "Run Sector or Evaluate Network readiness"
+      ],
+      "map_interaction": [
+        "Cell marker click changes the active cell in Single mode or toggles network membership in Network mode.",
+        "Map Focus and selected-cell visualization are controlled separately in the map toolbar."
+      ],
+      "drawer_density": "Moderate in the screenshot: common settings are visible and Scenario workspace remains collapsed; high when Scenario workspace is expanded.",
+      "disclosure_depth": "Planning > Advanced model details > Scenario workspace; Scenario workspace contains nested Scenario, Version, lineage, Run/Report association and comparison detail.",
+      "selected_object_behavior": "Tower click opens the current Map Inspector by replacing Setup; Scenario and Version selection remain local to ScenarioPanel.",
+      "provenance_shown": [
+        "Technology/profile context",
+        "Model applicability and RF assumptions behind Advanced model details",
+        "Scenario panel summary includes dataset and RF mode/profile"
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "WORKSPACE_MANAGEMENT",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/components/ControlPanel.jsx",
+        "frontend-react/src/components/ScenarioPanel.jsx",
+        "docs/assets/concept-8b1/after/1440-setup.jpg"
+      ]
+    },
+    {
+      "id": "inventory",
+      "stage": "Plan",
+      "current_surface": "Inventory left tool drawer with cell list, placement/import actions, and selected-cell RF profile editor.",
+      "primary_user_goal": "Browse and edit per-cell profile and placement data.",
+      "secondary_goals": [
+        "Import, duplicate, place, move, reset, or delete a cell",
+        "Inspect cell source/profile validity"
+      ],
+      "inputs": [
+        "Cell query/selection",
+        "Placement coordinates",
+        "Per-cell frequency, bandwidth, power, antenna, pattern, and receiver profile fields",
+        "Imported inventory file"
+      ],
+      "outputs": [
+        "Updated project inventory",
+        "Validation status",
+        "Plan invalidation/stale result status"
+      ],
+      "map_interaction": [
+        "Select a row/cell",
+        "Place new cell",
+        "Drag editable cell marker",
+        "Map click selects an active cell/cluster member"
+      ],
+      "drawer_density": "High when the RF profile editor is open; list and editor compete for one narrow drawer.",
+      "disclosure_depth": "Cell list > profile fields > advanced receiver/pattern sections.",
+      "selected_object_behavior": "Selection is task configuration and edits the canonical project draft; it is not read-only inspection.",
+      "provenance_shown": [
+        "Dataset/manual/project-override source metadata where available",
+        "Validity and request-ready state"
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "SPATIAL_INSPECTION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "source_evidence": [
+        "frontend-react/src/components/InventoryPanel.jsx",
+        "frontend-react/src/App.jsx"
+      ]
+    },
+    {
+      "id": "scenario-workspace",
+      "stage": "Plan",
+      "current_surface": "Collapsed Scenario workspace disclosure inside Setup; ScenarioPanel expands to a long management surface.",
+      "primary_user_goal": "Manage saved Scenarios, immutable Versions, branches, drafts, and associated lineage.",
+      "secondary_goals": [
+        "Save the current draft",
+        "Continue from or branch a Version",
+        "Compare Scenarios/Versions",
+        "Open associated Runs and Reports"
+      ],
+      "inputs": [
+        "Scenario name/description",
+        "Version change summary",
+        "Selected Version",
+        "Branch/duplicate names",
+        "Scenario and Version comparison selectors"
+      ],
+      "outputs": [
+        "Saved Version",
+        "New/duplicated/branched Scenario",
+        "Current working draft",
+        "Run/Report navigation"
+      ],
+      "map_interaction": [
+        "No direct map interaction; Version actions affect plan identity and can make result context stale."
+      ],
+      "drawer_density": "Very high when expanded: Scenario switcher, overview, save Version, Version list, selected-Version detail/actions, comparisons, and associations.",
+      "disclosure_depth": "Setup > Scenario workspace > internal Scenario/version/association sections.",
+      "selected_object_behavior": "Selected Version is an inspection/navigation context; Continue/Branch are explicit draft mutations.",
+      "provenance_shown": [
+        "Revision IDs/fingerprints and lineage details are partly present in detail views; summary includes source/dataset/profile facts."
+      ],
+      "mixed_roles": [
+        "WORKSPACE_MANAGEMENT",
+        "HISTORY",
+        "PROVENANCE_EVIDENCE",
+        "NAVIGATION"
+      ],
+      "source_evidence": [
+        "frontend-react/src/components/ScenarioPanel.jsx",
+        "frontend-react/src/domain/scenario.js",
+        "frontend-react/src/domain/scenarioDiff.js"
+      ]
+    },
+    {
+      "id": "propagation",
+      "stage": "Simulate",
+      "current_surface": "Propagation left drawer with Planning disclosure open, Advanced analysis and Research/reference disclosures collapsed.",
+      "primary_user_goal": "Configure and explicitly run a sector propagation/coverage analysis.",
+      "secondary_goals": [
+        "Optimize one sector azimuth",
+        "Configure network optimization priorities/constraints",
+        "Run a diagnostic path profile",
+        "Open isolated propagation reference workflows"
+      ],
+      "inputs": [
+        "Ray count",
+        "Radius",
+        "Azimuth",
+        "Beam width",
+        "Optimization priorities/constraints",
+        "Path profile endpoints",
+        "Research/reference parameters"
+      ],
+      "outputs": [
+        "RF rays/sector result",
+        "Coverage gaps",
+        "Path profile evidence",
+        "Research-only reference outputs"
+      ],
+      "map_interaction": [
+        "Map cell choice sets active transmitter through existing Plan selection; path profile can select a receiver endpoint on the map; result overlays remain in map context."
+      ],
+      "drawer_density": "Low-to-moderate with disclosures collapsed; high after Advanced and Research are both opened.",
+      "disclosure_depth": "Planning; Advanced analysis (optimization goals plus path profile); Research/reference (Sub-THz plus P.1411 candidate workflows).",
+      "selected_object_behavior": "Map cell click currently replaces Propagation with Map Inspector. Path profile is a configuration/evidence workflow, not a selected map-ray detail panel.",
+      "provenance_shown": [
+        "Research-only boundaries",
+        "Model/profile limits and explicit path-profile disclaimer"
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "RESULT_ANALYSIS",
+        "SPATIAL_INSPECTION"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/components/PathProfilePanel.jsx",
+        "frontend-react/src/features/propagation-research/PropagationResearchFeature.jsx",
+        "docs/assets/concept-8b1/after/1440-propagation.jpg"
+      ]
+    },
+    {
+      "id": "experiments",
+      "stage": "Simulate",
+      "current_surface": "Lazy-loaded Experiments panel.",
+      "primary_user_goal": "Queue an asynchronous parameter sweep and compare deterministic per-run outcomes.",
+      "secondary_goals": [
+        "Inspect sweep definition/fingerprint",
+        "Download the experiment definition",
+        "Cancel a queued/running job"
+      ],
+      "inputs": [
+        "Experiment name",
+        "Frequency, TX power, beam width, azimuth, and calibration sweep values"
+      ],
+      "outputs": [
+        "Job state/progress",
+        "Sweep results table",
+        "Pareto plot and fingerprint"
+      ],
+      "map_interaction": [
+        "Uses the active transmitter as the base configuration; result comparison appears in drawer rather than as individually inspectable map samples."
+      ],
+      "drawer_density": "Moderate at setup; high after completed results add chart and table.",
+      "disclosure_depth": "Single panel with form, action row, job progress and result visualization.",
+      "selected_object_behavior": "No map-selected object; one experiment job/result selection.",
+      "provenance_shown": [
+        "Experiment fingerprint and cache-hit status",
+        "Downloaded definition after it exists"
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "RESULT_ANALYSIS",
+        "TRANSIENT_FEEDBACK",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "source_evidence": [
+        "frontend-react/src/components/ExperimentPanel.jsx",
+        "docs/concept-7i-feature-load-matrix.json"
+      ]
+    },
+    {
+      "id": "signal-surface",
+      "stage": "Simulate",
+      "current_surface": "Statically imported SurfacePanel tool; map toolbar has a separate Signal display toggle.",
+      "primary_user_goal": "Generate and tune a received-power surface for spatial coverage interpretation.",
+      "secondary_goals": [
+        "Adjust display threshold/opacity",
+        "Export surface output"
+      ],
+      "inputs": [
+        "Surface options and active RF context"
+      ],
+      "outputs": [
+        "Raster/grid surface and map overlay",
+        "Exported surface artifact"
+      ],
+      "map_interaction": [
+        "Toggle/render aggregate raster; current raster has no stable clickable point sample in MapCanvas."
+      ],
+      "drawer_density": "Low before computation; moderate with options/output. SurfacePanel is not part of the current Concept 7I lazy feature list.",
+      "disclosure_depth": "Single tool panel; visualization settings also in map toolbar.",
+      "selected_object_behavior": "No individual sample selection; surface is aggregate visualization.",
+      "provenance_shown": [
+        "Current/available/loading/error surface status and source context"
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "MAP_VISUALIZATION",
+        "RESULT_ANALYSIS"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/components/SurfacePanel.jsx",
+        "frontend-react/src/components/WorkspaceChrome.jsx",
+        "frontend-react/src/components/MapCanvas.jsx"
+      ]
+    },
+    {
+      "id": "interference",
+      "stage": "Analyze",
+      "current_surface": "Interference left tool; applicable only for supported Network plans with at least two cells.",
+      "primary_user_goal": "Analyze co-channel interference and radio quality across the selected network.",
+      "secondary_goals": [
+        "Inspect SINR/RSRP/RSRQ layer",
+        "Open selected result point details",
+        "Review diagnostic model assumptions"
+      ],
+      "inputs": [
+        "Network cell set",
+        "Interference model controls and explicit analyze action"
+      ],
+      "outputs": [
+        "Interference stats/samples",
+        "Map layer",
+        "Current/unavailable applicability state"
+      ],
+      "map_interaction": [
+        "Interference sample click opens Map Inspector; current code records sample metrics and model in its payload."
+      ],
+      "drawer_density": "Moderate; fewer independent workflows than RF Diagnostics.",
+      "disclosure_depth": "Task controls with model details/provenance available separately.",
+      "selected_object_behavior": "Sample inspection switches the left drawer to Map Inspector and replaces Interference controls.",
+      "provenance_shown": [
+        "Model family/bandwidth/load details are available in sample/reference output."
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "RESULT_ANALYSIS",
+        "SPATIAL_INSPECTION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/components/MapCanvas.jsx",
+        "frontend-react/src/components/InterferenceResultsPanel.jsx"
+      ]
+    },
+    {
+      "id": "rf-diagnostics",
+      "stage": "Analyze",
+      "current_surface": "Canonical action area plus a lazy Research/reference disclosure.",
+      "primary_user_goal": "Navigate from a canonical RF result to diagnostic path or building-entry evidence, without presenting research as canonical RF.",
+      "secondary_goals": [
+        "Run a measurement campaign validation",
+        "Inspect material/facade reference",
+        "Inspect specular reflection reference"
+      ],
+      "inputs": [
+        "Current RF result identity",
+        "Path endpoint selection",
+        "Research campaign/material/reflection controls"
+      ],
+      "outputs": [
+        "Current-result link",
+        "Path-profile evidence",
+        "Building-entry estimate link",
+        "Independent research results"
+      ],
+      "map_interaction": [
+        "Path profile routes to Propagation advanced view; map sample features open current Map Inspector."
+      ],
+      "drawer_density": "Canonical view is moderate; Research becomes very high because three separate forms mount vertically.",
+      "disclosure_depth": "RF Diagnostics > Research/reference > Validation, Materials, Reflection panels (all currently stacked).",
+      "selected_object_behavior": "Measurement sample can open Map Inspector; path profile is not owned by an inspector.",
+      "provenance_shown": [
+        "Each evidence workflow has its own result/model context; research boundaries are stated."
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "RESULT_ANALYSIS",
+        "SPATIAL_INSPECTION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/features/rf-diagnostics/RFDiagnosticsResearchFeature.jsx",
+        "frontend-react/src/components/MeasurementValidationPanel.jsx",
+        "frontend-react/src/components/MaterialReferencePanel.jsx",
+        "frontend-react/src/components/SpecularReflectionReferencePanel.jsx",
+        "docs/assets/concept-8b1/after/1440-rf-diagnostics.jpg",
+        "docs/assets/concept-8b1/after/1440-rf-diagnostics-research.jpg"
+      ]
+    },
+    {
+      "id": "building-entry",
+      "stage": "Analyze",
+      "current_surface": "Building Entry tool under Advanced analysis disclosure.",
+      "primary_user_goal": "Estimate representative facade entry/service for relevant buildings and current cell/network inputs.",
+      "secondary_goals": [
+        "Inspect representative building outcome",
+        "Review explicit denominator and physical-model limits"
+      ],
+      "inputs": [
+        "Selected cell/network",
+        "Explicit Estimate action"
+      ],
+      "outputs": [
+        "Batched summary plus one representative building/detail and diagnostics"
+      ],
+      "map_interaction": [
+        "Building result detail includes stable building ID/facade point; a separately clicked building opens Map Inspector."
+      ],
+      "drawer_density": "Sparse without result; dense after result because summary, selected building, model facts, and limitations stack.",
+      "disclosure_depth": "One Advanced analysis wrapper and one tool panel.",
+      "selected_object_behavior": "Building detail is currently tool output, while a map-selected building is a different Map Inspector path.",
+      "provenance_shown": [
+        "Material evidence, receiver threshold, service denominator, explicit facade-only limitations"
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "RESULT_ANALYSIS",
+        "SPATIAL_INSPECTION",
+        "PROVENANCE_EVIDENCE"
+      ],
+      "source_evidence": [
+        "frontend-react/src/components/BuildingEntryPanel.jsx",
+        "frontend-react/src/App.jsx"
+      ]
+    },
+    {
+      "id": "5g-core",
+      "stage": "Analyze",
+      "current_surface": "Lazy optional Core Lab tool for local Open5GS/simulated overlay.",
+      "primary_user_goal": "Enable and inspect optional 5G core communication paths for applicable 5G plans.",
+      "secondary_goals": [
+        "Run one of the available core scenarios",
+        "Inspect path/function/session/event state"
+      ],
+      "inputs": [
+        "Core overlay toggle",
+        "Optional local sidecar command",
+        "Scenario action"
+      ],
+      "outputs": [
+        "Connection status",
+        "Communication paths/topology",
+        "Function/session/event summaries"
+      ],
+      "map_interaction": [
+        "Communication path click opens Map Inspector; overlay visibility is a map concern."
+      ],
+      "drawer_density": "Low before enabled; moderate-to-high when live status and events exist.",
+      "disclosure_depth": "Single optional feature surface; internal topology/event groups.",
+      "selected_object_behavior": "Route selection replaces tool drawer with Map Inspector.",
+      "provenance_shown": [
+        "Simulated overlay versus live mode/source; developer start command is visible by default when disconnected."
+      ],
+      "mixed_roles": [
+        "TASK_CONFIGURATION",
+        "MAP_VISUALIZATION",
+        "RESULT_ANALYSIS",
+        "TRANSIENT_FEEDBACK"
+      ],
+      "source_evidence": [
+        "frontend-react/src/features/core-lab/CoreLabFeature.jsx",
+        "frontend-react/src/components/MapCanvas.jsx",
+        "docs/concept-7i-feature-load-matrix.json"
+      ]
+    },
+    {
+      "id": "results",
+      "stage": "Review",
+      "current_surface": "Results left tool with RF, Optimization, Interference, Compare, and candidate/solution subviews; result context disclosure precedes subview.",
+      "primary_user_goal": "Interpret outputs from the exact current or retained Run and compare supported result kinds.",
+      "secondary_goals": [
+        "Inspect feasibility/optimization objectives",
+        "Compare network changes",
+        "Select a Pareto solution",
+        "Open source Run or report"
+      ],
+      "inputs": [
+        "Current result/Run context",
+        "Selected subview",
+        "Selected Pareto solution or recommendation"
+      ],
+      "outputs": [
+        "Metrics, gap/feasibility summaries, configuration deltas, comparison and explicit apply/navigation actions"
+      ],
+      "map_interaction": [
+        "Map result layers show output; clicking an inspectable sample replaces Results drawer with Map Inspector."
+      ],
+      "drawer_density": "High in populated Optimization/Compare/solutions views; result source disclosure is compact when closed.",
+      "disclosure_depth": "Results > subview > metric/configuration/explanation/detail blocks; candidate selection adds master/detail content in the same drawer.",
+      "selected_object_behavior": "Pareto selection is kept in Results state and does not recompute or change recommendation; separate from selected map cell and inspector object.",
+      "provenance_shown": [
+        "Freshness, source Run, Scenario/Version context, Details/Provenance; some source facts are expanded rather than primary."
+      ],
+      "mixed_roles": [
+        "RESULT_ANALYSIS",
+        "HISTORY",
+        "PROVENANCE_EVIDENCE",
+        "SPATIAL_INSPECTION"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/components/ResultContextBadge.jsx",
+        "docs/assets/concept-8b1/after/1440-results-current.jpg",
+        "docs/assets/concept-8b1/after/1440-results-optimization.jpg",
+        "docs/assets/concept-8b1/after/1440-results-stale.jpg"
+      ]
+    },
+    {
+      "id": "run-history",
+      "stage": "Review",
+      "current_surface": "Lazy Run History tool with filters/list and selected Run detail in one drawer.",
+      "primary_user_goal": "Find a retained local Run and inspect its exact source and compact retained result.",
+      "secondary_goals": [
+        "Rerun exact retained input",
+        "Generate historical Report",
+        "Apply retained public optimization solution",
+        "Open exact source Version",
+        "Delete/clear records"
+      ],
+      "inputs": [
+        "Project/current-Scenario scope",
+        "Run type/status filters",
+        "Selected Run"
+      ],
+      "outputs": [
+        "Run status/source/provenance, retained summary/public solutions, Run/Report actions"
+      ],
+      "map_interaction": [
+        "Historical detail is non-spatial unless map layers are regenerated; no run-selection inspector needed."
+      ],
+      "drawer_density": "Very high: list, three filters, selected detail, full provenance and public solutions all share a 320–360px drawer. Source CSS currently attempts a two-column master/detail inside this narrow surface.",
+      "disclosure_depth": "Run list > selected Run > provenance/error/warnings/solutions/actions.",
+      "selected_object_behavior": "Selected Run detail is internal history selection; it does not become the current plan or result source.",
+      "provenance_shown": [
+        "Run ID, Scenario/Version, timestamps, fingerprints, dataset, engine, RF contract, source links"
+      ],
+      "mixed_roles": [
+        "HISTORY",
+        "PROVENANCE_EVIDENCE",
+        "RESULT_ANALYSIS",
+        "WORKSPACE_MANAGEMENT"
+      ],
+      "source_evidence": [
+        "frontend-react/src/components/RunHistoryPanel.jsx",
+        "docs/concept-7i-feature-load-matrix.json"
+      ]
+    },
+    {
+      "id": "data",
+      "stage": "Review",
+      "current_surface": "Data left tool with Planning data open and Dataset details, Advanced model details, Research/reference collapsed.",
+      "primary_user_goal": "Understand data confidence and manage/select the active local dataset pack.",
+      "secondary_goals": [
+        "Review dataset QA/source/licensing",
+        "Inspect model assumptions/version",
+        "Import/validate measurements and evaluate calibration"
+      ],
+      "inputs": [
+        "Local dataset selection",
+        "Installed pack catalog",
+        "Measurement CSV",
+        "Explicit residual evaluation/calibration apply"
+      ],
+      "outputs": [
+        "Data quality summary",
+        "Dataset/model/app metadata",
+        "Pack QA and source/licenses",
+        "Measurement residuals/calibration"
+      ],
+      "map_interaction": [
+        "Dataset switch invalidates results; measurement residual output can be shown as a selectable map layer."
+      ],
+      "drawer_density": "High when all disclosures are expanded; default Planning data uses several equally weighted summary facts.",
+      "disclosure_depth": "Planning data; Dataset details (packs/QA/provenance/CLI); Advanced model details; Research/reference (CSV, residuals, calibration).",
+      "selected_object_behavior": "Measurement sample click opens Map Inspector; dataset/measurement section does not own one current selected object.",
+      "provenance_shown": [
+        "Dataset version, model/app version, licenses, source list, hashes, data quality and model assumptions",
+        "The CSV residual/calibration path is a distinct field-measurement workflow; it can explicitly apply a supported plan correction."
+      ],
+      "mixed_roles": [
+        "WORKSPACE_MANAGEMENT",
+        "RESULT_ANALYSIS",
+        "PROVENANCE_EVIDENCE",
+        "TASK_CONFIGURATION",
+        "TRANSIENT_FEEDBACK"
+      ],
+      "source_evidence": [
+        "frontend-react/src/App.jsx DataPanel",
+        "frontend-react/src/components/MapCanvas.jsx",
+        "docs/concept-7i-feature-load-matrix.json"
+      ]
+    },
+    {
+      "id": "report",
+      "stage": "Review",
+      "current_surface": "Lazy Reports tool with current report export, source context, definitions and stored artifacts.",
+      "primary_user_goal": "Generate, download, and inspect a report from a named current or historical source.",
+      "secondary_goals": [
+        "Regenerate/download/delete retained artifact",
+        "Open exact source Run/Version"
+      ],
+      "inputs": [
+        "Current/Run source context",
+        "PDF/print or Markdown action",
+        "Artifact selection"
+      ],
+      "outputs": [
+        "Report definition and generated artifact bytes",
+        "Download/open and source navigation"
+      ],
+      "map_interaction": [
+        "Report preview/export may carry a map preview but is not a map-selection inspector entity."
+      ],
+      "drawer_density": "Moderate; source panel, export actions, and artifact/definition list.",
+      "disclosure_depth": "Report source > generate/download > artifact list/detail/provenance.",
+      "selected_object_behavior": "Selected artifact remains in Reports detail, not a contextual map inspector.",
+      "provenance_shown": [
+        "Current unsaved plan or exact Run/Scenario/Version binding; artifact metadata/storage details in Reports."
+      ],
+      "mixed_roles": [
+        "RESULT_ANALYSIS",
+        "WORKSPACE_MANAGEMENT",
+        "PROVENANCE_EVIDENCE",
+        "HISTORY"
+      ],
+      "source_evidence": [
+        "frontend-react/src/features/reports/ReportFeature.jsx",
+        "frontend-react/src/components/ReportArtifactsPanel.jsx",
+        "docs/concept-7i-feature-load-matrix.json"
+      ]
+    }
+  ],
+  "inventory_notes": [
+    "A.T.O.M already has MapInspector renderers for tower, building, coverage gap, communication path, interference sample, measurement sample, and site recommendation.",
+    "That surface is not a right inspector: App sets drawerMode=inspector and ToolDrawer replaces the current tool. Tower marker click also changes active tower/network membership and map Focus.",
+    "A signal surface is currently an aggregate raster; no stable clickable signal-surface sample was found.",
+    "Screenshot coverage comes from Concept 8B.1 after-state files; source inspection supplements panels that were not captured."
+  ]
+}

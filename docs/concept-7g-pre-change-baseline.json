@@ -1,0 +1,115 @@
+{
+  "concept": "7G",
+  "artifact": "pre-change-baseline",
+  "capturedOn": "2026-09-22",
+  "method": "Static inspection of the pre-7G frontend and committed Concept 7F communication, navigation, task, and debt audits. This records product copy and state transitions; it is not a runtime or screenshot measurement.",
+  "evidenceSources": [
+    "docs/concept-7f-state-communication.json",
+    "docs/concept-7f-navigation-map.json",
+    "docs/concept-7f-task-matrix.json",
+    "docs/concept-7f-product-debt.json",
+    "frontend-react/src/App.jsx",
+    "frontend-react/src/components/RunHistoryPanel.jsx",
+    "frontend-react/src/components/ReportArtifactsPanel.jsx",
+    "frontend-react/src/components/WorkspaceChrome.jsx"
+  ],
+  "observations": [
+    {
+      "id": "fresh-simulation",
+      "state": "Current result was implicit",
+      "visibleSourceIdentity": "Result metrics and map layers were visible; the Run identity was not adjacent to them.",
+      "freshnessLabel": "None",
+      "scenarioVersionContext": "Scenario and Version were available in Scenario or Run details, not persistently in the header.",
+      "runIdentity": "Durable Run history retained a record, but the active result did not identify it.",
+      "actionTargets": ["Run current plan", "Open Results"],
+      "staleBehavior": "Not applicable until a later plan edit."
+    },
+    {
+      "id": "stale-after-edit",
+      "state": "Stale result artifacts were cleared",
+      "visibleSourceIdentity": "Map result artifacts were invalidated; the retained Run was not named in the workspace.",
+      "freshnessLabel": "Plan changed",
+      "scenarioVersionContext": "No persistent Scenario or Version cue.",
+      "runIdentity": "Retained in Run History but not surfaced beside the stale state.",
+      "actionTargets": ["Run Sector or evaluate the changed plan"],
+      "staleBehavior": "No automatic rerun; result layers were invalidated."
+    },
+    {
+      "id": "current-optimization",
+      "state": "Optimization result was implicit-current",
+      "visibleSourceIdentity": "Optimization metrics and solution roles were visible; source Run and Version were not unified with them.",
+      "freshnessLabel": "None",
+      "scenarioVersionContext": "Local to Scenario/Run detail.",
+      "runIdentity": "Optimization Run was stored but not shown in one shared result header.",
+      "actionTargets": ["Inspect recommended or Pareto solution", "Apply solution"],
+      "staleBehavior": "Result content was cleared on plan invalidation."
+    },
+    {
+      "id": "historical-simulation-run",
+      "state": "Historical Run detail",
+      "visibleSourceIdentity": "Run facts and retained summary were available; historical state was not a shared badge.",
+      "freshnessLabel": "Local historical/source wording only",
+      "scenarioVersionContext": "Available in lineage detail when the Run was bound to a saved Version.",
+      "runIdentity": "Visible in Run History detail.",
+      "actionTargets": ["Inspect retained summary", "Run again", "Delete"],
+      "staleBehavior": "Opening a Run did not activate its source Scenario as the current working draft."
+    },
+    {
+      "id": "historical-optimization-run",
+      "state": "Historical optimization detail",
+      "visibleSourceIdentity": "Public solutions and recommendation role were inspectable; no common source/destination confirmation preceded Apply.",
+      "freshnessLabel": "No shared Historical label",
+      "scenarioVersionContext": "Available in Run/Scenario lineage detail when retained.",
+      "runIdentity": "Visible in Run History.",
+      "actionTargets": ["Inspect solution", "Apply as Version/branch", "Run again"],
+      "staleBehavior": "Historical solution identity existed, but action target needed clearer confirmation."
+    },
+    {
+      "id": "current-run-report",
+      "state": "Report generated from current result",
+      "visibleSourceIdentity": "Report source binding was retained, but ordinary Report presentation exposed storage terminology and metadata.",
+      "freshnessLabel": "Not unified with Result state",
+      "scenarioVersionContext": "Stored in report definition/artifact binding; not led with consistently in the selected Report view.",
+      "runIdentity": "Run binding retained when available.",
+      "actionTargets": ["Generate or download Report", "Inspect retained output"],
+      "staleBehavior": "A live compatibility Report could be generated from a draft without clear saved-Version wording."
+    },
+    {
+      "id": "historical-run-report",
+      "state": "Report generated from historical Run",
+      "visibleSourceIdentity": "The Report builder used the source Run and ScenarioRevision; source confirmation was not a distinct user step.",
+      "freshnessLabel": "Historical meaning lived in implementation/source metadata",
+      "scenarioVersionContext": "Exact binding retained, but not summarized before generation.",
+      "runIdentity": "Bound to the source Run.",
+      "actionTargets": ["Generate Report from selected Run"],
+      "staleBehavior": "No RF rerun was required; current draft/source separation was not explicit in the UI."
+    },
+    {
+      "id": "unsupported-research",
+      "state": "Unsupported or research/reference output",
+      "visibleSourceIdentity": "Some feature limitations and research/reference scope were stated in local notes and titles.",
+      "freshnessLabel": "No shared Unsupported/Research label",
+      "scenarioVersionContext": "Not applicable to all reference cards.",
+      "runIdentity": "Diagnostic-specific.",
+      "actionTargets": ["Read limitation", "Run an isolated reference where supported"],
+      "staleBehavior": "Unsupported, unavailable, and research-only semantics were not one consistent visual/text system."
+    },
+    {
+      "id": "unavailable-diagnostic",
+      "state": "Unavailable diagnostic or retained detail",
+      "visibleSourceIdentity": "A rail symbol, disabled action, generic unavailable text, or panel-specific message could appear.",
+      "freshnessLabel": "Varied by feature",
+      "scenarioVersionContext": "Varied by panel.",
+      "runIdentity": "May be absent or unavailable when data was not retained.",
+      "actionTargets": ["Satisfy prerequisite", "Refresh or inspect retained summary"],
+      "staleBehavior": "Unavailable was not consistently separated from unsupported."
+    }
+  ],
+  "primaryRisks": [
+    "Users could interpret a prior Run as current after changing the plan.",
+    "Users could not answer which Scenario, Version, and Run owned a result without opening multiple panels.",
+    "Apply and historical Report actions did not make source and destination equally explicit.",
+    "Unavailable and unsupported states could be confused."
+  ],
+  "baselineConclusion": "The application already invalidated stale map/result data and retained durable lineage. The missing layer was a shared, persistent user-facing identity and state vocabulary."
+}

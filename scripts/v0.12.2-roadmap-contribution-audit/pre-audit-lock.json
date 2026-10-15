@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-15T12:25:35.412499+00:00",
+  "objective": "v0.12.2 roadmap and contribution readiness audit; no implementation",
+  "baseline": {
+    "status_short": "",
+    "branch": "main",
+    "head": "0310bd8dea2e807ea57696a1bc5b3e11286db39e",
+    "tree": "3d0966c114f38726db9362309cfe1162d8b8bd44",
+    "version": "0.12.2",
+    "diff_stat": "",
+    "remotes": "origin\thttps://github.com/Berk-Unsal/atom.git (fetch)\norigin\thttps://github.com/Berk-Unsal/atom.git (push)",
+    "tags_at_head": "v0.12.2"
+  },
+  "authoritative_sources_sha256": {
+    "AGENTS.md": "20d6fbdd441f1e0ac28c0398903f8ca407d042351dc6c1bc76a81d3417c76692",
+    "VERSION": "f482d06e4ee83158e42999dcf951d5909861dad7e03317deb2b1e2ddd5c46274",
+    "README.md": "6ed6560dfc6765ca3ae0b8f1eff834567d350a94e3c6b4bffceac4ea8b5c5ca9",
+    "PRODUCT.md": "13e4f0db9ddcbd62b6505155561b5b48ea02caf4f175d9431aa14ab677e4c386",
+    "planning/product-compass.md": "d825f6cce8f0cf0a1726e6a0658acd095210bb63bd51e54d27cc1a3b09967e6d",
+    "docs/modeling-limits.md": "21072c0c089f149a3db1f65a36441be75c7abe69d5e848c4621462ea2ff2373d",
+    "docs/features.md": "625881281504268c6a8789bbd26e81f503a04174173d66623d9ba74579dfc18e",
+    "docs/getting-started.md": "f1eed16d52e58e3e02228ce0eb1d7901e8d7531c17ee88d5baa96df477722339",
+    "docs/api.md": "92b1625742032c4965fa24101bbd67c88d554f768bd8b532577b853a672a53ba",
+    "docs/project-format.md": "10f79cf2a19d15cec19bc94c6b2f8a559b645f3767ba918204bb1fc282cf365b",
+    "docs/v0.12.1-post-release-product-scientific-audit.md": "44412bcca1b640038c73be7d94b0cc79da36083fb381c8d91416d927a8cd5b39",
+    "docs/v0.12.1-post-release-product-scientific-audit.json": "64030fe9c836e5445e61a818d24d0fd6345736c8b0b556adf6da237e5106c121",
+    "docs/v0.12.1-claim-reconciliation.md": "a81bcf89011a6e4da83ee93d960d070b92949fc7f858da3cc7c7052c17e188f2",
+    "docs/v0.12.1-claim-reconciliation.json": "cc97f59e60525632f5de33c25c17a8bf59410519304b483e282443e8ad941ca9",
+    "docs/eight-cell-product-cap-promotion.md": "d388975569c1d41905199296c205460a263e4dd4b7a0705d5788ee42f47136e8",
+    "docs/bounded-followup-policy-implementation.md": "8da38fc94c76333ff11b9264f9b8cfc8709685c816a8635444e02903252ee0fc"
+  },
+  "allowed_writes": [
+    "docs/v0.12.2-roadmap-contribution-audit.md",
+    "docs/v0.12.2-roadmap-contribution-audit.json",
+    "scripts/v0.12.2-roadmap-contribution-audit/**"
+  ],
+  "forbidden": [
+    "production implementation",
+    "VERSION changes",
+    "release/tag/push",
+    "backlog implementation"
+  ]
+}

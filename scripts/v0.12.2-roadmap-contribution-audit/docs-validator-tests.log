@@ -1,0 +1,31 @@
+EE
+======================================================================
+ERROR: validate_openapi_test (unittest.loader._FailedTest.validate_openapi_test)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: validate_openapi_test
+Traceback (most recent call last):
+  File "/Users/berkunsal/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/berkunsal/Desktop/urban-ray-tracer/docs/validate_openapi_test.py", line 4, in <module>
+    from validate_openapi import openapi_errors
+ModuleNotFoundError: No module named 'validate_openapi'
+
+
+======================================================================
+ERROR: validate_claims_test (unittest.loader._FailedTest.validate_claims_test)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: validate_claims_test
+Traceback (most recent call last):
+  File "/Users/berkunsal/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/berkunsal/Desktop/urban-ray-tracer/docs/validate_claims_test.py", line 5, in <module>
+    from classify_docs import CATALOG, catalog_errors
+ModuleNotFoundError: No module named 'classify_docs'
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (errors=2)

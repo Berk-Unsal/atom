@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-10-15T12:26:00.806547+00:00",
+  "command": [
+    "gh",
+    "api",
+    "graphql",
+    "-f",
+    "query=query { repository(owner:\"Berk-Unsal\",name:\"atom\") { hasDiscussionsEnabled discussions(first:50) { totalCount nodes { number title url category { name } } } } }"
+  ],
+  "exit_code": 0,
+  "data": {
+    "data": {
+      "repository": {
+        "hasDiscussionsEnabled": false,
+        "discussions": {
+          "totalCount": 0,
+          "nodes": []
+        }
+      }
+    }
+  },
+  "stderr": ""
+}

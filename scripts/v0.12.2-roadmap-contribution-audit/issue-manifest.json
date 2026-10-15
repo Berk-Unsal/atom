@@ -1,0 +1,1443 @@
+{
+  "schema_version": 1,
+  "prepared_at": "2026-10-15T12:33:06.824318+00:00",
+  "repository": "Berk-Unsal/atom",
+  "source_head": "0310bd8dea2e807ea57696a1bc5b3e11286db39e",
+  "pre_audit_lock_sha256": "aa29b95e15d3afb859827c913edb031998cce02c5dcb174ba0fc7b75028db2d7",
+  "mutation_authorization": "Explicit objective phases 22-28; issues/labels/one Project only; no implementation.",
+  "issues": [
+    {
+      "key": "score-interpretation",
+      "title": "Explain normalized network scores and Pareto alternatives in Results",
+      "type": "enhancement",
+      "area": "product-ux",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "Results shows a score /100 and defines Pareto mostly as non-dominated. Priorities already have objective help, but the decision surface does not explain that the score is a preference-weighted utility rather than coverage percentage or measured accuracy.",
+      "scope": "Add brief accessible help beside evaluation scores and Alternative solutions: weighted normalized utility, objective directions, a plain-language trade-off example, and the distinction between inspecting, reranking retained alternatives and rerunning search. Explain that network optimization changes azimuths while other configured RF/site inputs stay fixed.",
+      "acceptance_criteria": [
+        "A novice can explain /100 without calling it percentage coverage, measured accuracy or a probability.",
+        "A small illustrative two-option example explains why neither alternative dominates the other and why priorities change the recommendation.",
+        "Help distinguishes retained-frontier reranking, inspection, explicit apply and a new search; inspection sends no new RF work.",
+        "Existing raw compatibility fields and score/search behavior are unchanged; relevant App workflow tests cover accessible help and no hidden RF requests."
+      ],
+      "non_goals": "No scoring equations, Pareto/search policies, thresholds, API fields, navigation redesign or global-optimum claim.",
+      "evidence": [
+        [
+          "frontend-react/src/App.jsx",
+          4790
+        ],
+        [
+          "frontend-react/src/App.jsx",
+          5135
+        ],
+        [
+          "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+          34
+        ],
+        [
+          "docs/modeling-limits.md",
+          125
+        ]
+      ],
+      "contributor_notes": "Use App.jsx Results/Pareto components and App.workflow.test.jsx; optimizationConfig.js is the semantics reference. No RF-model change is required; maintainer checks the wording.",
+      "search_terms": [
+        "score",
+        "Pareto",
+        "non-dominated",
+        "normalized"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "Results shows a score /100 and defines Pareto mostly as non-dominated. Priorities already have objective help, but the decision surface does not explain that the score is a preference-weighted utility rather than coverage percentage or measured accuracy.",
+      "decision": "create",
+      "concept": "score-interpretation",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "score-interpretation",
+          "query": "repo:Berk-Unsal/atom is:issue score",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:02.107424+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: enhancement",
+        "area: product-ux",
+        "area: frontend",
+        "priority: P2",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nResults shows a score /100 and defines Pareto mostly as non-dominated. Priorities already have objective help, but the decision surface does not explain that the score is a preference-weighted utility rather than coverage percentage or measured accuracy.\n\n## Scope\n\nAdd brief accessible help beside evaluation scores and Alternative solutions: weighted normalized utility, objective directions, a plain-language trade-off example, and the distinction between inspecting, reranking retained alternatives and rerunning search. Explain that network optimization changes azimuths while other configured RF/site inputs stay fixed.\n\n## Acceptance criteria\n\n- [ ] A novice can explain /100 without calling it percentage coverage, measured accuracy or a probability.\n- [ ] A small illustrative two-option example explains why neither alternative dominates the other and why priorities change the recommendation.\n- [ ] Help distinguishes retained-frontier reranking, inspection, explicit apply and a new search; inspection sends no new RF work.\n- [ ] Existing raw compatibility fields and score/search behavior are unchanged; relevant App workflow tests cover accessible help and no hidden RF requests.\n\n## Non-goals\n\nNo scoring equations, Pareto/search policies, thresholds, API fields, navigation redesign or global-optimum claim.\n\n## Evidence / references\n\n- [frontend-react/src/App.jsx:L4790](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/App.jsx#L4790)\n- [frontend-react/src/App.jsx:L5135](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/App.jsx#L5135)\n- [frontend-react/src/components/OptimizationGoalsPanel.jsx:L34](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/components/OptimizationGoalsPanel.jsx#L34)\n- [docs/modeling-limits.md:L125](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/modeling-limits.md#L125)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P2**.\n\nUse App.jsx Results/Pareto components and App.workflow.test.jsx; optimizationConfig.js is the semantics reference. No RF-model change is required; maintainer checks the wording.\n"
+    },
+    {
+      "key": "export-recovery",
+      "title": "Surface portable-project export guard recovery guidance",
+      "type": "enhancement",
+      "area": "persistence",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "ProjectMenu catches export/import exceptions and displays only error.message. The current note explains retained evidence, but a size/node guard failure gives no next safe action. Large ray-bearing exports can hit the unchanged guards at six or eight Cells.",
+      "scope": "Add contextual recovery help for known project-budget failures and a link to the portable-format limits. Explain how to preserve an available report and current local project, and distinguish reduced future scenarios from archival export. Verify any suggested action actually works in the current UI.",
+      "acceptance_criteria": [
+        "Known encoded-size, decoded-size and node/depth budget errors show specific recovery guidance; unknown errors retain their original message.",
+        "Guidance names browser-local state and separately downloaded reports accurately; it does not promise that a report is a full editable backup.",
+        "Failure preserves the active project, retained evidence and file contents and triggers no RF retry or automatic deletion.",
+        "Deterministic ProjectMenu interaction tests inject budget failures and assert the guidance, preserved data and no download on failure; existing project reliability tests still pass."
+      ],
+      "non_goals": "Do not raise guards, change schemas, trim scientific data, implement a new archive/export mode or automatically delete Scenarios.",
+      "evidence": [
+        [
+          "frontend-react/src/components/WorkspaceChrome.jsx",
+          211
+        ],
+        [
+          "frontend-react/src/utils/projectStore.js",
+          260
+        ],
+        [
+          "docs/project-format.md",
+          33
+        ],
+        [
+          "docs/eight-cell-product-cap-promotion.md",
+          25
+        ]
+      ],
+      "contributor_notes": "WorkspaceChrome.jsx ProjectMenu owns the message; projectStore.js and projectRayColumns.js own guards. Use existing projectFileReliability.test.js and App.workflow.test.jsx patterns. RF expertise is unnecessary.",
+      "search_terms": [
+        "export",
+        "portable",
+        "project",
+        "import"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [
+        17,
+        26
+      ],
+      "rationale": "Closed #17 implemented bounded imports and #26 fixed storage ordering. This is recovery discoverability around correct, unchanged guards, not reopening those defects.",
+      "decision": "create",
+      "concept": "export-recovery",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 17,
+            "title": "[Severity 5] Bound and deeply validate imported project files",
+            "state": "closed"
+          },
+          {
+            "number": 26,
+            "title": "[Severity 6] Resolve dual workspace stores and save ordering",
+            "state": "closed"
+          },
+          {
+            "number": 31,
+            "title": "[Severity 4] Consolidate report escaping and formatting helpers",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [
+          17,
+          26
+        ],
+        "duplicate_found": false,
+        "adjudication": "Closed #17 implemented bounded imports and #26 fixed storage ordering. This is recovery discoverability around correct, unchanged guards, not reopening those defects.",
+        "live_search": {
+          "key": "export-recovery",
+          "query": "repo:Berk-Unsal/atom is:issue export",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:02.674383+00:00",
+          "total_count": 1,
+          "matches": [
+            {
+              "number": 31,
+              "title": "[Severity 4] Consolidate report escaping and formatting helpers",
+              "state": "closed",
+              "html_url": "https://github.com/Berk-Unsal/atom/issues/31"
+            }
+          ]
+        }
+      },
+      "labels": [
+        "type: enhancement",
+        "area: persistence",
+        "area: frontend",
+        "priority: P2",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nProjectMenu catches export/import exceptions and displays only error.message. The current note explains retained evidence, but a size/node guard failure gives no next safe action. Large ray-bearing exports can hit the unchanged guards at six or eight Cells.\n\n## Scope\n\nAdd contextual recovery help for known project-budget failures and a link to the portable-format limits. Explain how to preserve an available report and current local project, and distinguish reduced future scenarios from archival export. Verify any suggested action actually works in the current UI.\n\n## Acceptance criteria\n\n- [ ] Known encoded-size, decoded-size and node/depth budget errors show specific recovery guidance; unknown errors retain their original message.\n- [ ] Guidance names browser-local state and separately downloaded reports accurately; it does not promise that a report is a full editable backup.\n- [ ] Failure preserves the active project, retained evidence and file contents and triggers no RF retry or automatic deletion.\n- [ ] Deterministic ProjectMenu interaction tests inject budget failures and assert the guidance, preserved data and no download on failure; existing project reliability tests still pass.\n\n## Non-goals\n\nDo not raise guards, change schemas, trim scientific data, implement a new archive/export mode or automatically delete Scenarios.\n\n## Evidence / references\n\n- [frontend-react/src/components/WorkspaceChrome.jsx:L211](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/components/WorkspaceChrome.jsx#L211)\n- [frontend-react/src/utils/projectStore.js:L260](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/projectStore.js#L260)\n- [docs/project-format.md:L33](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/project-format.md#L33)\n- [docs/eight-cell-product-cap-promotion.md:L25](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/eight-cell-product-cap-promotion.md#L25)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P2**.\n\nWorkspaceChrome.jsx ProjectMenu owns the message; projectStore.js and projectRayColumns.js own guards. Use existing projectFileReliability.test.js and App.workflow.test.jsx patterns. RF expertise is unnecessary.\n"
+    },
+    {
+      "key": "worked-example",
+      "title": "Add a reproducible baseline-to-recommendation planning walkthrough",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P2",
+      "effort": "M",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "README and Getting Started now state the first planning question, but the shipped sample has no selected Cells, dataset binding or results. The four-step network guide leaves the user to choose a plan and infer what a useful comparison looks like.",
+      "scope": "Document one small public Ankara planning question using explicit dataset identity, selectable records or a validated importable planning-only fixture, RF settings, priorities and a baseline. Walk through evaluate, optimize, one meaningful metric trade-off, save/apply and separate project/report downloads.",
+      "acceptance_criteria": [
+        "A fresh clone with the documented public pack can reproduce the selected Cells and inputs without private data or guessed operator truth.",
+        "The example records dataset/model version and distinguishes changed azimuths from fixed settings; it states the planning and unestablished-accuracy boundaries.",
+        "The walkthrough explains a baseline delta and trade-off and ends with evidence a reviewer can reopen or read offline.",
+        "Any new project fixture passes existing import/reliability checks; instructions are exercised once and generated docs/link validation passes. Numeric expectations are scoped to the recorded dataset/configuration."
+      ],
+      "non_goals": "No new optimizer, onboarding wizard, deployment recommendation, larger network support or fabricated measured data. Preserve the legacy settings-only sample as a valid input-only example.",
+      "evidence": [
+        [
+          "README.md",
+          25
+        ],
+        [
+          "docs/getting-started.md",
+          105
+        ],
+        [
+          "examples/ankara-sample.atom-project.json",
+          1
+        ],
+        [
+          "frontend-react/src/utils/projectFileReliability.test.js",
+          146
+        ]
+      ],
+      "contributor_notes": "Work in docs/getting-started.md and examples/. Follow existing project-schema tests; use a bounded two-to-four Cell example. Maintainer reviews interpretation of the planning result. This is an executable example, not a replacement first-use slogan.",
+      "search_terms": [
+        "walkthrough",
+        "example",
+        "onboarding",
+        "first-use"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "README and Getting Started now state the first planning question, but the shipped sample has no selected Cells, dataset binding or results. The four-step network guide leaves the user to choose a plan and infer what a useful comparison looks like.",
+      "decision": "create",
+      "concept": "worked-example",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 32,
+            "title": "[Severity 4] Remove RF wrappers that silently discard errors",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "worked-example",
+          "query": "repo:Berk-Unsal/atom is:issue walkthrough",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:03.204126+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P2",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nREADME and Getting Started now state the first planning question, but the shipped sample has no selected Cells, dataset binding or results. The four-step network guide leaves the user to choose a plan and infer what a useful comparison looks like.\n\n## Scope\n\nDocument one small public Ankara planning question using explicit dataset identity, selectable records or a validated importable planning-only fixture, RF settings, priorities and a baseline. Walk through evaluate, optimize, one meaningful metric trade-off, save/apply and separate project/report downloads.\n\n## Acceptance criteria\n\n- [ ] A fresh clone with the documented public pack can reproduce the selected Cells and inputs without private data or guessed operator truth.\n- [ ] The example records dataset/model version and distinguishes changed azimuths from fixed settings; it states the planning and unestablished-accuracy boundaries.\n- [ ] The walkthrough explains a baseline delta and trade-off and ends with evidence a reviewer can reopen or read offline.\n- [ ] Any new project fixture passes existing import/reliability checks; instructions are exercised once and generated docs/link validation passes. Numeric expectations are scoped to the recorded dataset/configuration.\n\n## Non-goals\n\nNo new optimizer, onboarding wizard, deployment recommendation, larger network support or fabricated measured data. Preserve the legacy settings-only sample as a valid input-only example.\n\n## Evidence / references\n\n- [README.md:L25](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/README.md#L25)\n- [docs/getting-started.md:L105](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/getting-started.md#L105)\n- [examples/ankara-sample.atom-project.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/examples/ankara-sample.atom-project.json#L1)\n- [frontend-react/src/utils/projectFileReliability.test.js:L146](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/projectFileReliability.test.js#L146)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **M** (planning estimate, not a promise). Priority: **P2**.\n\nWork in docs/getting-started.md and examples/. Follow existing project-schema tests; use a bounded two-to-four Cell example. Maintainer reviews interpretation of the planning result. This is an executable example, not a replacement first-use slogan.\n"
+    },
+    {
+      "key": "matched-heroes",
+      "title": "Add matched current light and dark documentation hero captures",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P3",
+      "effort": "S",
+      "contributor_suitability": "beginner-safe",
+      "problem": "The docs landing page uses focused-workspace.jpg for light mode and v0.12.0/network-workspace.png for dark mode. Inspection confirms different navigation generations, map extents and Cell selections. Claim reconciliation explicitly deferred this mismatch.",
+      "scope": "Capture a matched pair from the current real app with the same public planning state, map extent, selected Cells and viewport. Wire the pair into the existing theme previews, with accurate alt text and capture provenance.",
+      "acceptance_criteria": [
+        "Both theme images show the same current workspace/state and identify source version, viewport and public dataset/configuration.",
+        "Images are actual app captures, not synthetic or repainted screenshots; do not invent successful RF output.",
+        "Landing-page light/dark alt text and fixture paths match the assets; desktop/mobile theme tests and docs asset/link checks pass.",
+        "Existing historical gallery and qualification images remain intact."
+      ],
+      "non_goals": "No UI redesign, image deduplication campaign, RF change, new scientific evidence claim or rewrite of historical screenshots.",
+      "evidence": [
+        [
+          "docs/index.html",
+          97
+        ],
+        [
+          "frontend-react/e2e/docs-theme.spec.js",
+          53
+        ],
+        [
+          "docs/v0.12.1-claim-reconciliation.md",
+          31
+        ]
+      ],
+      "contributor_notes": "docs/index.html, docs/assets/ and e2e/docs-theme.spec.js are the bounded surface. Run the app using documented Docker/LFS setup, capture the same state in both appearances, then run the theme tests. No RF expertise is required.",
+      "search_terms": [
+        "hero",
+        "screenshot",
+        "theme",
+        "image"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [
+        30
+      ],
+      "rationale": "Closed #30 deduplicated image storage. It did not align the two active hero states; visual/source evidence confirms this separate remaining P10.",
+      "decision": "create",
+      "concept": "matched-heroes",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 13,
+            "title": "[Severity 6] Run the Core Lab adapter as non-root and limit exposure",
+            "state": "closed"
+          },
+          {
+            "number": 11,
+            "title": "[Severity 6] Make build and dependency inputs reproducible",
+            "state": "closed"
+          },
+          {
+            "number": 24,
+            "title": "[Severity 8] Remove the tracked 95 MB generated data cache",
+            "state": "closed"
+          },
+          {
+            "number": 30,
+            "title": "[Severity 5] Deduplicate copied documentation images",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [
+          30
+        ],
+        "duplicate_found": false,
+        "adjudication": "Closed #30 deduplicated image storage. It did not align the two active hero states; visual/source evidence confirms this separate remaining P10.",
+        "live_search": {
+          "key": "matched-heroes",
+          "query": "repo:Berk-Unsal/atom is:issue hero",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:03.779286+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P3",
+        "help wanted",
+        "good first issue"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nThe docs landing page uses focused-workspace.jpg for light mode and v0.12.0/network-workspace.png for dark mode. Inspection confirms different navigation generations, map extents and Cell selections. Claim reconciliation explicitly deferred this mismatch.\n\n## Scope\n\nCapture a matched pair from the current real app with the same public planning state, map extent, selected Cells and viewport. Wire the pair into the existing theme previews, with accurate alt text and capture provenance.\n\n## Acceptance criteria\n\n- [ ] Both theme images show the same current workspace/state and identify source version, viewport and public dataset/configuration.\n- [ ] Images are actual app captures, not synthetic or repainted screenshots; do not invent successful RF output.\n- [ ] Landing-page light/dark alt text and fixture paths match the assets; desktop/mobile theme tests and docs asset/link checks pass.\n- [ ] Existing historical gallery and qualification images remain intact.\n\n## Non-goals\n\nNo UI redesign, image deduplication campaign, RF change, new scientific evidence claim or rewrite of historical screenshots.\n\n## Evidence / references\n\n- [docs/index.html:L97](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/index.html#L97)\n- [frontend-react/e2e/docs-theme.spec.js:L53](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/e2e/docs-theme.spec.js#L53)\n- [docs/v0.12.1-claim-reconciliation.md:L31](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/v0.12.1-claim-reconciliation.md#L31)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **beginner-safe**. Rough effort: **S** (planning estimate, not a promise). Priority: **P3**.\n\ndocs/index.html, docs/assets/ and e2e/docs-theme.spec.js are the bounded surface. Run the app using documented Docker/LFS setup, capture the same state in both appearances, then run the theme tests. No RF expertise is required.\n"
+    },
+    {
+      "key": "cell-glossary",
+      "title": "Explain Cell, sector and site terminology in the planning help",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "beginner-safe",
+      "problem": "UI labels use Cell, the API and active dataset use tower records, and candidates are known planning records. Getting Started says choose a tower while inventory uses Cells; no compact glossary explains that one physical site can contain several Cells or that a candidate record is not a verified site.",
+      "scope": "Add a short linked terminology section to current user help, covering planning Cell/sector/site/tower record, co-location, dataset identity and candidate feasibility. Reuse existing model-limit definitions rather than introducing new RF semantics.",
+      "acceptance_criteria": [
+        "A reader can distinguish a selected planning Cell from a physical site and understand multiple sectors at one location.",
+        "Candidate records are explicitly not evidence of ownership, availability, permitting, cost or backhaul.",
+        "Setup/Inventory and first-workflow documentation lead to the glossary; existing API names remain compatible.",
+        "Current generated docs, navigation and link validation pass; maintainer reviews definitions against the existing model contract."
+      ],
+      "non_goals": "No API/schema renames, physical inventory verification, RF equations or repository-wide historical terminology rewrite.",
+      "evidence": [
+        [
+          "docs/getting-started.md",
+          109
+        ],
+        [
+          "docs/modeling-limits.md",
+          59
+        ],
+        [
+          "docs/modeling-limits.md",
+          70
+        ],
+        [
+          "docs/features.md",
+          111
+        ],
+        [
+          "frontend-react/src/components/InventoryPanel.jsx",
+          1
+        ]
+      ],
+      "contributor_notes": "Start with docs/getting-started.md or docs/faq.md. Existing definitions and UI names supply the answer; deep RF knowledge is unnecessary. Build current references and run docs validation; do not edit historical audits.",
+      "search_terms": [
+        "terminology",
+        "glossary",
+        "sector",
+        "site"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "UI labels use Cell, the API and active dataset use tower records, and candidates are known planning records. Getting Started says choose a tower while inventory uses Cells; no compact glossary explains that one physical site can contain several Cells or that a candidate record is not a verified site.",
+      "decision": "create",
+      "concept": "cell-glossary",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 9,
+            "title": "[Severity 8] Require authorization for Core Lab scenario mutation",
+            "state": "closed"
+          },
+          {
+            "number": 27,
+            "title": "[Severity 6] Avoid returning recommendations twice",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "cell-glossary",
+          "query": "repo:Berk-Unsal/atom is:issue terminology",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:04.314947+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P2",
+        "help wanted",
+        "good first issue"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nUI labels use Cell, the API and active dataset use tower records, and candidates are known planning records. Getting Started says choose a tower while inventory uses Cells; no compact glossary explains that one physical site can contain several Cells or that a candidate record is not a verified site.\n\n## Scope\n\nAdd a short linked terminology section to current user help, covering planning Cell/sector/site/tower record, co-location, dataset identity and candidate feasibility. Reuse existing model-limit definitions rather than introducing new RF semantics.\n\n## Acceptance criteria\n\n- [ ] A reader can distinguish a selected planning Cell from a physical site and understand multiple sectors at one location.\n- [ ] Candidate records are explicitly not evidence of ownership, availability, permitting, cost or backhaul.\n- [ ] Setup/Inventory and first-workflow documentation lead to the glossary; existing API names remain compatible.\n- [ ] Current generated docs, navigation and link validation pass; maintainer reviews definitions against the existing model contract.\n\n## Non-goals\n\nNo API/schema renames, physical inventory verification, RF equations or repository-wide historical terminology rewrite.\n\n## Evidence / references\n\n- [docs/getting-started.md:L109](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/getting-started.md#L109)\n- [docs/modeling-limits.md:L59](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/modeling-limits.md#L59)\n- [docs/modeling-limits.md:L70](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/modeling-limits.md#L70)\n- [docs/features.md:L111](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/features.md#L111)\n- [frontend-react/src/components/InventoryPanel.jsx:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/components/InventoryPanel.jsx#L1)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **beginner-safe**. Rough effort: **S** (planning estimate, not a promise). Priority: **P2**.\n\nStart with docs/getting-started.md or docs/faq.md. Existing definitions and UI names supply the answer; deep RF knowledge is unnecessary. Build current references and run docs validation; do not edit historical audits.\n"
+    },
+    {
+      "key": "report-reader-guide",
+      "title": "Document how to read and preserve a planning report",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P3",
+      "effort": "S",
+      "contributor_suitability": "beginner-safe",
+      "problem": "The report already contains an executive summary, baseline comparison, Pareto table, source lineage and limitations. User help mainly says export Markdown or printable PDF; it does not teach an outside reader to check historical/current source, missing analyses, ray sampling or integrity meaning.",
+      "scope": "Add a bounded reader guide tied to the existing report sections. Explain source Scenario/Version/Run, evaluated versus recommended status, absent interference, map sampling, offline HTML/Markdown/PDF delivery and separate report/project retention.",
+      "acceptance_criteria": [
+        "An annotated example or section map shows where to find assumptions, achieved metrics, baseline, alternatives and limitations without inventing new metrics.",
+        "The guide explains historical/unsaved source context and that hashes verify artifact bytes rather than physical accuracy.",
+        "It states map sampling and absent-analysis behavior and separates stored HTML/Markdown download from printing to PDF and portable project export.",
+        "Steps are checked against existing report renderer/fixtures and linked from the current help; docs validation passes."
+      ],
+      "non_goals": "No report renderer redesign, new report calculations, new archives, scientific claims or template-system implementation.",
+      "evidence": [
+        [
+          "docs/getting-started.md",
+          184
+        ],
+        [
+          "frontend-react/src/components/ReportArtifactsPanel.jsx",
+          51
+        ],
+        [
+          "frontend-react/src/utils/reportExport.js",
+          458
+        ],
+        [
+          "frontend-react/src/utils/reportExport.js",
+          713
+        ],
+        [
+          "frontend-react/src/utils/reportExport.test.js",
+          572
+        ]
+      ],
+      "contributor_notes": "Use docs/getting-started.md/faq.md and existing reportExport fixtures as references. No RF code change or deep RF judgement is needed. Do not duplicate a new executive summary: it already exists.",
+      "search_terms": [
+        "report",
+        "read",
+        "guide",
+        "export"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [
+        31
+      ],
+      "rationale": "Closed #31 consolidated report formatting/escaping. The report functionality is present; this ticket only teaches consumers how to use it.",
+      "decision": "create",
+      "concept": "report-reader-guide",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 10,
+            "title": "[Severity 5] Stop exposing Core Lab response bodies and internal paths",
+            "state": "closed"
+          },
+          {
+            "number": 17,
+            "title": "[Severity 5] Bound and deeply validate imported project files",
+            "state": "closed"
+          },
+          {
+            "number": 16,
+            "title": "[Severity 5] Bound recommendation polygon complexity",
+            "state": "closed"
+          },
+          {
+            "number": 18,
+            "title": "[Severity 4] Detect oversized Core Lab scenario request bodies",
+            "state": "closed"
+          },
+          {
+            "number": 20,
+            "title": "[Severity 4] Reduce full-file dataset allocation during startup",
+            "state": "closed"
+          },
+          {
+            "number": 23,
+            "title": "[Severity 3] Avoid leaking JSON parser and dataset diagnostics",
+            "state": "closed"
+          },
+          {
+            "number": 31,
+            "title": "[Severity 4] Consolidate report escaping and formatting helpers",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [
+          31
+        ],
+        "duplicate_found": false,
+        "adjudication": "Closed #31 consolidated report formatting/escaping. The report functionality is present; this ticket only teaches consumers how to use it.",
+        "live_search": {
+          "key": "report-reader-guide",
+          "query": "repo:Berk-Unsal/atom is:issue report",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:04.923424+00:00",
+          "total_count": 1,
+          "matches": [
+            {
+              "number": 31,
+              "title": "[Severity 4] Consolidate report escaping and formatting helpers",
+              "state": "closed",
+              "html_url": "https://github.com/Berk-Unsal/atom/issues/31"
+            }
+          ]
+        }
+      },
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P3",
+        "help wanted",
+        "good first issue"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nThe report already contains an executive summary, baseline comparison, Pareto table, source lineage and limitations. User help mainly says export Markdown or printable PDF; it does not teach an outside reader to check historical/current source, missing analyses, ray sampling or integrity meaning.\n\n## Scope\n\nAdd a bounded reader guide tied to the existing report sections. Explain source Scenario/Version/Run, evaluated versus recommended status, absent interference, map sampling, offline HTML/Markdown/PDF delivery and separate report/project retention.\n\n## Acceptance criteria\n\n- [ ] An annotated example or section map shows where to find assumptions, achieved metrics, baseline, alternatives and limitations without inventing new metrics.\n- [ ] The guide explains historical/unsaved source context and that hashes verify artifact bytes rather than physical accuracy.\n- [ ] It states map sampling and absent-analysis behavior and separates stored HTML/Markdown download from printing to PDF and portable project export.\n- [ ] Steps are checked against existing report renderer/fixtures and linked from the current help; docs validation passes.\n\n## Non-goals\n\nNo report renderer redesign, new report calculations, new archives, scientific claims or template-system implementation.\n\n## Evidence / references\n\n- [docs/getting-started.md:L184](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/getting-started.md#L184)\n- [frontend-react/src/components/ReportArtifactsPanel.jsx:L51](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/components/ReportArtifactsPanel.jsx#L51)\n- [frontend-react/src/utils/reportExport.js:L458](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/reportExport.js#L458)\n- [frontend-react/src/utils/reportExport.js:L713](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/reportExport.js#L713)\n- [frontend-react/src/utils/reportExport.test.js:L572](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/reportExport.test.js#L572)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **beginner-safe**. Rough effort: **S** (planning estimate, not a promise). Priority: **P3**.\n\nUse docs/getting-started.md/faq.md and existing reportExport fixtures as references. No RF code change or deep RF judgement is needed. Do not duplicate a new executive summary: it already exists.\n"
+    },
+    {
+      "key": "contributor-guide",
+      "title": "Repair the contribution entry point, setup examples and validation guidance",
+      "type": "docs",
+      "area": "community",
+      "priority": "P2",
+      "effort": "M",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "GitHub detects docs/contributing.md, but no root CONTRIBUTING.md or README contribution entry exists. The guide calls Vitest tests Jest, invokes golint, demonstrates nonexistent RF helper/import paths, prescribes editing main.go for releases, links absent community files, and recommends disabled Discussions and speculative RF priorities.",
+      "scope": "Create a discoverable canonical contribution entry and repair the maintained guide against AGENTS.md, package scripts, CI and VERSION tooling. Include a small-change route from issue to files to focused checks, architecture/ownership boundaries, Docker/LFS prerequisites and current release process.",
+      "acceptance_criteria": [
+        "README and a GitHub-recognized contribution entry lead to one maintained source without contradictory duplicate instructions.",
+        "Fresh-clone Docker and frontend/backend development steps include LFS, readiness and correct working directories; documented snippets use real symbols/files or are explicitly pseudocode.",
+        "The test matrix names Vitest, frontend lint/build/Playwright, Go vet/race, docs and version/policy checks, with focused-versus-full guidance matching CI.",
+        "VERSION is canonical; contributor PRs use Unreleased rather than instructions to edit main.go or publish tags. Missing CoC/contributor promises are removed or linked only if real.",
+        "Communication uses available Issues while Discussions is disabled; RF changes are routed to maintainer review and bounded newcomer work to the roadmap. Commands/links are checked and docs validation passes."
+      ],
+      "non_goals": "No enabling Discussions, inventing CODEOWNERS/maintainers or community policy, adding RF models, changing CI gates, runtime upgrades or releasing software.",
+      "evidence": [
+        [
+          "docs/contributing.md",
+          58
+        ],
+        [
+          "docs/contributing.md",
+          207
+        ],
+        [
+          "docs/contributing.md",
+          332
+        ],
+        [
+          "docs/contributing.md",
+          432
+        ],
+        [
+          "README.md",
+          210
+        ],
+        [
+          "AGENTS.md",
+          1
+        ],
+        [
+          ".github/workflows/quality.yml",
+          45
+        ]
+      ],
+      "contributor_notes": "docs/contributing.md, README.md, a root CONTRIBUTING.md and docs build mapping are the likely surfaces. This is editorial/tooling verification; do not change working production code to match stale examples. GitHub community-profile snapshot confirms the detected guide.",
+      "search_terms": [
+        "contribut",
+        "setup",
+        "onboarding",
+        "release guidance"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "GitHub detects docs/contributing.md, but no root CONTRIBUTING.md or README contribution entry exists. The guide calls Vitest tests Jest, invokes golint, demonstrates nonexistent RF helper/import paths, prescribes editing main.go for releases, links absent community files, and recommends disabled Discussions and speculative RF priorities.",
+      "decision": "create",
+      "concept": "contributor-guide",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "contributor-guide",
+          "query": "repo:Berk-Unsal/atom is:issue contribut",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:05.447190+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: docs",
+        "area: community",
+        "priority: P2",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nGitHub detects docs/contributing.md, but no root CONTRIBUTING.md or README contribution entry exists. The guide calls Vitest tests Jest, invokes golint, demonstrates nonexistent RF helper/import paths, prescribes editing main.go for releases, links absent community files, and recommends disabled Discussions and speculative RF priorities.\n\n## Scope\n\nCreate a discoverable canonical contribution entry and repair the maintained guide against AGENTS.md, package scripts, CI and VERSION tooling. Include a small-change route from issue to files to focused checks, architecture/ownership boundaries, Docker/LFS prerequisites and current release process.\n\n## Acceptance criteria\n\n- [ ] README and a GitHub-recognized contribution entry lead to one maintained source without contradictory duplicate instructions.\n- [ ] Fresh-clone Docker and frontend/backend development steps include LFS, readiness and correct working directories; documented snippets use real symbols/files or are explicitly pseudocode.\n- [ ] The test matrix names Vitest, frontend lint/build/Playwright, Go vet/race, docs and version/policy checks, with focused-versus-full guidance matching CI.\n- [ ] VERSION is canonical; contributor PRs use Unreleased rather than instructions to edit main.go or publish tags. Missing CoC/contributor promises are removed or linked only if real.\n- [ ] Communication uses available Issues while Discussions is disabled; RF changes are routed to maintainer review and bounded newcomer work to the roadmap. Commands/links are checked and docs validation passes.\n\n## Non-goals\n\nNo enabling Discussions, inventing CODEOWNERS/maintainers or community policy, adding RF models, changing CI gates, runtime upgrades or releasing software.\n\n## Evidence / references\n\n- [docs/contributing.md:L58](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L58)\n- [docs/contributing.md:L207](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L207)\n- [docs/contributing.md:L332](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L332)\n- [docs/contributing.md:L432](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L432)\n- [README.md:L210](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/README.md#L210)\n- [AGENTS.md:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/AGENTS.md#L1)\n- [.github/workflows/quality.yml:L45](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/quality.yml#L45)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **M** (planning estimate, not a promise). Priority: **P2**.\n\ndocs/contributing.md, README.md, a root CONTRIBUTING.md and docs build mapping are the likely surfaces. This is editorial/tooling verification; do not change working production code to match stale examples. GitHub community-profile snapshot confirms the detected guide.\n"
+    },
+    {
+      "key": "issue-forms",
+      "title": "Add issue forms for reproducible planning bugs and scoped proposals",
+      "type": "chore",
+      "area": "community",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "Neither the tracked .github tree nor GitHub community profile has an issue template. A useful planning bug needs model/dataset identity, supported workflow, expected/actual result and reproducible inputs; arbitrary screenshots or private campaigns are insufficient.",
+      "scope": "Add lightweight bug and feature/research proposal forms that request the evidence appropriate to the problem, point to duplicate search and model limits, and keep private route data and credentials out of submissions.",
+      "acceptance_criteria": [
+        "Bug form captures app version, dataset/model identity, workflow/technology, minimal steps, expected/actual and relevant safe logs; setup-only bugs do not require RF data.",
+        "Proposal form asks which planning decision improves, evidence/prerequisites, bounded scope and non-goals.",
+        "Forms explicitly discourage secrets, private campaign locations and raw routes, and direct scientifically uncertain work to maintainer review.",
+        "Templates validate as GitHub issue-form YAML, use existing labels, and do not route users to disabled Discussions or require inaccessible private datasets."
+      ],
+      "non_goals": "No auto-triage bots, permission changes, forced raw measurement upload, new support service or reopening resolved security findings.",
+      "evidence": [
+        [
+          ".github/workflows/quality.yml",
+          1
+        ],
+        [
+          "docs/contributing.md",
+          7
+        ],
+        [
+          "planning/product-compass.md",
+          108
+        ],
+        [
+          "docs/modeling-limits.md",
+          131
+        ]
+      ],
+      "contributor_notes": "Create .github/ISSUE_TEMPLATE/*.yml and optionally config.yml. Cross-check supported YAML syntax and existing issue labels; no deep RF implementation knowledge is required. No workflow automation is needed.",
+      "search_terms": [
+        "issue template",
+        "issue form",
+        "bug report"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "Neither the tracked .github tree nor GitHub community profile has an issue template. A useful planning bug needs model/dataset identity, supported workflow, expected/actual result and reproducible inputs; arbitrary screenshots or private campaigns are insufficient.",
+      "decision": "create",
+      "concept": "issue-forms",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "issue-forms",
+          "query": "repo:Berk-Unsal/atom is:issue \"issue template\"",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:05.984665+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: chore",
+        "area: community",
+        "priority: P2",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nNeither the tracked .github tree nor GitHub community profile has an issue template. A useful planning bug needs model/dataset identity, supported workflow, expected/actual result and reproducible inputs; arbitrary screenshots or private campaigns are insufficient.\n\n## Scope\n\nAdd lightweight bug and feature/research proposal forms that request the evidence appropriate to the problem, point to duplicate search and model limits, and keep private route data and credentials out of submissions.\n\n## Acceptance criteria\n\n- [ ] Bug form captures app version, dataset/model identity, workflow/technology, minimal steps, expected/actual and relevant safe logs; setup-only bugs do not require RF data.\n- [ ] Proposal form asks which planning decision improves, evidence/prerequisites, bounded scope and non-goals.\n- [ ] Forms explicitly discourage secrets, private campaign locations and raw routes, and direct scientifically uncertain work to maintainer review.\n- [ ] Templates validate as GitHub issue-form YAML, use existing labels, and do not route users to disabled Discussions or require inaccessible private datasets.\n\n## Non-goals\n\nNo auto-triage bots, permission changes, forced raw measurement upload, new support service or reopening resolved security findings.\n\n## Evidence / references\n\n- [.github/workflows/quality.yml:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/quality.yml#L1)\n- [docs/contributing.md:L7](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L7)\n- [planning/product-compass.md:L108](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/planning/product-compass.md#L108)\n- [docs/modeling-limits.md:L131](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/modeling-limits.md#L131)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P2**.\n\nCreate .github/ISSUE_TEMPLATE/*.yml and optionally config.yml. Cross-check supported YAML syntax and existing issue labels; no deep RF implementation knowledge is required. No workflow automation is needed.\n"
+    },
+    {
+      "key": "pr-template",
+      "title": "Add a pull-request template with scoped validation and model boundaries",
+      "type": "chore",
+      "area": "community",
+      "priority": "P2",
+      "effort": "XS",
+      "contributor_suitability": "beginner-safe",
+      "problem": "The repository and GitHub community profile have no PR template. AGENTS.md already requires impact, validation, issue links and UI screenshots, but new contributors do not get these prompts when opening a PR.",
+      "scope": "Add a concise PR template that asks for the problem/result, linked issue, affected surfaces, exact checks run or skipped, screenshots for UI changes and relevant scientific/persistence/cap boundary changes.",
+      "acceptance_criteria": [
+        "GitHub recognizes the template and prepopulates a new PR body.",
+        "Prompts ask for concrete before/after behavior, issue reference and relevant validation commands/results, without requiring unrelated full suites for a typo.",
+        "UI changes request screenshots; RF, scope, persistence or compatibility changes request explicit boundary explanation and maintainer review.",
+        "Template matches AGENTS.md and VERSION/Unreleased policy, contains no fabricated validation checklist results and needs no CI/production change."
+      ],
+      "non_goals": "No new merge policy, automatic approvals, CODEOWNERS, branch protection changes or CI automation.",
+      "evidence": [
+        [
+          "AGENTS.md",
+          36
+        ],
+        [
+          "README.md",
+          223
+        ],
+        [
+          ".github/workflows/quality.yml",
+          1
+        ]
+      ],
+      "contributor_notes": "One file: .github/PULL_REQUEST_TEMPLATE.md. Read AGENTS.md and existing CI, then preview the Markdown and verify GitHub-recognized placement. No RF expertise or architecture prerequisite.",
+      "search_terms": [
+        "pull request template",
+        "PR template",
+        "review checklist"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "The repository and GitHub community profile have no PR template. AGENTS.md already requires impact, validation, issue links and UI screenshots, but new contributors do not get these prompts when opening a PR.",
+      "decision": "create",
+      "concept": "pr-template",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "pr-template",
+          "query": "repo:Berk-Unsal/atom is:issue \"pull request template\"",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:06.479340+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: chore",
+        "area: community",
+        "priority: P2",
+        "help wanted",
+        "good first issue"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nThe repository and GitHub community profile have no PR template. AGENTS.md already requires impact, validation, issue links and UI screenshots, but new contributors do not get these prompts when opening a PR.\n\n## Scope\n\nAdd a concise PR template that asks for the problem/result, linked issue, affected surfaces, exact checks run or skipped, screenshots for UI changes and relevant scientific/persistence/cap boundary changes.\n\n## Acceptance criteria\n\n- [ ] GitHub recognizes the template and prepopulates a new PR body.\n- [ ] Prompts ask for concrete before/after behavior, issue reference and relevant validation commands/results, without requiring unrelated full suites for a typo.\n- [ ] UI changes request screenshots; RF, scope, persistence or compatibility changes request explicit boundary explanation and maintainer review.\n- [ ] Template matches AGENTS.md and VERSION/Unreleased policy, contains no fabricated validation checklist results and needs no CI/production change.\n\n## Non-goals\n\nNo new merge policy, automatic approvals, CODEOWNERS, branch protection changes or CI automation.\n\n## Evidence / references\n\n- [AGENTS.md:L36](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/AGENTS.md#L36)\n- [README.md:L223](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/README.md#L223)\n- [.github/workflows/quality.yml:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/quality.yml#L1)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **beginner-safe**. Rough effort: **XS** (planning estimate, not a promise). Priority: **P2**.\n\nOne file: .github/PULL_REQUEST_TEMPLATE.md. Read AGENTS.md and existing CI, then preview the Markdown and verify GitHub-recognized placement. No RF expertise or architecture prerequisite.\n"
+    },
+    {
+      "key": "api-readiness-schemas",
+      "title": "Define response schemas for readiness and batch-process discovery",
+      "type": "enhancement",
+      "area": "api",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "OpenAPI 3.1 is now strictly valid, but /readyz 200/503 and /api/processes/batch-experiment 200 declare descriptions only. Strict schema validity cannot validate these actual JSON bodies or provide typed integration contracts.",
+      "scope": "Describe the existing readiness and batch-process discovery response bodies in OpenAPI and add response-contract fixtures using the existing handlers. Keep this bounded to the two operational discovery endpoints.",
+      "acceptance_criteria": [
+        "/readyz success and failure schemas match status/buildings/towers/frontend/dataset_error, preserving sanitized dependency errors.",
+        "Batch-process discovery schema describes id, version, job_control_options, dimensions and max_runs exactly as returned today.",
+        "Contract tests accept real handler outputs and reject missing/wrong-type required values; strict OpenAPI and local reference validation still pass.",
+        "No response/status behavior, RF budget or experiment limits change, and these schemas do not imply a new RF evidence class."
+      ],
+      "non_goals": "No repeat repair of the five resolved malformed Response Objects, new endpoint, entire Core Lab schema expansion, RF equation or runtime behavior changes.",
+      "evidence": [
+        [
+          "docs/openapi.yaml",
+          14
+        ],
+        [
+          "docs/openapi.yaml",
+          506
+        ],
+        [
+          "backend-go/main.go",
+          630
+        ],
+        [
+          "backend-go/experiment_jobs.go",
+          431
+        ],
+        [
+          "docs/v0.12.1-claim-reconciliation.md",
+          85
+        ]
+      ],
+      "contributor_notes": "Use docs/openapi.yaml, docs/validate_openapi_test.py, readiness tests in backend-go/interference_route_test.go and experiment_jobs_test.go. Follow existing schema-test conventions; no deep RF expertise is required.",
+      "search_terms": [
+        "OpenAPI",
+        "readiness",
+        "process discovery",
+        "schema"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "OpenAPI 3.1 is now strictly valid, but /readyz 200/503 and /api/processes/batch-experiment 200 declare descriptions only. Strict schema validity cannot validate these actual JSON bodies or provide typed integration contracts.",
+      "decision": "create",
+      "concept": "api-readiness-schemas",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 10,
+            "title": "[Severity 5] Stop exposing Core Lab response bodies and internal paths",
+            "state": "closed"
+          },
+          {
+            "number": 23,
+            "title": "[Severity 3] Avoid leaking JSON parser and dataset diagnostics",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "api-readiness-schemas",
+          "query": "repo:Berk-Unsal/atom is:issue OpenAPI",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:06.945683+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: enhancement",
+        "area: api",
+        "area: backend",
+        "priority: P2",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nOpenAPI 3.1 is now strictly valid, but /readyz 200/503 and /api/processes/batch-experiment 200 declare descriptions only. Strict schema validity cannot validate these actual JSON bodies or provide typed integration contracts.\n\n## Scope\n\nDescribe the existing readiness and batch-process discovery response bodies in OpenAPI and add response-contract fixtures using the existing handlers. Keep this bounded to the two operational discovery endpoints.\n\n## Acceptance criteria\n\n- [ ] /readyz success and failure schemas match status/buildings/towers/frontend/dataset_error, preserving sanitized dependency errors.\n- [ ] Batch-process discovery schema describes id, version, job_control_options, dimensions and max_runs exactly as returned today.\n- [ ] Contract tests accept real handler outputs and reject missing/wrong-type required values; strict OpenAPI and local reference validation still pass.\n- [ ] No response/status behavior, RF budget or experiment limits change, and these schemas do not imply a new RF evidence class.\n\n## Non-goals\n\nNo repeat repair of the five resolved malformed Response Objects, new endpoint, entire Core Lab schema expansion, RF equation or runtime behavior changes.\n\n## Evidence / references\n\n- [docs/openapi.yaml:L14](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/openapi.yaml#L14)\n- [docs/openapi.yaml:L506](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/openapi.yaml#L506)\n- [backend-go/main.go:L630](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/main.go#L630)\n- [backend-go/experiment_jobs.go:L431](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/experiment_jobs.go#L431)\n- [docs/v0.12.1-claim-reconciliation.md:L85](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/v0.12.1-claim-reconciliation.md#L85)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P2**.\n\nUse docs/openapi.yaml, docs/validate_openapi_test.py, readiness tests in backend-go/interference_route_test.go and experiment_jobs_test.go. Follow existing schema-test conventions; no deep RF expertise is required.\n"
+    },
+    {
+      "key": "roadmap-doc-freshness",
+      "title": "Reconcile maintained roadmap status and unsupported API release promises",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P3",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "problem": "planning/future_plans.md still calls tagged images, browser coverage and an additional pack release-completion work despite current release workflow/E2E/sample-pack evidence. docs/api.md says future versions will add webhooks and other capabilities without an admitted objective or milestone.",
+      "scope": "Reconcile maintained roadmap rows with the released source and this evidence-backed issue backlog. Replace unconditional API future promises with supported current behavior or clearly gated candidates. Preserve dated historical research and qualification reports.",
+      "acceptance_criteria": [
+        "Each maintained roadmap row is marked implemented, partial, blocked or deferred with current source/issue evidence; existing sample-pack and release/E2E work is not recreated.",
+        "Measurement reference-set text distinguishes synthetic/tooling fixtures from a usable real field-validation dataset.",
+        "API documentation makes no uncommitted webhook, terrain, custom-model or release promise; API contract version is kept distinct from application VERSION.",
+        "Current docs build/classification/link checks pass and historical artifacts are unchanged."
+      ],
+      "non_goals": "No v0.13.0 milestone or release commitment, qualification reopening, new APIs, new field measurements or implementation of listed ideas.",
+      "evidence": [
+        [
+          "planning/future_plans.md",
+          21
+        ],
+        [
+          "docs/api.md",
+          1285
+        ],
+        [
+          "backend-go/raytracer/testdata/sample-pack/manifest.json",
+          1
+        ],
+        [
+          ".github/workflows/release.yml",
+          1
+        ],
+        [
+          "frontend-react/playwright.config.js",
+          1
+        ]
+      ],
+      "contributor_notes": "Edit only current planning/future_plans.md and docs/api.md plus regenerated current docs as needed. Verify completion evidence rather than marking all broad rows complete. Maintainer reviews roadmap wording; no RF math changes.",
+      "search_terms": [
+        "roadmap",
+        "future",
+        "release",
+        "webhook"
+      ],
+      "dependencies": [],
+      "blocked_reason": null,
+      "related_closed": [],
+      "rationale": "planning/future_plans.md still calls tagged images, browser coverage and an additional pack release-completion work despite current release workflow/E2E/sample-pack evidence. docs/api.md says future versions will add webhooks and other capabilities without an admitted objective or milestone.",
+      "decision": "create",
+      "concept": "roadmap-doc-freshness",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 6,
+            "title": "[Severity 8] Replace unsupported Go 1.22 and Node 18 build lines",
+            "state": "closed"
+          },
+          {
+            "number": 13,
+            "title": "[Severity 6] Run the Core Lab adapter as non-root and limit exposure",
+            "state": "closed"
+          },
+          {
+            "number": 12,
+            "title": "[Severity 7] Pin privileged GitHub Actions to immutable revisions",
+            "state": "closed"
+          },
+          {
+            "number": 32,
+            "title": "[Severity 4] Remove RF wrappers that silently discard errors",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "roadmap-doc-freshness",
+          "query": "repo:Berk-Unsal/atom is:issue roadmap",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:07.524267+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P3",
+        "help wanted"
+      ],
+      "project_status": "Ready",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nplanning/future_plans.md still calls tagged images, browser coverage and an additional pack release-completion work despite current release workflow/E2E/sample-pack evidence. docs/api.md says future versions will add webhooks and other capabilities without an admitted objective or milestone.\n\n## Scope\n\nReconcile maintained roadmap rows with the released source and this evidence-backed issue backlog. Replace unconditional API future promises with supported current behavior or clearly gated candidates. Preserve dated historical research and qualification reports.\n\n## Acceptance criteria\n\n- [ ] Each maintained roadmap row is marked implemented, partial, blocked or deferred with current source/issue evidence; existing sample-pack and release/E2E work is not recreated.\n- [ ] Measurement reference-set text distinguishes synthetic/tooling fixtures from a usable real field-validation dataset.\n- [ ] API documentation makes no uncommitted webhook, terrain, custom-model or release promise; API contract version is kept distinct from application VERSION.\n- [ ] Current docs build/classification/link checks pass and historical artifacts are unchanged.\n\n## Non-goals\n\nNo v0.13.0 milestone or release commitment, qualification reopening, new APIs, new field measurements or implementation of listed ideas.\n\n## Evidence / references\n\n- [planning/future_plans.md:L21](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/planning/future_plans.md#L21)\n- [docs/api.md:L1285](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/api.md#L1285)\n- [backend-go/raytracer/testdata/sample-pack/manifest.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/testdata/sample-pack/manifest.json#L1)\n- [.github/workflows/release.yml:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/release.yml#L1)\n- [frontend-react/playwright.config.js:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/playwright.config.js#L1)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P3**.\n\nEdit only current planning/future_plans.md and docs/api.md plus regenerated current docs as needed. Verify completion evidence rather than marking all broad rows complete. Maintainer reviews roadmap wording; no RF math changes.\n"
+    },
+    {
+      "key": "serving-semantics",
+      "title": "Resolve serving-cell semantics required for canonical field validation",
+      "type": "research",
+      "area": "validation",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "research-heavy",
+      "problem": "The retained pilot parsed 53,005 rows but promoted zero canonical observations. All 83 registered candidates also say CONNECTION_NONE. Matching serving-change events do not settle that conflict; the latest semantics audit explicitly remains unresolved.",
+      "scope": "Scientific question: which version-specific collector/device evidence can establish an authoritative serving identity when recorded fields conflict? Record the collector build/device scope, authoritative clarification and a deterministic decision table, or a documented no-go. Known evidence is the sanitized conflict/transition audit; missing evidence is source authority and build-specific behavior.",
+      "acceptance_criteria": [
+        "An authoritative version/device-scoped explanation reconciles registered, connection status and event identity/derivation, including contradictory PS identity evidence; otherwise record why the source remains unusable and what new capture evidence would be necessary.",
+        "A reviewed evidence matrix specifies accepted/rejected/ambiguous cases without strongest-signal, proximity or model-output inference.",
+        "Any later proposed adapter behavior requires separate scoped implementation review with sanitized positive/negative fixtures; this research issue does not silently weaken current guards.",
+        "The decision and provenance are public-safe, and canonical observation/calibration readiness stays false until all independent gates pass."
+      ],
+      "non_goals": "No vendor contact is authorized by this issue creation; no parser fallback, private routes, new field campaign, canonical residuals, calibration or RF changes in this audit.",
+      "evidence": [
+        [
+          "docs/concept-6a1-readiness.json",
+          1
+        ],
+        [
+          "docs/concept-6a1-2-serving-state-semantics.md",
+          1
+        ],
+        [
+          "docs/concept-6a1-2-vendor-questions.md",
+          1
+        ],
+        [
+          "backend-go/raytracer/concept_6a1_campaign_tooling_test.go",
+          340
+        ]
+      ],
+      "contributor_notes": "Maintainer-owned research requiring collector/Android source understanding and external evidence. Use sanitized existing artifacts; do not publish raw recordings, Cell IDs or campaign locations. Prepared questions already exist; do not merely rewrite them as completion.",
+      "search_terms": [
+        "serving",
+        "canonical",
+        "measurement",
+        "collector"
+      ],
+      "dependencies": [],
+      "blocked_reason": "External version-specific collector/device source clarification is missing.",
+      "related_closed": [],
+      "rationale": "The retained pilot parsed 53,005 rows but promoted zero canonical observations. All 83 registered candidates also say CONNECTION_NONE. Matching serving-change events do not settle that conflict; the latest semantics audit explicitly remains unresolved.",
+      "decision": "create",
+      "concept": "serving-semantics",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 3,
+            "title": "[Severity 10] Prevent multi-gigabyte JSON amplification from tower IDs",
+            "state": "closed"
+          },
+          {
+            "number": 14,
+            "title": "[Severity 5] Define HTTP security headers and transport boundary",
+            "state": "closed"
+          },
+          {
+            "number": 28,
+            "title": "[Severity 6] Consolidate duplicated RF and scenario rules",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "serving-semantics",
+          "query": "repo:Berk-Unsal/atom is:issue serving",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:08.157845+00:00",
+          "total_count": 2,
+          "matches": [
+            {
+              "number": 3,
+              "title": "[Severity 10] Prevent multi-gigabyte JSON amplification from tower IDs",
+              "state": "closed",
+              "html_url": "https://github.com/Berk-Unsal/atom/issues/3"
+            },
+            {
+              "number": 14,
+              "title": "[Severity 5] Define HTTP security headers and transport boundary",
+              "state": "closed",
+              "html_url": "https://github.com/Berk-Unsal/atom/issues/14"
+            }
+          ]
+        }
+      },
+      "labels": [
+        "type: research",
+        "area: validation",
+        "priority: P1",
+        "blocked"
+      ],
+      "project_status": "Blocked",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nThe retained pilot parsed 53,005 rows but promoted zero canonical observations. All 83 registered candidates also say CONNECTION_NONE. Matching serving-change events do not settle that conflict; the latest semantics audit explicitly remains unresolved.\n\n## Scope\n\nScientific question: which version-specific collector/device evidence can establish an authoritative serving identity when recorded fields conflict? Record the collector build/device scope, authoritative clarification and a deterministic decision table, or a documented no-go. Known evidence is the sanitized conflict/transition audit; missing evidence is source authority and build-specific behavior.\n\n## Acceptance criteria\n\n- [ ] An authoritative version/device-scoped explanation reconciles registered, connection status and event identity/derivation, including contradictory PS identity evidence; otherwise record why the source remains unusable and what new capture evidence would be necessary.\n- [ ] A reviewed evidence matrix specifies accepted/rejected/ambiguous cases without strongest-signal, proximity or model-output inference.\n- [ ] Any later proposed adapter behavior requires separate scoped implementation review with sanitized positive/negative fixtures; this research issue does not silently weaken current guards.\n- [ ] The decision and provenance are public-safe, and canonical observation/calibration readiness stays false until all independent gates pass.\n\n## Non-goals\n\nNo vendor contact is authorized by this issue creation; no parser fallback, private routes, new field campaign, canonical residuals, calibration or RF changes in this audit.\n\n## Evidence / references\n\n- [docs/concept-6a1-readiness.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-readiness.json#L1)\n- [docs/concept-6a1-2-serving-state-semantics.md:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-2-serving-state-semantics.md#L1)\n- [docs/concept-6a1-2-vendor-questions.md:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-2-vendor-questions.md#L1)\n- [backend-go/raytracer/concept_6a1_campaign_tooling_test.go:L340](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/concept_6a1_campaign_tooling_test.go#L340)\n\n## Dependencies\n\nNone in this backlog.\n\nExternal/evidence blocker: External version-specific collector/device source clarification is missing.\n\n## Contributor notes\n\nSuitability: **research-heavy**. Rough effort: **RESEARCH** (planning estimate, not a promise). Priority: **P1**.\n\nMaintainer-owned research requiring collector/Android source understanding and external evidence. Use sanitized existing artifacts; do not publish raw recordings, Cell IDs or campaign locations. Prepared questions already exist; do not merely rewrite them as completion.\n"
+    },
+    {
+      "key": "transmitter-truth",
+      "title": "Establish authoritative transmitter mapping and RF truth for field validation",
+      "type": "research",
+      "area": "rf-science",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "research-heavy",
+      "problem": "The pilot has zero exact mappings to the planning pack. OpenCellID-derived points and configured RF defaults do not establish the actual sector, position, conducted power/reference plane, height, orientation or antenna response.",
+      "scope": "Scientific question: can a permitted reference transmitter or operator-provided source support exact identity mapping and an auditable RF link budget? Obtain or assess an authoritative evidence package with field-level provenance and uncertainty. Known evidence is the transmitter-reconciliation/truth audit; all source-specific TX parameters are currently missing.",
+      "acceptance_criteria": [
+        "The source has explicit usage/privacy rights and exact PLMN plus Cell/sector mapping; nearest-tower or strongest-signal matching is never substituted.",
+        "Position, antenna height/azimuth/tilt, conducted TX power and reference plane, gain/pattern, system/polarization assumptions, frequency and channel are each known with provenance or explicitly block validation.",
+        "A sanitized mapping/field-completeness decision is reviewed against the existing transmitter-map contract and rejects ambiguous identities.",
+        "No public issue contains precise private sites/raw routes or confidential operator data; missing truth produces a recorded no-go rather than guessed defaults."
+      ],
+      "non_goals": "No general operator inventory product, proximity mapper, vendor-pattern importer, guessed TX values, RF extension, campaign collection or calibration promotion.",
+      "evidence": [
+        [
+          "docs/concept-6a1-1-real-pilot-ingestion.md",
+          78
+        ],
+        [
+          "docs/concept-6a1-1-transmitter-truth.json",
+          1
+        ],
+        [
+          "docs/concept-6a1-1-transmitter-reconciliation.json",
+          1
+        ],
+        [
+          "backend-go/raytracer/concept_6a1_campaign_tooling.go",
+          452
+        ]
+      ],
+      "contributor_notes": "Maintainer-owned scientific/data-provenance work. Source access is an external prerequisite; existing transmitter-map validation supplies the deterministic contract. Coordinate with serving-semantics for final observation binding, but source acquisition can be assessed independently.",
+      "search_terms": [
+        "transmitter",
+        "mapping",
+        "operator",
+        "truth"
+      ],
+      "dependencies": [],
+      "blocked_reason": "Authoritative identity and transmitter RF/source evidence is unavailable.",
+      "related_closed": [],
+      "rationale": "The pilot has zero exact mappings to the planning pack. OpenCellID-derived points and configured RF defaults do not establish the actual sector, position, conducted power/reference plane, height, orientation or antenna response.",
+      "decision": "create",
+      "concept": "transmitter-truth",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "transmitter-truth",
+          "query": "repo:Berk-Unsal/atom is:issue transmitter",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:08.709967+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: research",
+        "area: rf-science",
+        "priority: P1",
+        "blocked"
+      ],
+      "project_status": "Blocked",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nThe pilot has zero exact mappings to the planning pack. OpenCellID-derived points and configured RF defaults do not establish the actual sector, position, conducted power/reference plane, height, orientation or antenna response.\n\n## Scope\n\nScientific question: can a permitted reference transmitter or operator-provided source support exact identity mapping and an auditable RF link budget? Obtain or assess an authoritative evidence package with field-level provenance and uncertainty. Known evidence is the transmitter-reconciliation/truth audit; all source-specific TX parameters are currently missing.\n\n## Acceptance criteria\n\n- [ ] The source has explicit usage/privacy rights and exact PLMN plus Cell/sector mapping; nearest-tower or strongest-signal matching is never substituted.\n- [ ] Position, antenna height/azimuth/tilt, conducted TX power and reference plane, gain/pattern, system/polarization assumptions, frequency and channel are each known with provenance or explicitly block validation.\n- [ ] A sanitized mapping/field-completeness decision is reviewed against the existing transmitter-map contract and rejects ambiguous identities.\n- [ ] No public issue contains precise private sites/raw routes or confidential operator data; missing truth produces a recorded no-go rather than guessed defaults.\n\n## Non-goals\n\nNo general operator inventory product, proximity mapper, vendor-pattern importer, guessed TX values, RF extension, campaign collection or calibration promotion.\n\n## Evidence / references\n\n- [docs/concept-6a1-1-real-pilot-ingestion.md:L78](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-1-real-pilot-ingestion.md#L78)\n- [docs/concept-6a1-1-transmitter-truth.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-1-transmitter-truth.json#L1)\n- [docs/concept-6a1-1-transmitter-reconciliation.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-1-transmitter-reconciliation.json#L1)\n- [backend-go/raytracer/concept_6a1_campaign_tooling.go:L452](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/concept_6a1_campaign_tooling.go#L452)\n\n## Dependencies\n\nNone in this backlog.\n\nExternal/evidence blocker: Authoritative identity and transmitter RF/source evidence is unavailable.\n\n## Contributor notes\n\nSuitability: **research-heavy**. Rough effort: **RESEARCH** (planning estimate, not a promise). Priority: **P1**.\n\nMaintainer-owned scientific/data-provenance work. Source access is an external prerequisite; existing transmitter-map validation supplies the deterministic contract. Coordinate with serving-semantics for final observation binding, but source acquisition can be assessed independently.\n"
+    },
+    {
+      "key": "resource-truth",
+      "title": "Establish observation-bound bandwidth and measurement-resource truth",
+      "type": "research",
+      "area": "validation",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "research-heavy",
+      "problem": "Pilot B7 rows have unavailable CellInfo bandwidth; ServiceState vectors cannot be assigned exactly to a candidate identity. RSRP cannot be relabeled as carrier power, and RSRQ/SINR/RSSI additionally lack a defensible resource/interferer context.",
+      "scope": "Scientific question: which observed quantity/reference plane and identity/time-bound resource evidence permits a like-for-like comparison? Establish provenance for bandwidth, reference-signal/resource definition, frequency and neighbor/load context per intended KPI, or explicitly exclude unsupported quantities.",
+      "acceptance_criteria": [
+        "Every accepted quantity has a documented measurement definition/reference plane, units, identity/time binding and uncertainty; unavailable sentinels remain missing.",
+        "Bandwidth is independently assignable to the exact observation; channel/subscription proximity or configured planning defaults do not fill missing truth.",
+        "The 2.665 versus canonical 2.600 GHz mismatch is resolved through a compatible evidence source or explicit no-go, without widening the frozen profile tolerance.",
+        "RSRP, carrier power, RSRQ, SINR and RSSI eligibility is assessed separately; missing denominator/neighbor truth explicitly blocks affected KPIs.",
+        "Publish only sanitized quantity-readiness decisions and reviewable positive/negative assignment examples."
+      ],
+      "non_goals": "No invented bandwidth, signal-quantity conversion, new carrier model, canonical tolerance change, extra KPI accuracy claim or calibration.",
+      "evidence": [
+        [
+          "docs/concept-6a1-1-bandwidth-audit.json",
+          1
+        ],
+        [
+          "docs/concept-6a1-1-applicability.json",
+          1
+        ],
+        [
+          "docs/concept-6a1-readiness.json",
+          1
+        ],
+        [
+          "backend-go/raytracer/concept_6a1_campaign_tooling.go",
+          1054
+        ]
+      ],
+      "contributor_notes": "Research-heavy measurement/RF semantics; not beginner work. Reuse current quantity-readiness and explicit resource ledgers. Serving and TX tasks establish final observation identity, while evidence-source assessment can proceed independently.",
+      "search_terms": [
+        "bandwidth",
+        "resource",
+        "RSRP",
+        "measurement"
+      ],
+      "dependencies": [],
+      "blocked_reason": "Observation-bound bandwidth/resource/quantity evidence is missing; identity remains unresolved.",
+      "related_closed": [],
+      "rationale": "Pilot B7 rows have unavailable CellInfo bandwidth; ServiceState vectors cannot be assigned exactly to a candidate identity. RSRP cannot be relabeled as carrier power, and RSRQ/SINR/RSSI additionally lack a defensible resource/interferer context.",
+      "decision": "create",
+      "concept": "resource-truth",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 2,
+            "title": "[Severity 8] Bound /api/simulate response amplification",
+            "state": "closed"
+          },
+          {
+            "number": 3,
+            "title": "[Severity 10] Prevent multi-gigabyte JSON amplification from tower IDs",
+            "state": "closed"
+          },
+          {
+            "number": 7,
+            "title": "[Severity 7] Avoid uncached public delivery of the 116 MB building dataset",
+            "state": "closed"
+          },
+          {
+            "number": 28,
+            "title": "[Severity 6] Consolidate duplicated RF and scenario rules",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "resource-truth",
+          "query": "repo:Berk-Unsal/atom is:issue bandwidth",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:09.245933+00:00",
+          "total_count": 2,
+          "matches": [
+            {
+              "number": 7,
+              "title": "[Severity 7] Avoid uncached public delivery of the 116 MB building dataset",
+              "state": "closed",
+              "html_url": "https://github.com/Berk-Unsal/atom/issues/7"
+            },
+            {
+              "number": 2,
+              "title": "[Severity 8] Bound /api/simulate response amplification",
+              "state": "closed",
+              "html_url": "https://github.com/Berk-Unsal/atom/issues/2"
+            }
+          ]
+        }
+      },
+      "labels": [
+        "type: research",
+        "area: validation",
+        "priority: P1",
+        "blocked"
+      ],
+      "project_status": "Blocked",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nPilot B7 rows have unavailable CellInfo bandwidth; ServiceState vectors cannot be assigned exactly to a candidate identity. RSRP cannot be relabeled as carrier power, and RSRQ/SINR/RSSI additionally lack a defensible resource/interferer context.\n\n## Scope\n\nScientific question: which observed quantity/reference plane and identity/time-bound resource evidence permits a like-for-like comparison? Establish provenance for bandwidth, reference-signal/resource definition, frequency and neighbor/load context per intended KPI, or explicitly exclude unsupported quantities.\n\n## Acceptance criteria\n\n- [ ] Every accepted quantity has a documented measurement definition/reference plane, units, identity/time binding and uncertainty; unavailable sentinels remain missing.\n- [ ] Bandwidth is independently assignable to the exact observation; channel/subscription proximity or configured planning defaults do not fill missing truth.\n- [ ] The 2.665 versus canonical 2.600 GHz mismatch is resolved through a compatible evidence source or explicit no-go, without widening the frozen profile tolerance.\n- [ ] RSRP, carrier power, RSRQ, SINR and RSSI eligibility is assessed separately; missing denominator/neighbor truth explicitly blocks affected KPIs.\n- [ ] Publish only sanitized quantity-readiness decisions and reviewable positive/negative assignment examples.\n\n## Non-goals\n\nNo invented bandwidth, signal-quantity conversion, new carrier model, canonical tolerance change, extra KPI accuracy claim or calibration.\n\n## Evidence / references\n\n- [docs/concept-6a1-1-bandwidth-audit.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-1-bandwidth-audit.json#L1)\n- [docs/concept-6a1-1-applicability.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-1-applicability.json#L1)\n- [docs/concept-6a1-readiness.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-readiness.json#L1)\n- [backend-go/raytracer/concept_6a1_campaign_tooling.go:L1054](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/concept_6a1_campaign_tooling.go#L1054)\n\n## Dependencies\n\nNone in this backlog.\n\nExternal/evidence blocker: Observation-bound bandwidth/resource/quantity evidence is missing; identity remains unresolved.\n\n## Contributor notes\n\nSuitability: **research-heavy**. Rough effort: **RESEARCH** (planning estimate, not a promise). Priority: **P1**.\n\nResearch-heavy measurement/RF semantics; not beginner work. Reuse current quantity-readiness and explicit resource ledgers. Serving and TX tasks establish final observation identity, while evidence-source assessment can proceed independently.\n"
+    },
+    {
+      "key": "field-validation",
+      "title": "Track evidence gates for canonical real-world RF validation",
+      "type": "research",
+      "area": "validation",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "maintainer-owned",
+      "problem": "Measurement tooling and synthetic fixtures exist, but current canonical real-pilot observations are zero and measured accuracy remains unestablished. Three independent evidence-source blockers need coordinated closure; more raw rows alone will not establish accuracy.",
+      "scope": "Track the serving, transmitter and resource prerequisites plus the remaining compatible reference dataset, receiver characterization/AGL provenance, independent outdoor/LOS labels and declared-scope holdout evaluation. Scientific question: what uncalibrated held-out error can the released canonical model support under a fully evidenced scope? Known evidence is the retained readiness ledger and existing validation tooling; a qualifying reference set and endpoint truth are missing.",
+      "acceptance_criteria": [
+        "Linked serving, transmitter and resource issues reach evidence-backed decisions; no-go decisions remain blockers rather than counting as successful validation.",
+        "A licensed/public-safe compatible-frequency reference set has trustworthy serving identity, authoritative TX truth, receiver height/response provenance and independent outdoor/LOS annotations, with exclusions/counts retained.",
+        "The study predeclares quantity, dataset/model identity, scope, spatial/site/campaign holdouts, uncertainty and handling of repeated/autocorrelated samples before examining residual improvements.",
+        "Only after all gates pass, uncalibrated held-out residuals, subgroup counts, limitations and reproducible sanitized fixtures/report are published; no threshold/MAE target is invented from current missing evidence.",
+        "Calibration remains a separate later study using independent holdouts; artifact hashes and synthetic tests are not presented as physical accuracy."
+      ],
+      "non_goals": "No campaign scheduling or collection authorized by this audit, no forced salvage of the current pilot, no calibration implementation, 140 GHz promotion, new model or commercial-accuracy claim.",
+      "evidence": [
+        [
+          "docs/concept-6a1-readiness.json",
+          1
+        ],
+        [
+          "docs/concept-6a1-1-applicability.json",
+          1
+        ],
+        [
+          "docs/concept-6a-canonical-rf-validation.md",
+          1
+        ],
+        [
+          "backend-go/raytracer/canonical_rf_validation.go",
+          1
+        ],
+        [
+          "backend-go/raytracer/canonical_rf_validation_holdout.go",
+          1
+        ]
+      ],
+      "contributor_notes": "One tracking issue is justified by the independent evidence prerequisites; it owns final study readiness and receiver/LOS/reference-set evidence, not duplicate prerequisite research. Maintainer/RF review required. No raw private route data in GitHub.",
+      "search_terms": [
+        "field validation",
+        "canonical",
+        "accuracy",
+        "measurement"
+      ],
+      "dependencies": [
+        "serving-semantics",
+        "transmitter-truth",
+        "resource-truth"
+      ],
+      "blocked_reason": "Depends on three evidence prerequisites and external receiver/outdoor/LOS compatible reference-set evidence.",
+      "related_closed": [],
+      "rationale": "Measurement tooling and synthetic fixtures exist, but current canonical real-pilot observations are zero and measured accuracy remains unestablished. Three independent evidence-source blockers need coordinated closure; more raw rows alone will not establish accuracy.",
+      "decision": "create",
+      "concept": "field-validation",
+      "existing_duplicate_search": {
+        "coverage": "All open AND closed issues, fully paginated REST baseline; PRs excluded.",
+        "issues_reviewed": 32,
+        "keyword_matches": [
+          {
+            "number": 3,
+            "title": "[Severity 10] Prevent multi-gigabyte JSON amplification from tower IDs",
+            "state": "closed"
+          },
+          {
+            "number": 28,
+            "title": "[Severity 6] Consolidate duplicated RF and scenario rules",
+            "state": "closed"
+          }
+        ],
+        "related_closed_reviewed": [],
+        "duplicate_found": false,
+        "adjudication": "No existing issue represents this coherent problem; all matched historical findings are resolved, different in scope or general keyword overlap.",
+        "live_search": {
+          "key": "field-validation",
+          "query": "repo:Berk-Unsal/atom is:issue \"field validation\"",
+          "state_filter": "none: includes open and closed",
+          "captured_at": "2026-10-15T12:34:09.759262+00:00",
+          "total_count": 0,
+          "matches": []
+        }
+      },
+      "labels": [
+        "type: research",
+        "area: validation",
+        "priority: P1",
+        "blocked"
+      ],
+      "project_status": "Blocked",
+      "body_template": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nMeasurement tooling and synthetic fixtures exist, but current canonical real-pilot observations are zero and measured accuracy remains unestablished. Three independent evidence-source blockers need coordinated closure; more raw rows alone will not establish accuracy.\n\n## Scope\n\nTrack the serving, transmitter and resource prerequisites plus the remaining compatible reference dataset, receiver characterization/AGL provenance, independent outdoor/LOS labels and declared-scope holdout evaluation. Scientific question: what uncalibrated held-out error can the released canonical model support under a fully evidenced scope? Known evidence is the retained readiness ledger and existing validation tooling; a qualifying reference set and endpoint truth are missing.\n\n## Acceptance criteria\n\n- [ ] Linked serving, transmitter and resource issues reach evidence-backed decisions; no-go decisions remain blockers rather than counting as successful validation.\n- [ ] A licensed/public-safe compatible-frequency reference set has trustworthy serving identity, authoritative TX truth, receiver height/response provenance and independent outdoor/LOS annotations, with exclusions/counts retained.\n- [ ] The study predeclares quantity, dataset/model identity, scope, spatial/site/campaign holdouts, uncertainty and handling of repeated/autocorrelated samples before examining residual improvements.\n- [ ] Only after all gates pass, uncalibrated held-out residuals, subgroup counts, limitations and reproducible sanitized fixtures/report are published; no threshold/MAE target is invented from current missing evidence.\n- [ ] Calibration remains a separate later study using independent holdouts; artifact hashes and synthetic tests are not presented as physical accuracy.\n\n## Non-goals\n\nNo campaign scheduling or collection authorized by this audit, no forced salvage of the current pilot, no calibration implementation, 140 GHz promotion, new model or commercial-accuracy claim.\n\n## Evidence / references\n\n- [docs/concept-6a1-readiness.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-readiness.json#L1)\n- [docs/concept-6a1-1-applicability.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a1-1-applicability.json#L1)\n- [docs/concept-6a-canonical-rf-validation.md:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/concept-6a-canonical-rf-validation.md#L1)\n- [backend-go/raytracer/canonical_rf_validation.go:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/canonical_rf_validation.go#L1)\n- [backend-go/raytracer/canonical_rf_validation_holdout.go:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/canonical_rf_validation_holdout.go#L1)\n\n## Dependencies\n\n- {{issue:serving-semantics}}\n- {{issue:transmitter-truth}}\n- {{issue:resource-truth}}\n\nExternal/evidence blocker: Depends on three evidence prerequisites and external receiver/outdoor/LOS compatible reference-set evidence.\n\n## Contributor notes\n\nSuitability: **maintainer-owned**. Rough effort: **RESEARCH** (planning estimate, not a promise). Priority: **P1**.\n\nOne tracking issue is justified by the independent evidence prerequisites; it owns final study readiness and receiver/LOS/reference-set evidence, not duplicate prerequisite research. Maintainer/RF review required. No raw private route data in GitHub.\n"
+    }
+  ],
+  "dependency_graph": {
+    "score-interpretation": [],
+    "export-recovery": [],
+    "worked-example": [],
+    "matched-heroes": [],
+    "cell-glossary": [],
+    "report-reader-guide": [],
+    "contributor-guide": [],
+    "issue-forms": [],
+    "pr-template": [],
+    "api-readiness-schemas": [],
+    "roadmap-doc-freshness": [],
+    "serving-semantics": [],
+    "transmitter-truth": [],
+    "resource-truth": [],
+    "field-validation": [
+      "serving-semantics",
+      "transmitter-truth",
+      "resource-truth"
+    ]
+  },
+  "tracking_issues": [
+    "field-validation"
+  ],
+  "duplicate_proposals_rejected": [
+    {
+      "proposal": "Repair strict OpenAPI 3.1 validation",
+      "reason": "Resolved by v0.12.2; new operational schemas are a distinct completeness task."
+    },
+    {
+      "proposal": "Add Measurement6 UI guard",
+      "reason": "measurementScope.js and App workflow tests already enforce it."
+    },
+    {
+      "proposal": "Translate Retry-After into wait guidance",
+      "reason": "rfRecoveryMessage.js and regressions already implement it."
+    },
+    {
+      "proposal": "Explain draft/Version/Run/project retention",
+      "reason": "Current ProjectMenu/README/project-format already explain the distinctions; only guard recovery remains."
+    },
+    {
+      "proposal": "Fix dual-store ordering/import limits/report escaping/image deduplication",
+      "reason": "Closed #26/#17/#31/#30 respectively; the proposed docs/recovery work does not reopen these defects."
+    },
+    {
+      "proposal": "Repeat 8-Cell/W1 budget or optimization performance repair",
+      "reason": "Completed and scoped in preserved evidence; no changed evidence justifies reopening."
+    },
+    {
+      "proposal": "Add sample dataset pack/release workflow/basic first-decision narrative",
+      "reason": "Already present in testdata/sample-pack, release.yml and README/getting-started; only freshness and executable walkthrough remain."
+    }
+  ],
+  "validation": {
+    "status": "approved",
+    "validated_at": "2026-10-15T12:34:23.700460+00:00",
+    "github_mutation_started": false,
+    "issue_count": 15,
+    "new_issue_ceiling": 24,
+    "unique_titles_and_concepts": true,
+    "dependency_graph_acyclic": true,
+    "all_references_resolve_in_locked_source": true,
+    "issue_format_and_public_data_scan": "pass",
+    "resolved_work_excluded": true,
+    "speculative_scope_excluded": true,
+    "manual_concept_reviews": [
+      "score help vs executable walkthrough: decision-surface explanation vs reproducible inputs/journey",
+      "worked example vs report reader guide: operating a plan vs consuming a retained artifact",
+      "export recovery vs existing #17/#26: actionable guard guidance vs bounded parsing/storage ordering",
+      "matched heroes vs #30: current state parity vs duplicate asset storage",
+      "report guide vs #31: consumer help vs escaping/formatting implementation",
+      "contribution entry vs issue forms vs PR template: development instructions vs intake vs review handoff",
+      "schema completeness vs strict-validator repair: new response body contracts vs resolved syntax errors",
+      "roadmap freshness vs contribution guide: public planning promises vs contributor workflow instructions",
+      "three scientific prerequisites are independent evidence contracts; one tracker owns final reference set/Rx/LOS/held-out evaluation"
+    ]
+  }
+}

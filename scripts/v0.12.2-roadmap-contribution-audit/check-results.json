@@ -1,0 +1,77 @@
+[
+  {
+    "name": "docs-validation",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "exit_code": 0,
+    "scope": "Existing source/contract, not new field/operational qualification",
+    "log": "docs-validation.log"
+  },
+  {
+    "name": "openapi-validation",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/validate_openapi.py"
+    ],
+    "exit_code": 0,
+    "scope": "Existing source/contract, not new field/operational qualification",
+    "log": "openapi-validation.log"
+  },
+  {
+    "name": "docs-validator-tests",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "-m",
+      "unittest",
+      "docs/validate_openapi_test.py",
+      "docs/validate_claims_test.py"
+    ],
+    "exit_code": 1,
+    "scope": "Existing source/contract, not new field/operational qualification",
+    "log": "docs-validator-tests.log"
+  },
+  {
+    "name": "classification-baseline",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/classify_docs.py"
+    ],
+    "exit_code": 0,
+    "scope": "Read-only check; docs pair not yet created",
+    "log": "classification-baseline.log"
+  },
+  {
+    "name": "claims-baseline",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/validate_claims.py"
+    ],
+    "exit_code": 0,
+    "scope": "Read-only check; docs pair not yet created",
+    "log": "claims-baseline.log"
+  },
+  {
+    "name": "version",
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "exit_code": 0,
+    "scope": "Existing source/contract, not new field/operational qualification",
+    "log": "version.log"
+  },
+  {
+    "name": "generated-policy",
+    "command": [
+      "python3",
+      "scripts/generate_policy.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "scope": "Existing source/contract, not new field/operational qualification",
+    "log": "generated-policy.log"
+  }
+]

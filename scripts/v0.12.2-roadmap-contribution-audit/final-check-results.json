@@ -1,0 +1,70 @@
+[
+  {
+    "name": "classification-final",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/classify_docs.py"
+    ],
+    "exit_code": 0,
+    "output_tail": "documentation classifications valid: 560 sources\n",
+    "log": "classification-final.log"
+  },
+  {
+    "name": "claims-final",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/validate_claims.py"
+    ],
+    "exit_code": 0,
+    "output_tail": "current-doc claim regressions passed; historical/reference/design sources excluded explicitly\n",
+    "log": "claims-final.log"
+  },
+  {
+    "name": "docs-final",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "exit_code": 0,
+    "output_tail": "documentation valid: 57 HTML pages and 42 API paths\n",
+    "log": "docs-final.log"
+  },
+  {
+    "name": "docs-tests-final",
+    "command": [
+      "/tmp/atom-roadmap-audit-venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "docs",
+      "-p",
+      "*_test.py"
+    ],
+    "exit_code": 0,
+    "output_tail": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.142s\n\nOK\n",
+    "log": "docs-tests-final.log"
+  },
+  {
+    "name": "version-final",
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "exit_code": 0,
+    "output_tail": "A.T.O.M version metadata is consistent: 0.12.2\n",
+    "log": "version-final.log"
+  },
+  {
+    "name": "policy-final",
+    "command": [
+      "python3",
+      "scripts/generate_policy.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output_tail": "RF policy bindings are current\n",
+    "log": "policy-final.log"
+  }
+]

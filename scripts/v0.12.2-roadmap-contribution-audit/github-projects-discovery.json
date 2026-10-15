@@ -1,0 +1,126 @@
+{
+  "captured_at": "2026-10-15T12:26:00.359550+00:00",
+  "command": [
+    "gh",
+    "api",
+    "graphql",
+    "-f",
+    "query=query { viewer { login } repository(owner:\"Berk-Unsal\",name:\"atom\") { hasDiscussionsEnabled projectsV2(first:30) { nodes { id number title url closed } } discussions(first:30) { totalCount nodes { number title url } } } user(login:\"Berk-Unsal\") { projectsV2(first:50) { nodes { id number title url closed } } } }"
+  ],
+  "exit_code": 1,
+  "data": {
+    "errors": [
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 93
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'projectsV2' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 124
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 127
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'number' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 134
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 140
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'url' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 144
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'closed' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 279
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 282
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'number' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 289
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 295
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'url' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      },
+      {
+        "type": "INSUFFICIENT_SCOPES",
+        "locations": [
+          {
+            "line": 1,
+            "column": 299
+          }
+        ],
+        "message": "Your token has not been granted the required scopes to execute this query. The 'closed' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+      }
+    ]
+  },
+  "stderr": "gh: Your token has not been granted the required scopes to execute this query. The 'projectsV2' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'number' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'url' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'closed' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'id' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'number' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'title' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'url' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens.\nYour token has not been granted the required scopes to execute this query. The 'closed' field requires one of the following scopes: ['read:project'], but your token has only been granted the: ['gist', 'read:org', 'repo', 'workflow'] scopes. Please modify your token's scopes at: https://github.com/settings/tokens."
+}

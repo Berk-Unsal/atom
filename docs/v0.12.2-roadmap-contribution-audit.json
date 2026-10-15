@@ -1,0 +1,1750 @@
+{
+  "schema_version": 1,
+  "audit": "A.T.O.M v0.12.2 Roadmap + Contribution Readiness Audit",
+  "date": "2026-10-15",
+  "timezone": "Europe/Istanbul",
+  "audit_only": true,
+  "generated_at_utc": "2026-10-15T12:46:52.934497+00:00",
+  "baseline": {
+    "status_short": "",
+    "branch": "main",
+    "head": "0310bd8dea2e807ea57696a1bc5b3e11286db39e",
+    "tree": "3d0966c114f38726db9362309cfe1162d8b8bd44",
+    "version": "0.12.2",
+    "diff_stat": "",
+    "remotes": "origin\thttps://github.com/Berk-Unsal/atom.git (fetch)\norigin\thttps://github.com/Berk-Unsal/atom.git (push)",
+    "tags_at_head": "v0.12.2"
+  },
+  "audit_lock_sha256": "aa29b95e15d3afb859827c913edb031998cce02c5dcb174ba0fc7b75028db2d7",
+  "scope_supplement": {
+    "recorded_at": "2026-10-15T12:39:20.787307+00:00",
+    "pre_audit_lock_sha256": "aa29b95e15d3afb859827c913edb031998cce02c5dcb174ba0fc7b75028db2d7",
+    "additional_allowed_write": "docs/doc-sources.json",
+    "reason": "Normal docs/claim checks require every new report source to be classified. Register exactly the two requested audit artifacts as historical evidence; this is report metadata, not product implementation.",
+    "baseline_catalog_sha256": "e52ae871ba3cc85e57e99e7c8bfbbfe24d34cf1875a29df20e9d1c5bf26b6936",
+    "allowed_change": "Add exactly docs/v0.12.2-roadmap-contribution-audit.md and matching .json entries; preserve all original entries and top-level metadata.",
+    "original_scope_lock_preserved": true
+  },
+  "verdict": {
+    "code": "B",
+    "label": "ISSUES READY — PROJECT ORGANIZATION INCOMPLETE",
+    "rationale": "Verified bounded backlog and labels exist. Projects discovery/configuration could not proceed because the authenticated token lacks project scopes; existing project state is unknown."
+  },
+  "backlog_before": {
+    "issues": 32,
+    "open": 0,
+    "closed": 32,
+    "labels": 24,
+    "milestones": 0,
+    "open_pull_requests": 7,
+    "unlabeled_open_issues": 0,
+    "stale_open_issues": 0,
+    "duplicate_open_issue_themes": [],
+    "assessment": "Closed audit/security/maintenance findings, no active issue roadmap. Some historical bodies retain original pre-fix wording; closed state/current source govern deduplication."
+  },
+  "backlog_after": {
+    "issues": 47,
+    "open": 15,
+    "closed": 32,
+    "labels": 39,
+    "reused_issues": 0,
+    "new_issues": 15,
+    "priority_counts": {
+      "P2": 8,
+      "P3": 3,
+      "P1": 4
+    },
+    "effort_counts": {
+      "S": 8,
+      "M": 2,
+      "XS": 1,
+      "RESEARCH": 4
+    },
+    "suitability_counts": {
+      "contributor-friendly": 7,
+      "beginner-safe": 4,
+      "research-heavy": 3,
+      "maintainer-owned": 1
+    }
+  },
+  "priority_definitions": {
+    "P1": "Material correctness, scientific credibility, major product friction or important contract/integration defect.",
+    "P2": "Meaningful usability/workflow clarity, contributor experience or bounded technical debt.",
+    "P3": "Polish, convenience, low-severity documentation or optional quality improvement."
+  },
+  "effort_definitions": {
+    "XS": "Less than half a day; tightly bounded.",
+    "S": "Roughly a day.",
+    "M": "Multi-day bounded change.",
+    "L": "Substantial cross-surface feature.",
+    "RESEARCH": "Implementation unknown until evidence resolves; not a delivery promise."
+  },
+  "contributor_suitability_rules": {
+    "beginner-safe": "Clear files/surface, low scientific risk, deterministic validation, no architectural prerequisite, bounded output; eligible for good first issue.",
+    "contributor-friendly": "Bounded and documented, but needs workflow/tooling familiarity or maintainer interpretation review; help wanted without beginner promise.",
+    "maintainer-owned": "Cross-prerequisite scientific decisions and final promotion gates; no beginner/help-wanted label.",
+    "research-heavy": "External evidence or domain judgment determines whether implementation is warranted; no beginner/help-wanted label."
+  },
+  "contribution_readiness": {
+    "rubric": "Ten ordinal dimensions, 0 absent/unsafe, 1 partial/conflicting, 2 clear/evidenced; heuristic, not a user study.",
+    "maximum": 20,
+    "before": 10,
+    "after": 12,
+    "rows": [
+      {
+        "dimension": "Contribution entry",
+        "before": 1,
+        "after": 1,
+        "rationale": "Guide detected by GitHub; root/README entry absent and guide contradictory."
+      },
+      {
+        "dimension": "Development setup",
+        "before": 1,
+        "after": 1,
+        "rationale": "Getting Started has LFS/Docker/npm ci paths; contributor examples remain stale. No fresh-clone usability test."
+      },
+      {
+        "dimension": "Architecture/ownership boundaries",
+        "before": 2,
+        "after": 2,
+        "rationale": "Architecture, modules, AGENTS and explicit RF/reference boundaries exist. CODEOWNERS absent; do not invent maintainers."
+      },
+      {
+        "dimension": "Deterministic tests and CI",
+        "before": 2,
+        "after": 2,
+        "rationale": "Strong Go/React/docs/contract/policy checks and focused test entry points exist."
+      },
+      {
+        "dimension": "Commit/release guidance",
+        "before": 1,
+        "after": 1,
+        "rationale": "README/AGENTS use VERSION; contributor guide wrongly says edit main.go and publish tags."
+      },
+      {
+        "dimension": "Issue intake",
+        "before": 0,
+        "after": 0,
+        "rationale": "No issue forms; future issue remains unimplemented."
+      },
+      {
+        "dimension": "PR review handoff",
+        "before": 0,
+        "after": 0,
+        "rationale": "No template; future issue remains unimplemented."
+      },
+      {
+        "dimension": "Find a bounded task",
+        "before": 0,
+        "after": 2,
+        "rationale": "Before: no open issues. After: labeled bounded issues, four beginner-safe with source/check guidance."
+      },
+      {
+        "dimension": "Scientific contribution boundaries",
+        "before": 2,
+        "after": 2,
+        "rationale": "Current docs and new research issues preserve missing-truth and non-promotion gates."
+      },
+      {
+        "dimension": "Native discoverability",
+        "before": 1,
+        "after": 1,
+        "rationale": "Active releases and README; description/topics narrow, no contribution section, Discussions disabled."
+      }
+    ],
+    "verdict": "Partially ready; actionable starter backlog now exists, while guide/intake/PR fixes remain to be implemented.",
+    "github_native_community_health_percentage": 57
+  },
+  "product_debt_review": [
+    {
+      "surface": "Score interpretation",
+      "status": "Unresolved focused usability debt",
+      "finding": "Results shows /100; objective help exists in Goals. Explain preference-weighted utility at Results and distinguish it from coverage or accuracy.",
+      "issue_key": "score-interpretation",
+      "evidence": "frontend-react/src/App.jsx:5135; docs/modeling-limits.md:125"
+    },
+    {
+      "surface": "Pareto/trade-offs",
+      "status": "Partial",
+      "finding": "Roles and trade-off tables already exist; add a plain-language example and distinguish inspect/rerank/apply/rerun rather than rebuilding the explorer.",
+      "issue_key": "score-interpretation",
+      "evidence": "frontend-react/src/App.jsx:4790"
+    },
+    {
+      "surface": "Optimization changes/fixed inputs",
+      "status": "Present, contextual explanation can improve",
+      "finding": "Configuration changes already expose per-Cell azimuth deltas. Network optimization varies azimuth; add a concise fixed-input boundary with score help.",
+      "issue_key": "score-interpretation",
+      "evidence": "frontend-react/src/App.jsx:5167; docs/api.md:853"
+    },
+    {
+      "surface": "Light/dark heroes",
+      "status": "Confirmed mismatch",
+      "finding": "Observed both committed assets: light is older single-Cell Setup; dark is the later eight-Cell workspace. Capture matching actual app state.",
+      "issue_key": "matched-heroes",
+      "evidence": "docs/index.html:97; frontend-react/e2e/docs-theme.spec.js:53"
+    },
+    {
+      "surface": "Persistence/export recovery",
+      "status": "Unresolved recovery discoverability",
+      "finding": "Existing notes explain retained evidence. Known guard errors display only error.message and omit a safe next step; limits themselves are intentional.",
+      "issue_key": "export-recovery",
+      "evidence": "frontend-react/src/components/WorkspaceChrome.jsx:211; frontend-react/src/utils/projectStore.js:260"
+    },
+    {
+      "surface": "Project portability expectations",
+      "status": "Mostly clarified in v0.12.2",
+      "finding": "Draft/Version/Run/report exclusions are already stated. A remaining early Getting Started full-project sentence is overbroad; align it within the bounded export recovery/help task.",
+      "issue_key": "export-recovery",
+      "evidence": "docs/getting-started.md:97; docs/getting-started.md:170; docs/project-format.md:1"
+    },
+    {
+      "surface": "First-run orientation",
+      "status": "Present",
+      "finding": "Visible run action, planning-estimate notice, settings-only sample and first decision text already exist. No new wizard or generic onboarding ticket.",
+      "issue_key": null,
+      "evidence": "README.md:25; frontend-react/src/components/WorkspaceChrome.jsx:79; docs/getting-started.md:105"
+    },
+    {
+      "surface": "First useful decision",
+      "status": "Partial",
+      "finding": "Current guide describes the loop; sample has empty selection and no dataset binding/results. Add explicit reproducible inputs, a comparison and evidence delivery.",
+      "issue_key": "worked-example",
+      "evidence": "examples/ankara-sample.atom-project.json:1; docs/getting-started.md:125"
+    },
+    {
+      "surface": "Report usability",
+      "status": "Functionality present; reader help sparse",
+      "finding": "Executive summary, baseline, alternatives, lineage, unavailable states, offline artifact downloads and map-sampling disclosure exist. Add a reader guide, not another renderer or summary.",
+      "issue_key": "report-reader-guide",
+      "evidence": "frontend-react/src/utils/reportExport.js:458; frontend-react/src/components/ReportArtifactsPanel.jsx:51"
+    },
+    {
+      "surface": "Terminology",
+      "status": "Partial",
+      "finding": "Cell/tower/site/sector aliases can confuse planning records with physical infrastructure. API and candidate limits are already scoped; add one compact linked glossary.",
+      "issue_key": "cell-glossary",
+      "evidence": "docs/getting-started.md:109; docs/modeling-limits.md:70; docs/features.md:111"
+    },
+    {
+      "surface": "Errors/recovery",
+      "status": "Core repairs already complete",
+      "finding": "Retry-After guidance and independent Measurement6 scope guard exist with regressions. Do not repeat those issues; remaining project export guard recovery is separate.",
+      "issue_key": null,
+      "evidence": "frontend-react/src/utils/rfRecoveryMessage.js:1; frontend-react/src/utils/measurementScope.js:1"
+    }
+  ],
+  "scientific_roadmap": [
+    {
+      "area": "Real measurement validation",
+      "classification": "blocked",
+      "evidence_gap_or_state": "Tooling, CSV diagnostics and synthetic fixtures exist; latest readiness has 0 canonical field observations and no defensible canonical MAE/RMSE.",
+      "issue_key": "field-validation",
+      "evidence": "docs/concept-6a1-readiness.json:1; docs/modeling-limits.md:131"
+    },
+    {
+      "area": "Serving-state semantics",
+      "classification": "research prerequisite",
+      "evidence_gap_or_state": "83 registered candidates conflict with NONE; matching transitions do not settle source authority. Version-specific collector/device evidence is missing; external evidence blocks the issue.",
+      "issue_key": "serving-semantics",
+      "evidence": "docs/concept-6a1-2-serving-state-semantics.md:1; backend-go/raytracer/concept_6a1_campaign_tooling_test.go:340"
+    },
+    {
+      "area": "Authoritative transmitter mapping",
+      "classification": "research prerequisite",
+      "evidence_gap_or_state": "Exact mapping is 0; public planning records are not measured sites or power/antenna/height truth. Require exact identity and field-level provenance; external source access blocks the issue.",
+      "issue_key": "transmitter-truth",
+      "evidence": "docs/concept-6a1-1-transmitter-truth.json:1; backend-go/raytracer/concept_6a1_campaign_tooling.go:452"
+    },
+    {
+      "area": "Receiver/resource metadata",
+      "classification": "research prerequisite",
+      "evidence_gap_or_state": "Receiver AGL is user-estimated and device response uncalibrated; field tracker owns receiver/endpoint evidence, resource issue owns quantity/reference-plane evidence.",
+      "issue_key": "field-validation",
+      "evidence": "docs/concept-6a1-1-applicability.json:1; docs/concept-6a1-readiness.json:1"
+    },
+    {
+      "area": "Measurement bandwidth truth",
+      "classification": "blocked",
+      "evidence_gap_or_state": "CellInfo bandwidth unavailable; ServiceState vectors lack exact identity association. Do not substitute configured bandwidth or relabel RSRP as carrier power.",
+      "issue_key": "resource-truth",
+      "evidence": "docs/concept-6a1-1-bandwidth-audit.json:1"
+    },
+    {
+      "area": "LOS/outdoor truth",
+      "classification": "research prerequisite",
+      "evidence_gap_or_state": "Independent endpoint/outdoor/LOS annotations are missing; model-predicted LOS cannot serve as validation truth. Track within the final reference-set gate.",
+      "issue_key": "field-validation",
+      "evidence": "docs/concept-6a1-1-applicability.json:1"
+    },
+    {
+      "area": "Calibration prerequisites",
+      "classification": "blocked",
+      "evidence_gap_or_state": "Ordinary CSV holdout-checked global dB correction is implemented. Canonical calibration requires trustworthy compatible data and independent holdouts; no calibration implementation ticket yet.",
+      "issue_key": "field-validation",
+      "evidence": "docs/modeling-limits.md:135; backend-go/raytracer/canonical_rf_validation_holdout.go:1"
+    },
+    {
+      "area": "Terrain canonicalization",
+      "classification": "future / not justified",
+      "evidence_gap_or_state": "Optional profile diagnostics and corrected clearance primitive exist. Canonical network terrain remains unavailable; source semantics, local control, uncertainty and diffraction qualification still block promotion. Do not reopen the corrected sign bug.",
+      "issue_key": null,
+      "evidence": "docs/concept-4f3a5-terrain-clearance-primitive.md:62; docs/modeling-limits.md:70"
+    },
+    {
+      "area": "Clutter/morphology",
+      "classification": "future / not justified",
+      "evidence_gap_or_state": "Pack metadata/manual path-profile and isolated P.1411 morphology inputs exist; no authoritative canonical spatially joined clutter evidence or validated effect justifies adding losses.",
+      "issue_key": null,
+      "evidence": "docs/features.md:138; docs/modeling-limits.md:70"
+    },
+    {
+      "area": "Antenna-pattern evidence",
+      "classification": "research prerequisite",
+      "evidence_gap_or_state": "Analytic and single-element reference cuts exist; measured vendor pattern import/validation is absent. TX evidence issue can establish what evidence exists before any model/import feature is admitted.",
+      "issue_key": "transmitter-truth",
+      "evidence": "backend-go/raytracer/antenna_evaluator.go:64; docs/modeling-limits.md:47"
+    },
+    {
+      "area": "Operational discovery response schemas",
+      "classification": "actionable engineering",
+      "evidence_gap_or_state": "Readiness/process JSON bodies exist without OpenAPI body schemas. This is a software contract gap, not new physical validation.",
+      "issue_key": "api-readiness-schemas",
+      "evidence": "docs/openapi.yaml:14; docs/openapi.yaml:506"
+    }
+  ],
+  "rf_planner_gap_matrix": [
+    {
+      "capability": "Terrain-aware canonical propagation",
+      "classification": "absent",
+      "decision": "Point-to-point terrain is partial supporting capability; canonical network path does not consume it. Defer promotion until source/control/uncertainty gates pass.",
+      "evidence": "docs/modeling-limits.md:70; docs/concept-4f3a5-terrain-clearance-primitive.md:62"
+    },
+    {
+      "capability": "Clutter/morphology",
+      "classification": "partial",
+      "decision": "Pack sidecars and explicit reference/diagnostic inputs exist; no automatic canonical clutter join. No backlog feature without authoritative data and a decision need.",
+      "evidence": "docs/features.md:138; docs/modeling-limits.md:70"
+    },
+    {
+      "capability": "Operator/site inventory import",
+      "classification": "partial",
+      "decision": "Bounded CSV/GeoJSON planning inventory already works. Operator verification/mapping does not; research truth issue covers evidence, not a broad enterprise importer.",
+      "evidence": "frontend-react/src/utils/inventoryImport.js:1; docs/features.md:25"
+    },
+    {
+      "capability": "PCI/neighbor planning",
+      "classification": "absent",
+      "decision": "PCI is validated metadata; Core Lab neighbor edges are simulated coordination, not RF PCI conflict or neighbor-list planning. No demonstrated product prerequisite.",
+      "evidence": "docs/modeling-limits.md:62; backend-go/raytracer/request_inputs.go:1"
+    },
+    {
+      "capability": "Handover/mobility",
+      "classification": "out of scope",
+      "decision": "No UE mobility/handover simulator. Collector identity transitions and Core Lab paths do not establish handover behavior.",
+      "evidence": "docs/modeling-limits.md:47; planning/product-compass.md:120"
+    },
+    {
+      "capability": "Capacity/traffic",
+      "classification": "out of scope",
+      "decision": "Scalar Cell load and demand weights exist; no traffic/scheduler/throughput/capacity model. No new system without user/evidence basis.",
+      "evidence": "docs/modeling-limits.md:47; backend-go/raytracer/interference.go:440"
+    },
+    {
+      "capability": "Multi-carrier",
+      "classification": "partial",
+      "decision": "Per-Cell frequency/band/channel/bandwidth and co-channel grouping exist. No per-Cell carrier aggregation or multi-carrier scheduler; extension not currently justified.",
+      "evidence": "docs/features.md:25; docs/modeling-limits.md:62"
+    },
+    {
+      "capability": "Antenna-pattern imports",
+      "classification": "absent",
+      "decision": "Analytic presets and 3GPP single-element cuts already exist; no measured/vendor tabular import. Evidence and interpolation/validation requirements must precede such a feature.",
+      "evidence": "backend-go/raytracer/antenna_evaluator.go:64; docs/modeling-limits.md:47"
+    },
+    {
+      "capability": "Measured KPI comparison",
+      "classification": "partial",
+      "decision": "User RSRP residuals and isolated evidence tooling work; credible canonical field results remain blocked. SINR/RSRQ/RSSI require independent resource context.",
+      "evidence": "docs/features.md:117; docs/concept-6a1-readiness.json:1"
+    },
+    {
+      "capability": "Candidate-site workflows",
+      "classification": "already present",
+      "decision": "Known-record recommendations, bounded area/candidate search, apply-as-scenario and re-evaluation exist; ownership, permitting, cost and backhaul excluded.",
+      "evidence": "docs/features.md:109; docs/architecture.md:175"
+    },
+    {
+      "capability": "Richer interference",
+      "classification": "partial",
+      "decision": "Modeled finite-horizon co-channel RSRP/SINR/RSRQ/RSSI, load/reuse/resources exist. Adjacent-channel, uplink and dynamic scheduling are absent and not currently justified extensions.",
+      "evidence": "docs/architecture.md:179; docs/modeling-limits.md:47"
+    }
+  ],
+  "rejected_speculative_work": [
+    {
+      "proposal": "10/12 Cells or arbitrary larger networks",
+      "reason": "No changed W1 qualification or product decision supports a new cap."
+    },
+    {
+      "proposal": "W2/W3 or repeat W1/Profile A qualification",
+      "reason": "No material source/evidence change justifies reopening completed work; current scope remains explicit."
+    },
+    {
+      "proposal": "Adaptive/estimator admission or Auto reopening",
+      "reason": "Observation-only and paused admission remain deliberate policy; no new evidence."
+    },
+    {
+      "proposal": "Random RF models, generic AI optimization",
+      "reason": "Fails evidence, explainability and feature-admission criteria."
+    },
+    {
+      "proposal": "Broad enterprise/cloud collaboration/live control",
+      "reason": "No product demand evidence; contradicts current local-first bounded job."
+    },
+    {
+      "proposal": "Mobility/capacity/PCI systems",
+      "reason": "No user decision/evidence need established; metadata and scalar load are not missing-system authorization."
+    },
+    {
+      "proposal": "Canonical terrain/clutter/vendor-pattern promotion",
+      "reason": "Prerequisites remain unresolved; reference support does not qualify canonical loss composition."
+    },
+    {
+      "proposal": "Calibration or canonical MAE/RMSE now",
+      "reason": "Zero canonical observations and incompatible/missing truth make this indefensible."
+    },
+    {
+      "proposal": "Separate epics for every area",
+      "reason": "Only canonical field validation has genuinely independent prerequisites; avoid hierarchy overhead."
+    },
+    {
+      "proposal": "Stars campaigns, enabling Discussions or About/topic mutations",
+      "reason": "Useful discoverability recommendations suffice; those metadata/community changes were not authorized here."
+    }
+  ],
+  "duplicate_proposals_rejected": [
+    {
+      "proposal": "Repair strict OpenAPI 3.1 validation",
+      "reason": "Resolved by v0.12.2; new operational schemas are a distinct completeness task."
+    },
+    {
+      "proposal": "Add Measurement6 UI guard",
+      "reason": "measurementScope.js and App workflow tests already enforce it."
+    },
+    {
+      "proposal": "Translate Retry-After into wait guidance",
+      "reason": "rfRecoveryMessage.js and regressions already implement it."
+    },
+    {
+      "proposal": "Explain draft/Version/Run/project retention",
+      "reason": "Current ProjectMenu/README/project-format already explain the distinctions; only guard recovery remains."
+    },
+    {
+      "proposal": "Fix dual-store ordering/import limits/report escaping/image deduplication",
+      "reason": "Closed #26/#17/#31/#30 respectively; the proposed docs/recovery work does not reopen these defects."
+    },
+    {
+      "proposal": "Repeat 8-Cell/W1 budget or optimization performance repair",
+      "reason": "Completed and scoped in preserved evidence; no changed evidence justifies reopening."
+    },
+    {
+      "proposal": "Add sample dataset pack/release workflow/basic first-decision narrative",
+      "reason": "Already present in testdata/sample-pack, release.yml and README/getting-started; only freshness and executable walkthrough remain."
+    }
+  ],
+  "issues": [
+    {
+      "key": "score-interpretation",
+      "title": "Explain normalized network scores and Pareto alternatives in Results",
+      "type": "enhancement",
+      "area": "product-ux",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: enhancement",
+        "area: product-ux",
+        "area: frontend",
+        "priority: P2",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 76,
+      "url": "https://github.com/Berk-Unsal/atom/issues/76",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "export-recovery",
+      "title": "Surface portable-project export guard recovery guidance",
+      "type": "enhancement",
+      "area": "persistence",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: enhancement",
+        "area: persistence",
+        "area: frontend",
+        "priority: P2",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 77,
+      "url": "https://github.com/Berk-Unsal/atom/issues/77",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "worked-example",
+      "title": "Add a reproducible baseline-to-recommendation planning walkthrough",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P2",
+      "effort": "M",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P2",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 78,
+      "url": "https://github.com/Berk-Unsal/atom/issues/78",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "matched-heroes",
+      "title": "Add matched current light and dark documentation hero captures",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P3",
+      "effort": "S",
+      "contributor_suitability": "beginner-safe",
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P3",
+        "help wanted",
+        "good first issue"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 79,
+      "url": "https://github.com/Berk-Unsal/atom/issues/79",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "cell-glossary",
+      "title": "Explain Cell, sector and site terminology in the planning help",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "beginner-safe",
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P2",
+        "help wanted",
+        "good first issue"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 80,
+      "url": "https://github.com/Berk-Unsal/atom/issues/80",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "report-reader-guide",
+      "title": "Document how to read and preserve a planning report",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P3",
+      "effort": "S",
+      "contributor_suitability": "beginner-safe",
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P3",
+        "help wanted",
+        "good first issue"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 81,
+      "url": "https://github.com/Berk-Unsal/atom/issues/81",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "contributor-guide",
+      "title": "Repair the contribution entry point, setup examples and validation guidance",
+      "type": "docs",
+      "area": "community",
+      "priority": "P2",
+      "effort": "M",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: docs",
+        "area: community",
+        "priority: P2",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 82,
+      "url": "https://github.com/Berk-Unsal/atom/issues/82",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "issue-forms",
+      "title": "Add issue forms for reproducible planning bugs and scoped proposals",
+      "type": "chore",
+      "area": "community",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: chore",
+        "area: community",
+        "priority: P2",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 83,
+      "url": "https://github.com/Berk-Unsal/atom/issues/83",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "pr-template",
+      "title": "Add a pull-request template with scoped validation and model boundaries",
+      "type": "chore",
+      "area": "community",
+      "priority": "P2",
+      "effort": "XS",
+      "contributor_suitability": "beginner-safe",
+      "labels": [
+        "type: chore",
+        "area: community",
+        "priority: P2",
+        "help wanted",
+        "good first issue"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 84,
+      "url": "https://github.com/Berk-Unsal/atom/issues/84",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "api-readiness-schemas",
+      "title": "Define response schemas for readiness and batch-process discovery",
+      "type": "enhancement",
+      "area": "api",
+      "priority": "P2",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: enhancement",
+        "area: api",
+        "area: backend",
+        "priority: P2",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 85,
+      "url": "https://github.com/Berk-Unsal/atom/issues/85",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "roadmap-doc-freshness",
+      "title": "Reconcile maintained roadmap status and unsupported API release promises",
+      "type": "docs",
+      "area": "docs",
+      "priority": "P3",
+      "effort": "S",
+      "contributor_suitability": "contributor-friendly",
+      "labels": [
+        "type: docs",
+        "area: docs",
+        "priority: P3",
+        "help wanted"
+      ],
+      "dependencies": [],
+      "project_status": "Ready",
+      "number": 86,
+      "url": "https://github.com/Berk-Unsal/atom/issues/86",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "serving-semantics",
+      "title": "Resolve serving-cell semantics required for canonical field validation",
+      "type": "research",
+      "area": "validation",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "research-heavy",
+      "labels": [
+        "type: research",
+        "area: validation",
+        "priority: P1",
+        "blocked"
+      ],
+      "dependencies": [],
+      "project_status": "Blocked",
+      "number": 87,
+      "url": "https://github.com/Berk-Unsal/atom/issues/87",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "transmitter-truth",
+      "title": "Establish authoritative transmitter mapping and RF truth for field validation",
+      "type": "research",
+      "area": "rf-science",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "research-heavy",
+      "labels": [
+        "type: research",
+        "area: rf-science",
+        "priority: P1",
+        "blocked"
+      ],
+      "dependencies": [],
+      "project_status": "Blocked",
+      "number": 88,
+      "url": "https://github.com/Berk-Unsal/atom/issues/88",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "resource-truth",
+      "title": "Establish observation-bound bandwidth and measurement-resource truth",
+      "type": "research",
+      "area": "validation",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "research-heavy",
+      "labels": [
+        "type: research",
+        "area: validation",
+        "priority: P1",
+        "blocked"
+      ],
+      "dependencies": [],
+      "project_status": "Blocked",
+      "number": 89,
+      "url": "https://github.com/Berk-Unsal/atom/issues/89",
+      "decision": "created",
+      "project_status_applied": false
+    },
+    {
+      "key": "field-validation",
+      "title": "Track evidence gates for canonical real-world RF validation",
+      "type": "research",
+      "area": "validation",
+      "priority": "P1",
+      "effort": "RESEARCH",
+      "contributor_suitability": "maintainer-owned",
+      "labels": [
+        "type: research",
+        "area: validation",
+        "priority: P1",
+        "blocked"
+      ],
+      "dependencies": [
+        "serving-semantics",
+        "transmitter-truth",
+        "resource-truth"
+      ],
+      "project_status": "Blocked",
+      "number": 90,
+      "url": "https://github.com/Berk-Unsal/atom/issues/90",
+      "decision": "created",
+      "project_status_applied": false
+    }
+  ],
+  "tracking_issues": [
+    90
+  ],
+  "dependency_graph": {
+    "76": [],
+    "77": [],
+    "78": [],
+    "79": [],
+    "80": [],
+    "81": [],
+    "82": [],
+    "83": [],
+    "84": [],
+    "85": [],
+    "86": [],
+    "87": [],
+    "88": [],
+    "89": [],
+    "90": [
+      87,
+      88,
+      89
+    ]
+  },
+  "external_science_gates": [
+    "authoritative collector/device semantics",
+    "exact TX identity and source truth",
+    "per-observation quantity/resources/frequency",
+    "receiver response/AGL provenance",
+    "independent outdoor/LOS truth",
+    "licensed compatible reference set",
+    "predeclared independent holdouts/uncertainty"
+  ],
+  "project": {
+    "status": "not_applied_permission_blocked",
+    "discovery": "Attempted repository and owner Projects v2; denied read:project scope.",
+    "existing_project_count": null,
+    "project_used_or_created": null,
+    "url": null,
+    "issues_added": 0,
+    "existing_project_issue_count": null,
+    "recovery": "With owner-authorized project scopes, discover first, reuse an appropriate existing project, or create one A.T.O.M Roadmap only if none exists. Preserve equivalent fields/views.",
+    "fields": {
+      "Status": [
+        "Backlog",
+        "Ready",
+        "In Progress",
+        "Blocked",
+        "Done"
+      ],
+      "Priority": [
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "Area": [
+        "RF Science",
+        "Validation",
+        "Product / UX",
+        "Frontend",
+        "Backend",
+        "API",
+        "Docs",
+        "Persistence",
+        "Tooling / Community"
+      ],
+      "Effort": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "Research"
+      ],
+      "Type": [
+        "Bug",
+        "Enhancement",
+        "Documentation",
+        "Research",
+        "Chore"
+      ]
+    },
+    "items": [
+      {
+        "issue": 76,
+        "url": "https://github.com/Berk-Unsal/atom/issues/76",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "product-ux",
+        "effort": "S",
+        "type": "enhancement",
+        "fields_applied": false
+      },
+      {
+        "issue": 77,
+        "url": "https://github.com/Berk-Unsal/atom/issues/77",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "persistence",
+        "effort": "S",
+        "type": "enhancement",
+        "fields_applied": false
+      },
+      {
+        "issue": 78,
+        "url": "https://github.com/Berk-Unsal/atom/issues/78",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "docs",
+        "effort": "M",
+        "type": "docs",
+        "fields_applied": false
+      },
+      {
+        "issue": 79,
+        "url": "https://github.com/Berk-Unsal/atom/issues/79",
+        "desired_status": "Ready",
+        "priority": "P3",
+        "area": "docs",
+        "effort": "S",
+        "type": "docs",
+        "fields_applied": false
+      },
+      {
+        "issue": 80,
+        "url": "https://github.com/Berk-Unsal/atom/issues/80",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "docs",
+        "effort": "S",
+        "type": "docs",
+        "fields_applied": false
+      },
+      {
+        "issue": 81,
+        "url": "https://github.com/Berk-Unsal/atom/issues/81",
+        "desired_status": "Ready",
+        "priority": "P3",
+        "area": "docs",
+        "effort": "S",
+        "type": "docs",
+        "fields_applied": false
+      },
+      {
+        "issue": 82,
+        "url": "https://github.com/Berk-Unsal/atom/issues/82",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "community",
+        "effort": "M",
+        "type": "docs",
+        "fields_applied": false
+      },
+      {
+        "issue": 83,
+        "url": "https://github.com/Berk-Unsal/atom/issues/83",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "community",
+        "effort": "S",
+        "type": "chore",
+        "fields_applied": false
+      },
+      {
+        "issue": 84,
+        "url": "https://github.com/Berk-Unsal/atom/issues/84",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "community",
+        "effort": "XS",
+        "type": "chore",
+        "fields_applied": false
+      },
+      {
+        "issue": 85,
+        "url": "https://github.com/Berk-Unsal/atom/issues/85",
+        "desired_status": "Ready",
+        "priority": "P2",
+        "area": "api",
+        "effort": "S",
+        "type": "enhancement",
+        "fields_applied": false
+      },
+      {
+        "issue": 86,
+        "url": "https://github.com/Berk-Unsal/atom/issues/86",
+        "desired_status": "Ready",
+        "priority": "P3",
+        "area": "docs",
+        "effort": "S",
+        "type": "docs",
+        "fields_applied": false
+      },
+      {
+        "issue": 87,
+        "url": "https://github.com/Berk-Unsal/atom/issues/87",
+        "desired_status": "Blocked",
+        "priority": "P1",
+        "area": "validation",
+        "effort": "RESEARCH",
+        "type": "research",
+        "fields_applied": false
+      },
+      {
+        "issue": 88,
+        "url": "https://github.com/Berk-Unsal/atom/issues/88",
+        "desired_status": "Blocked",
+        "priority": "P1",
+        "area": "rf-science",
+        "effort": "RESEARCH",
+        "type": "research",
+        "fields_applied": false
+      },
+      {
+        "issue": 89,
+        "url": "https://github.com/Berk-Unsal/atom/issues/89",
+        "desired_status": "Blocked",
+        "priority": "P1",
+        "area": "validation",
+        "effort": "RESEARCH",
+        "type": "research",
+        "fields_applied": false
+      },
+      {
+        "issue": 90,
+        "url": "https://github.com/Berk-Unsal/atom/issues/90",
+        "desired_status": "Blocked",
+        "priority": "P1",
+        "area": "validation",
+        "effort": "RESEARCH",
+        "type": "research",
+        "fields_applied": false
+      }
+    ],
+    "views": [
+      {
+        "name": "Roadmap",
+        "group_by": "Status",
+        "applied": false
+      },
+      {
+        "name": "By Area",
+        "group_by": "Area",
+        "applied": false
+      },
+      {
+        "name": "Contributor Friendly",
+        "filter_semantics": "good first issue OR help wanted",
+        "applied": false
+      }
+    ],
+    "status_counts_planned_only": {
+      "Ready": 11,
+      "Blocked": 4
+    },
+    "status_rule": "Default Backlog; Ready only for 11 clearly bounded independent tasks. Four research/tracking tasks remain Blocked by evidence; none In Progress."
+  },
+  "mutations": {
+    "started_at": "2026-10-15T12:36:12.220509+00:00",
+    "manifest_sha256": "de2412af7a2710e3bd0663f387ab92899057820d7b917e3e834df179f93a5349",
+    "labels_created": [
+      "area: api",
+      "area: community",
+      "area: docs",
+      "area: persistence",
+      "area: product-ux",
+      "area: rf-science",
+      "area: validation",
+      "blocked",
+      "priority: P1",
+      "priority: P2",
+      "priority: P3",
+      "type: chore",
+      "type: docs",
+      "type: enhancement",
+      "type: research"
+    ],
+    "labels_reused": [
+      "area: backend",
+      "area: frontend",
+      "good first issue",
+      "help wanted"
+    ],
+    "labels_skipped_preserved": [
+      "area: ci",
+      "area: container",
+      "area: core-lab-adapter",
+      "area: data-pipeline",
+      "bug",
+      "dependencies",
+      "docker",
+      "documentation",
+      "duplicate",
+      "enhancement",
+      "github_actions",
+      "go",
+      "invalid",
+      "javascript",
+      "python",
+      "question",
+      "status: ci-failing",
+      "status: merge-conflict",
+      "status: needs-review",
+      "wontfix"
+    ],
+    "issues": [
+      {
+        "key": "score-interpretation",
+        "number": 76,
+        "url": "https://github.com/Berk-Unsal/atom/issues/76",
+        "title": "Explain normalized network scores and Pareto alternatives in Results",
+        "node_id": "I_kwDOS_JrHc8AAAABXad8hw",
+        "labels": [
+          "area: frontend",
+          "area: product-ux",
+          "help wanted",
+          "priority: P2",
+          "type: enhancement"
+        ],
+        "created_at": "2026-10-15T12:36:21Z",
+        "decision": "created"
+      },
+      {
+        "key": "export-recovery",
+        "number": 77,
+        "url": "https://github.com/Berk-Unsal/atom/issues/77",
+        "title": "Surface portable-project export guard recovery guidance",
+        "node_id": "I_kwDOS_JrHc8AAAABXad9PA",
+        "labels": [
+          "area: frontend",
+          "area: persistence",
+          "help wanted",
+          "priority: P2",
+          "type: enhancement"
+        ],
+        "created_at": "2026-10-15T12:36:22Z",
+        "decision": "created"
+      },
+      {
+        "key": "worked-example",
+        "number": 78,
+        "url": "https://github.com/Berk-Unsal/atom/issues/78",
+        "title": "Add a reproducible baseline-to-recommendation planning walkthrough",
+        "node_id": "I_kwDOS_JrHc8AAAABXad-Hg",
+        "labels": [
+          "area: docs",
+          "help wanted",
+          "priority: P2",
+          "type: docs"
+        ],
+        "created_at": "2026-10-15T12:36:22Z",
+        "decision": "created"
+      },
+      {
+        "key": "matched-heroes",
+        "number": 79,
+        "url": "https://github.com/Berk-Unsal/atom/issues/79",
+        "title": "Add matched current light and dark documentation hero captures",
+        "node_id": "I_kwDOS_JrHc8AAAABXad-wg",
+        "labels": [
+          "area: docs",
+          "good first issue",
+          "help wanted",
+          "priority: P3",
+          "type: docs"
+        ],
+        "created_at": "2026-10-15T12:36:23Z",
+        "decision": "created"
+      },
+      {
+        "key": "cell-glossary",
+        "number": 80,
+        "url": "https://github.com/Berk-Unsal/atom/issues/80",
+        "title": "Explain Cell, sector and site terminology in the planning help",
+        "node_id": "I_kwDOS_JrHc8AAAABXad_jQ",
+        "labels": [
+          "area: docs",
+          "good first issue",
+          "help wanted",
+          "priority: P2",
+          "type: docs"
+        ],
+        "created_at": "2026-10-15T12:36:24Z",
+        "decision": "created"
+      },
+      {
+        "key": "report-reader-guide",
+        "number": 81,
+        "url": "https://github.com/Berk-Unsal/atom/issues/81",
+        "title": "Document how to read and preserve a planning report",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeAIg",
+        "labels": [
+          "area: docs",
+          "good first issue",
+          "help wanted",
+          "priority: P3",
+          "type: docs"
+        ],
+        "created_at": "2026-10-15T12:36:24Z",
+        "decision": "created"
+      },
+      {
+        "key": "contributor-guide",
+        "number": 82,
+        "url": "https://github.com/Berk-Unsal/atom/issues/82",
+        "title": "Repair the contribution entry point, setup examples and validation guidance",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeA4w",
+        "labels": [
+          "area: community",
+          "help wanted",
+          "priority: P2",
+          "type: docs"
+        ],
+        "created_at": "2026-10-15T12:36:25Z",
+        "decision": "created"
+      },
+      {
+        "key": "issue-forms",
+        "number": 83,
+        "url": "https://github.com/Berk-Unsal/atom/issues/83",
+        "title": "Add issue forms for reproducible planning bugs and scoped proposals",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeCGA",
+        "labels": [
+          "area: community",
+          "help wanted",
+          "priority: P2",
+          "type: chore"
+        ],
+        "created_at": "2026-10-15T12:36:26Z",
+        "decision": "created"
+      },
+      {
+        "key": "pr-template",
+        "number": 84,
+        "url": "https://github.com/Berk-Unsal/atom/issues/84",
+        "title": "Add a pull-request template with scoped validation and model boundaries",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeC4Q",
+        "labels": [
+          "area: community",
+          "good first issue",
+          "help wanted",
+          "priority: P2",
+          "type: chore"
+        ],
+        "created_at": "2026-10-15T12:36:26Z",
+        "decision": "created"
+      },
+      {
+        "key": "api-readiness-schemas",
+        "number": 85,
+        "url": "https://github.com/Berk-Unsal/atom/issues/85",
+        "title": "Define response schemas for readiness and batch-process discovery",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeDxw",
+        "labels": [
+          "area: api",
+          "area: backend",
+          "help wanted",
+          "priority: P2",
+          "type: enhancement"
+        ],
+        "created_at": "2026-10-15T12:36:27Z",
+        "decision": "created"
+      },
+      {
+        "key": "roadmap-doc-freshness",
+        "number": 86,
+        "url": "https://github.com/Berk-Unsal/atom/issues/86",
+        "title": "Reconcile maintained roadmap status and unsupported API release promises",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeElg",
+        "labels": [
+          "area: docs",
+          "help wanted",
+          "priority: P3",
+          "type: docs"
+        ],
+        "created_at": "2026-10-15T12:36:28Z",
+        "decision": "created"
+      },
+      {
+        "key": "serving-semantics",
+        "number": 87,
+        "url": "https://github.com/Berk-Unsal/atom/issues/87",
+        "title": "Resolve serving-cell semantics required for canonical field validation",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeFVw",
+        "labels": [
+          "area: validation",
+          "blocked",
+          "priority: P1",
+          "type: research"
+        ],
+        "created_at": "2026-10-15T12:36:29Z",
+        "decision": "created"
+      },
+      {
+        "key": "transmitter-truth",
+        "number": 88,
+        "url": "https://github.com/Berk-Unsal/atom/issues/88",
+        "title": "Establish authoritative transmitter mapping and RF truth for field validation",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeGAg",
+        "labels": [
+          "area: rf-science",
+          "blocked",
+          "priority: P1",
+          "type: research"
+        ],
+        "created_at": "2026-10-15T12:36:30Z",
+        "decision": "created"
+      },
+      {
+        "key": "resource-truth",
+        "number": 89,
+        "url": "https://github.com/Berk-Unsal/atom/issues/89",
+        "title": "Establish observation-bound bandwidth and measurement-resource truth",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeHCQ",
+        "labels": [
+          "area: validation",
+          "blocked",
+          "priority: P1",
+          "type: research"
+        ],
+        "created_at": "2026-10-15T12:36:31Z",
+        "decision": "created"
+      },
+      {
+        "key": "field-validation",
+        "number": 90,
+        "url": "https://github.com/Berk-Unsal/atom/issues/90",
+        "title": "Track evidence gates for canonical real-world RF validation",
+        "node_id": "I_kwDOS_JrHc8AAAABXaeHyQ",
+        "labels": [
+          "area: validation",
+          "blocked",
+          "priority: P1",
+          "type: research"
+        ],
+        "created_at": "2026-10-15T12:36:31Z",
+        "decision": "created"
+      }
+    ],
+    "projects": {
+      "status": "blocked",
+      "reason": "Discovery rejected: token lacks read:project; no creation or field mutation attempted.",
+      "project_id": null,
+      "url": null,
+      "actual_issue_count": null,
+      "issues_added": 0,
+      "existing_projects": "unknown: discovery permission denied"
+    },
+    "milestones": {
+      "created": [],
+      "reused": [],
+      "decision": "No coherent release promise; leave issues unmilestoned."
+    },
+    "unrelated_metadata_changed": false,
+    "completed_at": "2026-10-15T12:36:32.165560+00:00"
+  },
+  "checks": [
+    {
+      "name": "docs-validation",
+      "command": [
+        "/tmp/atom-roadmap-audit-venv/bin/python",
+        "docs/validate_docs.py"
+      ],
+      "exit_code": 0,
+      "scope": "Existing source/contract, not new field/operational qualification",
+      "log": "docs-validation.log"
+    },
+    {
+      "name": "openapi-validation",
+      "command": [
+        "/tmp/atom-roadmap-audit-venv/bin/python",
+        "docs/validate_openapi.py"
+      ],
+      "exit_code": 0,
+      "scope": "Existing source/contract, not new field/operational qualification",
+      "log": "openapi-validation.log"
+    },
+    {
+      "name": "docs-validator-tests",
+      "command": [
+        "/tmp/atom-roadmap-audit-venv/bin/python",
+        "-m",
+        "unittest",
+        "docs/validate_openapi_test.py",
+        "docs/validate_claims_test.py"
+      ],
+      "exit_code": 1,
+      "scope": "Existing source/contract, not new field/operational qualification",
+      "log": "docs-validator-tests.log"
+    },
+    {
+      "name": "classification-baseline",
+      "command": [
+        "/tmp/atom-roadmap-audit-venv/bin/python",
+        "docs/classify_docs.py"
+      ],
+      "exit_code": 0,
+      "scope": "Read-only check; docs pair not yet created",
+      "log": "classification-baseline.log"
+    },
+    {
+      "name": "claims-baseline",
+      "command": [
+        "/tmp/atom-roadmap-audit-venv/bin/python",
+        "docs/validate_claims.py"
+      ],
+      "exit_code": 0,
+      "scope": "Read-only check; docs pair not yet created",
+      "log": "claims-baseline.log"
+    },
+    {
+      "name": "version",
+      "command": [
+        "python3",
+        "scripts/versioning.py",
+        "check"
+      ],
+      "exit_code": 0,
+      "scope": "Existing source/contract, not new field/operational qualification",
+      "log": "version.log"
+    },
+    {
+      "name": "generated-policy",
+      "command": [
+        "python3",
+        "scripts/generate_policy.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "scope": "Existing source/contract, not new field/operational qualification",
+      "log": "generated-policy.log"
+    },
+    {
+      "name": "docs-validator-tests-corrected",
+      "exit_code": 0,
+      "log": "docs-validator-tests-corrected.log",
+      "result": "8 tests passed; correct cwd docs/"
+    },
+    {
+      "name": "frontend-focused",
+      "exit_code": 0,
+      "log": "frontend-focused.log",
+      "result": "6 files / 99 tests passed; no production changes"
+    },
+    {
+      "name": "backend-evidence-focused",
+      "exit_code": 0,
+      "log": "backend-evidence-focused.log",
+      "result": "Existing canonical ingestion conflict/exact identity/no-default guards passed"
+    },
+    {
+      "name": "github-verification",
+      "exit_code": 0,
+      "log": "github-verification.json",
+      "result": "15 issue URLs, bodies, labels and dependencies verified; 32 closed issues and 24 original labels unchanged"
+    },
+    {
+      "name": "classification-final",
+      "exit_code": 0,
+      "log": "classification-final.log",
+      "result": "Final post-report/catalog check passed; see retained command and output."
+    },
+    {
+      "name": "claims-final",
+      "exit_code": 0,
+      "log": "claims-final.log",
+      "result": "Final post-report/catalog check passed; see retained command and output."
+    },
+    {
+      "name": "docs-final",
+      "exit_code": 0,
+      "log": "docs-final.log",
+      "result": "Final post-report/catalog check passed; see retained command and output."
+    },
+    {
+      "name": "docs-tests-final",
+      "exit_code": 0,
+      "log": "docs-tests-final.log",
+      "result": "Final post-report/catalog check passed; see retained command and output."
+    },
+    {
+      "name": "version-final",
+      "exit_code": 0,
+      "log": "version-final.log",
+      "result": "Final post-report/catalog check passed; see retained command and output."
+    },
+    {
+      "name": "policy-final",
+      "exit_code": 0,
+      "log": "policy-final.log",
+      "result": "Final post-report/catalog check passed; see retained command and output."
+    }
+  ],
+  "methodology": {
+    "mode": "Single-auditor repository/source and live authenticated GitHub audit; no subagents or implementation.",
+    "ux": "Impeccable product context assisted source/committed-asset review; this is not a standalone dual-agent critique, detector/WCAG certification or timed novice test.",
+    "evidence": "Current source resolves past debt; historical reports stay immutable; fully paginated REST issue inventory plus live all-state searches precede mutations.",
+    "limitations": [
+      "No live planning journey, new full E2E/race matrix or physical campaign run",
+      "No authoritative source clarification/vendor contact made",
+      "No Project read or write capability",
+      "No cold-clone/target-user study",
+      "Historical raw qualification/campaign data not re-parsed"
+    ],
+    "corrected_probes": [
+      "Initial goal registration found the existing active /goal; no second goal created",
+      "Initial broad output/path/glob probes were narrowed to real source files",
+      "REST --slurp singleton object decoding corrected for repository/tag records",
+      "Two stale venv probes lacked PyYAML; a fresh temporary bundled-Python environment installed the pinned hash lock",
+      "Initial docs unittest invocation used repository cwd and failed imports; rerun from docs passed all 8 tests",
+      "Draft report filenames used Path.with_suffix on a dotted version base; corrected to explicit suffix append before terminal verification, removed the two draft files/catalog entries, and regenerated the requested names"
+    ],
+    "violations": []
+  },
+  "source_evidence_index": "../scripts/v0.12.2-roadmap-contribution-audit/source-evidence-index.json",
+  "required_final_items": [
+    {
+      "number": 1,
+      "name": "Starting baseline",
+      "result": "Clean main; HEAD 0310bd8dea2e807ea57696a1bc5b3e11286db39e; VERSION 0.12.2; empty tracked diff/stat; origin Berk-Unsal/atom. Local/remote annotated v0.12.2 and remote main resolve to this commit; published release verified."
+    },
+    {
+      "number": 2,
+      "name": "Audit lock",
+      "result": "pre-audit-lock.json; SHA256 aa29b95e15d3afb859827c913edb031998cce02c5dcb174ba0fc7b75028db2d7. Original lock preserved; predeclared supplement permits only two report catalog entries."
+    },
+    {
+      "number": 3,
+      "name": "Existing issue count",
+      "result": "32 total / 0 open / 32 closed; PRs counted separately, including 7 open PRs. After: 47 total / 15 open / 32 closed."
+    },
+    {
+      "number": 4,
+      "name": "Existing label assessment",
+      "result": "24 labels; useful language/dependency/component and legacy bug/enhancement labels, plus good first issue/help wanted. No priority/research/product-roadmap taxonomy. No unlabeled or stale open issues because none were open."
+    },
+    {
+      "number": 5,
+      "name": "Existing Project assessment",
+      "result": "Unknown. Repository and owner Projects v2 discovery was attempted and denied for missing read:project; do not infer no Project exists."
+    },
+    {
+      "number": 6,
+      "name": "Contribution-readiness verdict",
+      "result": "Partially ready. Heuristic 10/20 before, 12/20 after backlog curation; setup/guide/intake/PR improvements remain unimplemented. GitHub native community health is separately 57%."
+    },
+    {
+      "number": 7,
+      "name": "Product roadmap findings",
+      "result": "Focused decision support: score/Pareto [#76](https://github.com/Berk-Unsal/atom/issues/76), export recovery [#77](https://github.com/Berk-Unsal/atom/issues/77), reproducible planning example [#78](https://github.com/Berk-Unsal/atom/issues/78). Preserve map-first deterministic scope."
+    },
+    {
+      "number": 8,
+      "name": "Scientific roadmap findings",
+      "result": "Serving semantics, TX mapping and observation-bound resources precede canonical field accuracy; receiver/LOS/compatible data and holdouts remain independent gates. No calibration/model promotion."
+    },
+    {
+      "number": 9,
+      "name": "UX/documentation findings",
+      "result": "Matched theme captures [#79](https://github.com/Berk-Unsal/atom/issues/79), glossary [#80](https://github.com/Berk-Unsal/atom/issues/80), report reader guide [#81](https://github.com/Berk-Unsal/atom/issues/81); existing workflow, executive summary and save notes are present."
+    },
+    {
+      "number": 10,
+      "name": "Tooling/contribution findings",
+      "result": "Guide [#82](https://github.com/Berk-Unsal/atom/issues/82), intake [#83](https://github.com/Berk-Unsal/atom/issues/83), PR template [#84](https://github.com/Berk-Unsal/atom/issues/84), readiness/process body schemas [#85](https://github.com/Berk-Unsal/atom/issues/85), roadmap freshness [#86](https://github.com/Berk-Unsal/atom/issues/86)."
+    },
+    {
+      "number": 11,
+      "name": "Rejected speculative roadmap items",
+      "result": "No 10/12/arbitrary Cell expansion, W2/W3/repeat qualification, adaptive admission, generic AI/new RF models, broad enterprise, mobility/capacity systems or premature terrain/clutter/vendor/calibration promotion."
+    },
+    {
+      "number": 12,
+      "name": "Issue taxonomy",
+      "result": "type: enhancement/docs/chore/research; primary area: product-ux/persistence/docs/community/api/rf-science/validation; existing frontend/backend secondary areas; P1/P2/P3 and contribution/blocker labels. No unused taxonomy labels created."
+    },
+    {
+      "number": 13,
+      "name": "Priority definitions used",
+      "result": "P1 correctness/credibility/major friction/integration; P2 meaningful workflow/contribution/bounded debt; P3 polish/convenience/docs quality. Scientific issues are P1 for accuracy promotion, not current runtime outages."
+    },
+    {
+      "number": 14,
+      "name": "Effort definitions used",
+      "result": "XS < half-day; S ~day; M bounded multi-day; L substantial cross-surface; RESEARCH unknown until evidence resolves. Rough estimates only; no effort labels."
+    },
+    {
+      "number": 15,
+      "name": "Contributor-suitability rules",
+      "result": "Beginner-safe requires exact files, bounded output, deterministic validation, low scientific risk and no architectural prerequisite; other coding/docs help is contributor-friendly; science stays research-heavy/maintainer-owned."
+    },
+    {
+      "number": 16,
+      "name": "Dependency graph summary",
+      "result": "[#87](https://github.com/Berk-Unsal/atom/issues/87) + [#88](https://github.com/Berk-Unsal/atom/issues/88) + [#89](https://github.com/Berk-Unsal/atom/issues/89) -> [#90](https://github.com/Berk-Unsal/atom/issues/90); tracker additionally requires compatible data/Rx/outdoor/LOS/holdouts. Eleven independent ready tasks have no hard backlog prerequisite."
+    },
+    {
+      "number": 17,
+      "name": "Tracking issues created/reused",
+      "result": "One created: [#90](https://github.com/Berk-Unsal/atom/issues/90). None reused; no area epics."
+    },
+    {
+      "number": 18,
+      "name": "New issues created",
+      "result": "15: #76–#90; full verified titles, labels, estimates and URLs in inventory."
+    },
+    {
+      "number": 19,
+      "name": "Existing issues reused",
+      "result": "0. No open issues existed; all 32 original issues remain closed and unchanged."
+    },
+    {
+      "number": 20,
+      "name": "Duplicate proposals rejected",
+      "result": "Seven proposal families excluded: strict OpenAPI repair; Measurement6; Retry-After; save/Version/Run distinctions; closed storage/import/report/image fixes; completed qualification/performance; existing pack/release/basic-first-task work."
+    },
+    {
+      "number": 21,
+      "name": "Issues labeled good first issue",
+      "result": "[#79](https://github.com/Berk-Unsal/atom/issues/79), [#80](https://github.com/Berk-Unsal/atom/issues/80), [#81](https://github.com/Berk-Unsal/atom/issues/81), [#84](https://github.com/Berk-Unsal/atom/issues/84)"
+    },
+    {
+      "number": 22,
+      "name": "Issues labeled help wanted",
+      "result": "[#76](https://github.com/Berk-Unsal/atom/issues/76), [#77](https://github.com/Berk-Unsal/atom/issues/77), [#78](https://github.com/Berk-Unsal/atom/issues/78), [#79](https://github.com/Berk-Unsal/atom/issues/79), [#80](https://github.com/Berk-Unsal/atom/issues/80), [#81](https://github.com/Berk-Unsal/atom/issues/81), [#82](https://github.com/Berk-Unsal/atom/issues/82), [#83](https://github.com/Berk-Unsal/atom/issues/83), [#84](https://github.com/Berk-Unsal/atom/issues/84), [#85](https://github.com/Berk-Unsal/atom/issues/85), [#86](https://github.com/Berk-Unsal/atom/issues/86)"
+    },
+    {
+      "number": 23,
+      "name": "Research-heavy issues",
+      "result": "[#87](https://github.com/Berk-Unsal/atom/issues/87), [#88](https://github.com/Berk-Unsal/atom/issues/88), [#89](https://github.com/Berk-Unsal/atom/issues/89); [#90](https://github.com/Berk-Unsal/atom/issues/90) is the maintainer-owned research tracker."
+    },
+    {
+      "number": 24,
+      "name": "Blocked issues",
+      "result": "[#87](https://github.com/Berk-Unsal/atom/issues/87), [#88](https://github.com/Berk-Unsal/atom/issues/88), [#89](https://github.com/Berk-Unsal/atom/issues/89), [#90](https://github.com/Berk-Unsal/atom/issues/90); all blocked on external/independent evidence, not on normal UI engineering."
+    },
+    {
+      "number": 25,
+      "name": "P1 issues",
+      "result": "[#87](https://github.com/Berk-Unsal/atom/issues/87), [#88](https://github.com/Berk-Unsal/atom/issues/88), [#89](https://github.com/Berk-Unsal/atom/issues/89), [#90](https://github.com/Berk-Unsal/atom/issues/90)"
+    },
+    {
+      "number": 26,
+      "name": "P2 issues",
+      "result": "[#76](https://github.com/Berk-Unsal/atom/issues/76), [#77](https://github.com/Berk-Unsal/atom/issues/77), [#78](https://github.com/Berk-Unsal/atom/issues/78), [#80](https://github.com/Berk-Unsal/atom/issues/80), [#82](https://github.com/Berk-Unsal/atom/issues/82), [#83](https://github.com/Berk-Unsal/atom/issues/83), [#84](https://github.com/Berk-Unsal/atom/issues/84), [#85](https://github.com/Berk-Unsal/atom/issues/85)"
+    },
+    {
+      "number": 27,
+      "name": "P3 issues",
+      "result": "[#79](https://github.com/Berk-Unsal/atom/issues/79), [#81](https://github.com/Berk-Unsal/atom/issues/81), [#86](https://github.com/Berk-Unsal/atom/issues/86)"
+    },
+    {
+      "number": 28,
+      "name": "Labels created",
+      "result": "area: api, area: community, area: docs, area: persistence, area: product-ux, area: rf-science, area: validation, blocked, priority: P1, priority: P2, priority: P3, type: chore, type: docs, type: enhancement, type: research (15)."
+    },
+    {
+      "number": 29,
+      "name": "Labels reused",
+      "result": "area: backend, area: frontend, good first issue, help wanted; 20 unrelated existing labels preserved, none renamed/deleted."
+    },
+    {
+      "number": 30,
+      "name": "Project used/created",
+      "result": "None; discovery permission blocked. Existing Projects remain unknown."
+    },
+    {
+      "number": 31,
+      "name": "Project URL",
+      "result": "Unavailable; no invented URL."
+    },
+    {
+      "number": 32,
+      "name": "Project fields",
+      "result": "None applied. Proposed Status, Priority, Area, Effort and Type choices/item values are in project-plan.json; reuse equivalent fields after discovery."
+    },
+    {
+      "number": 33,
+      "name": "Project issue count",
+      "result": "0 added by this audit; existing Project item count unknown. All 15 issues are available for later organization."
+    },
+    {
+      "number": 34,
+      "name": "Project status assignments",
+      "result": "Not applied. Plan: 11 Ready and 4 Blocked; 0 In Progress, 0 Done. Backlog remains default for less-defined future work."
+    },
+    {
+      "number": 35,
+      "name": "Contributor-friendly view result",
+      "result": "Not created/preserved through API because discovery failed. Recommend Contributor Friendly filtered to good first issue OR help wanted."
+    },
+    {
+      "number": 36,
+      "name": "Roadmap view result",
+      "result": "Not applied. Recommend Roadmap grouped by Status and By Area grouped/filterable by Area; no fragile UI workaround."
+    },
+    {
+      "number": 37,
+      "name": "Milestone decision",
+      "result": "No existing milestones and none created; no v0.13.0 release promise supported."
+    },
+    {
+      "number": 38,
+      "name": "Repository discoverability findings",
+      "result": "About says \"High efficiency RF planning module written in Go.\"; topics only golang/rf. Recommend scoped local-first urban planning/React/Go description and relevant geospatial/telecom topics after owner review. README opening/releases strong, contribution entry and executable story weak. Description/topics unchanged."
+    },
+    {
+      "number": 39,
+      "name": "Files created",
+      "result": "Requested Markdown/JSON pair and audit directory containing lock/supplement, source/GitHub snapshots, validated issue manifest/bodies, mutation/verification records, Project plan, scripts and bounded check logs. docs/doc-sources.json changes only by two historical audit entries."
+    },
+    {
+      "number": 40,
+      "name": "GitHub mutations performed",
+      "result": "15 labels created; 15 issues created with validated labels/dependency references. No existing issue-body edits, reopens, assignees, milestone, Project, repository About/topic changes, releases, tags or code pushes."
+    },
+    {
+      "number": 41,
+      "name": "Permission/API limitations",
+      "result": "Projects v2 read denied: read:project missing; write project scope also absent. No auth refresh/device flow or unsupported view hack attempted. Issues/labels succeeded."
+    },
+    {
+      "number": 42,
+      "name": "Methodology violations",
+      "result": "No user-scope or production-code violation found. Original lock unchanged; only report catalog registration is permitted by a recorded pre-edit supplement. Initial path/dependency/cwd probes were corrected and are not counted as passes; failed logs retained."
+    },
+    {
+      "number": 43,
+      "name": "Missing evidence",
+      "result": "No target-user timing/fresh-clone study, new real-backend E2E/operational qualification or field campaign; no authoritative serving/TX/resources/Rx/LOS truth; existing Projects inaccessible. Historical scientific/qualification evidence is cited, not independently recollected."
+    },
+    {
+      "number": 44,
+      "name": "Final A/B/C/D/E verdict",
+      "result": "B — ISSUES READY — PROJECT ORGANIZATION INCOMPLETE. A cannot be claimed because Project organization is unavailable; C/D/E are contradicted by verified issues and evidence."
+    },
+    {
+      "number": 45,
+      "name": "Single highest-priority issue",
+      "result": "[#87](https://github.com/Berk-Unsal/atom/issues/87) — authoritative serving-source semantics; it is the primary current field-readiness blocker, with independent TX/resource gates retained."
+    },
+    {
+      "number": 46,
+      "name": "Best good-first issue",
+      "result": "[#84](https://github.com/Berk-Unsal/atom/issues/84) — one bounded Markdown template, existing rules, no RF/architecture prerequisite; glossary/hero/report guide offer additional entry points."
+    },
+    {
+      "number": 47,
+      "name": "Most important scientific/research issue",
+      "result": "[#87](https://github.com/Berk-Unsal/atom/issues/87); [#90](https://github.com/Berk-Unsal/atom/issues/90) tracks final scientific success without disguising uncertainty as a coding task."
+    },
+    {
+      "number": 48,
+      "name": "What NOT to work on next",
+      "result": "Larger Cell caps, W2/W3/adaptive admission, new RF/AI/enterprise/mobility/capacity systems, canonical terrain/clutter/vendor-pattern additions or calibration before evidence."
+    },
+    {
+      "number": 49,
+      "name": "Freeze decision",
+      "result": "Keep VERSION 0.12.2, HEAD/tag, RF/search/policy/caps/budgets/persistence and all historical evidence unchanged. Freeze the approved manifest and completed audit records. No commit/release/tag/push or backlog implementation."
+    },
+    {
+      "number": 50,
+      "name": "Single recommended next action",
+      "result": "Start [#76](https://github.com/Berk-Unsal/atom/issues/76) as the next bounded implementation task; it is ready, improves the core decision loop and does not depend on external scientific evidence. This audit stops here."
+    }
+  ]
+}

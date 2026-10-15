@@ -1,0 +1,89 @@
+
+name: Feature or research proposal
+description: Propose a bounded improvement to A.T.O.M. planning decisions
+title: "[Proposal]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting, [search existing issues](https://github.com/Berk-Unsal/atom/issues) for duplicates.
+
+        Explain the planning decision this proposal would improve. Keep the work bounded and identify what is explicitly out of scope.
+
+        Never include credentials, private campaign locations, raw routes, private datasets, or other sensitive information. Do not upload raw measurements or campaign data.
+
+        A.T.O.M provides deterministic planning estimates, and measured real-world propagation accuracy has not been established. Scientifically uncertain work requires maintainer review; a proposal is not evidence of scientific validity or approval for production use.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Planning decision to improve
+      description: Which specific planning decision or workflow would this proposal improve, and what limitation motivates the change?
+      placeholder: Describe the current limitation and the decision it affects.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and rationale
+      description: Provide safe, reproducible evidence, references, or examples supporting the problem. Distinguish established facts from hypotheses.
+      placeholder: |
+        - Observed limitation:
+        - Supporting evidence or references:
+        - Remaining uncertainty:
+    validations:
+      required: true
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: Prerequisites and dependencies
+      description: Identify required inputs, datasets, model assumptions, dependencies, or validation work. Do not provide private datasets or campaign data.
+      placeholder: List prerequisites, or explain why none are required.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Proposed bounded scope
+      description: Describe the smallest useful change and how its outcome could be evaluated.
+      placeholder: |
+        - Included:
+        - Expected outcome:
+        - Validation approach:
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals and exclusions
+      description: State what this proposal will not implement or claim.
+      placeholder: List excluded functionality, assumptions, and claims.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scientific_uncertainty
+    attributes:
+      label: Scientific assumptions and uncertainty
+      description: Explain uncertain assumptions, applicability limits, and evidence still needed. Maintainers must review scientifically uncertain work.
+      placeholder: Describe known limitations and unresolved questions.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues for duplicates.
+          required: true
+        - label: I excluded credentials, private campaign locations, raw routes, and confidential data.
+          required: true
+        - label: I understand that scientifically uncertain work requires maintainer review.
+          required: true

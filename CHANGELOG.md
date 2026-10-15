@@ -4,6 +4,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-10-15
+
 ### Fixed
 
 - Reconcile current product, model, accuracy, optimization and performance claims with the released planning scope; clarify independent network8/Recommendation5/Measurement6 and portable-evidence limits.
@@ -317,7 +319,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.2...HEAD
+[0.12.2]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/Berk-Unsal/atom/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Berk-Unsal/atom/compare/v0.10.2...v0.11.0

@@ -11,6 +11,7 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 - [Architecture](architecture.html): internal request paths, RF engines, spatial data and reliability controls after the first planning task.
 - [Capabilities](features.html): current supported planning workflows and technology boundaries.
 - [Modeling limits](modeling-limits.html): what the deterministic model includes and excludes.
+- [Cell, sector, site, and tower record terminology](terminology.html): distinguish planning Cells and dataset candidates from physical sites.
 - [Concept 4D urban propagation](concept-4d-urban-propagation.md): selectable model modes, UMa equations, LOS/NLOS rule, fallback policy, and baseline artifact. The [canonical comparison](concept-4d-canonical-comparison.json) records the real Ankara legacy-versus-urban run.
 - [Concept 4E building entry](concept-4e-building-entry.html): deterministic facade-entry semantics, TR 38.901 O2I loss profiles, material audit, API contract, caching, and canonical Ankara ledger.
 - [Concept 4F.1 height-aware obstruction](concept-4f1-height-aware-obstruction.md): height provenance, deterministic centerline roof blocking, conservative unknown-height behavior, terrain status, multipart identity, and canonical audit.

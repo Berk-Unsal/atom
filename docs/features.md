@@ -24,6 +24,8 @@ Project history is local to the browser. A.T.O.M does not provide accounts, shar
 
 ## Cell Inventory And RF Profiles
 
+Cells and imported tower records are planning inputs. See [Cell, sector, site, and tower record terminology](terminology.html) before interpreting a Cell as a physical site.
+
 - Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories.
 - Search the inventory and select cells without losing their per-cell overrides.
 - Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and either manual receiver sensitivity or a derived receiver mode with noise bandwidth, noise figure, required SNR, and receiver margin independently for every cell.

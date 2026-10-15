@@ -1,0 +1,3904 @@
+{
+  "schema_version": 1,
+  "audit": "A.T.O.M v0.12.1 Post-Release Product + Scientific Coherence Audit",
+  "date": "2026-10-15",
+  "timezone": "Europe/Istanbul",
+  "audit_only": true,
+  "baseline": {
+    "utc": "2026-10-15T09:39:10.222274+00:00",
+    "branch": "main",
+    "head": "e84210dda6fb282474eda4e935f50c598fad7b34",
+    "version": "0.12.1",
+    "status_porcelain": "?? scripts/v0.12.1-post-release-audit/",
+    "diff_stat": "",
+    "tracked_diff": ""
+  },
+  "initial_observation": "Initial pre-directory git status --short was empty; main/e84210dda6fb282474eda4e935f50c598fad7b34; VERSION 0.12.1; empty diff --stat. Freeze JSON intentionally records the subsequently created audit directory.",
+  "audit_lock_sha256": "4035e4a3ce4cde804a161c7deef9f5061ddaaa29e006b7bad18f4f5934a8cd91",
+  "criteria_lock": "scripts/v0.12.1-post-release-audit/criteria-lock.json",
+  "source_identities": {
+    "backend": {
+      "count": 164,
+      "sha256": "6d8634d7481228a117d8229fadecf8f0564a2ea0fcaef427adccd8d5bf8b99f6"
+    },
+    "frontend": {
+      "count": 218,
+      "sha256": "8621029024bcde78bffe3fb86e39913716e99ee45d6425d3b042142b92d95cb6"
+    },
+    "rf_science": {
+      "count": 107,
+      "sha256": "985ad85371e722ad7a6abeb3d80bea4d608b7a6b44000583d1376dddb0ae2f6d"
+    },
+    "policy_admission": {
+      "count": 101,
+      "sha256": "db9b163d31584128629e2622d16e5901b8c7b370c279ff591d75e54048cef22b"
+    },
+    "persistence": {
+      "count": 95,
+      "sha256": "91507147d87b9b5c3467ae015f5e59a8f33552d1e5827fc903ceac599ff2d6fa"
+    },
+    "openapi": {
+      "count": 1,
+      "sha256": "2aa64c0841a4be5564536ee9fd64c869b157b4da31fe047e5291f173f1426e7f"
+    },
+    "docs": {
+      "count": 1053,
+      "sha256": "04fae6587279cfc7f1c05e65a1176895a720000018f355aaba5c8f9014d9ad21"
+    },
+    "version": {
+      "count": 1,
+      "sha256": "59fbccf86ecfc22c584479a08ad091d91a7f713694756b71912dfe11911b9426"
+    },
+    "all_tracked": {
+      "count": 3217,
+      "sha256": "2e290f3ff8bcbabc13e144496a4e2faa9183b264d468c0a91de9e9096659d8f0"
+    }
+  },
+  "product_definition": "A.T.O.M is a local-first, open-source workspace for comparing small urban cellular-network configurations on real maps using deterministic RF planning estimates and bounded azimuth search.",
+  "primary_label": "Deterministic urban RF planning and experimentation workspace.",
+  "verdict": {
+    "category": "C",
+    "label": "SCIENTIFIC CLAIM-BOUNDARY DEFECT",
+    "rationale": "C — SCIENTIFIC CLAIM-BOUNDARY DEFECT. The primary runtime/README support a coherent, scientifically careful small-plan comparison product, but current unarchived docs/overview.md materially presents vendor antenna validation across terrain/buildings, beamforming work and broad data/performance/scalability claims beyond released evidence. It is not linked from the current docs hub, but is public repository product copy and is not a frozen historical qualification/design report. This cluster of present-tense applicability assertions crosses the locked C rule; it is more than an isolated aspirational roadmap sentence. B describes the core product/workflow condition but is insufficient as the overall claim-alignment verdict. A is contradicted by these claims and other copy drift; D is not supported because the core loop is connected; E is unnecessary because the relevant sources/checks are available. No core RF equation defect or measured accuracy is asserted by this verdict."
+  },
+  "evidence_index": {
+    "readme": {
+      "file": "README.md",
+      "line": 21
+    },
+    "readme_caps": {
+      "file": "README.md",
+      "line": 33
+    },
+    "readme_scope": {
+      "file": "README.md",
+      "line": 38
+    },
+    "readme_features": {
+      "file": "README.md",
+      "line": 42
+    },
+    "readme_start": {
+      "file": "README.md",
+      "line": 178
+    },
+    "readme_gallery": {
+      "file": "README.md",
+      "line": 123
+    },
+    "compass": {
+      "file": "planning/product-compass.md",
+      "line": 7
+    },
+    "product": {
+      "file": "PRODUCT.md",
+      "line": 11
+    },
+    "landing": {
+      "file": "docs/index.html",
+      "line": 86
+    },
+    "landing_default": {
+      "file": "docs/index.html",
+      "line": 139
+    },
+    "landing_light": {
+      "file": "docs/index.html",
+      "line": 98
+    },
+    "landing_limits": {
+      "file": "docs/index.html",
+      "line": 204
+    },
+    "architecture": {
+      "file": "docs/architecture.md",
+      "line": 39
+    },
+    "limits": {
+      "file": "docs/modeling-limits.md",
+      "line": 1
+    },
+    "algorithms": {
+      "file": "docs/algorithms.md",
+      "line": 5
+    },
+    "legacy_benchmark": {
+      "file": "docs/algorithms.md",
+      "line": 396
+    },
+    "features_cap": {
+      "file": "docs/features.md",
+      "line": 72
+    },
+    "features": {
+      "file": "docs/features.md",
+      "line": 1
+    },
+    "guide": {
+      "file": "docs/getting-started.md",
+      "line": 122
+    },
+    "guide_measurement": {
+      "file": "docs/getting-started.md",
+      "line": 153
+    },
+    "api": {
+      "file": "docs/api.md",
+      "line": 1
+    },
+    "api_optimal": {
+      "file": "docs/api.md",
+      "line": 784
+    },
+    "api_bounded": {
+      "file": "docs/api.md",
+      "line": 894
+    },
+    "api_budget": {
+      "file": "docs/api.md",
+      "line": 1275
+    },
+    "openapi": {
+      "file": "docs/openapi.yaml",
+      "line": 24
+    },
+    "policy": {
+      "file": "policy/rf-policy.json",
+      "line": 1
+    },
+    "tools": {
+      "file": "frontend-react/src/components/workspaceTools.js",
+      "line": 17
+    },
+    "chrome": {
+      "file": "frontend-react/src/components/WorkspaceChrome.jsx",
+      "line": 30
+    },
+    "setup": {
+      "file": "frontend-react/src/components/ControlPanel.jsx",
+      "line": 107
+    },
+    "cap_ui": {
+      "file": "frontend-react/src/components/ControlPanel.jsx",
+      "line": 127
+    },
+    "recommendation_guard": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 2070
+    },
+    "measurement_handler": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 2127
+    },
+    "measurement_ui": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 5546
+    },
+    "bias_heading": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 5568
+    },
+    "app_model": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 5602
+    },
+    "data_confidence": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 5412
+    },
+    "results": {
+      "file": "frontend-react/src/App.jsx",
+      "line": 5148
+    },
+    "goals": {
+      "file": "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+      "line": 31
+    },
+    "interference_ui": {
+      "file": "frontend-react/src/components/InterferenceResultsPanel.jsx",
+      "line": 53
+    },
+    "empty": {
+      "file": "frontend-react/src/components/AnalysisEmptyState.jsx",
+      "line": 1
+    },
+    "apply": {
+      "file": "frontend-react/src/components/ApplySolutionDialog.jsx",
+      "line": 42
+    },
+    "progress": {
+      "file": "frontend-react/src/utils/optimizationOperation.js",
+      "line": 1
+    },
+    "rf": {
+      "file": "backend-go/raytracer/propagation_model.go",
+      "line": 29
+    },
+    "antenna": {
+      "file": "backend-go/raytracer/antenna_evaluator.go",
+      "line": 1
+    },
+    "receiver": {
+      "file": "backend-go/raytracer/receiver_noise.go",
+      "line": 1
+    },
+    "interference": {
+      "file": "backend-go/raytracer/interference.go",
+      "line": 1
+    },
+    "building": {
+      "file": "backend-go/raytracer/building_entry.go",
+      "line": 1
+    },
+    "terrain": {
+      "file": "backend-go/raytracer/terrain.go",
+      "line": 1
+    },
+    "measurements": {
+      "file": "backend-go/raytracer/measurements.go",
+      "line": 231
+    },
+    "canonical": {
+      "file": "docs/concept-6a-canonical-rf-validation.md",
+      "line": 1
+    },
+    "pilot": {
+      "file": "docs/concept-6a1-readiness.json",
+      "line": 6
+    },
+    "pilot_note": {
+      "file": "docs/concept-6a1-campaign-tooling.md",
+      "line": 248
+    },
+    "promotion": {
+      "file": "docs/eight-cell-product-cap-promotion.md",
+      "line": 1
+    },
+    "shipping": {
+      "file": "scripts/eight-cell-product-cap-promotion/shipping-build.json",
+      "line": 1
+    },
+    "performance": {
+      "file": "docs/network-optimization-deadline-audit.md",
+      "line": 27
+    },
+    "cache": {
+      "file": "docs/network-optimization-deadline-audit.md",
+      "line": 43
+    },
+    "concurrency": {
+      "file": "docs/network-optimization-deadline-audit.md",
+      "line": 109
+    },
+    "resource": {
+      "file": "backend-go/resource_profile.go",
+      "line": 1
+    },
+    "workflow_policy": {
+      "file": "backend-go/rf_workflows.go",
+      "line": 1
+    },
+    "protection": {
+      "file": "backend-go/rf_protection.go",
+      "line": 1
+    },
+    "api_client": {
+      "file": "frontend-react/src/utils/apiClient.js",
+      "line": 33
+    },
+    "store": {
+      "file": "frontend-react/src/utils/projectStore.js",
+      "line": 10
+    },
+    "store_export": {
+      "file": "frontend-react/src/utils/projectStore.js",
+      "line": 260
+    },
+    "store_retention": {
+      "file": "frontend-react/src/utils/projectStore.js",
+      "line": 371
+    },
+    "project_format": {
+      "file": "docs/project-format.md",
+      "line": 3
+    },
+    "reports": {
+      "file": "frontend-react/src/utils/reportExport.js",
+      "line": 1217
+    },
+    "report_limits": {
+      "file": "frontend-react/src/utils/reportExport.js",
+      "line": 848
+    },
+    "report_pareto": {
+      "file": "frontend-react/src/utils/reportExport.js",
+      "line": 643
+    },
+    "report_map": {
+      "file": "frontend-react/src/utils/reportExport.js",
+      "line": 719
+    },
+    "history": {
+      "file": "frontend-react/src/domain/resultContext.js",
+      "line": 1
+    },
+    "reference_tests": {
+      "file": "backend-go/raytracer/rf_reference_fixtures_test.go",
+      "line": 1
+    },
+    "cap_tests": {
+      "file": "backend-go/product_cap_promotion_test.go",
+      "line": 1
+    },
+    "cache_tests": {
+      "file": "backend-go/raytracer/optimization_cell_cache_test.go",
+      "line": 1
+    },
+    "e2e": {
+      "file": "frontend-react/e2e/workspace.spec.js",
+      "line": 1842
+    },
+    "changelog": {
+      "file": "CHANGELOG.md",
+      "line": 40
+    },
+    "overview": {
+      "file": "docs/overview.md",
+      "line": 14
+    },
+    "overview_perf": {
+      "file": "docs/overview.md",
+      "line": 66
+    },
+    "overview_data": {
+      "file": "docs/overview.md",
+      "line": 76
+    },
+    "overview_scale": {
+      "file": "docs/overview.md",
+      "line": 79
+    },
+    "overview_roadmap": {
+      "file": "docs/overview.md",
+      "line": 83
+    },
+    "overview_commercial": {
+      "file": "docs/overview.md",
+      "line": 31
+    },
+    "algorithm_suitability": {
+      "file": "docs/algorithms.md",
+      "line": 499
+    },
+    "semantics": {
+      "file": "docs/concept-6a1-2-serving-state-semantics.md",
+      "line": 95
+    },
+    "semantics_decision": {
+      "file": "docs/concept-6a1-2-decision.json",
+      "line": 1
+    },
+    "sample": {
+      "file": "examples/ankara-sample.atom-project.json",
+      "line": 1
+    }
+  },
+  "personas": [
+    [
+      "RF / RAN engineer",
+      "Compare small, explicitly configured urban plans; inspect link and interference assumptions.",
+      "Per-Cell inventory, azimuth evaluation/search, co-channel maps, baseline deltas and reports.",
+      "Surveyed operator inventory, calibrated clutter/terrain propagation, vendor patterns, mobility/capacity and field accuracy.",
+      "Planning-grade and RSRP labels may create commercial-tool expectations; README/model limits substantially constrain them."
+    ],
+    [
+      "Telecom student / researcher",
+      "Explore how geometry, band, antennas and objectives change deterministic estimates.",
+      "2.6/28 GHz planning, isolated 140 GHz/reference tools, fixtures, experiments, provenance and reproducibility.",
+      "Validated 6G channels, stochastic channel/PHY behavior, a published numeric real-campaign accuracy result.",
+      "The 6G research badge helps; standards citations are not measurement validation."
+    ],
+    [
+      "Network-planning experimenter",
+      "Compare candidate configurations and explain a bounded recommendation.",
+      "Two-to-eight-Cell planning, optional quality objective, known-record candidates up to five existing inputs, saved Versions.",
+      "Arbitrary site deployment feasibility, globally optimal siting, arbitrary network scale.",
+      "Site/recommendation terminology and a /100 score need interpretation."
+    ],
+    [
+      "Software / systems engineer exploring RF",
+      "Study bounded geospatial computation and reproducible local workflows.",
+      "Go/React source, API, immutable dataset runtime, cancellation, request budgets and tests.",
+      "A general RF truth service or universal performance guarantee from worker-pool design.",
+      "A long feature list and old parallelization timing examples can mislead."
+    ],
+    [
+      "Hobbyist / open-source contributor",
+      "Run a concrete urban experiment locally and contribute a focused improvement.",
+      "Docker path, settings-only example, inspectable map, public source, tests and contribution docs.",
+      "One-click install without LFS/build tools, production spectrum/network management.",
+      "Purpose and first useful decision are less prominent than installation and capabilities."
+    ]
+  ],
+  "use_cases": [
+    [
+      "Compare candidate cellular deployments",
+      "CORE PRODUCT WORKFLOW",
+      "Compare configured planning records, azimuths and scenarios; deployment feasibility excluded."
+    ],
+    [
+      "Visualize propagation / received power / gaps",
+      "CORE PRODUCT WORKFLOW",
+      "Sector/network estimates on the map; ray reach, building service and area coverage have distinct meanings."
+    ],
+    [
+      "Evaluate network configurations",
+      "CORE PRODUCT WORKFLOW",
+      "Two-to-eight selected Cells; exact RF inputs and normalized score."
+    ],
+    [
+      "Optimize network parameters",
+      "CORE PRODUCT WORKFLOW",
+      "Azimuth search under fixed other inputs; no silent power/tilt/site optimization."
+    ],
+    [
+      "Compare baseline and recommendation",
+      "CORE PRODUCT WORKFLOW",
+      "Results, Solutions, apply-to-Version and reports preserve lineage."
+    ],
+    [
+      "Inspect co-channel interference",
+      "SUPPORTING ANALYSIS",
+      "4G/5G horizon-bounded modeled radio quality."
+    ],
+    [
+      "Inspect representative building entry",
+      "SUPPORTING ANALYSIS",
+      "2.6/28 GHz facade-entry estimate at zero indoor depth."
+    ],
+    [
+      "Inspect RF explanations",
+      "SUPPORTING ANALYSIS",
+      "Conditional marginal effects, not causal/additive attribution."
+    ],
+    [
+      "Run bounded experiment matrices",
+      "SUPPORTING ANALYSIS",
+      "At most 64 combinations; asynchronous jobs; advanced reproducible use."
+    ],
+    [
+      "Explore assumptions / path profiles",
+      "REFERENCE TOOL",
+      "Terrain/Fresnel/single-edge evidence is isolated from canonical network loss."
+    ],
+    [
+      "Measurement CSV residual review",
+      "RESEARCH / EXPERIMENTAL",
+      "User-supplied 4G/5G samples and optional holdout-checked scalar correction; no bundled validated real campaign."
+    ],
+    [
+      "Sub-THz atmosphere, P.1411, material, reflection evidence",
+      "REFERENCE TOOL",
+      "Applicability-gated, separately labeled, no automatic canonical promotion."
+    ],
+    [
+      "5G Core communication paths",
+      "RESEARCH / EXPERIMENTAL",
+      "Optional simulated/external lab overlay independent from RF."
+    ],
+    [
+      "Auto / admission qualification diagnostics",
+      "INTERNAL / DIAGNOSTIC",
+      "Observation-only capacity/resource metadata; estimator admission paused."
+    ]
+  ],
+  "workflow": [
+    [
+      "Open project / workspace",
+      "Start or resume a planning hypothesis",
+      "Project menu, Setup, Scenarios",
+      "GET metadata/dataset/inventory; browser repository load",
+      "Working draft, selected dataset, immutable Versions and Runs",
+      "Choose mode and Cells",
+      "LFS/build prerequisites; draft autosave and saved Version can be confused."
+    ],
+    [
+      "Select/configure Cells",
+      "Define transmitters and independent RF profiles",
+      "Setup → Select cells; Inventory editor",
+      "Browser validation; later canonical request DTOs",
+      "Ordered selection of up to eight, per-Cell overrides",
+      "Set model and propagation controls",
+      "A Cell is a planning record/sector, not proof of one physical site. Ninth is refused; co-located IDs are possible."
+    ],
+    [
+      "Configure RF",
+      "Make assumptions explicit",
+      "Setup, Propagation Planning/Advanced, Inventory",
+      "No hidden RF request on edits",
+      "Draft changes; old results stale/incompatible",
+      "Evaluate Network",
+      "Defaults versus per-Cell overrides require care; UMa acronym assumes knowledge."
+    ],
+    [
+      "Evaluate",
+      "Establish a baseline configuration",
+      "Command bar Evaluate Network",
+      "POST /api/evaluate-network + verified per-Cell /api/simulate map follow-ups",
+      "Network metrics, current Run, map rays and evidence",
+      "Inspect map/results",
+      "Map refresh consists of real bounded child work; failure must not be read as a completed result."
+    ],
+    [
+      "Inspect maps/results",
+      "Find where outcomes occur",
+      "Results RF/Optimization, Map key, Inspector",
+      "Retained results; presentation toggles avoid RF",
+      "Source Run, metrics, Cell/sample inspection",
+      "Analyze interference",
+      "Received-power surface, diagnostic rays, reach and serviceability are not interchangeable."
+    ],
+    [
+      "Analyze interference",
+      "Check co-channel relationships",
+      "Analyze → Interference; Results",
+      "POST /api/interference",
+      "4G/5G RSRP/SINR/RSRQ/RSSI grid and ledger",
+      "Edit assumptions and re-evaluate",
+      "No 140 GHz quality; thresholds, finite horizon and per-resource conversion constrain interpretation."
+    ],
+    [
+      "Re-evaluate",
+      "Test a changed hypothesis",
+      "Inputs + explicit command-bar run",
+      "New protected evaluation and matching map refresh",
+      "New Run replaces only matching current state",
+      "Optimize or retain baseline",
+      "Latest-response/cancellation guards prevent stale overwrite; repeated work can consume shared-IP budget."
+    ],
+    [
+      "Optimize",
+      "Compare azimuth candidates under priorities/constraints",
+      "Propagation → Optimize Network; Goals",
+      "POST /api/optimize-network + matching map follow-ups",
+      "Recommended feasible state, baseline, up to 25 discovered Pareto alternatives",
+      "Inspect comparison and Solutions",
+      "Legacy two-pass coordinate search; not a global optimum. Expensive options remain deadline-bounded."
+    ],
+    [
+      "Compare result",
+      "Understand trade-offs",
+      "Review → Results / Solutions / Compare",
+      "Local retained frontier reranking/inspection where compatible",
+      "Baseline deltas and selected alternative; map focus separate",
+      "Inspect explanations / apply",
+      "A priority rerank does not discover new states; opt-in weighted discovery can differ on rerun."
+    ],
+    [
+      "Inspect explanations",
+      "Understand each Cell conditional contribution",
+      "Per-Cell explanation and Inspector",
+      "Protected lazy explanation request; cached matching evidence reused",
+      "Cell-reverted counterfactual, feasibility and metric deltas",
+      "Review assumptions",
+      "Additional uncached requests consume ordinary budget; conditional effects are not causal/additive."
+    ],
+    [
+      "Review / apply",
+      "Bind a decision to source evidence",
+      "Results, Apply solution dialog, Run history",
+      "Browser repository; source-Version checks",
+      "New Version/branch and lineage",
+      "Generate report; save/export",
+      "Apply unavailable without retained source Version; intentional safety prerequisite can surprise novices."
+    ],
+    [
+      "Export/report/save",
+      "Carry evidence to another review/session",
+      "Project menu, Report, historical Run report",
+      "Local HTML/Markdown artifact generation, hashes, IndexedDB/file guards",
+      "Retained project schema v3 and report artifacts",
+      "Compare/reopen or communicate estimate",
+      "16 MiB encoded, 32 MiB/1M decoded guards; map paths sampled with disclosure; five recent scenario layer caches; browser-local save is not portable backup."
+    ]
+  ],
+  "tools": [
+    [
+      "Setup",
+      "essential to primary planning workflow",
+      "Mode, model, defaults, selected Cells"
+    ],
+    [
+      "Inventory",
+      "essential to primary planning workflow",
+      "Per-Cell configuration and placement"
+    ],
+    [
+      "Scenarios",
+      "essential to primary planning workflow",
+      "Hypotheses, Versions, branches; terminology introduces learning cost"
+    ],
+    [
+      "Propagation",
+      "essential to primary planning workflow",
+      "Evaluate context and explicit azimuth optimization"
+    ],
+    [
+      "Results / Solutions / Compare",
+      "essential to primary planning workflow",
+      "Outcome, baseline, priorities and alternatives"
+    ],
+    [
+      "Run history / Report",
+      "essential to primary planning workflow",
+      "Reproducibility and decision delivery"
+    ],
+    [
+      "Interference / Building entry / Signal surface",
+      "useful secondary analysis",
+      "Different planning questions; task/result scopes documented"
+    ],
+    [
+      "Experiments",
+      "expert-only",
+      "Bounded matrices and Pareto comparisons"
+    ],
+    [
+      "RF Diagnostics / path profile",
+      "expert-only",
+      "Separate diagnostic loss/terrain evidence"
+    ],
+    [
+      "Sub-THz/P.1411/material/reflection/campaign panels",
+      "experimental/reference",
+      "Research disclosures already distinguish these; advanced tools need not be removed"
+    ],
+    [
+      "Data / dataset switching / Pack Studio",
+      "useful secondary analysis",
+      "Provenance and pack management; Data is also the measurement entry point"
+    ],
+    [
+      "5G Core",
+      "possibly disconnected",
+      "Legitimate optional telecom overlay; less central to the RF planning decision and already availability-gated"
+    ],
+    [
+      "Auto/resource metadata",
+      "internal/diagnostic",
+      "Observation, not adaptive control or user azimuth automation"
+    ]
+  ],
+  "terminology": [
+    [
+      "Cell",
+      "One selected inventory/planning RF record with its own profile and direction.",
+      "Current UI uses Cell; backend tower DTOs and historical reports retain tower. Counting records does not count physical sites."
+    ],
+    [
+      "tower",
+      "Legacy/API/data representation of a planning record/location.",
+      "API errors still say selected towers; docs sometimes say choose a tower. Avoid translating this into surveyed infrastructure truth."
+    ],
+    [
+      "sector",
+      "Directional RF analysis/configuration associated with a Cell.",
+      "Single-sector mode and duplicated co-located sectors do not establish a site inventory hierarchy."
+    ],
+    [
+      "site",
+      "Candidate planning location or measurement site depending on context.",
+      "recommend-sites/Candidate Site docs can sound like greenfield siting; source uses known unselected records. Measurement site IDs have another evidence role."
+    ],
+    [
+      "network",
+      "The finite selected group of configured Cells.",
+      "Not the whole operator RAN or complete interference environment."
+    ],
+    [
+      "RF profile",
+      "Resolved per-Cell radio assumptions with request defaults and explicit overrides.",
+      "Distinct from deployment resource Profile A."
+    ],
+    [
+      "propagation / coverage",
+      "Modeled received power, usable ray reach, building service or sampled surfaces.",
+      "Legacy objective coverage is reach, not continuous geographic coverage. Display labels improve this but API names remain."
+    ],
+    [
+      "interference",
+      "Modeled finite-horizon co-channel linear power ledger and quality conversion.",
+      "Measure network overlap in tool description should be read as estimate; no measured UE state."
+    ],
+    [
+      "optimization / solution",
+      "Feasible azimuth candidate search and one discovered configuration.",
+      "Optimal API field and maximum coverage sentence are broader than search/weighted demand semantics."
+    ],
+    [
+      "recommendation",
+      "Either optimizer preferred configuration or ranked candidate record.",
+      "Both defensible; different task and cap. Needs context, not automatic renaming."
+    ],
+    [
+      "measurement validation",
+      "Ordinary CSV residual/global-bias workflow; isolated reference ledger; canonical validation library.",
+      "Three distinct evidence paths. UI capability is not proof that the shipped model passed real-campaign validation."
+    ],
+    [
+      "W1",
+      "Frozen workload/layout/settings class in historical qualification.",
+      "Evidence vocabulary, not model confidence or a universal certification class."
+    ],
+    [
+      "Profile A",
+      "2 CPU/4 GiB reference deployment envelope in the locked qualification.",
+      "Not RF profile or arbitrary minimum hardware guarantee."
+    ],
+    [
+      "Auto",
+      "Resource/admission observation metadata, with estimator admission paused.",
+      "Different from Auto-Optimize Sector, which explicitly runs azimuth search."
+    ],
+    [
+      "Project / Scenario / Version / Run",
+      "Workspace container / hypothesis / immutable input revision / execution evidence.",
+      "Coherent lineage, but unsaved Version and autosaved draft sound contradictory without explanation."
+    ]
+  ],
+  "claim_inventory": [
+    {
+      "id": "C01",
+      "claim": "Supports eight selected Cells",
+      "current_wording_location": "README current workflow table; Setup; normal policy/OpenAPI caps",
+      "evidence_level": "A",
+      "supported": "yes",
+      "qualification_needed": "Eight is an operational product limit; it is not measured accuracy.",
+      "recommended_wording": "Supports two-to-eight configured Cells in normal network workflows.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 33
+        },
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 127
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        },
+        {
+          "file": "policy/rf-policy.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "claim": "Eight-Cell W1/Profile A qualification",
+      "current_wording_location": "README qualification paragraph; promotion report",
+      "evidence_level": "B",
+      "supported": "yes, historical frozen scope",
+      "qualification_needed": "Exact eight paired Ankara layouts, 120 rays/400 m/30 dBm/120°; 2.6/28 GHz; legacy two-pass; Go 1.26.6 Linux/arm64, 2 CPU/4 GiB.",
+      "recommended_wording": "Eight-Cell operational qualification applies to the frozen Ankara W1/Profile A workload; heavier workloads and other systems are unqualified.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "scripts/eight-cell-product-cap-promotion/shipping-build.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "claim": "2.6 GHz planning",
+      "current_wording_location": "README/modeling limits/Setup",
+      "evidence_level": "C",
+      "supported": "yes, model subset",
+      "qualification_needed": "Deterministic outdoor UMa median path loss with applicability/fallback; not field-calibrated.",
+      "recommended_wording": "2.6 GHz deterministic urban planning estimates using the documented UMa subset.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "backend-go/raytracer/propagation_model.go",
+          "line": 29
+        },
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 107
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "claim": "28 GHz planning",
+      "current_wording_location": "README/modeling limits/Setup",
+      "evidence_level": "C",
+      "supported": "yes, model subset",
+      "qualification_needed": "Same subset and applicability; not validated mmWave multipath/beamforming.",
+      "recommended_wording": "28 GHz deterministic urban planning estimates; no measured accuracy guarantee.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "backend-go/raytracer/propagation_model.go",
+          "line": 29
+        },
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 107
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "claim": "140 GHz planning/research overlay",
+      "current_wording_location": "README; 6G research option; model applicability",
+      "evidence_level": "D",
+      "supported": "yes, research only",
+      "qualification_needed": "Legacy conservative attenuation envelope; no 3GPP 140 GHz applicability or canonical field validation.",
+      "recommended_wording": "140 GHz research comparison profile with isolated reference diagnostics.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 107
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5602
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "claim": "3GPP basis",
+      "current_wording_location": "UMa and antenna/O2I descriptions",
+      "evidence_level": "C",
+      "supported": "yes, stated subsets",
+      "qualification_needed": "No full channel-model, PHY, UE, protocol or standards-conformance certification.",
+      "recommended_wording": "Implements documented deterministic 3GPP-derived path-loss, antenna and entry subsets.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5602
+        },
+        {
+          "file": "backend-go/raytracer/antenna_evaluator.go",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "claim": "Real-world RF accuracy",
+      "current_wording_location": "README says estimates, not measurements; visualization/model limits disclaim calibration",
+      "evidence_level": "E",
+      "supported": "not established",
+      "qualification_needed": "Real pilot yielded zero canonical observations; no defensible residual/MAE/RMSE accuracy result.",
+      "recommended_wording": "Measured propagation accuracy has not been established for the released model.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "docs/concept-6a-canonical-rf-validation.md",
+          "line": 1
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "claim": "Optimization ~1.5–2 minutes to seconds",
+      "current_wording_location": "Deadline audit affected six-Cell 28 GHz case; not a README universal promise",
+      "evidence_level": "B",
+      "supported": "yes, scoped historical measurement",
+      "qualification_needed": "Request timing, same payload/dataset/control environment; no universal full-journey SLA.",
+      "recommended_wording": "Affected six-Cell request: approximately 95–113 s uncached to 6.72–6.76 s corrected in the recorded container controls.",
+      "evidence": [
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 27
+        },
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 43
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "claim": "Speedup caused by Go concurrency",
+      "current_wording_location": "Supplied external question; no such broad current README claim",
+      "evidence_level": "F",
+      "supported": "unsupported attribution",
+      "qualification_needed": "Correction did not change worker count, scheduling or candidate parallelism; no controlled caching-versus-concurrency factorial split.",
+      "recommended_wording": "The demonstrated correction removes redundant RF work through request-local contribution reuse; pre-existing concurrency remains.",
+      "evidence": [
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 43
+        },
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 109
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "claim": "36 s naive → 250 ms with parallelization; 4× quad-core speedup",
+      "current_wording_location": "Algorithms complexity/parallelization sections",
+      "evidence_level": "F",
+      "supported": "unsupported as current benchmark",
+      "qualification_needed": "Missing workload, band, Cell count, hardware/runtime, raw measurements, warm/cold state; internally different ratios.",
+      "recommended_wording": "Describe parallel worker structure without timing guarantees, or cite a reproducible scoped benchmark.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 396
+        }
+      ]
+    },
+    {
+      "id": "C11",
+      "claim": "2 CPU/4 GiB resource qualification",
+      "current_wording_location": "README; getting-started appendix; historical promotion",
+      "evidence_level": "B",
+      "supported": "yes, reference scope",
+      "qualification_needed": "Not minimum universal requirements; current Go 1.26.9 binary was not resource-requalified in this audit.",
+      "recommended_wording": "Reference qualification: frozen W1 workload on Profile A, 2 CPU/4 GiB, with the recorded historical toolchain.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "scripts/eight-cell-product-cap-promotion/shipping-build.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C12",
+      "claim": "Network optimization",
+      "current_wording_location": "README/Results/Goals; API search policy descriptions",
+      "evidence_level": "A",
+      "supported": "yes, bounded deterministic implementation",
+      "qualification_needed": "Changes azimuths only; fixed inputs and weights/constraints; no global optimum.",
+      "recommended_wording": "Bounded deterministic azimuth search recommends feasible configurations for the chosen priorities.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+          "line": 31
+        },
+        {
+          "file": "docs/api.md",
+          "line": 894
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C13",
+      "claim": "Interference and RSRP/SINR/RSRQ/RSSI",
+      "current_wording_location": "README; Interference Results; API",
+      "evidence_level": "C",
+      "supported": "yes, planning approximation",
+      "qualification_needed": "Finite per-Cell radius, exact co-channel rule, resource conversion, no scheduler/UE validation or uplink.",
+      "recommended_wording": "Modeled 4G/5G co-channel radio-quality estimates under explicit horizon and resource assumptions.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/InterferenceResultsPanel.jsx",
+          "line": 53
+        },
+        {
+          "file": "backend-go/raytracer/interference.go",
+          "line": 1
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C14",
+      "claim": "Measurement residual/MAE/RMSE capability",
+      "current_wording_location": "README; ordinary Data CSV workflow; /measurements/evaluate",
+      "evidence_level": "A",
+      "supported": "yes, software capability",
+      "qualification_needed": "One-to-six Cells; max 5,000 samples; input quality/serving truth still determines scientific validity.",
+      "recommended_wording": "Compute residual diagnostics for compatible user-supplied 4G/5G RSRP samples; this capability is not validation of the shipped model.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5546
+        },
+        {
+          "file": "backend-go/raytracer/measurements.go",
+          "line": 231
+        },
+        {
+          "file": "docs/getting-started.md",
+          "line": 153
+        }
+      ]
+    },
+    {
+      "id": "C15",
+      "claim": "Real Signal Collector ingestion succeeded",
+      "current_wording_location": "Concept 6A.1.1 sanitized pilot readiness",
+      "evidence_level": "A",
+      "supported": "yes, parsing/QA only",
+      "qualification_needed": "53,005 rows parsed; 1,858 ordering warnings; serving semantics unresolved; zero promoted observations.",
+      "recommended_wording": "Real pilot parsed and audited; canonical serving-observation validation remains blocked.",
+      "evidence": [
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "docs/concept-6a1-campaign-tooling.md",
+          "line": 248
+        }
+      ]
+    },
+    {
+      "id": "C16",
+      "claim": "Full measured model calibration",
+      "current_wording_location": "Data global-bias disclosure and canonical validation notes",
+      "evidence_level": "E",
+      "supported": "not established",
+      "qualification_needed": "Ordinary explicit scalar correction differs from isolated canonical diagnostic calibration; no full measured model calibration.",
+      "recommended_wording": "An eligible user CSV may support an explicitly applied, holdout-checked scalar bias correction; no shipped field calibration is claimed.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5546
+        },
+        {
+          "file": "docs/concept-6a-canonical-rf-validation.md",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 848
+        }
+      ]
+    },
+    {
+      "id": "C17",
+      "claim": "Spatially validated global bias heading",
+      "current_wording_location": "Data panel heading appears whenever measurement stats exist",
+      "evidence_level": "F",
+      "supported": "overbroad conditional label",
+      "qualification_needed": "Heading renders before eligibility; reason and Apply gating constrain action but title can imply validation on ineligible data.",
+      "recommended_wording": "Global bias validation review — show validated status only when the relevant holdout gate passes.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5568
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 2127
+        }
+      ]
+    },
+    {
+      "id": "C18",
+      "claim": "Persistence and portable projects",
+      "current_wording_location": "README; project menu; schema-v3 exports",
+      "evidence_level": "A",
+      "supported": "yes, bounded",
+      "qualification_needed": "Eight result-only round-trip; ray-heavy projects may fail 16 MiB/decoded budgets; retained results/caches are bounded. Project files exclude separate Run History, generated report files and coverage surfaces; only retained Scenario evidence/embedded metadata travels.",
+      "recommended_wording": "Portable project exports preserve retained evidence within explicit file and decoded-content limits.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 10
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 260
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "docs/project-format.md",
+          "line": 3
+        }
+      ]
+    },
+    {
+      "id": "C19",
+      "claim": "Deterministic/reproducible estimates",
+      "current_wording_location": "README; reference fixtures; source hashes and Runs",
+      "evidence_level": "A",
+      "supported": "yes, software-scoped",
+      "qualification_needed": "Same normalized inputs/data/model; deterministic tests are not formal physical proof; volatile diagnostics excluded as declared.",
+      "recommended_wording": "Repeatable model outputs for the same dataset and scientific inputs, with declared runtime-only fields.",
+      "evidence": [
+        {
+          "file": "backend-go/raytracer/rf_reference_fixtures_test.go",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/domain/resultContext.js",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 1217
+        }
+      ]
+    },
+    {
+      "id": "C20",
+      "claim": "Height-aware LOS/NLOS",
+      "current_wording_location": "README; algorithms; model result metadata",
+      "evidence_level": "A",
+      "supported": "yes, deterministic geometry",
+      "qualification_needed": "Flat-ground centerline; observed-tag/levels-derived/unknown heights; unknown intersections conservative NLOS; no surveyed terrain truth.",
+      "recommended_wording": "Deterministic footprint-height centerline classification with explicit height provenance.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "backend-go/raytracer/propagation_model.go",
+          "line": 29
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C21",
+      "claim": "Legacy FSPL and wall-event attenuation",
+      "current_wording_location": "Model selector and legacy algorithm reference",
+      "evidence_level": "D",
+      "supported": "yes, compatibility/reference model",
+      "qualification_needed": "Heuristic wall events; distinct from empirical UMa NLOS; no double-counting claim.",
+      "recommended_wording": "Selectable legacy FSPL plus wall-event heuristic for compatibility comparisons.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "backend-go/raytracer/propagation_model.go",
+          "line": 29
+        }
+      ]
+    },
+    {
+      "id": "C22",
+      "claim": "Default propagation is FSPL plus cumulative walls",
+      "current_wording_location": "Docs landing Sector propagation capability sentence",
+      "evidence_level": "F",
+      "supported": "misdescribes current default",
+      "qualification_needed": "True for selectable legacy/research behavior, not normal 2.6/28 GHz UMa default.",
+      "recommended_wording": "Default 2.6/28 GHz uses deterministic urban LOS/NLOS; legacy FSPL plus walls remains selectable.",
+      "evidence": [
+        {
+          "file": "docs/index.html",
+          "line": 139
+        },
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 107
+        },
+        {
+          "file": "backend-go/raytracer/propagation_model.go",
+          "line": 29
+        }
+      ]
+    },
+    {
+      "id": "C23",
+      "claim": "Representative building-entry service",
+      "current_wording_location": "README and building-entry report",
+      "evidence_level": "C",
+      "supported": "yes, constrained",
+      "qualification_needed": "2.6/28 GHz low/high scenarios, zero indoor depth; 2.6 GHz 20 dB compatibility; no room/floor/whole-building service or calibrated materials.",
+      "recommended_wording": "Deterministic service estimate immediately inside a representative facade.",
+      "evidence": [
+        {
+          "file": "backend-go/raytracer/building_entry.go",
+          "line": 1
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 848
+        }
+      ]
+    },
+    {
+      "id": "C24",
+      "claim": "Analytic antenna patterns and link budget",
+      "current_wording_location": "README; inventory; signed RF ledger",
+      "evidence_level": "C",
+      "supported": "yes, limited",
+      "qualification_needed": "Analytic presets and optional 3GPP single element; no vendor diagrams, arrays, codebooks or MIMO.",
+      "recommended_wording": "Explicit analytic antenna and signed link-budget assumptions; vendor calibration excluded.",
+      "evidence": [
+        {
+          "file": "backend-go/raytracer/antenna_evaluator.go",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5602
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C25",
+      "claim": "Noise-derived receiver sensitivity",
+      "current_wording_location": "README; receiver equation and modes",
+      "evidence_level": "A",
+      "supported": "yes, arithmetic/implementation",
+      "qualification_needed": "Opt-in kTB-style threshold; manual default retained; separate from building-service and interference serviceability.",
+      "recommended_wording": "Inspectable deterministic receiver threshold, independent of building and quality policy thresholds.",
+      "evidence": [
+        {
+          "file": "backend-go/raytracer/receiver_noise.go",
+          "line": 1
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C26",
+      "claim": "Terrain support",
+      "current_wording_location": "README path profile; modeling limits; Pack Studio",
+      "evidence_level": "D",
+      "supported": "yes, isolated diagnostic",
+      "qualification_needed": "Optional supported COG/HGT point-to-point path; canonical fast network engines do not consume terrain; current Ankara pack lacks terrain.",
+      "recommended_wording": "Terrain is optional point-to-point diagnostic evidence; it does not modify canonical network propagation.",
+      "evidence": [
+        {
+          "file": "backend-go/raytracer/terrain.go",
+          "line": 1
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5602
+        }
+      ]
+    },
+    {
+      "id": "C27",
+      "claim": "Fresnel and selected single-edge diffraction",
+      "current_wording_location": "README/algorithms/path-profile tools",
+      "evidence_level": "D",
+      "supported": "yes, diagnostic",
+      "qualification_needed": "Known height evidence; isolated FSPL+single-edge comparison; not added to UMa or a complete multiple-edge method.",
+      "recommended_wording": "Inspect geometric Fresnel clearance and one selected knife-edge approximation separately from canonical RF.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C28",
+      "claim": "Atmosphere/P.1411/material/reflection references",
+      "current_wording_location": "README research feature; isolated APIs/model limits",
+      "evidence_level": "D",
+      "supported": "yes, gated references",
+      "qualification_needed": "Explicit inputs, strict envelopes and provenance; no automatic canonical composition or accuracy promotion.",
+      "recommended_wording": "Isolated applicability-gated research/reference calculations.",
+      "evidence": [
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/api.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C29",
+      "claim": "Pareto frontier / recommendation / score",
+      "current_wording_location": "Results, normalized score, reports and API",
+      "evidence_level": "A",
+      "supported": "yes, discovered set",
+      "qualification_needed": "0–100 is preference utility, not percent real coverage/accuracy; non-dominated among discovered feasible states, public view capped 25.",
+      "recommended_wording": "Discovered feasible trade-offs; recommendation reflects current priorities and bounded search.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5148
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 643
+        },
+        {
+          "file": "docs/api.md",
+          "line": 894
+        }
+      ]
+    },
+    {
+      "id": "C30",
+      "claim": "Optimal azimuth for maximum coverage",
+      "current_wording_location": "API single-sector summary and optimal_azimuth field",
+      "evidence_level": "F",
+      "supported": "overbroad prose",
+      "qualification_needed": "Single-sector discrete 10° sweep and demand/residential/reach objective; not arbitrary-angle global coverage/site optimum.",
+      "recommended_wording": "Recommended azimuth from the documented discrete objective sweep.",
+      "evidence": [
+        {
+          "file": "docs/api.md",
+          "line": 784
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        }
+      ]
+    },
+    {
+      "id": "C31",
+      "claim": "Candidate recommendations / sites",
+      "current_wording_location": "README; Candidate Site docs; recommend-sites API",
+      "evidence_level": "A",
+      "supported": "yes, known-record ranking",
+      "qualification_needed": "Existing-input cap 5, bounded candidates, candidate azimuth only; no cost/access/backhaul/permitting; interference excluded from candidate score.",
+      "recommended_wording": "Rank known unselected planning records in a drawn area; evaluate interference after applying.",
+      "evidence": [
+        {
+          "file": "docs/features.md",
+          "line": 1
+        },
+        {
+          "file": "docs/getting-started.md",
+          "line": 122
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 2070
+        }
+      ]
+    },
+    {
+      "id": "C32",
+      "claim": "Per-Cell explanations",
+      "current_wording_location": "README; results/report conditional-marginal note",
+      "evidence_level": "A",
+      "supported": "yes, counterfactual implementation",
+      "qualification_needed": "One Cell restored to baseline while others fixed; not causal attribution/additive decomposition.",
+      "recommended_wording": "Conditional marginal comparison under the retained plan and model.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 848
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 1217
+        }
+      ]
+    },
+    {
+      "id": "C33",
+      "claim": "Demand-aware optimization",
+      "current_wording_location": "README; Goals; demand confidence in Data",
+      "evidence_level": "A",
+      "supported": "yes, heuristic scoring",
+      "qualification_needed": "OSM-derived POI/residential weights, not measured subscribers, traffic, capacity or economics.",
+      "recommended_wording": "Compare configured POI/residential demand proxies under explicit priorities.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5412
+        },
+        {
+          "file": "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+          "line": 31
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        }
+      ]
+    },
+    {
+      "id": "C34",
+      "claim": "Signal surfaces / GeoTIFF/GeoJSON/CSV",
+      "current_wording_location": "README/features/regular surface API",
+      "evidence_level": "A",
+      "supported": "yes, bounded implementation",
+      "qualification_needed": "Single-Cell received-power raster, sampled grid and unsmoothed isolines; valid below-threshold values differ from NoData.",
+      "recommended_wording": "Export bounded model-derived signal surfaces with grid and NoData semantics.",
+      "evidence": [
+        {
+          "file": "docs/features.md",
+          "line": 1
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C35",
+      "claim": "Bounded experiment matrices",
+      "current_wording_location": "README/features/asynchronous job source",
+      "evidence_level": "A",
+      "supported": "yes",
+      "qualification_needed": "At most 64 combinations; no arbitrary unbounded sweeps or capacity promise.",
+      "recommended_wording": "Reproducible bounded parameter experiments with cancellation and fingerprints.",
+      "evidence": [
+        {
+          "file": "docs/features.md",
+          "line": 1
+        },
+        {
+          "file": "docs/api.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C36",
+      "claim": "20 ordinary +8 verified follow-up units",
+      "current_wording_location": "README; policy; current API budget text",
+      "evidence_level": "A",
+      "supported": "yes, policy implementation",
+      "qualification_needed": "Shared per ClientIP fixed 60 s, eligible input-bound children, not 28 arbitrary calls; NAT users share budget; failures can charge.",
+      "recommended_wording": "Eligible network map/azimuth follow-ups use bounded verified units; unrelated RF work retains ordinary admission limits.",
+      "evidence": [
+        {
+          "file": "backend-go/rf_workflows.go",
+          "line": 1
+        },
+        {
+          "file": "backend-go/rf_protection.go",
+          "line": 1
+        },
+        {
+          "file": "docs/api.md",
+          "line": 1275
+        }
+      ]
+    },
+    {
+      "id": "C37",
+      "claim": "Auto observation-only / admission paused",
+      "current_wording_location": "Historical resource studies and current resource-profile source",
+      "evidence_level": "A",
+      "supported": "yes, current configuration",
+      "qualification_needed": "Auto diagnostics do not raise caps, tune concurrency/deadlines or certify new loads; Auto-Optimize is a separate action.",
+      "recommended_wording": "Auto reports resource evidence while fixed admission policy remains in force.",
+      "evidence": [
+        {
+          "file": "backend-go/resource_profile.go",
+          "line": 1
+        },
+        {
+          "file": "policy/rf-policy.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C38",
+      "claim": "Cancellation/latest-response protection",
+      "current_wording_location": "README/architecture/hooks and tests",
+      "evidence_level": "A",
+      "supported": "yes, regression scope",
+      "qualification_needed": "No proof of all possible races; tested workflows retain source/freshness and do not publish deadline partial success.",
+      "recommended_wording": "Current-request and cancellation guards prevent tested stale responses replacing matching results.",
+      "evidence": [
+        {
+          "file": "docs/architecture.md",
+          "line": 39
+        },
+        {
+          "file": "frontend-react/src/domain/resultContext.js",
+          "line": 1
+        },
+        {
+          "file": "backend-go/rf_protection.go",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C39",
+      "claim": "Optional 5G Core paths / live status",
+      "current_wording_location": "README/features/Core Lab",
+      "evidence_level": "D",
+      "supported": "yes, optional overlay",
+      "qualification_needed": "Simulated overlay unless configured external status; no complete core/RAN stack, mobility protocol simulation or RF coupling.",
+      "recommended_wording": "Optional lab communication-path overlay, with simulated versus external provenance.",
+      "evidence": [
+        {
+          "file": "docs/features.md",
+          "line": 1
+        },
+        {
+          "file": "README.md",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "id": "C40",
+      "claim": "Dataset provenance/QA and switching",
+      "current_wording_location": "README/features/Data/runtime",
+      "evidence_level": "A",
+      "supported": "yes, structural/data QA",
+      "qualification_needed": "Schema/CRS/hash/geometry/license QA is not surveyed inventory or RF accuracy; static data and heuristic demand.",
+      "recommended_wording": "Validated pack integrity and explicit provenance; source certainty remains bounded.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5412
+        },
+        {
+          "file": "docs/features.md",
+          "line": 1
+        },
+        {
+          "file": "README.md",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "id": "C41",
+      "claim": "Two-to-six network evaluation",
+      "current_wording_location": "Current features reference, Markdown and generated HTML",
+      "evidence_level": "F",
+      "supported": "stale and false for v0.12.1",
+      "qualification_needed": "Normal product cap 8; independent Measurement 6 must not be confused with network scope.",
+      "recommended_wording": "Network evaluation supports two-to-eight selected Cells.",
+      "evidence": [
+        {
+          "file": "docs/features.md",
+          "line": 72
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C42",
+      "claim": "OpenAPI 3.1 contract is valid/current",
+      "current_wording_location": "README downloadable contract; features reproducibility claim",
+      "evidence_level": "F",
+      "supported": "schema-invalid despite current caps/refs",
+      "qualification_needed": "Five Response Objects contain stray keys from comma-separated flow descriptions; syntax-only validator misses them.",
+      "recommended_wording": "Treat the v0.12.1 contract as requiring schema repair before strict tooling integration.",
+      "evidence": [
+        {
+          "file": "docs/openapi.yaml",
+          "line": 24
+        },
+        {
+          "file": "docs/features.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C43",
+      "claim": "Report reproducibility and SHA256 verification",
+      "current_wording_location": "README and report artifacts workflow",
+      "evidence_level": "A",
+      "supported": "yes, artifact integrity",
+      "qualification_needed": "Hashes verify retained content/lineage, not correctness of physical predictions; map paths may be sampled.",
+      "recommended_wording": "Reproducible retained planning evidence with verifiable artifact integrity and explicit model limits.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 1217
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 848
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 719
+        }
+      ]
+    },
+    {
+      "id": "C44",
+      "claim": "Current screenshots in both themes",
+      "current_wording_location": "Docs hero and refreshed gallery captions",
+      "evidence_level": "F",
+      "supported": "partially stale presentation",
+      "qualification_needed": "Light hero shows older rail/Setup than current source; dark hero/current README uses 0.12.0 workspace; captions disclose gallery version.",
+      "recommended_wording": "Use matched current theme captures with one scenario and clear model/input captions.",
+      "evidence": [
+        {
+          "file": "docs/index.html",
+          "line": 98
+        },
+        {
+          "file": "README.md",
+          "line": 123
+        }
+      ]
+    },
+    {
+      "id": "C45",
+      "claim": "Public data reflects real operator transmitters",
+      "current_wording_location": "README OpenCellID-derived wording and modeling limits",
+      "evidence_level": "E",
+      "supported": "not established",
+      "qualification_needed": "Planning records are not exact operator inventory; real pilot exact mapping absent.",
+      "recommended_wording": "Static OpenCellID-derived planning records, not verified operator transmitter truth.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "id": "C46",
+      "claim": "Universal arbitrary eight-Cell certification / W2/W3 support",
+      "current_wording_location": "Not found in current README; explicitly excluded by qualification",
+      "evidence_level": "F",
+      "supported": "unsupported if inferred",
+      "qualification_needed": "No W2/W3, arbitrary hardware/dataset, replicated deployment or stronger-RF applicability claim.",
+      "recommended_wording": "Normal cap 8; operational evidence is limited to the locked W1/Profile A envelope.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C47",
+      "claim": "Measured/vendor antenna, calibrated clutter, mobility/capacity",
+      "current_wording_location": "Modeling limits explicitly excludes these; inventory has metadata only",
+      "evidence_level": "E",
+      "supported": "not provided/validated",
+      "qualification_needed": "PCI/band/duplex/load fields do not establish PCI planning, mobility or traffic simulation.",
+      "recommended_wording": "Configured metadata and simplified loading are available; advanced operational planning behavior is outside current scope.",
+      "evidence": [
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/features.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C48",
+      "claim": "Quick first-run example",
+      "current_wording_location": "README settings-first sample and getting-started",
+      "evidence_level": "A",
+      "supported": "yes, documented route",
+      "qualification_needed": "LFS/build/readiness required; example intentionally contains no bundled analysis result and is not user-study evidence.",
+      "recommended_wording": "Import the settings-only sample, select local Cells, and explicitly evaluate the first plan.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 178
+        },
+        {
+          "file": "docs/getting-started.md",
+          "line": 122
+        }
+      ]
+    },
+    {
+      "id": "C49",
+      "claim": "Equipment vendors can validate antenna performance across terrain/building profiles",
+      "current_wording_location": "Project Overview use cases, Equipment Vendors",
+      "evidence_level": "F",
+      "supported": "unsupported current applicability/validation claim",
+      "qualification_needed": "No vendor antenna files, measured hardware calibration or canonical terrain RF; isolated path diagnostics do not validate antenna hardware.",
+      "recommended_wording": "Compare configured analytic antenna assumptions; hardware/terrain propagation validation requires independent evidence.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 14
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "backend-go/raytracer/antenna_evaluator.go",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C50",
+      "claim": "Prototype beamforming techniques",
+      "current_wording_location": "Project Overview Telecommunications Researchers use case",
+      "evidence_level": "F",
+      "supported": "overbroad as a current capability",
+      "qualification_needed": "Code is extensible, but the current app has no array/codebook/beamforming channel implementation; manual azimuth is not beamforming validation.",
+      "recommended_wording": "Study or extend the existing deterministic azimuth and propagation model; beamforming research requires new separately scoped implementation.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 14
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C51",
+      "claim": "Sub-100ms response times for beamforming adjustments",
+      "current_wording_location": "Project Overview architectural philosophy",
+      "evidence_level": "F",
+      "supported": "unsupported timing and capability assertion",
+      "qualification_needed": "No matching workload/band/Cell count/hardware/cold-warm evidence, and no modeled beamforming implementation.",
+      "recommended_wording": "Interactive map/configuration controls; RF computation latency depends on the declared workload.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 66
+        },
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 27
+        }
+      ]
+    },
+    {
+      "id": "C52",
+      "claim": "Complete OSM building and 5G tower data",
+      "current_wording_location": "Project Overview Ankara testbed",
+      "evidence_level": "F",
+      "supported": "unsupported completeness/identity assertion",
+      "qualification_needed": "Pack integrity is tested; completeness, current operator truth and actual 5G transmitter inventory are not established.12,000+ headline is also stale context versus the full current pack.",
+      "recommended_wording": "Static OSM and OpenCellID-derived planning data with explicit QA, omissions and uncertain operator identity.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 76
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5412
+        }
+      ]
+    },
+    {
+      "id": "C53",
+      "claim": "Same engine scales to any city or region with GeoJSON",
+      "current_wording_location": "Project Overview arbitrary-region assertion",
+      "evidence_level": "F",
+      "supported": "unsupported universal scalability extrapolation",
+      "qualification_needed": "Validated pack generation exists, but workload/resource qualification is frozen Ankara W1, not arbitrary geometry/regions/hardware.",
+      "recommended_wording": "Other regions can be prepared as validated packs; applicability, data quality and performance require separate workload evidence.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 79
+        },
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "docs/features.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C54",
+      "claim": "Current v1.0 / planned v1.1 roadmap is current product status",
+      "current_wording_location": "Project Overview Roadmap",
+      "evidence_level": "F",
+      "supported": "stale status, not release truth",
+      "qualification_needed": "VERSION0.12.1 is canonical; unarchived future lists also mix absent and partially implemented items.",
+      "recommended_wording": "Refer to canonical 0.12.1 release/capability scope and explicitly dated future plans.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 83
+        },
+        {
+          "file": "CHANGELOG.md",
+          "line": 40
+        }
+      ]
+    },
+    {
+      "id": "C55",
+      "claim": "Commercial tools lack customization/scalability and A.T.O.M solves these limits",
+      "current_wording_location": "Project Overview Problem Statement",
+      "evidence_level": "F",
+      "supported": "unsupported competitive comparison",
+      "qualification_needed": "No controlled commercial-tool study, current pricing or representative dataset benchmark in the repository supports these broad comparisons.",
+      "recommended_wording": "Describe A.T.O.M local open-source extensibility and bounded workload evidence without unsupported commercial comparisons.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 31
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "C56",
+      "claim": "Interference and detailed link-budget analysis are unsuitable/absent",
+      "current_wording_location": "Algorithms When to Use and legacy limitations",
+      "evidence_level": "F",
+      "supported": "stale capability understatement/contradiction",
+      "qualification_needed": "Current interference ledger and inspectable budgets exist within declared planning limits; no full commercial/measurement claim follows.",
+      "recommended_wording": "Use the supported planning interference/link-budget diagnostics within their documented assumptions.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 499
+        },
+        {
+          "file": "frontend-react/src/components/InterferenceResultsPanel.jsx",
+          "line": 53
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5602
+        }
+      ]
+    }
+  ],
+  "product_debt": [
+    {
+      "id": "P01",
+      "category": "positioning debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "The first decision is less prominent than the feature catalogue",
+      "evidence": [
+        "readme",
+        "landing",
+        "readme_features",
+        "readme_start"
+      ],
+      "impact": "A newcomer can identify telecom/RF simulation but still ask what decision to make or why to return.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "In a later task, anchor one reproducible configure→evaluate→compare→explain→export use case."
+    },
+    {
+      "id": "P02",
+      "category": "documentation debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Current capability reference still says network 2–6",
+      "evidence": [
+        "features_cap",
+        "readme_caps",
+        "cap_tests"
+      ],
+      "impact": "Users following a prominent capability link receive a limit contradicted by the app and README.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Correct current reference copy later; preserve historical six-Cell reports."
+    },
+    {
+      "id": "P03",
+      "category": "documentation debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Landing propagation summary describes the legacy model as the general engine",
+      "evidence": [
+        "landing_default",
+        "setup",
+        "algorithms"
+      ],
+      "impact": "Users can infer cumulative wall attenuation applies on top of normal urban NLOS.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "State the default/fallback distinction in landing copy later."
+    },
+    {
+      "id": "P04",
+      "category": "documentation debt",
+      "severity": "high",
+      "priority": "P1",
+      "title": "Old algorithm timing examples lack reproducible benchmark support",
+      "evidence": [
+        "legacy_benchmark",
+        "performance",
+        "concurrency"
+      ],
+      "impact": "250 ms/4× prose invites a universal performance/concurrency claim that the recorded measurements do not establish.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Remove or scope timing examples later; retain the measured request-local reuse explanation."
+    },
+    {
+      "id": "P05",
+      "category": "operational debt",
+      "severity": "high",
+      "priority": "P1",
+      "title": "Strict OpenAPI consumers encounter five invalid Response Objects",
+      "evidence": [
+        "openapi"
+      ],
+      "impact": "Spec validation/client tooling fails; local app use and correct 8/5/6 caps remain functional.",
+      "blocks_current_use": "blocks strict contract integration, not local planning",
+      "fix_soon": true,
+      "action": "In a later fix, quote affected descriptions and add genuine schema validation."
+    },
+    {
+      "id": "P06",
+      "category": "UI debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Measurement 6 is not visible before the eight-Cell request",
+      "evidence": [
+        "measurement_handler",
+        "measurement_ui",
+        "measurements"
+      ],
+      "impact": "An eight-Cell network can import samples and request evaluation, then receives backend one-to-six error; unlike Recommendation 5 there is no frontend maximum guard.",
+      "blocks_current_use": "blocks that eight-Cell measurement attempt; choose ≤6",
+      "fix_soon": true,
+      "action": "Disclose independent scope before submission later; do not raise its cap."
+    },
+    {
+      "id": "P07",
+      "category": "UI debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Retry-After is captured but not used for actionable wait guidance",
+      "evidence": [
+        "api_client",
+        "api_budget",
+        "protection"
+      ],
+      "impact": "Messages identify budget/capacity failure, but users lack a concrete retry wait and shared-IP explanation.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Later translate rate-limit wait metadata into contextual recovery copy; keep accounting internals out of normal UI."
+    },
+    {
+      "id": "P08",
+      "category": "terminology debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Cell/tower/site and optimization/recommendation are contextual aliases",
+      "evidence": [
+        "guide",
+        "api_optimal",
+        "tools",
+        "features"
+      ],
+      "impact": "Known-record candidates may be read as new-site feasibility; optimal/maximum coverage prose overstates objective and search.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Explain task meanings with RF-aware terminology; preserve API compatibility."
+    },
+    {
+      "id": "P09",
+      "category": "persistence debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Autosaved draft, immutable Version, artifact retention and portable file are separate promises",
+      "evidence": [
+        "chrome",
+        "store",
+        "store_retention",
+        "readme_features",
+        "project_format"
+      ],
+      "impact": "A saved-local status can be mistaken for a durable portable backup; large ray-bearing exports can fail existing guards. Separate Run History, report files and coverage surfaces are not in the portable project.",
+      "blocks_current_use": "blocks oversize export, not supported result-only round-trip",
+      "fix_soon": true,
+      "action": "Explain save/Version/export/retention scope later without changing schemas or guards."
+    },
+    {
+      "id": "P10",
+      "category": "UI debt",
+      "severity": "low",
+      "priority": "P3",
+      "title": "Theme-specific docs hero screenshots show different interface generations",
+      "evidence": [
+        "landing_light",
+        "readme_gallery",
+        "tools"
+      ],
+      "impact": "Light-theme readers see older navigation and a weaker workflow story.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Capture matching current theme/state screenshots in a later docs task."
+    },
+    {
+      "id": "P11",
+      "category": "scientific-validation debt",
+      "severity": "high",
+      "priority": "P1",
+      "title": "No usable canonical real-campaign accuracy result",
+      "evidence": [
+        "pilot",
+        "canonical",
+        "limits"
+      ],
+      "impact": "Blocks evidence-based claims of measured model accuracy or full calibration; does not invalidate explicitly bounded exploratory planning.",
+      "blocks_current_use": "blocks field-accuracy claim and canonical calibration promotion",
+      "fix_soon": true,
+      "action": "Resolve collector semantics and transmitter/resource truth first; no automatic collection or defaults."
+    },
+    {
+      "id": "P12",
+      "category": "workflow debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Score and retained Pareto trade-offs need a novice interpretation path",
+      "evidence": [
+        "results",
+        "goals",
+        "report_pareto"
+      ],
+      "impact": "Users can inspect what changed but need help turning normalized utility, reach and non-dominance into a decision.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Teach score/objective meanings in the single first-decision walkthrough later."
+    },
+    {
+      "id": "P13",
+      "category": "UI debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Global-bias heading precedes validation eligibility",
+      "evidence": [
+        "bias_heading",
+        "measurement_ui"
+      ],
+      "impact": "Ineligible sample sets still show a validated-sounding title, even though reason / Apply gating prevents automatic promotion.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Use a neutral review heading until eligibility is established in a later wording fix."
+    },
+    {
+      "id": "P14",
+      "category": "scientific claim-boundary debt",
+      "severity": "high",
+      "priority": "P1",
+      "title": "Unarchived Project Overview implies vendor/terrain/beamforming validation and universal readiness",
+      "evidence": [
+        "overview",
+        "overview_perf",
+        "overview_data",
+        "overview_scale",
+        "overview_roadmap"
+      ],
+      "impact": "A repository reader can infer antenna hardware/terrain/beamforming applicability, complete operator-like data and performance evidence that the released product does not provide. Not linked from the current docs hub/search, but publicly readable and not marked historical.",
+      "blocks_current_use": "blocks coherent public scientific/applicability positioning; core scoped planning remains usable",
+      "fix_soon": true,
+      "action": "In a separately authorized task, reconcile or explicitly archive obsolete current copy; do not rewrite historical qualification evidence."
+    },
+    {
+      "id": "P15",
+      "category": "documentation debt",
+      "severity": "medium",
+      "priority": "P2",
+      "title": "Algorithm suitability/limitations contradict present interference and budget capabilities",
+      "evidence": [
+        "algorithm_suitability",
+        "interference_ui",
+        "app_model"
+      ],
+      "impact": "Readers can wrongly conclude the product cannot perform analyses already demonstrated in its primary workflow.",
+      "blocks_current_use": false,
+      "fix_soon": true,
+      "action": "Reconcile legacy/current model and suitability sections later while preserving the actual scientific exclusions."
+    }
+  ],
+  "scientific_debt": [
+    [
+      "Measured propagation validation",
+      "blocked evidence gap",
+      "No usable canonical field residuals; deterministic fixtures only.",
+      "pilot",
+      "High for accuracy claims; comparison workflows remain usable."
+    ],
+    [
+      "Known transmitter truth",
+      "absent for pilot",
+      "No exact active-pack identity match; Tx power/antenna/height/azimuth truth unavailable.",
+      "pilot",
+      "Required before credible canonical residuals."
+    ],
+    [
+      "Receiver metadata",
+      "partial",
+      "Pseudonymous handset/height/provenance infrastructure exists; receiver response uncalibrated.",
+      "pilot",
+      "Restricts absolute error interpretation."
+    ],
+    [
+      "Bandwidth/resource metadata",
+      "unavailable for relevant pilot rows",
+      "ServiceState vectors cannot be assigned to exact B7 identity; neighbor context incomplete.",
+      "pilot",
+      "Blocks quantity-preserving RSRP/quality validation."
+    ],
+    [
+      "Frequency and outdoor/LOS truth",
+      "mismatched / missing",
+      "Observed 2.665 GHz versus canonical 2.600 GHz plus unknown endpoint/LOS evidence.",
+      "pilot",
+      "Do not fill missing truth with planning defaults."
+    ],
+    [
+      "Terrain canonicalization",
+      "explicit non-goal / future applicability work",
+      "Optional point-to-point terrain exists; canonical fast RF does not consume it.",
+      "limits",
+      "A limitation, not a defect in the declared model."
+    ],
+    [
+      "Model applicability boundaries",
+      "implemented, communication drift",
+      "UMa/reference scope and fallback explicit; landing/optimal prose needs alignment.",
+      "app_model",
+      "Communicate current scope before adding models."
+    ],
+    [
+      "Calibration evidence",
+      "not established for released canonical model",
+      "Ordinary CSV scalar bias is optional and input-bound; canonical campaign diagnostics never auto-promote.",
+      "canonical",
+      "No calibration promotion from parse count or synthetic holdout."
+    ]
+  ],
+  "commercial_expectation_gap": [
+    [
+      "Operator/site inventory integration",
+      "partial",
+      "CSV/GeoJSON configurable inventory exists; no authoritative operator feed, ownership or live OSS integration."
+    ],
+    [
+      "Calibrated clutter / morphology",
+      "partial",
+      "Pack metadata and explicit diagnostic inputs/reference morphology exist; no canonical calibrated spatial clutter model."
+    ],
+    [
+      "Terrain",
+      "partial",
+      "Optional COG/HGT path-profile sampling; absent from canonical network RF and bundled Ankara terrain evidence."
+    ],
+    [
+      "Drive-test import",
+      "partial",
+      "Generic RSRP CSV and source-specific campaign ingestion tooling; no turnkey usable real-drive-test accuracy dataset."
+    ],
+    [
+      "Measured model calibration",
+      "partial",
+      "Optional held-out scalar bias correction for suitable user CSV; full measured canonical calibration absent."
+    ],
+    [
+      "PCI / neighbor planning",
+      "absent",
+      "PCI/channel/inventory fields and neighbor context do not provide PCI conflict/neighbor planning algorithms."
+    ],
+    [
+      "Handover / mobility",
+      "out of scope",
+      "No RF mobility or handover model; collector event names and optional Core overlays are not protocol handover prediction."
+    ],
+    [
+      "Traffic / capacity / throughput",
+      "out of scope",
+      "POI/residential proxies and fixed load assumptions; no dynamic scheduler, traffic forecast or MCS/throughput model."
+    ],
+    [
+      "Multi-carrier / multi-band planning",
+      "partial",
+      "Per-Cell technology/frequency/channel/bandwidth metadata and mixed-profile processing; no full carrier aggregation, adjacent-channel, network-wide multiband commercial suite."
+    ],
+    [
+      "Advanced antenna patterns",
+      "partial",
+      "Analytic and single-element reference patterns, height/tilt/orientation; no surveyed vendor files/array codebooks."
+    ],
+    [
+      "KPI/RSRP/RSRQ/SINR validation",
+      "partial",
+      "Modeled metrics and validation infrastructure; real canonical quantity validation remains blocked."
+    ],
+    [
+      "Small-plan configuration comparison",
+      "already present",
+      "Core two-to-eight-Cell evaluation, bounded azimuth search, explainability and retained evidence."
+    ],
+    [
+      "Deployment economics / feasibility / live control",
+      "out of scope",
+      "No invented site access, permitting, backhaul/cost or production network control."
+    ]
+  ],
+  "external_feedback": [
+    [
+      "Caching may explain more than concurrency",
+      "technical question",
+      "Consistent with recorded contribution reuse; independent workers unchanged in the fix. No factorial split supports a general percentage attribution."
+    ],
+    [
+      "What is the use case?",
+      "messaging issue",
+      "Qualitative signal supports inspecting first-use story; not proof that the product lacks supported uses."
+    ],
+    [
+      "UI/map smoothness praise",
+      "non-actionable praise",
+      "A useful preservation signal. Responsive tests and UI inspection support layout usability; no instrumented frame-rate study or representative user panel validates perceived smoothness."
+    ],
+    [
+      "Positive reaction to small urban focus",
+      "validated strength (source-supported scope, not market validation)",
+      "Matches bounded local planning capabilities and explicit W1 scope; audience demand remains qualitative."
+    ],
+    [
+      "Feature requests",
+      "none supplied",
+      "No attributable planner feature request in supplied feedback; do not invent demand for an enterprise roadmap."
+    ]
+  ],
+  "ranked_next_options": [
+    {
+      "rank": 1,
+      "initiative": "Reconcile current public claims with released planning scope",
+      "benefit": "Remove contradictory scientific/applicability/performance expectations while preserving the defensible planning product.",
+      "evidence": [
+        "P14",
+        "P04",
+        "P03",
+        "P02",
+        "P08",
+        "P13",
+        "P15"
+      ],
+      "cost": "small to medium; bounded wording/current-document classification and evidence links",
+      "risk": "Do not rewrite historical reports, imply measured accuracy or broaden RF scope; keep correct current caveats.",
+      "dependency": "Use the frozen claim matrix and authoritative current model/cap/measurement evidence.",
+      "success": "Every current overview/capability/API/UI claim states the implemented task, model boundary and supported evidence; no vendor/beamforming/terrain accuracy or universal timing/data claim remains unsupported."
+    },
+    {
+      "rank": 2,
+      "initiative": "One reproducible first planning decision",
+      "benefit": "Make the use case, first action and interpretation clear across README/docs/app help using one existing small urban comparison.",
+      "evidence": [
+        "P01",
+        "P02",
+        "P03",
+        "P08",
+        "P10",
+        "P12"
+      ],
+      "cost": "small to medium; mainly content/example/task guidance",
+      "risk": "Low if scope is bounded; avoid a redesign or hiding scientific limits.",
+      "dependency": "Use current capabilities and retained baseline/recommendation evidence; separately repair strict contract blockers when implementing.",
+      "success": "A first-time target user can state the decision, run the example, explain a baseline delta, name the model/accuracy limit and export evidence without expert coaching."
+    },
+    {
+      "rank": 3,
+      "initiative": "Unlock canonical real-measurement validation prerequisites",
+      "benefit": "Enable a defensible future field-accuracy study rather than adding more unvalidated RF depth.",
+      "evidence": [
+        "P11"
+      ],
+      "cost": "uncertain/high; authoritative external metadata and transmitter access",
+      "risk": "Collector semantics or transmitter truth may remain unavailable; raw data collection alone can add no validation value.",
+      "dependency": "Authoritative serving-status interpretation, exact mapping, frequency/resource/receiver/LOS metadata; predeclared holdouts.",
+      "success": "A declared-scope campaign passes quantity and identity gates and reports uncalibrated held-out residuals with exclusions and counts; calibration remains a separate decision."
+    },
+    {
+      "rank": 4,
+      "initiative": "Repair strict API contract integrity",
+      "benefit": "Unblock strict specification consumers and make the docs quality gate detect schema defects.",
+      "evidence": [
+        "P05"
+      ],
+      "cost": "small",
+      "risk": "Keep endpoint semantics, limits and production behavior unchanged; only contract syntax/validation needs correction.",
+      "dependency": "Quote malformed flow descriptions and check genuine OpenAPI 3.1 schema validity in a later authorized task.",
+      "success": "All five recorded Response Object errors disappear under strict validation;8/8/5/6caps and 410 local references remain correct."
+    },
+    {
+      "rank": 5,
+      "initiative": "Clarify portable evidence and report delivery",
+      "benefit": "Make local save, Versions, retained layers, export guards and report map sampling understandable.",
+      "evidence": [
+        "P09",
+        "P12",
+        "P13"
+      ],
+      "cost": "small to medium",
+      "risk": "Do not imply every large ray project is portable or a report hash proves physical accuracy.",
+      "dependency": "Keep persistence guards, schemas, source lineage and current report integrity unchanged unless separately authorized.",
+      "success": "Users can identify what is saved/exported, recover from oversize rejection and interpret an offline report without overstated confidence."
+    }
+  ],
+  "single_recommendation": {
+    "rank": 1,
+    "initiative": "Reconcile current public claims with released planning scope",
+    "benefit": "Remove contradictory scientific/applicability/performance expectations while preserving the defensible planning product.",
+    "evidence": [
+      "P14",
+      "P04",
+      "P03",
+      "P02",
+      "P08",
+      "P13",
+      "P15"
+    ],
+    "cost": "small to medium; bounded wording/current-document classification and evidence links",
+    "risk": "Do not rewrite historical reports, imply measured accuracy or broaden RF scope; keep correct current caveats.",
+    "dependency": "Use the frozen claim matrix and authoritative current model/cap/measurement evidence.",
+    "success": "Every current overview/capability/API/UI claim states the implemented task, model boundary and supported evidence; no vendor/beamforming/terrain accuracy or universal timing/data claim remains unsupported."
+  },
+  "scorecard": [
+    {
+      "dimension": "Purpose clarity",
+      "score": 3,
+      "rationale": "README defines urban RF planning and audiences, but starts with a technical engine description and extensive capabilities before a decision example."
+    },
+    {
+      "dimension": "Onboarding",
+      "score": 3,
+      "rationale": "Docker/LFS/readiness and a settings-only example are explicit; the first map starts ready to Run Sector but does not teach the comparison decision."
+    },
+    {
+      "dimension": "Workflow coherence",
+      "score": 4,
+      "rationale": "Stage rail, explicit compute, source Runs, stale guards, apply-to-Version and reports connect the core loop; specialized caps/lineage prerequisites cause friction."
+    },
+    {
+      "dimension": "RF transparency",
+      "score": 4,
+      "rationale": "Default/model/fallback, height provenance, thresholds and isolated research are inspectable; initial screen hides full limitations and landing text drifts."
+    },
+    {
+      "dimension": "Result explainability",
+      "score": 4,
+      "rationale": "Baseline deltas, objective meanings, raw denominators, conditional Cell effects and trade-offs are present; no universal good/bad meaning for /100."
+    },
+    {
+      "dimension": "Scientific honesty",
+      "score": 3,
+      "rationale": "Runtime/README preserve estimates and research boundaries, but unarchived Overview vendor/terrain/beamforming validation and broad timing/data claims materially exceed evidence."
+    },
+    {
+      "dimension": "Visual hierarchy",
+      "score": 4,
+      "rationale": "Map remains primary with four stages and progressive disclosure; desktop/mobile layout checks pass. No formal accessibility or perceptual performance certification."
+    },
+    {
+      "dimension": "Documentation",
+      "score": 3,
+      "rationale": "Extensive limits/guides/provenance; stale network cap/default-model summary, unmatched hero captures, old benchmark prose and schema-invalid OpenAPI impair trust."
+    },
+    {
+      "dimension": "Persistence expectations",
+      "score": 3,
+      "rationale": "Bounded v3 exports, draft/Version lineage and large-ray caveats documented; local save vs portable retained evidence remains a learning burden."
+    },
+    {
+      "dimension": "External readiness",
+      "score": 2,
+      "rationale": "Scoped local planning is usable, but public claim alignment and strict API contract integration need correction before broad external scientific/engineering positioning."
+    }
+  ],
+  "screenshots": [
+    [
+      "docs/assets/v0.12.0/network-workspace.png",
+      "Eight-Cell selection/order and spatial result context",
+      "Current gallery; populated end-state, not an onboarding step."
+    ],
+    [
+      "docs/assets/v0.12.0/network-propagation.png",
+      "Existing-plan propagation controls and explicit Optimize action",
+      "Useful configure step; advanced/reference disclosures visibly separated."
+    ],
+    [
+      "docs/assets/v0.12.0/network-optimization-results.png",
+      "Score 64.3/100, baseline deltas, denominators and feasible trade-offs",
+      "Strong outcome evidence; score meaning and first input choice still require explanation."
+    ],
+    [
+      "docs/assets/v0.12.0/single-sector-propagation.png",
+      "Simpler single-Cell run and Auto-Optimize alternative",
+      "Shows a second workflow, not the network decision endpoint."
+    ],
+    [
+      "docs/assets/focused-workspace.jpg",
+      "Light-theme map/old Setup and older icon rail",
+      "Stale relative to current four-stage source/live app; theme-specific hero mismatch."
+    ]
+  ],
+  "phases": [
+    {
+      "phase": 0,
+      "title": "Baseline / freeze",
+      "finding": "Initial shell observation: clean main at e84210dda6fb282474eda4e935f50c598fad7b34, VERSION 0.12.1, empty diff stat. The later freeze-time status includes only the newly created audit directory. Criteria were locked before evaluation; SHA256 4035e4a3ce4cde804a161c7deef9f5061ddaaa29e006b7bad18f4f5934a8cd91. All 3,217 tracked files are hashed, with backend/frontend/science/policy/persistence/OpenAPI/docs/VERSION group identities. No production writes are authorized. Historical shipping-source comparison matches 82/82 source identities; toolchain/dependency/frontend/docs changes do not certify a new resource envelope.",
+      "evidence": [
+        {
+          "file": "scripts/eight-cell-product-cap-promotion/shipping-build.json",
+          "line": 1
+        }
+      ],
+      "table": "source_groups"
+    },
+    {
+      "phase": 1,
+      "title": "Define the product in one sentence",
+      "finding": "A.T.O.M is a local-first, open-source workspace for comparing small urban cellular-network configurations on real maps using deterministic RF planning estimates and bounded azimuth search. README, docs, app and Product Compass share this thesis. README engine language and acronym density are more technical than necessary; first useful decision is less prominent than features. Git remote identifies Berk-Unsal/atom; no GitHub About description was present in the inspected tracked metadata, and live GitHub metadata was not fetched. An unarchived docs/overview.md contradicts the main thesis by presenting vendor antenna validation across terrain, beamforming experimentation, complete data and universal-region performance. Its Current v1.0 roadmap is also stale. It is not linked from the current landing/search navigation, which reduces exposure but does not make it a protected historical qualification report.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "docs/index.html",
+          "line": 86
+        },
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        },
+        {
+          "file": "PRODUCT.md",
+          "line": 11
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 14
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 2,
+      "title": "Actual users",
+      "finding": "Primary users are engineers making bounded comparisons and telecom learners/researchers inspecting assumptions; experimenters, systems engineers and contributors are secondary. Evidence supports no operator/enterprise workflow claim. Personas below distinguish supported jobs from reasonable unmet expectations. Overview lists operators/equipment vendors/urban planners more broadly than supported workflows; those personas are aspirational or conditional, not established current customers.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        },
+        {
+          "file": "docs/features.md",
+          "line": 1
+        }
+      ],
+      "table": "personas"
+    },
+    {
+      "phase": 3,
+      "title": "Use-case clarity",
+      "finding": "The defensible job is comparing a small configured urban plan, seeing trade-offs, explaining a recommendation and preserving evidence. Supported uses are classified below. The supplied “what is the use case?” comment is a product-clarity signal only. A broad capabilities catalogue answers what the software contains better than why a newcomer should perform its first comparison.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 42
+        },
+        {
+          "file": "docs/getting-started.md",
+          "line": 122
+        },
+        {
+          "file": "frontend-react/src/components/workspaceTools.js",
+          "line": 17
+        }
+      ],
+      "table": "use_cases"
+    },
+    {
+      "phase": 4,
+      "title": "First 30 seconds",
+      "finding": "Heuristic inspection, not a timed user study: the fresh live app shows Telecom planning, a single Cell,5G / 28 GHz, UMa model, Run needed, a visible Run Sector action, Setup and four stages. A newcomer can identify a map-based RF tool and first compute action; intended decision, source data certainty and accuracy boundary are less visible until disclosures/Data/docs. README identifies engineers/students and estimates; docs hero says inspect/run/model before a user outcome. A simulator/planner/optimizer combination is discoverable but not yet one crisp first-use promise.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/WorkspaceChrome.jsx",
+          "line": 30
+        },
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 107
+        },
+        {
+          "file": "docs/index.html",
+          "line": 86
+        },
+        {
+          "file": "README.md",
+          "line": 21
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 5,
+      "title": "End-to-end workflow",
+      "finding": "The primary loop is intentional and connected. Trace below combines current source, regression/browser checks and retained historical real eight-Cell F28 evidence. The present browser workflow suites use mocked APIs; Go tests exercise real engine/controlled geometry; live inspection used the full Ankara backend only for first-screen/navigation observation. This audit did not rerun the costly frozen operational matrix or claim a fresh real-backend eight-Cell browser qualification. Dead ends are local and explicit: no retained Version for Apply, unsupported 140 GHz analyses, independent tool caps, deadlines and export guards.",
+      "evidence": [
+        {
+          "file": "docs/getting-started.md",
+          "line": 122
+        },
+        {
+          "file": "frontend-react/e2e/workspace.spec.js",
+          "line": 1842
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        }
+      ],
+      "table": "workflow"
+    },
+    {
+      "phase": 6,
+      "title": "Tool information architecture",
+      "finding": "Four stages and task-specific progressive disclosures provide real hierarchy; major capabilities are not all permanent peers. Core Lab and deep references can distract when discovered without a planning question, but their optional/isolated scope is valuable and not grounds for deletion. Data carries both source provenance and measurement experiments; Results has several meanings. Preserve current hierarchy and teach the core route before considering new navigation.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/workspaceTools.js",
+          "line": 17
+        },
+        {
+          "file": "docs/features.md",
+          "line": 1
+        }
+      ],
+      "table": "tools"
+    },
+    {
+      "phase": 7,
+      "title": "Terminology",
+      "finding": "Cell is the selected RF record; tower is a legacy/API/data alias; sector is a directional configuration; site is contextual, not verified infrastructure. These must not be normalized by assumption. Coverage may mean ray reach, building service or sampled surface; optimization changes azimuth, and optimal is bounded. RF profile, Profile A and Auto have distinct meanings. Terminology inventory follows.",
+      "evidence": [
+        {
+          "file": "docs/getting-started.md",
+          "line": 122
+        },
+        {
+          "file": "docs/api.md",
+          "line": 784
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/components/workspaceTools.js",
+          "line": 17
+        }
+      ],
+      "table": "terms"
+    },
+    {
+      "phase": 8,
+      "title": "Scientific claim inventory",
+      "finding": "The atomic claim matrix below assigns exactly one A–F primary level to each of 56 claim families. The lexical appendix inventories 3,330 matching textual occurrences in 184 files, including generated duplicates and historical reports; validation of input/schema or software is not RF accuracy. Historical qualification/design claims remain attributed to their original scope, never rewritten as present product guarantees. Standards basis is traced to current implementation/citations/fixtures; this is not an independent standards-conformance certification.",
+      "evidence": [
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "backend-go/raytracer/rf_reference_fixtures_test.go",
+          "line": 1
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        }
+      ],
+      "table": "claims"
+    },
+    {
+      "phase": 9,
+      "title": "RF model boundaries",
+      "finding": "2.6/28 GHz use the deterministic outdoor UMa path-loss subset with height-aware centerline LOS/NLOS and explicit legacy fallback. Unknown roof evidence is conservative NLOS. Urban NLOS does not get an extra legacy wall penalty.140 GHz is a research attenuation profile with isolated standards references, not canonical radio quality. Building entry is a representative zero-depth facade estimate. Antennas are analytic/single-element references, receiver assumptions scalar/manual or derived. Terrain is optional path-profile evidence and absent from canonical fast RF. Main detailed limits are sound; the landing FSPL/walls summary is stale.",
+      "evidence": [
+        {
+          "file": "docs/algorithms.md",
+          "line": 5
+        },
+        {
+          "file": "backend-go/raytracer/propagation_model.go",
+          "line": 29
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/index.html",
+          "line": 139
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 10,
+      "title": "Measurement-validation status",
+      "finding": "The current sanitized real-pilot readiness says real_data_ingested_serving_semantics_blocked: 53,005 raw data rows parsed, zero malformed/dropped samples, 1,858 elapsed-order warnings, 83 registered-flag rows all with NONE connection status, 37 collector serving-change events, and zero canonical observations. Exact pack mapping is absent. B7 bandwidth/resource association, 2.665 versus 2.600 GHz, transmitter/receiver/LOS truth remain separate blockers. No canonical pilot residual artifact or defensible MAE/RMSE resulted. Ordinary CSV diagnostics, isolated research ledger and canonical campaign library are separate capabilities. The later 6A.1.2 reconciliation confirms 37/37 event/candidate transitions, but all 83 registered candidates still conflict with CONNECTION_NONE and 156 PS registration contexts have a valid but contradictory PCI 0. Current readiness remains A_SEMANTICS_UNRESOLVED; event consistency does not authorize promotion.",
+      "evidence": [
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "docs/concept-6a1-campaign-tooling.md",
+          "line": 248
+        },
+        {
+          "file": "docs/concept-6a-canonical-rf-validation.md",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5546
+        },
+        {
+          "file": "docs/concept-6a1-2-serving-state-semantics.md",
+          "line": 95
+        },
+        {
+          "file": "docs/concept-6a1-2-decision.json",
+          "line": 1
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 11,
+      "title": "Model accuracy wording",
+      "finding": "Current main copy explicitly says planning estimate and excludes field/UE/PHY calibration. Accurate/precise language found in current overview material is chiefly a negated limit, future contribution example, coordinate precision or software/data validation. Dangerous exceptions: unconditional validated-sounding bias heading on an ineligible result; maximum-coverage/optimal sector prose; old unscoped parallelization timings. Verified RF follow-up refers to request authorization, not verified physical RF. Do not infer accuracy from standards citations, regression tests, hash equality or operating within resource budgets. The current Project Overview adds a material exception: equipment-vendor antenna validation across terrain/buildings and beamforming prototyping are presented as use cases without a historical/aspirational scope label. Combined with complete-data, sub-100ms and any-region scaling language, this crosses the locked applicability boundary despite modern caveats elsewhere.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5568
+        },
+        {
+          "file": "docs/api.md",
+          "line": 784
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 396
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 14
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 66
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 12,
+      "title": "Eight-Cell claim boundary",
+      "finding": "Normal network 8 is source/test/API behavior. Operational evidence is the exact frozen paired Ankara 2026.07 W1 layouts,2.6/28 GHz,120 rays / 400 m / 30 dBm / 120°, legacy two-pass, historical Go 1.26.6 Linux/arm64 Profile A 2 CPU/4 GiB. No W2/W3, arbitrary hardware/datasets, stronger models or multi-instance qualification follows. Current README explicitly states limits; no blanket arbitrary-eight certification was found. Current capability reference incorrectly understates the cap as 6.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "docs/features.md",
+          "line": 72
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 13,
+      "title": "Performance claims / causal attribution",
+      "finding": "Recorded affected six-Cell 28 GHz request: uncached 94.707–112.731 s; corrected same-container controls 6.720739/6.760776/6.749160 s.434 network proposals preserved;2,604 contribution requests reduced to 180 expensive misses with 2,424 hits. Five distinct profiles/locations among six IDs matter. Scheduling, workers and candidate parallelism were unchanged. The evidence isolates contribution reuse as the correction; no controlled factorial split quantifies caching versus all historical concurrency/other improvements. The supplied Reddit question prompts this check and is not proof.",
+      "evidence": [
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 27
+        },
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 43
+        },
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 109
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 14,
+      "title": "Benchmark communication",
+      "finding": "Historical deadline report responsibly gives payload, band, rays, radius, toolchain, hardware, quotas, before/after, tiny samples and confounders. It measures admitted requests, not the complete user journey; map refresh, persistence and dataset load have separate cost. Request-local memoization is rebuilt per request, not a persistent cross-request warm cache. Whole-system cold/warm/runtime effects were not controlled enough to promise a universal number. Algorithms 36 s → 250 ms / 4× prose has none of the required context and is unsupported as a released benchmark. Profile A 11.788 s worst request and 1.217 GB kernel peak belong to the separate matrix, not this speedup comparison. Overview adds an unsupported sub-100ms beamforming-adjustment response claim without workload or hardware context. Current UI responsiveness and retained request benchmarks do not establish it.",
+      "evidence": [
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 27
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 396
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 66
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 15,
+      "title": "Resource qualification",
+      "finding": "Profile A is a reference qualification, not a universal minimum system requirement. Frozen W1/paired layouts/settings, single-instance/Linux/arm64 cgroupv2/CGO0, historical Go 1.26.6, fixed concurrency 2/1,60 s deadline and worker 1 / queue 16 define the envelope. Recorded promotion worst request11.788444160 s, minimum headroom 48.211555840 s and process-lifetime kernel peak 1,217,204,224 bytes with no OOM/kill/max events are historical measurements. The current toolchain is 1.26.9; source equality and race tests do not requalify its resource/performance binary.",
+      "evidence": [
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "scripts/eight-cell-product-cap-promotion/shipping-build.json",
+          "line": 1
+        },
+        {
+          "file": "README.md",
+          "line": 38
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 16,
+      "title": "Request-budget UX",
+      "finding": "20 ordinary attempts per ClientIP / anchored 60 s plus 8 shared verified eligible follow-up units enables the declared normal map/azimuth journeys without teaching capability accounting to users. Prebooking/fail-closed tests support avoiding budget-exhausted partial eligible fan-out, not guaranteeing all RF work succeeds. API docs should carry counters/headers, architecture docs ownership/verification details, UI the problem and wait/retry action. Current error text distinguishes capacity/budget, but Retry-After is only stored on Error and catches display message. NAT sharing and charged failures can surprise users; no automatic retry or admission redesign is recommended here.",
+      "evidence": [
+        {
+          "file": "backend-go/rf_workflows.go",
+          "line": 1
+        },
+        {
+          "file": "docs/api.md",
+          "line": 1275
+        },
+        {
+          "file": "frontend-react/src/utils/apiClient.js",
+          "line": 33
+        },
+        {
+          "file": "backend-go/rf_protection.go",
+          "line": 1
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 17,
+      "title": "Eight-Cell product limit UX",
+      "finding": "Setup shows selected count, minimum 2 / maximum 8 and refuses a ninth without RF. This feels intentional as a product limit, but the reason is mostly discoverable in README/qualification rather than at the point of selection. The useful explanation is a currently supported small-plan operational scope; users do not need W1/Profile A internals to select Cells. Eight is not a scientific law or guarantee of accuracy.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/ControlPanel.jsx",
+          "line": 127
+        },
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 18,
+      "title": "Independent cap coherence",
+      "finding": "Normal 8, Recommendation existing-input 5, Measurement 1–6 are deliberately independent and remain unchanged. README current scope table is clear. Candidate UI guard/explanation uses 5 and requires a drawn area; app flow further requires at least 2 existing inputs although endpoint supports its own minimum. Measurement UI advertises 5,000 samples but not max 6 and its handler lacks a maximum precheck, so an eight-Cell user encounters a backend rejection. Document this as recoverable workflow debt, not an argument to equalize caps.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 33
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 2070
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 2127
+        },
+        {
+          "file": "backend-go/raytracer/measurements.go",
+          "line": 231
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 19,
+      "title": "Results / explainability",
+      "finding": "Results answers what happened through scores/raw metrics; baseline impact and comparisons show compared with what; thresholds and conditional per-Cell effects show why; non-dominated Solutions support trade-offs. Is it good requires user priorities and policy context:64/100 is neither 64% coverage nor accuracy. Objective meanings and raw denominators are present but not automatically understood. Current empty/infeasible states avoid success claims. Next-inspection guidance exists per tool but is less unified than the evidence itself.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5148
+        },
+        {
+          "file": "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+          "line": 31
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 643
+        },
+        {
+          "file": "frontend-react/src/components/InterferenceResultsPanel.jsx",
+          "line": 53
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 20,
+      "title": "Optimization semantics",
+      "finding": "Default network search is deterministic two-pass coordinate azimuth search on 10° candidates;578 proposals for 8 Cells. Other radio/geometry inputs stay fixed. Priorities weight normalized available utilities, hard constraints gate feasibility; radio quality opt-in starts at 0. Opt-in multistart/archive searches are bounded heuristics. A retained Pareto set is discovered, truncated and not global; local priority reranking is not new RF search. UI/report recommendation wording is substantially honest; single-sector API optimal/max coverage sentence is overbroad and conflates weighted demand with coverage.",
+      "evidence": [
+        {
+          "file": "docs/api.md",
+          "line": 894
+        },
+        {
+          "file": "backend-go/product_cap_promotion_test.go",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+          "line": 31
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 643
+        },
+        {
+          "file": "docs/api.md",
+          "line": 784
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 21,
+      "title": "Uncertainty / provenance",
+      "finding": "Strong current principle: static source licenses/hashes, observed_tag vs levels-derived vs unknown roof evidence, requested/applied models, applicability/fallback, receiver/quality/building thresholds, Run/Version lineage and report hashes remain explicit. Data calls demand heuristic, not subscriber measurements. Unknown fields remain unsupported/missing rather than promoted. Absolute accuracy uncertainty is not quantified by deterministic repeatability; the real-pilot block is preserved. A report hash proves artifact integrity only.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5412
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 5602
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 1217
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 22,
+      "title": "Errors / empty states",
+      "finding": "Empty states suggest select Cells/run analysis/import samples; unsupported 140 GHz quality is explicit. Stale/historical result badges and unavailable Apply states preserve evidence boundaries. Cap errors and persistence errors are real failures, not success banners. Recovery gaps: Measurement 6 surfaces after submission, generic resource-budget export wording does not teach which artifact to reduce, and retry metadata is not translated into a wait. Browser/Go tests support representative paths; no exhaustive failure-mode or formal accessibility certification was performed.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/components/AnalysisEmptyState.jsx",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/components/InterferenceResultsPanel.jsx",
+          "line": 53
+        },
+        {
+          "file": "frontend-react/src/components/ApplySolutionDialog.jsx",
+          "line": 42
+        },
+        {
+          "file": "frontend-react/src/utils/apiClient.js",
+          "line": 33
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 260
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 23,
+      "title": "Report / export honesty",
+      "finding": "HTML and Markdown builders retain selected Cells, request/model/dataset/application metadata, source Runs/Versions, score/baseline/Pareto evidence and limitations. Reports say deterministic planning estimate, not measurement or deployment approval; scalar correction is not full calibration; conditional effects are noncausal. Missing data has explicit unavailable representation. Report maps sample rays for readability with disclosure; full result preservation belongs to bounded project/artifact storage, not the map image. Some exact identity/hash evidence is in retained artifact/source data rather than every printable summary. No claim of complete universal portable evidence is warranted. Portable project files do not include the separate Run History database, generated report files or coverage surfaces; retained Scenario artifacts and embedded Version/Run metadata are narrower than a complete workspace backup. Download reports separately. These documented exclusions should be visible when promising portability.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 1217
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 848
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 719
+        },
+        {
+          "file": "frontend-react/src/utils/reportExport.js",
+          "line": 643
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 260
+        },
+        {
+          "file": "docs/project-format.md",
+          "line": 3
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 24,
+      "title": "Persistence expectations",
+      "finding": "Known historical eight-Cell network-result-only round-trip is supported, and current regression suite preserves it.16 MiB file,250k encoded-node,32 MiB/1M decoded-content guards remain. Oversize export throws before download; this audit found no evidence that a rejected export is reported as safely exported. Only recent scenario layers are cached, older inputs remain and require rerun. Draft autosave, immutable Version and downloadable project are different promises. Current README caveat is honest, but discoverability/recovery remain medium debt. The project-format contract explicitly excludes the separate Run History database, generated reports, coverage surfaces and transient view/Undo state. This is documented omission, not silent retention of every important artifact; a saved-local indicator alone does not explain portable backup completeness.",
+      "evidence": [
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 10
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 260
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 371
+        },
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "docs/project-format.md",
+          "line": 3
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 25,
+      "title": "README verdict",
+      "finding": "Good scoped technical introduction and strong scientific caveats; visible scope table, versioned gallery, LFS/Docker/readiness path, settings-first sample, limitations and contribution links. It primarily sells a large capability set after its overview, rather than leading with one concrete comparison problem/outcome. Screenshots demonstrate results/control density more than the complete first planning decision. Source-build/LFS friction is explicit and appropriate; no turnkey operator workflow is implied by the strongest caveats. Its strongest introduction should be retained; inconsistent legacy Overview claims are a separate public-copy defect, not evidence that this README makes those claims.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "README.md",
+          "line": 33
+        },
+        {
+          "file": "README.md",
+          "line": 123
+        },
+        {
+          "file": "README.md",
+          "line": 178
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 26,
+      "title": "Docs landing verdict",
+      "finding": "Clear run locally CTA, one planning loop and a prominent confidence boundary lower on the page; search/navigation and light/dark behavior pass current browser checks. Architecture is a peer first destination, so internal system explanation competes with first user outcome. Default propagation sentence is stale, current capability link leads to a 2–6 understatement, and theme previews differ in UI generation. Appearance itself does not invalidate the hierarchy; matched content and a concrete first task matter more than another palette change.",
+      "evidence": [
+        {
+          "file": "docs/index.html",
+          "line": 86
+        },
+        {
+          "file": "docs/index.html",
+          "line": 204
+        },
+        {
+          "file": "docs/index.html",
+          "line": 139
+        },
+        {
+          "file": "docs/index.html",
+          "line": 98
+        },
+        {
+          "file": "docs/features.md",
+          "line": 72
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 27,
+      "title": "Screenshot story",
+      "finding": "Inspected all four README gallery images and both docs hero assets in place. Network workspace: selection/order, rays and map key. Propagation drawer: configure beam/radius/rays plus explicit Optimize. Optimization results:64.3/100, deltas, raw denominators and discovered trade-offs; no first-selection or full apply/export action. Single-sector: alternative simpler mode and research disclosures. They partially tell configure→analyze→optimize→understand, but start in populated states and omit the initial question/baseline/export decision. Light hero is an older UI capture; dark hero is the current eight-Cell workspace. Captions do not establish measured performance or accuracy.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 123
+        },
+        {
+          "file": "docs/index.html",
+          "line": 98
+        }
+      ],
+      "table": "screenshots"
+    },
+    {
+      "phase": 28,
+      "title": "Public positioning",
+      "finding": "Primary label: deterministic urban RF planning and experimentation workspace. Secondary: cellular-network simulator (planning estimates), bounded azimuth optimization tool, geospatial RF visualization/explanation tool. Research/reference platform describes the optional specialist area. A universal network planner,6G validated simulator or commercial operator-planning replacement is not defensible. The small-scale urban focus is an asset to preserve. Overview currently implies a broader vendor/operator validation tool; treat that mismatch as a claim defect, not a reason to invent enterprise features.",
+      "evidence": [
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        },
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 29,
+      "title": "Commercial-tool expectation gap",
+      "finding": "Table distinguishes present, partial, absent and explicitly out-of-scope capabilities. Inventory fields are not an operator integration, configured loading is not capacity, terrain diagnostics are not canonical terrain propagation, CSV ingestion is not field validation, and Core overlays are not mobility/handover prediction. These are expectation boundaries, not an automatic feature wishlist.",
+      "evidence": [
+        {
+          "file": "docs/features.md",
+          "line": 1
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        }
+      ],
+      "table": "commercial"
+    },
+    {
+      "phase": 30,
+      "title": "External feedback synthesis",
+      "finding": "Only supplied summaries were used. No Reddit thread/author/date or statistically representative audience evidence was provided; none was fetched or invented. Caching question matches repository evidence, use-case question reinforces first-use review, smooth-map praise is preservation input, and small urban scope is source-supported. There are no attributable planner feature requests to justify a new specialist capability.",
+      "evidence": [
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 27
+        },
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        }
+      ],
+      "table": "feedback"
+    },
+    {
+      "phase": 31,
+      "title": "Product debt inventory",
+      "finding": "Fifteen evidence-backed items below separate claim/documentation drift, workflow discoverability, terms, persistence expectations and integration readiness. None authorizes implementation. Strict OpenAPI integration is blocked; local core planning is not shown to be broken. Field-accuracy and calibration promotion are separately blocked by scientific evidence, not a missing UI feature.",
+      "evidence": [
+        {
+          "file": "docs/openapi.yaml",
+          "line": 24
+        },
+        {
+          "file": "docs/features.md",
+          "line": 72
+        },
+        {
+          "file": "frontend-react/src/App.jsx",
+          "line": 2127
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 10
+        }
+      ],
+      "table": "findings"
+    },
+    {
+      "phase": 32,
+      "title": "Scientific debt inventory",
+      "finding": "Scientific debt is chiefly unusable measurement evidence and unknown transmitter/resource/receiver truth. Model applicability is explicit; canonical terrain absence and advanced channel/PHY omissions are declared scope limitations, not automatically defects. Do not turn synthetic tests, source identity or operational success into a measured accuracy result.",
+      "evidence": [
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "docs/concept-6a-canonical-rf-validation.md",
+          "line": 1
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ],
+      "table": "scientific_debt"
+    },
+    {
+      "phase": 33,
+      "title": "What not to build next",
+      "finding": "Do not promote 10/12 Cells: no demonstrated user decision blocked by 8, and current independent/persistence limits do not disappear with a cap increase. Do not expand W2/W3 or repeat infrastructure qualification by default: W1 evidence is adequate for the declared use and no broader demand case exists. Do not reopen adaptive admission: invalid estimator validation remains historical evidence and Auto stays observation-only. Do not add arbitrary RF models, universal terrain/clutter physics or an enterprise wishlist without applicability, data and user-task evidence. These are defer decisions, not claims such work can never matter.",
+      "evidence": [
+        {
+          "file": "docs/eight-cell-product-cap-promotion.md",
+          "line": 1
+        },
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        },
+        {
+          "file": "backend-go/resource_profile.go",
+          "line": 1
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 34,
+      "title": "Ranked next-phase options",
+      "finding": "Five directions, ranked by evidence and dependency readiness, appear below. Costs/risks are qualitative, not schedule estimates. Current claim reconciliation comes first because the final source pass found material unsupported applicability statements; the first-decision walkthrough follows. Real scientific validation remains high-value but externally blocked. The strict API schema defect is a concrete separate integration task; none authorizes implementation now.",
+      "evidence": [
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "README.md",
+          "line": 178
+        }
+      ],
+      "table": "options"
+    },
+    {
+      "phase": 35,
+      "title": "Single recommendation",
+      "finding": "Choose exactly one initiative: reconcile current public claims with the released planning scope. Start with the unarchived Overview vendor/terrain/beamforming/data/performance assertions, then reconcile current algorithm/capability/API/UI wording against the frozen claim matrix. Preserve historical qualification/design reports as evidence. This is a bounded claim-alignment task, not a product redesign, new model, cap expansion or measured-validation claim. A reproducible first-decision example is the next-ranked initiative rather than a substitute for correcting unsupported assertions.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 14
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 66
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        },
+        {
+          "file": "docs/algorithms.md",
+          "line": 396
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 36,
+      "title": "Final claim matrix",
+      "finding": "The matrix is compact by atomic claim family, with source/wording, one category, support judgment, required qualification and recommended wording. Recommended wording is audit output only and has not been applied. Unsupported inferred claims are explicitly marked as absent/inferred rather than falsely attributed to current README.",
+      "evidence": [
+        {
+          "file": "README.md",
+          "line": 38
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/network-optimization-deadline-audit.md",
+          "line": 27
+        }
+      ],
+      "table": "claims"
+    },
+    {
+      "phase": 37,
+      "title": "Product workflow scorecard",
+      "finding": "Ordinal 1–5 scores use the locked anchors. They are auditor judgments from source, tests and bounded visual observation, not measured usability percentages; no arithmetic overall score is manufactured.",
+      "evidence": [
+        {
+          "file": "planning/product-compass.md",
+          "line": 7
+        },
+        {
+          "file": "docs/getting-started.md",
+          "line": 122
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        }
+      ],
+      "table": "scorecard"
+    },
+    {
+      "phase": 38,
+      "title": "Audit verdict",
+      "finding": "C — SCIENTIFIC CLAIM-BOUNDARY DEFECT. The primary runtime/README support a coherent, scientifically careful small-plan comparison product, but current unarchived docs/overview.md materially presents vendor antenna validation across terrain/buildings, beamforming work and broad data/performance/scalability claims beyond released evidence. It is not linked from the current docs hub, but is public repository product copy and is not a frozen historical qualification/design report. This cluster of present-tense applicability assertions crosses the locked C rule; it is more than an isolated aspirational roadmap sentence. B describes the core product/workflow condition but is insufficient as the overall claim-alignment verdict. A is contradicted by these claims and other copy drift; D is not supported because the core loop is connected; E is unnecessary because the relevant sources/checks are available. No core RF equation defect or measured accuracy is asserted by this verdict.",
+      "evidence": [
+        {
+          "file": "docs/overview.md",
+          "line": 14
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 66
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 76
+        },
+        {
+          "file": "docs/overview.md",
+          "line": 79
+        },
+        {
+          "file": "README.md",
+          "line": 21
+        },
+        {
+          "file": "docs/modeling-limits.md",
+          "line": 1
+        },
+        {
+          "file": "docs/concept-6a1-readiness.json",
+          "line": 6
+        }
+      ],
+      "table": null
+    },
+    {
+      "phase": 39,
+      "title": "No implementation / freeze",
+      "finding": "End at findings. VERSION stays 0.12.1; all original tracked source, scientific/policy/persistence files, historical evidence and release metadata remain hash-identical. No caps/models/worker/deadline/admission/search/Pareto/Auto changes, README rewrite, changelog edit, tag, release, commit or push. Only the requested Markdown/JSON report and audit support/evidence directory are created. No recommendation is implemented.",
+      "evidence": [
+        {
+          "file": "policy/rf-policy.json",
+          "line": 1
+        },
+        {
+          "file": "frontend-react/src/utils/projectStore.js",
+          "line": 10
+        },
+        {
+          "file": "scripts/eight-cell-product-cap-promotion/shipping-build.json",
+          "line": 1
+        }
+      ],
+      "table": null
+    }
+  ],
+  "checks": [
+    {
+      "name": "backend race suite",
+      "command": "cd backend-go && GOTOOLCHAIN=go1.26.9 go test -race ./...",
+      "exit_code": 0,
+      "result": "Pass: API/root 123.814 s, resourceprofile 1.243 s, raytracer 20.394 s; gated artifact/qualification generators intentionally not enabled.",
+      "log": "logs/backend-tests.log",
+      "scope": "Actual engine and API tests; controlled fixtures, not a new operational qualification."
+    },
+    {
+      "name": "backend vet",
+      "command": "cd backend-go && GOTOOLCHAIN=go1.26.9 go vet ./...",
+      "exit_code": 0,
+      "result": "Pass.",
+      "log": "logs/backend-vet.log",
+      "scope": "Go static diagnostics."
+    },
+    {
+      "name": "frontend suite",
+      "command": "cd frontend-react && npm test (bundled Node on PATH)",
+      "exit_code": 0,
+      "result": "70 files / 439 tests passed.",
+      "log": "logs/frontend-tests.log",
+      "scope": "Workflow, source context, limits, reports, persistence and helper regression tests."
+    },
+    {
+      "name": "frontend lint",
+      "command": "npm --prefix frontend-react run lint (bundled Node)",
+      "exit_code": 0,
+      "result": "Pass.",
+      "log": "logs/frontend-lint.log",
+      "scope": "Existing source/browser lint configuration."
+    },
+    {
+      "name": "frontend build",
+      "command": "cd frontend-react && npm run build (bundled Node)",
+      "exit_code": 0,
+      "result": "Pass; existing >500kB chunk warning.",
+      "log": "logs/frontend-build.log",
+      "scope": "Ignored production bundle for live local observation."
+    },
+    {
+      "name": "appearance/eight-Cell browser checks",
+      "command": "npx playwright test e2e/eight-cell-presentation.spec.js e2e/docs-theme.spec.js --project=desktop-1440 --project=mobile-390 --workers=2",
+      "exit_code": 0,
+      "result": "16 passed, 0 skipped.",
+      "log": "logs/browser-checks.log",
+      "scope": "Mocked RF for presentation; docs/theme/navigation/storage behavior, desktop 1440 and mobile 390 Chromium."
+    },
+    {
+      "name": "workflow browser checks",
+      "command": "npx playwright test e2e/workspace.spec.js --project=desktop-1440 --project=mobile-390 --workers=2 --grep <six named journeys>",
+      "exit_code": 0,
+      "result": "11 passed, 1 declared skip; full Run/apply/Version/historical-report journey desktop only.",
+      "log": "logs/workflow-browser-checks.log",
+      "scope": "Mocked backend responses; sector/scenario, project/history isolation, unsaved draft, Pareto, lazy explanation. Not fresh eight-Cell real RF or full mobile journey proof."
+    },
+    {
+      "name": "dataset validation",
+      "command": "cd backend-go && GOTOOLCHAIN=go1.26.9 go run ./cmd/validate-dataset ../data-pipeline",
+      "exit_code": 0,
+      "result": "Ankara 2026.07 valid: 451 towers / 161,784 indexed buildings.",
+      "log": "logs/dataset-validation.log",
+      "scope": "Dataset integrity, not transmitter truth or RF accuracy."
+    },
+    {
+      "name": "docs validation",
+      "command": "python docs/validate_docs.py (Python 3.12/PyYAML 6.0.3)",
+      "exit_code": 0,
+      "result": "57 HTML pages /42 API paths valid.",
+      "log": "logs/docs-validation.log",
+      "scope": "Links/theme/search assets and YAML/basic OpenAPI shape; not strict OpenAPI schema."
+    },
+    {
+      "name": "OpenAPI schema and semantic contracts",
+      "command": "python scripts/v0.12.1-post-release-audit/contracts.py",
+      "exit_code": 1,
+      "result": "FAIL:5 invalid Response Objects.410 local refs resolve;8/8/5/6 caps correct;82/82 historical shipping source identities match.",
+      "log": "logs/openapi-contracts.log",
+      "scope": "Strict OpenAPI 3.1 via openapi-spec-validator 0.9.0; no repair made."
+    },
+    {
+      "name": "version consistency",
+      "command": "python scripts/versioning.py check",
+      "exit_code": 0,
+      "result": "0.12.1 consistent.",
+      "log": "logs/version.log",
+      "scope": "Canonical release metadata."
+    },
+    {
+      "name": "generated-policy consistency",
+      "command": "python scripts/generate_policy.py --check",
+      "exit_code": 0,
+      "result": "Bindings current.",
+      "log": "logs/policy.log",
+      "scope": "No generated file write."
+    },
+    {
+      "name": "UI mechanical detector",
+      "command": "impeccable detect --json <WorkspaceChrome,ControlPanel,InterferenceResultsPanel>",
+      "exit_code": 0,
+      "result": "Empty finding list for the three scoped files.",
+      "log": "logs/ui-detector.json",
+      "scope": "Scoped mechanical rules only; not a formal WCAG/performance audit."
+    },
+    {
+      "name": "source/lock freeze",
+      "command": "python scripts/v0.12.1-post-release-audit/audit.py verify",
+      "exit_code": 0,
+      "result": "All 3,217 original tracked file identities, HEAD, VERSION and lock unchanged; rerun at completion.",
+      "log": "logs/invariance.log",
+      "scope": "Strong no-production-change evidence; report/new-file coverage checked separately."
+    },
+    {
+      "name": "whitespace",
+      "command": "git diff --check; audit added text checked separately by completion.py",
+      "exit_code": 0,
+      "result": "No tracked whitespace errors; final new-file check retained separately.",
+      "log": "logs/diff-check.log",
+      "scope": "Untracked audit artifacts need the separate completion check."
+    }
+  ],
+  "methodology": {
+    "mode": "Single-auditor source/evidence audit; Impeccable audit heuristics used for scoped UI observation. No dual-agent critique or redesign was invoked.",
+    "initial_status": "Initial pre-directory git status --short was empty; main/e84210dda6fb282474eda4e935f50c598fad7b34; VERSION 0.12.1; empty diff --stat. Freeze JSON intentionally records the subsequently created audit directory.",
+    "lock_timing": "Freeze completed before reading product/evidence content beyond repository/user instructions and file inventory.",
+    "observed_live": "Normal Go 1.26.9 backend/full Ankara pack, ignored built frontend, fresh browser origin127.0.0.1:18081. Setup/first-screen/navigation observed with CUA; screenshot inspected. No field measurement or performance benchmark performed.",
+    "violations": [],
+    "nonfatal_probe_errors": [
+      "Initial system Node failed due missing simdjson dylib; bundled Node used.",
+      "Initial Python 3.15 environment had no compatible pinned PyYAML wheel; temporary bundled Python 3.12 environment succeeded.",
+      "Two preliminary check invocations used the wrong cwd and did not execute the intended checks; corrected commands/logs are the evidence.",
+      "An initial broad lexical scan included JSON; it was narrowed and replaced before retention to exclude data/campaign records.",
+      "Strict OpenAPI validator initially stopped at first error; iter_errors retained all 5 errors without changing the specification.",
+      "Draft B verdict was revised to C before completion when the required overview-source pass found material current applicability claims; initial draft report filenames were corrected before delivery. Neither draft was treated as final evidence."
+    ],
+    "limits": [
+      "No representative timed usability study or target-user interviews;30 seconds is heuristic.",
+      "No physical-device touch/screen-reader/complete accessibility certification; Chromium emulated desktop/mobile layout and representative keyboard behavior only.",
+      "One browser journey intentionally skips mobile;0 skipped not claimed.",
+      "No new Go 1.26.9/Linux/arm64 Profile A resource certification; frozen historical evidence remains Go 1.26.6.",
+      "No controlled caching-vs-concurrency factorial study, universal benchmark or full cold/warm decomposition.",
+      "No usable canonical field observations, exact transmitter truth or measured residual accuracy.",
+      "No raw private campaign copied; sanitized repository readiness summaries audited, not independently re-parsed private bytes.",
+      "No live GitHub About description, Reddit thread, author attribution or independent commercial-user demand study.",
+      "No full external standards-conformance re-audit; source subset/citations/fixtures inspected.",
+      "The historical promotion archive and SHA index are absent at their recorded local paths; committed qualification summaries and current source/regression evidence were checked, but historical raw numeric measurements were not independently reverified. See frozen-evidence-availability.json.",
+      "The claim-language appendix is complete for its recorded textual regex scope and uses transparent routing into adjudicated claim families; routing is not an independent semantic or scientific verification of every source line. Nonmatching present-tense claims, including Overview, were added manually to the matrix."
+    ],
+    "not_run": [
+      "Expensive frozen operational qualification matrices and artifact-generating gated tests.",
+      "Docs reference rebuild in the production tree, because it writes frozen generated files; existing docs assets checked read-only.",
+      "New regression tests, because no production fix was implemented."
+    ],
+    "exact_blockers": [
+      "Public scientific positioning: current unarchived Overview validation/beamforming/terrain applicability, complete-data and universal performance/scaling claims exceed the supported released scope.",
+      "OpenAPI strict schema integration: five invalid Response Objects at docs/openapi.yaml:24,180,509,547,637.",
+      "Canonical measured accuracy/calibration promotion: trustworthy serving semantics, exact transmitter mapping, assignable bandwidth/resources, compatible frequency, Tx/Rx/LOS/outdoor truth missing.",
+      "No blocker to concluding the audit or to the explicitly supported local small-plan comparison workflow."
+    ],
+    "raw_evidence_policy": "Store bounded command logs, scan inventory, source hashes and structured findings in audit directory; do not copy measurement campaigns, secrets, personal data, or regenerate historical evidence. Existing evidence cited in place. Live UI observations distinguish mock/backend/source; no measured accuracy inference.",
+    "strengths": [
+      "Map-first focused workspace and progressive disclosure",
+      "Deterministic explicit inputs and model/fallback/height provenance",
+      "Current/stale/historical lineage and guarded Apply",
+      "Baseline deltas, conditional per-Cell explanations and discovered trade-offs",
+      "Local-first portable retained evidence with bounded guards",
+      "Strict separation of research references, Core overlay and canonical RF",
+      "Frozen W1 operational evidence and observation-only Auto"
+    ],
+    "freeze_decision": "Retain 0.12.1 and all production/scientific/policy/persistence/release identities. No implementation, tag, release or push. Audit artifacts are the only additions.",
+    "single_next_action": "Open one bounded follow-up for current public claim-boundary reconciliation, beginning with docs/overview.md and the algorithm/capability/API/UI wording identified in the matrix; preserve all historical evidence and production behavior."
+  },
+  "required_final_items": [
+    {
+      "number": 1,
+      "title": "Starting baseline",
+      "answer": "Initial pre-directory git status --short was empty; main/e84210dda6fb282474eda4e935f50c598fad7b34; VERSION 0.12.1; empty diff --stat. Freeze JSON intentionally records the subsequently created audit directory."
+    },
+    {
+      "number": 2,
+      "title": "Audit-lock SHA",
+      "answer": "4035e4a3ce4cde804a161c7deef9f5061ddaaa29e006b7bad18f4f5934a8cd91"
+    },
+    {
+      "number": 3,
+      "title": "Current product one-sentence definition",
+      "answer": "A.T.O.M is a local-first, open-source workspace for comparing small urban cellular-network configurations on real maps using deterministic RF planning estimates and bounded azimuth search."
+    },
+    {
+      "number": 4,
+      "title": "Primary users",
+      "answer": "RF/RAN engineers making small-plan comparisons; telecom students/researchers; experimenters, systems engineers and contributors as secondary users."
+    },
+    {
+      "number": 5,
+      "title": "Core use cases",
+      "answer": "Configure/evaluate small urban plans, inspect propagation/interference, compare azimuth recommendations, explain trade-offs and retain/export evidence."
+    },
+    {
+      "number": 6,
+      "title": "First 30 seconds verdict",
+      "answer": "RF planning/map tool and Run Sector are visible; first decision, data certainty and accuracy boundary need more guidance."
+    },
+    {
+      "number": 7,
+      "title": "Primary workflow verdict",
+      "answer": "Coherent main loop; cap/Version/export prerequisites cause recoverable friction. Current mocked browser checks and controlled Go tests supplement retained real F28 evidence."
+    },
+    {
+      "number": 8,
+      "title": "Tool IA verdict",
+      "answer": "Four stages and progressive disclosure work; optional Core/research breadth needs task context, not deletion."
+    },
+    {
+      "number": 9,
+      "title": "Terminology findings",
+      "answer": "Cell/tower/site/sector differ by context; coverage is overloaded; RF profile≠Profile A; Auto observer≠Auto-Optimize; optimal is bounded."
+    },
+    {
+      "number": 10,
+      "title": "Scientific claim inventory",
+      "answer": "56 atomic claim families, exactly one A–F category each; lexical occurrence appendix and evidence paths retained."
+    },
+    {
+      "number": 11,
+      "title": "2.6 GHz status",
+      "answer": "C: documented deterministic UMa planning subset; not field-validated."
+    },
+    {
+      "number": 12,
+      "title": "28 GHz status",
+      "answer": "C: documented deterministic UMa planning subset; no calibrated multipath/beamforming claim."
+    },
+    {
+      "number": 13,
+      "title": "140 GHz status",
+      "answer": "D: research/reference overlay; ordinary radio quality unsupported."
+    },
+    {
+      "number": 14,
+      "title": "Measurement-validation status",
+      "answer": "Software tooling exists; real pilot parsed 53,005 rows but yielded 0 canonical observations because serving semantics and truth/resource gates failed."
+    },
+    {
+      "number": 15,
+      "title": "Real-world accuracy status",
+      "answer": "E: unestablished; no defensible canonical field MAE/RMSE result."
+    },
+    {
+      "number": 16,
+      "title": "Eight-Cell claim boundary",
+      "answer": "Normal cap 8; only frozen Ankara W1/2.6 & 28 GHz/legacy settings and historical Profile A qualification; no arbitrary networks/W2/W3."
+    },
+    {
+      "number": 17,
+      "title": "Optimization-performance evidence",
+      "answer": "Affected six-Cell 28 GHz request ≈95–113 s uncached → 6.72–6.76 s corrected in recorded container controls; not a full-workflow guarantee."
+    },
+    {
+      "number": 18,
+      "title": "Caching vs concurrency conclusion",
+      "answer": "434 proposals retained; expensive independent Cell computations 2604→180. Reuse is the demonstrated correction; workers/scheduling unchanged; no universal causal percentage split."
+    },
+    {
+      "number": 19,
+      "title": "Benchmark communication findings",
+      "answer": "Detailed historical audit is scoped; Algorithms 36 s → 250 ms / 4× claims lack workload/hardware/raw evidence and are unsupported."
+    },
+    {
+      "number": 20,
+      "title": "Profile A claim boundary",
+      "answer": "2 CPU/4 GiB refers to the frozen historical Go 1.26.6 Linux/arm64 W1 reference, not minimum universal requirements or a new 1.26.9 certificate."
+    },
+    {
+      "number": 21,
+      "title": "Budget-policy UX finding",
+      "answer": "Normal users need problem/wait/retry guidance, not capability accounting; Retry-After is captured but not presented; NAT shares limits."
+    },
+    {
+      "number": 22,
+      "title": "Eight-Cell UX finding",
+      "answer": "Count/minimum/maximum/ninth refusal clear; operational reason is mainly in docs."
+    },
+    {
+      "number": 23,
+      "title": "Independent-cap UX finding",
+      "answer": "README 8/5/6 table clear; Recommendation 5 guard exists; Measurement 6 maximum not disclosed/prechecked before submission."
+    },
+    {
+      "number": 24,
+      "title": "Results/explainability finding",
+      "answer": "Strong baseline/metrics/conditional effects/trade-offs; /100 is a preference score needing context, not percent accuracy/coverage."
+    },
+    {
+      "number": 25,
+      "title": "Optimization-semantics finding",
+      "answer": "Azimuth-only bounded search; no global guarantee. Single-sector optimal/max-coverage API sentence overstates semantics."
+    },
+    {
+      "number": 26,
+      "title": "Provenance finding",
+      "answer": "Strong model/dataset/height/default/fallback/Run lineage; missing truth remains missing. Artifact hashes do not prove physical accuracy."
+    },
+    {
+      "number": 27,
+      "title": "Error/empty-state finding",
+      "answer": "Most actions and unsupported/stale states are clear; retry wait, oversize recovery and Measurement 6 need improvement."
+    },
+    {
+      "number": 28,
+      "title": "Report/export finding",
+      "answer": "Retained lineage, selected Cells, model/dataset identity and limits survive; report map ray sampling is disclosed."
+    },
+    {
+      "number": 29,
+      "title": "Persistence expectation finding",
+      "answer": "Eight result-only round-trip supported within 16 MiB encoded/32 MiB decoded and 1M-node guards. Project exports exclude separate Run History, report files and coverage surfaces; draft/Version/export promises differ."
+    },
+    {
+      "number": 30,
+      "title": "README verdict",
+      "answer": "Strong scoped technical intro and run path; feature catalogue outweighs one decision/outcome story."
+    },
+    {
+      "number": 31,
+      "title": "Docs landing-page verdict",
+      "answer": "Useful loop/limits/CTA and working themes; legacy-model summary, stale capability cap and mismatched hero captures need later correction."
+    },
+    {
+      "number": 32,
+      "title": "Screenshot-story verdict",
+      "answer": "Shows configured maps, controls and optimization impact; lacks a complete first-question/baseline/apply/export narrative; light hero is older."
+    },
+    {
+      "number": 33,
+      "title": "Recommended primary product label",
+      "answer": "Deterministic urban RF planning and experimentation workspace."
+    },
+    {
+      "number": 34,
+      "title": "Commercial-tool expectation gap",
+      "answer": "Inventory, drive-test, terrain/clutter, antenna and calibration are partial; PCI/neighbor planning absent; mobility/capacity/live control outside scope."
+    },
+    {
+      "number": 35,
+      "title": "External-feedback synthesis",
+      "answer": "Use-case question=messaging signal; caching=technical question supported by source; smooth UI=praise, not a frame-rate study; small urban focus=source-supported strength."
+    },
+    {
+      "number": 36,
+      "title": "Product-debt inventory",
+      "answer": "15 items with evidence, impact, severity, blockers and fix-soon fields in the report/JSON."
+    },
+    {
+      "number": 37,
+      "title": "Scientific-debt inventory",
+      "answer": "Measured validation, transmitter truth, receiver/resource/frequency/LOSmetadata and calibration evidence are missing/blocked; canonical terrain is a declared limitation."
+    },
+    {
+      "number": 38,
+      "title": "What NOT to build next",
+      "answer": "No 10/12 Cell promotion, W2/W3 expansion, more qualification by default, adaptive admission reopening or arbitrary new RF models."
+    },
+    {
+      "number": 39,
+      "title": "Ranked next-phase options",
+      "answer": "1 claim-boundary reconciliation; 2 first planning decision; 3 canonical validation prerequisites; 4 strict API contract integrity; 5 portable evidence/report clarity."
+    },
+    {
+      "number": 40,
+      "title": "Single recommended next initiative",
+      "answer": "Reconcile current public claims with released planning scope"
+    },
+    {
+      "number": 41,
+      "title": "Claim matrix",
+      "answer": "56 rows in phase 36; includes all requested minimum claims and explicit unsupported wording."
+    },
+    {
+      "number": 42,
+      "title": "Product workflow scorecard",
+      "answer": "Purpose 3; Onboarding 3; Workflow 4; RF transparency 4; Explainability 4; Honesty 3; Hierarchy 4; Docs 3; Persistence 3; External readiness 2. Ordinal, with individual rationale."
+    },
+    {
+      "number": 43,
+      "title": "Methodology violations",
+      "answer": "No freeze or audit-only violations found. Failed environment/cwd probes corrected and disclosed; one declared mobile skip, historical evidence and current mock/controlled/live scopes remain explicit."
+    },
+    {
+      "number": 44,
+      "title": "Missing evidence",
+      "answer": "No usable field-accuracy campaign, exact Tx/resource truth, fresh current-binary Profile A certification, representative usability study, historical raw archive/index at recorded paths or controlled concurrency/cache factorial split. These limit claims rather than prevent the audit."
+    },
+    {
+      "number": 45,
+      "title": "Final A/B/C/D/E verdict",
+      "answer": "C — SCIENTIFIC CLAIM-BOUNDARY DEFECT."
+    },
+    {
+      "number": 46,
+      "title": "Exact blockers",
+      "answer": "Public scientific positioning: current unarchived Overview validation/beamforming/terrain applicability, complete-data and universal performance/scaling claims exceed the supported released scope. OpenAPI strict schema integration: five invalid Response Objects at docs/openapi.yaml:24,180,509,547,637. Canonical measured accuracy/calibration promotion: trustworthy serving semantics, exact transmitter mapping, assignable bandwidth/resources, compatible frequency, Tx/Rx/LOS/outdoor truth missing. No blocker to concluding the audit or to the explicitly supported local small-plan comparison workflow."
+    },
+    {
+      "number": 47,
+      "title": "Current strengths to preserve",
+      "answer": "Map-first operation, deterministic/provenanced estimates, guarded lineage, explicit research isolation, explanations/baselines and bounded local evidence."
+    },
+    {
+      "number": 48,
+      "title": "Files created",
+      "answer": "docs/v0.12.1-post-release-product-scientific-audit.md; matching.json; scripts/v0.12.1-post-release-audit/lock, manifests, scripts, inventories and logs."
+    },
+    {
+      "number": 49,
+      "title": "Raw evidence policy",
+      "answer": "Bounded check logs/hashes/structured findings retained; historical evidence cited in place; private raw campaign/precise route/user identifiers not copied; no new benchmark campaign."
+    },
+    {
+      "number": 50,
+      "title": "Freeze decision",
+      "answer": "Retain 0.12.1 and all production/scientific/policy/persistence/release identities. No implementation, tag, release or push. Audit artifacts are the only additions."
+    },
+    {
+      "number": 51,
+      "title": "Single next action",
+      "answer": "Open one bounded follow-up for current public claim-boundary reconciliation, beginning with docs/overview.md and the algorithm/capability/API/UI wording identified in the matrix; preserve all historical evidence and production behavior."
+    }
+  ]
+}

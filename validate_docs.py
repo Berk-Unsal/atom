@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate static documentation links, anchors, assets, and OpenAPI syntax."""
+"""Validate static documentation links, assets, and the strict OpenAPI contract."""
 
 import hashlib
 import json
@@ -10,6 +10,7 @@ from urllib.parse import unquote, urlsplit
 import yaml
 
 from build_theme_assets import generated_theme
+from validate_openapi import openapi_errors
 
 
 DOCS = Path(__file__).resolve().parent
@@ -97,6 +98,7 @@ def main():
     specification = yaml.safe_load((DOCS / "openapi.yaml").read_text(encoding="utf-8"))
     if specification.get("openapi") != "3.1.0" or not specification.get("paths"):
         errors.append("openapi.yaml: expected OpenAPI 3.1.0 with documented paths")
+    errors.extend(f"openapi.yaml: {error}" for error in openapi_errors(specification))
 
     search_index = json.loads((DOCS / "search-index.json").read_text(encoding="utf-8"))
     search_documents = search_index.get("documents", [])

@@ -21,7 +21,7 @@ paths:
     get:
       summary: Reproducibility metadata
       responses:
-        "200": { description: Build, model, technology, and active dataset metadata, content: { application/json: { schema: { $ref: "#/components/schemas/Meta" } } } }
+        "200": { description: "Build, model, technology, and active dataset metadata", content: { application/json: { schema: { $ref: "#/components/schemas/Meta" } } } }
   /api/rf-workflows:
     delete:
       summary: Retire unused workflow obligations
@@ -177,7 +177,7 @@ paths:
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
-        "200": { description: Nested simulation and coverage_gaps results derived from one propagation pass, each carrying the canonical RF contract }
+        "200": { description: "Nested simulation and coverage_gaps results derived from one propagation pass, each carrying the canonical RF contract" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "413": { $ref: "#/components/responses/TooLarge" }
         "422": { $ref: "#/components/responses/TooComplex" }
@@ -340,7 +340,8 @@ paths:
     post:
       parameters:
         - { $ref: "#/components/parameters/RFAzimuthWorkflow" }
-      summary: Optimize one sector azimuth
+      summary: Recommend one sector azimuth
+      description: Evaluates 36 azimuths on a 10-degree grid using unique POI demand and residential weights plus capped usable ray reach. The compatibility optimal_azimuth field identifies the best evaluated direction; no global optimum or area-coverage percentage is established.
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SectorRequest" } } } }
       responses:
@@ -356,7 +357,7 @@ paths:
             RF-Workflow-ID: { $ref: "#/components/headers/RF-Workflow-ID" }
             RF-Workflow-Remaining: { $ref: "#/components/headers/RF-Workflow-Remaining" }
             RF-Workflow-Expires: { $ref: "#/components/headers/RF-Workflow-Expires" }
-          description: Optimal azimuth, propagation-reach score, score breakdown, and canonical RF contract
+          description: Recommended azimuth from the bounded sweep, propagation-reach score, score breakdown, and canonical RF contract
           content: { application/json: { schema: { $ref: "#/components/schemas/OptimizeAzimuthResponse" } } }
         "400": { $ref: "#/components/responses/BadRequest" }
         "422": { $ref: "#/components/responses/TooComplex" }
@@ -418,6 +419,7 @@ paths:
       parameters:
         - { $ref: "#/components/parameters/RFNetworkWorkflow" }
       summary: Coordinate selected-cell azimuth optimization
+      description: Bounded deterministic azimuth search. Default legacy two-pass search proposes 578 evaluations for eight Cells. Compatibility optimal_* fields identify discovered candidates and do not prove global optimality.
       security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
       requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkRequest" } } } }
       responses:
@@ -506,7 +508,7 @@ paths:
     get:
       summary: Describe the batch experiment process
       responses:
-        "200": { description: Process identifier, limits, accepted axes, and job links }
+        "200": { description: "Process identifier, limits, accepted axes, and job links" }
   /api/processes/batch-experiment/execution:
     post:
       summary: Queue an asynchronous batch experiment
@@ -544,7 +546,7 @@ paths:
           description: Comma-separated tower IDs; at most 64 entries and 128 UTF-8 bytes per ID.
           schema: { type: string }
         - { name: network_tech, in: query, schema: { type: string, const: 5g } }
-      responses: { "200": { description: gNB nodes, interface edges, and route decisions } }
+      responses: { "200": { description: "gNB nodes, interface edges, and route decisions" } }
   /api/core/sessions:
     get:
       summary: Optional Core Lab sessions
@@ -634,7 +636,7 @@ components:
   responses:
     BadRequest: { description: Invalid request, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     TooLarge: { description: Request exceeds 1 MiB, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
-    TooComplex: { description: Actual segmented-ray output exceeded the hard 25,000-feature response ceiling, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    TooComplex: { description: "Actual segmented-ray output exceeded the hard 25,000-feature response ceiling", content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     Unauthorized: { description: The route API key is configured and the supplied credential is missing or invalid, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
     Busy:
       description: Global capacity, per-client concurrency, or the per-client request budget rejected the request

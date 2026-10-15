@@ -1,0 +1,3368 @@
+{
+  "schema_version": 1,
+  "task": "A.T.O.M v0.12.1 Claim Reconciliation + API Contract Repair",
+  "completed_at_utc": "2026-10-15T11:24:32.050089+00:00",
+  "status": "complete",
+  "baseline": {
+    "utc": "2026-10-15T10:57:43.534818+00:00",
+    "branch": "main",
+    "head": "e84210dda6fb282474eda4e935f50c598fad7b34",
+    "version": "0.12.1",
+    "initial_status": "?? docs/v0.12.1-post-release-product-scientific-audit.json\n?? docs/v0.12.1-post-release-product-scientific-audit.md\n?? scripts/v0.12.1-post-release-audit/",
+    "freeze_status": "?? docs/v0.12.1-post-release-product-scientific-audit.json\n?? docs/v0.12.1-post-release-product-scientific-audit.md\n?? scripts/v0.12.1-claim-reconciliation/\n?? scripts/v0.12.1-post-release-audit/",
+    "diff_stat": ""
+  },
+  "remediation_lock_sha256": "2f30251193dd43f6bf3c74a7ed2df4c89adf06f0254696da364705b9f63fcbec",
+  "authoritative_audit": "docs/v0.12.1-post-release-product-scientific-audit.json",
+  "verdict": {
+    "code": "B",
+    "label": "CLAIMS MOSTLY RECONCILED — NON-BLOCKING DEBT REMAINS",
+    "previous_C_resolved": true,
+    "rationale": "Material public overclaims removed, strict contract valid, bounded workflow prechecks/recovery clear. P10 screenshot mismatch remains low-severity; ordinary product and scientific evidence gaps remain explicitly bounded."
+  },
+  "product_definition": "Deterministic urban RF planning and experimentation workspace.",
+  "evidence_standard": [
+    "SOFTWARE VERIFIED",
+    "OPERATIONALLY QUALIFIED",
+    "STANDARDS-BASED",
+    "RESEARCH / REFERENCE",
+    "REAL-WORLD ACCURACY UNESTABLISHED"
+  ],
+  "fix_inventory": [
+    {
+      "finding": "P02",
+      "title": "Current capability reference still says network 2–6",
+      "current_sources": [
+        "features_cap",
+        "readme_caps",
+        "cap_tests"
+      ],
+      "current_wording_behavior": "Current features normal network2–6",
+      "required_correction": "Current normal2–8; independent Recommendation5/Measurement6",
+      "allowed_surface": "docs/features.md + generated HTML",
+      "tests_needed": "current-claim/cap regressions",
+      "source_files": [
+        "docs/features.md",
+        "docs/architecture.html",
+        "docs/download.html",
+        "docs/deployment.md"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P03",
+      "title": "Landing propagation summary describes the legacy model as the general engine",
+      "current_sources": [
+        "landing_default",
+        "setup",
+        "algorithms"
+      ],
+      "current_wording_behavior": "Landing describes FSPL/walls as general default",
+      "required_correction": "Simple UMa2.6/28/default/fallback and separate research/terrain/entry scope",
+      "allowed_surface": "docs/index.html",
+      "tests_needed": "model-scope and landing-content checks",
+      "source_files": [
+        "docs/index.html",
+        "docs/index.md",
+        "docs/architecture.md"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P04",
+      "title": "Old algorithm timing examples lack reproducible benchmark support",
+      "current_sources": [
+        "legacy_benchmark",
+        "performance",
+        "concurrency"
+      ],
+      "current_wording_behavior": "Unscoped1000×/36s→250ms/4× and API3–5s claims",
+      "required_correction": "Remove unproven timing comparisons; scope historical reuse evidence",
+      "allowed_surface": "docs/algorithms.md,docs/api.md + derived HTML",
+      "tests_needed": "performance claim regressions",
+      "source_files": [
+        "docs/algorithms.md",
+        "docs/api.md",
+        "docs/visualization.md"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P05",
+      "title": "Strict OpenAPI consumers encounter five invalid Response Objects",
+      "current_sources": [
+        "openapi"
+      ],
+      "current_wording_behavior": "Five invalid Response Objects",
+      "required_correction": "Quote malformed descriptions; strict validator in quality path",
+      "allowed_surface": "docs/openapi.yaml, validation/dependency/CI files",
+      "tests_needed": "strict schema + invalid response/ref/placement/shape fixtures; semantic diff",
+      "source_files": [
+        "docs/openapi.yaml",
+        "docs/validate_openapi.py",
+        "docs/validate_openapi_test.py",
+        "docs/validate_docs.py",
+        "docs/requirements.in",
+        "docs/requirements.txt",
+        ".github/workflows/quality.yml"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P06",
+      "title": "Measurement 6 is not visible before the eight-Cell request",
+      "current_sources": [
+        "measurement_handler",
+        "measurement_ui",
+        "measurements"
+      ],
+      "current_wording_behavior": "Eight-Cell measurement action reaches backend rejection",
+      "required_correction": "Expose max6; disable/precheck7/8; retain independent backend check",
+      "allowed_surface": "frontend App/UI helper + tests",
+      "tests_needed": "6dispatches;7/8no RF;8normalnetwork/5recommendation regressions",
+      "source_files": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/App.workflow.test.jsx",
+        "frontend-react/src/utils/measurementScope.js",
+        "frontend-react/src/utils/measurementScope.test.js"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P07",
+      "title": "Retry-After is captured but not used for actionable wait guidance",
+      "current_sources": [
+        "api_client",
+        "api_budget",
+        "protection"
+      ],
+      "current_wording_behavior": "Captured Retry-After not displayed",
+      "required_correction": "Static approximate retry guidance for known headers; no automatic requests",
+      "allowed_surface": "frontend apiClient/error helper + tests; docs/API troubleshooting",
+      "tests_needed": "valid/missing/invalid headers; one fetch only; capacity/budget distinction",
+      "source_files": [
+        "frontend-react/src/utils/apiClient.js",
+        "frontend-react/src/utils/apiClient.test.js",
+        "frontend-react/src/utils/rfRecoveryMessage.js",
+        "frontend-react/src/utils/rfRecoveryMessage.test.js",
+        "frontend-react/e2e/workspace.spec.js",
+        "docs/api.md",
+        "docs/faq.md"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P08",
+      "title": "Cell/tower/site and optimization/recommendation are contextual aliases",
+      "current_sources": [
+        "guide",
+        "api_optimal",
+        "tools",
+        "features"
+      ],
+      "current_wording_behavior": "Optimal/maximumcoverage and site meanings overbroad",
+      "required_correction": "Recommended evaluated candidate and actual weighted sector objective; preserve API fields",
+      "allowed_surface": "currentAPI/algorithm/visualization and UI copy",
+      "tests_needed": "bounded-search/sector-objective wording checks",
+      "source_files": [
+        "docs/api.md",
+        "docs/openapi.yaml",
+        "docs/features.md",
+        "docs/algorithms.md"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P10",
+      "title": "Theme-specific docs hero screenshots show different interface generations",
+      "current_sources": [
+        "landing_light",
+        "readme_gallery",
+        "tools"
+      ],
+      "current_wording_behavior": "Older light hero versus current dark",
+      "required_correction": "Real equivalent-state light capture when bounded; otherwise explicit remaining debt",
+      "allowed_surface": "docs hero asset/reference and browser capture test",
+      "tests_needed": "currentDOM/theme/equivalent scenario assertions; real screenshot",
+      "source_files": [
+        "docs/index.html",
+        "frontend-react/e2e/docs-theme.spec.js"
+      ],
+      "result": "DEFERRED LOW-SEVERITY",
+      "reason": "No matched current real-state capture was established for a safe equivalent light/dark replacement. Existing screenshot/browser fixtures are UI-test evidence, not a verified replacement pair. Original hero assets and references remain; no synthetic screenshot generated. User explicitly allows bounded deferral."
+    },
+    {
+      "finding": "P13",
+      "title": "Global-bias heading precedes validation eligibility",
+      "current_sources": [
+        "bias_heading",
+        "measurement_ui"
+      ],
+      "current_wording_behavior": "Validated-sounding global bias heading",
+      "required_correction": "Neutral residual-bias review; same eligibility/holdout/Apply",
+      "allowed_surface": "frontend App.jsx + tests",
+      "tests_needed": "ineligible result heading and Apply gating",
+      "source_files": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/App.workflow.test.jsx"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P14",
+      "title": "Unarchived Project Overview implies vendor/terrain/beamforming validation and universal readiness",
+      "current_sources": [
+        "overview",
+        "overview_perf",
+        "overview_data",
+        "overview_scale",
+        "overview_roadmap"
+      ],
+      "current_wording_behavior": "Overview vendor/terrain/beamforming/data/performance overclaims",
+      "required_correction": "Current bounded planning thesis with explicit missing accuracy/research/applicability",
+      "allowed_surface": "docs/overview.md",
+      "tests_needed": "high-risk concept regressions",
+      "source_files": [
+        "docs/overview.md"
+      ],
+      "result": "RESOLVED"
+    },
+    {
+      "finding": "P15",
+      "title": "Algorithm suitability/limitations contradict present interference and budget capabilities",
+      "current_sources": [
+        "algorithm_suitability",
+        "interference_ui",
+        "app_model"
+      ],
+      "current_wording_behavior": "Algorithms says interference/link budgets unsuitable",
+      "required_correction": "Document implemented planning interference and inspectable budget within limits",
+      "allowed_surface": "docs/algorithms.md + derivedHTML",
+      "tests_needed": "capability/finite-horizon/measurement exclusions",
+      "source_files": [
+        "docs/algorithms.md",
+        "docs/visualization.md"
+      ],
+      "result": "RESOLVED"
+    }
+  ],
+  "mini_reaudit": [
+    {
+      "finding": "P02",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/features.md",
+        "docs/architecture.html",
+        "docs/download.html",
+        "docs/deployment.md"
+      ]
+    },
+    {
+      "finding": "P03",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/index.html",
+        "docs/index.md",
+        "docs/architecture.md"
+      ]
+    },
+    {
+      "finding": "P04",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/algorithms.md",
+        "docs/api.md",
+        "docs/visualization.md"
+      ]
+    },
+    {
+      "finding": "P05",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/openapi.yaml",
+        "docs/validate_openapi.py",
+        "docs/validate_openapi_test.py",
+        "docs/validate_docs.py",
+        "docs/requirements.in",
+        "docs/requirements.txt",
+        ".github/workflows/quality.yml"
+      ]
+    },
+    {
+      "finding": "P06",
+      "status": "RESOLVED",
+      "source_files": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/App.workflow.test.jsx",
+        "frontend-react/src/utils/measurementScope.js",
+        "frontend-react/src/utils/measurementScope.test.js"
+      ]
+    },
+    {
+      "finding": "P07",
+      "status": "RESOLVED",
+      "source_files": [
+        "frontend-react/src/utils/apiClient.js",
+        "frontend-react/src/utils/apiClient.test.js",
+        "frontend-react/src/utils/rfRecoveryMessage.js",
+        "frontend-react/src/utils/rfRecoveryMessage.test.js",
+        "frontend-react/e2e/workspace.spec.js",
+        "docs/api.md",
+        "docs/faq.md"
+      ]
+    },
+    {
+      "finding": "P08",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/api.md",
+        "docs/openapi.yaml",
+        "docs/features.md",
+        "docs/algorithms.md"
+      ]
+    },
+    {
+      "finding": "P10",
+      "status": "DEFERRED LOW-SEVERITY",
+      "source_files": [
+        "docs/index.html",
+        "frontend-react/e2e/docs-theme.spec.js"
+      ]
+    },
+    {
+      "finding": "P13",
+      "status": "RESOLVED",
+      "source_files": [
+        "frontend-react/src/App.jsx",
+        "frontend-react/src/App.workflow.test.jsx"
+      ]
+    },
+    {
+      "finding": "P14",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/overview.md"
+      ]
+    },
+    {
+      "finding": "P15",
+      "status": "RESOLVED",
+      "source_files": [
+        "docs/algorithms.md",
+        "docs/visualization.md"
+      ]
+    }
+  ],
+  "claim_matrix": [
+    {
+      "claim": "network cap8",
+      "current_wording": "Normal network evaluation supports two to eight Cells.",
+      "evidence_class": "SOFTWARE VERIFIED; OPERATIONALLY QUALIFIED",
+      "required_qualifier": "Qualification is only the frozen Ankara/Profile A envelope; heavier settings require separate evidence.",
+      "evidence": "docs/features.md; backend cap tests; eight-cell-product-cap-promotion.md",
+      "supported": true,
+      "final_public_wording": "Normal network evaluation supports two to eight Cells."
+    },
+    {
+      "claim": "Recommendation5",
+      "current_wording": "Candidate recommendations accept up to five existing input Cells.",
+      "evidence_class": "SOFTWARE VERIFIED",
+      "required_qualifier": "Candidates are planning records, not new-site feasibility approval.",
+      "evidence": "docs/features.md; RecommendationRequest.maxItems=5; frontend networkSelection tests",
+      "supported": true,
+      "final_public_wording": "Candidate recommendations accept up to five existing input Cells."
+    },
+    {
+      "claim": "Measurement6",
+      "current_wording": "Measurement Validation accepts one to six selected 4G/5G Cells.",
+      "evidence_class": "SOFTWARE VERIFIED",
+      "required_qualifier": "Up to 5,000 compatible samples; diagnostics do not establish field accuracy.",
+      "evidence": "docs/features.md; measurementScope/App workflow tests; MeasurementRequest.maxItems=6",
+      "supported": true,
+      "final_public_wording": "Measurement Validation accepts one to six selected 4G/5G Cells."
+    },
+    {
+      "claim": "2.6 GHz",
+      "current_wording": "Default deterministic urban UMa median planning subset at 2.6 GHz.",
+      "evidence_class": "STANDARDS-BASED; SOFTWARE VERIFIED",
+      "required_qualifier": "Explicit LOS/NLOS applicability and legacy fallback; measured accuracy unestablished.",
+      "evidence": "docs/overview.md; docs/modeling-limits.md; canonical RF tests",
+      "supported": true,
+      "final_public_wording": "Default deterministic urban UMa median planning subset at 2.6 GHz."
+    },
+    {
+      "claim": "28 GHz",
+      "current_wording": "Default deterministic urban UMa median planning subset at 28 GHz.",
+      "evidence_class": "STANDARDS-BASED; SOFTWARE VERIFIED",
+      "required_qualifier": "Explicit LOS/NLOS applicability and legacy fallback; measured accuracy unestablished.",
+      "evidence": "docs/overview.md; docs/modeling-limits.md; canonical RF tests",
+      "supported": true,
+      "final_public_wording": "Default deterministic urban UMa median planning subset at 28 GHz."
+    },
+    {
+      "claim": "140 GHz",
+      "current_wording": "140 GHz is research/reference only.",
+      "evidence_class": "RESEARCH / REFERENCE",
+      "required_qualifier": "Outside ordinary radio-quality and measurement-validation workflows; no standardized field service claim.",
+      "evidence": "README.md; docs/index.html; research isolation tests",
+      "supported": true,
+      "final_public_wording": "140 GHz is research/reference only."
+    },
+    {
+      "claim": "3GPP basis",
+      "current_wording": "The default urban model implements a deterministic 3GPP UMa subset.",
+      "evidence_class": "STANDARDS-BASED",
+      "required_qualifier": "A subset and standards citation are not complete standard conformance or field validation.",
+      "evidence": "docs/overview.md; docs/algorithms.md; path-loss/classifier tests",
+      "supported": true,
+      "final_public_wording": "The default urban model implements a deterministic 3GPP UMa subset."
+    },
+    {
+      "claim": "real-world accuracy",
+      "current_wording": "Measured real-world propagation accuracy is not yet established.",
+      "evidence_class": "REAL-WORLD ACCURACY UNESTABLISHED",
+      "required_qualifier": "Pilot: 53,005 raw rows, zero canonical observations; unresolved serving semantics and transmitter/resource truth; no canonical MAE/RMSE.",
+      "evidence": "docs/modeling-limits.md; immutable concept-6a1-readiness.json",
+      "supported": true,
+      "final_public_wording": "Measured real-world propagation accuracy is not yet established."
+    },
+    {
+      "claim": "optimization",
+      "current_wording": "Bounded deterministic azimuth search recommends a discovered feasible solution.",
+      "evidence_class": "SOFTWARE VERIFIED",
+      "required_qualifier": "Default eight-Cell legacy search has 578 proposals; no global optimum is proved.",
+      "evidence": "docs/api.md; docs/openapi.yaml; search/Pareto deterministic tests",
+      "supported": true,
+      "final_public_wording": "Bounded deterministic azimuth search recommends a discovered feasible solution."
+    },
+    {
+      "claim": "optimization speedup",
+      "current_wording": "Historical affected six-Cell request: approximately 94.7–112.7 s to 6.72–6.76 s.",
+      "evidence_class": "OPERATIONALLY QUALIFIED (historical scoped comparison)",
+      "required_qualifier": "28 GHz, Ankara, 120 rays/400 m/30 dBm/120° legacy search, Go1.26.6 Linux/arm64 Docker Apple M4/10 CPUs/no quota; 434 proposals; 2,604 requests ->180 misses+2,424 hits. No universal latency or controlled cache/concurrency percentage.",
+      "evidence": "docs/algorithms.md; immutable network-optimization-deadline-audit.md",
+      "supported": true,
+      "final_public_wording": "Historical affected six-Cell request: approximately 94.7–112.7 s to 6.72–6.76 s."
+    },
+    {
+      "claim": "Profile A",
+      "current_wording": "Eight-Cell operational qualification covers the frozen Ankara W1 envelope on Profile A.",
+      "evidence_class": "OPERATIONALLY QUALIFIED",
+      "required_qualifier": "2 CPUs/4 GiB, Go1.26.6 Linux/arm64, 120 rays/400 m/30 dBm/120°, 2.6/28 GHz and legacy two-pass; no W2/W3 or Go1.26.9 resource requalification.",
+      "evidence": "README.md; docs/download.html; immutable eight-cell-product-cap-promotion.md",
+      "supported": true,
+      "final_public_wording": "Eight-Cell operational qualification covers the frozen Ankara W1 envelope on Profile A."
+    },
+    {
+      "claim": "interference",
+      "current_wording": "Modeled co-channel quality uses explicit resources and finite per-Cell horizons.",
+      "evidence_class": "SOFTWARE VERIFIED; STANDARDS-BASED",
+      "required_qualifier": "Planning estimate; no measured UE, adjacent-channel full-system or commercial KPI truth.",
+      "evidence": "docs/algorithms.md; docs/features.md; interference tests",
+      "supported": true,
+      "final_public_wording": "Modeled co-channel quality uses explicit resources and finite per-Cell horizons."
+    },
+    {
+      "claim": "measurement diagnostics",
+      "current_wording": "Residual, subgroup, uncertainty and eligibility-gated spatial holdout bias review.",
+      "evidence_class": "SOFTWARE VERIFIED",
+      "required_qualifier": "User-supplied inputs and data sufficiency determine eligibility; apply/holdout/math unchanged.",
+      "evidence": "docs/api.md; App workflow tests; measurement validation tests",
+      "supported": true,
+      "final_public_wording": "Residual, subgroup, uncertainty and eligibility-gated spatial holdout bias review."
+    },
+    {
+      "claim": "terrain",
+      "current_wording": "Terrain supports optional point-to-point path-profile diagnostics.",
+      "evidence_class": "SOFTWARE VERIFIED; RESEARCH / REFERENCE",
+      "required_qualifier": "Not consumed by canonical fast-network propagation.",
+      "evidence": "docs/index.html; docs/modeling-limits.md; path-profile tests",
+      "supported": true,
+      "final_public_wording": "Terrain supports optional point-to-point path-profile diagnostics."
+    },
+    {
+      "claim": "vendor antennas",
+      "current_wording": "Analytic and single-element antenna references are planning inputs.",
+      "evidence_class": "SOFTWARE VERIFIED; RESEARCH / REFERENCE",
+      "required_qualifier": "No measured vendor-pattern or antenna hardware validation.",
+      "evidence": "docs/overview.md; antenna tests",
+      "supported": true,
+      "final_public_wording": "Analytic and single-element antenna references are planning inputs."
+    },
+    {
+      "claim": "beamforming",
+      "current_wording": "Configured sector azimuths and analytic patterns support planning experiments.",
+      "evidence_class": "SOFTWARE VERIFIED",
+      "required_qualifier": "No array/codebook beamforming, hardware validation or sub-100ms response promise.",
+      "evidence": "docs/overview.md; docs/algorithms.md",
+      "supported": true,
+      "final_public_wording": "Configured sector azimuths and analytic patterns support planning experiments."
+    },
+    {
+      "claim": "persistence portability",
+      "current_wording": "Portable files retain bounded Scenario/Version/embedded Run and retained Scenario result evidence.",
+      "evidence_class": "SOFTWARE VERIFIED",
+      "required_qualifier": "Exclude separate Run History DB, generated report files, coverage surfaces, transient view and Undo state; unchanged16MiB encoded/node and32MiB decoded/value guards.",
+      "evidence": "README.md; docs/getting-started.md; docs/project-format.md; persistence tests",
+      "supported": true,
+      "final_public_wording": "Portable files retain bounded Scenario/Version/embedded Run and retained Scenario result evidence."
+    }
+  ],
+  "quality_gates": [
+    {
+      "gate": "backend-tests",
+      "status": "PASS",
+      "command": "GOTOOLCHAIN=go1.26.9 go test ./...",
+      "log": "logs/backend-tests.log"
+    },
+    {
+      "gate": "backend-race",
+      "status": "PASS",
+      "command": "GOTOOLCHAIN=go1.26.9 go test -race ./...",
+      "cache_note": "Go reported cached package race results",
+      "log": "logs/backend-race.log"
+    },
+    {
+      "gate": "backend-vet",
+      "status": "PASS",
+      "command": "GOTOOLCHAIN=go1.26.9 go vet ./...",
+      "log": "logs/backend-vet.log"
+    },
+    {
+      "gate": "adapter-race-vet",
+      "status": "PASS",
+      "log": "logs/adapter-race.log;logs/adapter-vet.log"
+    },
+    {
+      "gate": "frontend-tests",
+      "status": "PASS",
+      "files": 72,
+      "tests": 459,
+      "log": "logs/frontend-tests.log"
+    },
+    {
+      "gate": "frontend-lint",
+      "status": "PASS",
+      "log": "logs/frontend-lint.log"
+    },
+    {
+      "gate": "frontend-build",
+      "status": "PASS",
+      "note": "Existing >500kB chunk advisory",
+      "log": "logs/frontend-build.log"
+    },
+    {
+      "gate": "docs-browser",
+      "status": "PASS",
+      "passed": 24,
+      "widths": [
+        1440,
+        1024,
+        768,
+        390
+      ],
+      "log": "logs/docs-browser.log"
+    },
+    {
+      "gate": "workspace-browser",
+      "status": "PASS",
+      "passed": 9,
+      "skipped": 3,
+      "reason": "Existing full journey intentionally desktop1440 only; responsive and recovery checks run all four widths",
+      "log": "logs/workspace-browser.log"
+    },
+    {
+      "gate": "contract-live-compatibility",
+      "status": "PASS",
+      "log": "logs/contract-compatibility.log"
+    },
+    {
+      "gate": "all-openapi-references",
+      "status": "PASS",
+      "resolved": 410,
+      "log": "logs/openapi-references.log"
+    },
+    {
+      "gate": "dependency-hash-install",
+      "status": "PASS",
+      "log": "logs/dependency-install.log"
+    },
+    {
+      "gate": "docs-build",
+      "command": [
+        "sh",
+        "docs/build-reference-pages.sh"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/docs-build.log"
+    },
+    {
+      "gate": "docs-validation",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "docs/validate_docs.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/docs-validation.log"
+    },
+    {
+      "gate": "classification",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "docs/classify_docs.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/classification.log"
+    },
+    {
+      "gate": "claims",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "docs/validate_claims.py",
+        "--inventory",
+        "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/v0.12.1-claim-reconciliation/current-language-inventory.json"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/claims.log"
+    },
+    {
+      "gate": "docs-tests",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "docs",
+        "-p",
+        "*_test.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/docs-tests.log"
+    },
+    {
+      "gate": "openapi-validation",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "docs/validate_openapi.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/openapi-validation.log"
+    },
+    {
+      "gate": "version",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "scripts/versioning.py",
+        "check"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/version.log"
+    },
+    {
+      "gate": "policy",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "scripts/generate_policy.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/policy.log"
+    },
+    {
+      "gate": "policy-tests",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "generate_policy_test.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/policy-tests.log"
+    },
+    {
+      "gate": "invariance",
+      "command": [
+        "/tmp/atom-v0121-audit-py312/bin/python",
+        "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/v0.12.1-claim-reconciliation/verify_invariance.py"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/invariance.log"
+    },
+    {
+      "gate": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "scripts/v0.12.1-claim-reconciliation/logs/diff-check.log"
+    }
+  ],
+  "openapi": {
+    "wording_only_annotations": [
+      {
+        "path": "/api/optimize-azimuth",
+        "method": "post",
+        "field": "summary",
+        "before": "Optimize one sector azimuth",
+        "after": "Recommend one sector azimuth"
+      },
+      {
+        "path": "/api/optimize-azimuth",
+        "method": "post",
+        "field": "description",
+        "before": null,
+        "after": "Evaluates 36 azimuths on a 10-degree grid using unique POI demand and residential weights plus capped usable ray reach. The compatibility optimal_azimuth field identifies the best evaluated direction; no global optimum or area-coverage percentage is established."
+      },
+      {
+        "path": "/api/optimize-network",
+        "method": "post",
+        "field": "description",
+        "before": null,
+        "after": "Bounded deterministic azimuth search. Default legacy two-pass search proposes 578 evaluations for eight Cells. Compatibility optimal_* fields identify discovered candidates and do not prove global optimality."
+      },
+      {
+        "path": "/api/optimize-azimuth",
+        "method": "post",
+        "response_code": "200",
+        "field": "description",
+        "before": "Optimal azimuth, propagation-reach score, score breakdown, and canonical RF contract",
+        "after": "Recommended azimuth from the bounded sweep, propagation-reach score, score breakdown, and canonical RF contract"
+      }
+    ],
+    "baseline_strict_errors": [
+      "paths//api/meta/get/responses/200: Unevaluated properties are not allowed ('and active dataset metadata', 'model', 'technology' were unexpected)",
+      "paths//api/analyze-sector/post/responses/200: Unevaluated properties are not allowed ('each carrying the canonical RF contract' was unexpected)",
+      "paths//api/processes/batch-experiment/get/responses/200: Unevaluated properties are not allowed ('accepted axes', 'and job links', 'limits' were unexpected)",
+      "paths//api/core/topology/get/responses/200: Unevaluated properties are not allowed ('and route decisions', 'interface edges' were unexpected)",
+      "components/responses/TooComplex: Unevaluated properties are not allowed ('000-feature response ceiling' was unexpected)"
+    ],
+    "baseline_strict_error_count": 5,
+    "final_strict_error_count": 0,
+    "semantic_contract_comparison": "PASS: five Response Object description/YAML repairs plus bounded-search wording annotations; content/schemas/requests/statuses unchanged",
+    "caps": {
+      "NetworkRequest": 8,
+      "RecommendationRequest": 5,
+      "MeasurementRequest": 6
+    },
+    "probes": [
+      {
+        "path": "/healthz",
+        "method": "get",
+        "status": 200,
+        "schema_checked": true,
+        "json_sha256": "347be4183693e682fe8dac0b8f1702ddbe59367e83651ae1ea38152ec5a8cedd",
+        "request": null,
+        "response": {
+          "backend": "static-in-memory",
+          "buildingDemand": {
+            "total_buildings": 161784,
+            "demand_weighted_buildings": 5957,
+            "residential_weighted_buildings": 75446,
+            "density_weighted_buildings": 125221,
+            "avg_demand_weight": 44.18,
+            "max_demand_weight": 240,
+            "avg_residential_demand": 20.37,
+            "max_residential_demand": 108.65,
+            "avg_density_score": 49.78,
+            "max_density_score": 100,
+            "tag_coverage_pct": {
+              "amenity": 1.38,
+              "building:levels": 3.6,
+              "height": 0.69,
+              "name": 3.66,
+              "office": 0,
+              "shop": 0
+            },
+            "material_metadata_buildings": 0,
+            "material_metadata_coverage_pct": 0,
+            "material_tag_coverage_pct": {
+              "building:material": 0,
+              "facade:material": 0,
+              "material": 0,
+              "roof:material": 0
+            },
+            "material_categories": {
+              "unknown": 161784
+            },
+            "explicit_height_buildings": 1108,
+            "levels_derived_height_buildings": 4966,
+            "fallback_only_height_buildings": 155710,
+            "unavailable_height_buildings": 0,
+            "data_quality": "good"
+          },
+          "buildingIndex": {
+            "footprintCount": 161784,
+            "treeCount": 161784
+          },
+          "rtreeFootprints": 161784,
+          "status": "ok",
+          "towerCount": 451
+        }
+      },
+      {
+        "path": "/readyz",
+        "method": "get",
+        "status": 200,
+        "schema_checked": false,
+        "json_sha256": "0fc6c698578b8e661a618e657314d9b870229d1aff83a96a615f22c0b8229714",
+        "request": null,
+        "response": {
+          "buildings": true,
+          "dataset_error": "",
+          "frontend": true,
+          "status": "ready",
+          "towers": true
+        }
+      },
+      {
+        "path": "/api/meta",
+        "method": "get",
+        "status": 200,
+        "schema_checked": true,
+        "json_sha256": "8d3b80a43b7f61f635c4f30b2f92e4b9fbaeeeaae8a496ae72b16d036da5853a",
+        "request": null,
+        "response": {
+          "application_version": "dev",
+          "build_commit": "unknown",
+          "building_entry_model": {
+            "id": "3gpp_tr_38_901_o2i",
+            "reference": "3GPP TR 38.901 V19.4.0, §7.4.3.1",
+            "scenario": "building-entry-just-inside-facade",
+            "description": "Deterministic median outdoor facade power plus 3GPP TR 38.901 O2I entry loss; not an indoor or whole-building coverage model",
+            "supported_frequencies_ghz": [
+              2.6,
+              28
+            ],
+            "outdoor_baseline_model": "urban_short_range",
+            "outdoor_baseline_rule": "Concept 4D 3GPP UMa LOS/NLOS to the representative facade point; outdoor wall events are not added as legacy wall loss",
+            "indoor_depth_m": 0,
+            "random_draws_used": false,
+            "material_evidence_only": true,
+            "no_whole_building_claim": true,
+            "profile_semantics": "low-loss and high-loss reference scenarios; both are retained when facade material evidence is not defensibly mapped",
+            "unsupported_frequencies_ghz": [
+              140
+            ],
+            "profiles": [
+              {
+                "id": "low_loss",
+                "label": "low_loss",
+                "frequency_scope": "o2i_low_high_profile",
+                "external_wall_loss_db": 17.828787452687028,
+                "indoor_depth_m": 0,
+                "indoor_loss_db": 0,
+                "median_entry_loss_db": 17.828787452687028,
+                "shadow_sigma_db": 0,
+                "reference_shadow_sigma_db": 4.4,
+                "reference_shadow_sigma_note": "TR 38.901 Table 7.4.3-2 reference sigma; no random draw is sampled in Concept 4E",
+                "random_draw_applied": false,
+                "equation": "PL_tw = PL_npi - 10 log10(sum_i(p_i * 10^(-L_material_i/10))); PL_in = 0.5 * d_2D-in with d_2D-in = 0 m for Concept 4E",
+                "composition_assumption": "low-loss: PL_npi = 5 dB, p_standard-glass = 0.3, p_concrete = 0.7"
+              },
+              {
+                "id": "high_loss",
+                "label": "high_loss",
+                "frequency_scope": "o2i_low_high_profile",
+                "external_wall_loss_db": 35.029019597240406,
+                "indoor_depth_m": 0,
+                "indoor_loss_db": 0,
+                "median_entry_loss_db": 35.029019597240406,
+                "shadow_sigma_db": 0,
+                "reference_shadow_sigma_db": 6.5,
+                "reference_shadow_sigma_note": "TR 38.901 Table 7.4.3-2 reference sigma; no random draw is sampled in Concept 4E",
+                "random_draw_applied": false,
+                "equation": "PL_tw = PL_npi - 10 log10(sum_i(p_i * 10^(-L_material_i/10))); PL_in = 0.5 * d_2D-in with d_2D-in = 0 m for Concept 4E",
+                "composition_assumption": "high-loss: PL_npi = 5 dB, p_IRR-glass = 0.7, p_concrete = 0.3"
+              }
+            ]
+          },
+          "dataset": {
+            "schema_version": 2,
+            "id": "ankara-open-planning",
+            "name": "Ankara Open Planning Dataset",
+            "version": "2026.07",
+            "crs": "EPSG:4326",
+            "bounds": [
+              32.45,
+              39.55,
+              33.25,
+              40.25
+            ],
+            "generated_at": "2026-07-17",
+            "sources": [
+              "OpenStreetMap",
+              "OpenCellID-derived planning records"
+            ],
+            "licenses": [
+              "ODbL 1.0 for OpenStreetMap-derived data",
+              "Review upstream OpenCellID terms before redistribution"
+            ],
+            "confidence": "Static planning dataset with synthetic demand enrichment; not an operator inventory.",
+            "files": {
+              "towers": "ankara_5g_nodes.geojson",
+              "buildings": "ankara_buildings.geojson"
+            },
+            "sha256": {
+              "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+              "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+            },
+            "layers": {
+              "buildings": {
+                "kind": "building_footprints",
+                "format": "geojson",
+                "crs": "EPSG:4326",
+                "optional": false,
+                "source": "OpenStreetMap",
+                "license": "ODbL 1.0",
+                "confidence": "Static footprints with heuristic demand enrichment."
+              },
+              "towers": {
+                "kind": "cell_inventory",
+                "format": "geojson",
+                "crs": "EPSG:4326",
+                "optional": false,
+                "source": "OpenCellID-derived planning records",
+                "license": "Review upstream OpenCellID terms before redistribution",
+                "confidence": "Planning inventory; not operator-verified."
+              }
+            },
+            "quality": {
+              "summary": "Geometry and hashes validated; RF inventory and demand attributes remain planning-grade.",
+              "feature_counts": {
+                "buildings": 161626,
+                "towers": 451
+              },
+              "geometry": {
+                "buildings": {
+                  "invalid_input": 0,
+                  "repaired": 0,
+                  "dropped": 0,
+                  "output": 161626
+                },
+                "towers": {
+                  "invalid_input": 0,
+                  "repaired": 0,
+                  "dropped": 0,
+                  "output": 451
+                }
+              },
+              "coverage": {
+                "requested_bounds": [
+                  32.45,
+                  39.55,
+                  33.25,
+                  40.25
+                ],
+                "data_bounds": [
+                  32.45,
+                  39.55,
+                  33.25,
+                  40.25
+                ],
+                "coverage_ratio": 1
+              }
+            },
+            "spatial_evidence": {
+              "schema_version": "atom-spatial-evidence-v1",
+              "matching_policy_version": "footprint-height-match-v1",
+              "source_precedence": [
+                "user_supplied",
+                "lidar_derived",
+                "osm_explicit_height",
+                "external_building_height",
+                "osm_levels_derived",
+                "dsm_minus_dtm",
+                "generic_fallback",
+                "unavailable"
+              ],
+              "terrain_interpolation": "bilinear",
+              "datum_transformation_policy": "explicit-compatible-datum-v1"
+            }
+          },
+          "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+          "model_id": "urban_short_range",
+          "model_version": "urban_short_range",
+          "propagation_models": [
+            {
+              "id": "urban_short_range",
+              "description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+              "model_family": "3GPP UMa outdoor urban median path loss",
+              "scenario": "urban-short-range-outdoor-to-outdoor",
+              "formula": "PL_LOS = PL1/PL2 with dBP; PL_NLOS = max(PL_LOS, PL') using Table 7.4.1-1",
+              "fallback_model_id": "legacy_fspl_walls",
+              "building_height_used": true,
+              "requires_building_data": true,
+              "requires_los_or_nlos": true,
+              "frequency_min_ghz": 0.5,
+              "frequency_max_ghz": 100,
+              "distance_min_m": 10,
+              "distance_max_m": 5000,
+              "limitations": [
+                "median outdoor path loss only",
+                "no shadow fading, Fresnel clearance, diffraction, or reflection",
+                "unknown building heights use conservative 2D NLOS",
+                "terrain is unavailable in the current Ankara network evaluator; flat-ground relative-height assumption applies"
+              ]
+            },
+            {
+              "id": "legacy_fspl_walls",
+              "description": "Legacy FSPL with frequency-dependent footprint wall-event loss",
+              "model_family": "free-space path loss plus footprint wall events",
+              "scenario": "planning-compatibility",
+              "formula": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration",
+              "fallback_model_id": "legacy_fspl_walls",
+              "building_height_used": false,
+              "requires_building_data": false,
+              "requires_los_or_nlos": false,
+              "frequency_min_ghz": 0,
+              "frequency_max_ghz": 300,
+              "distance_min_m": 0,
+              "distance_max_m": 5000,
+              "limitations": [
+                "material-agnostic wall loss",
+                "not an empirical urban path-loss model"
+              ]
+            },
+            {
+              "id": "research_sub_thz",
+              "description": "Research-only sub-THz planning profile using the legacy conservative attenuation envelope",
+              "model_family": "research planning profile",
+              "scenario": "research-sub-thz",
+              "formula": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration",
+              "fallback_model_id": "legacy_fspl_walls",
+              "building_height_used": false,
+              "requires_building_data": false,
+              "requires_los_or_nlos": false,
+              "frequency_min_ghz": 100,
+              "frequency_max_ghz": 300,
+              "distance_min_m": 0,
+              "distance_max_m": 5000,
+              "limitations": [
+                "research-only",
+                "uses conservative planning attenuation rather than a validated 140 GHz channel model"
+              ]
+            }
+          ],
+          "rf_budget_policy": "bounded-followups-v1",
+          "rf_contract": {
+            "model_id": "urban_short_range",
+            "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+            "applied_model_id": "urban_short_range",
+            "model_family": "3GPP TR 38.901 UMa median path loss",
+            "scenario": "urban short-range outdoor-to-outdoor planning",
+            "model_status": "deterministic planning baseline",
+            "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+            "applicability": "0.5 < f_c < 100 GHz, 10 m <= d_2D <= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+            "fallback_model_id": "legacy_fspl_walls",
+            "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+            "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+            "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+            "deterministic": true,
+            "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+            "uses_terrain": false,
+            "uses_building_height": true,
+            "uses_diffraction": false,
+            "uses_reflection": false,
+            "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+            "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+            "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+            "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+            "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+            "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+            "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+            "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+            "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+            "antenna_pattern_id": "ideal-sector",
+            "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+            "antenna_pattern_uses_hard_beam": true,
+            "absolute_terms": [
+              "conducted transmit power",
+              "absolute TX boresight gain",
+              "receive antenna gain",
+              "system loss",
+              "global calibration offset"
+            ],
+            "relative_attenuation_terms": [
+              "horizontal antenna attenuation",
+              "vertical antenna attenuation"
+            ],
+            "propagation_terms": [
+              "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+              "3GPP UMa NLOS max(LOS, PL') path loss",
+              "footprint-height-los-v1 geometric centerline classifier",
+              "conservative unknown-height fallback"
+            ],
+            "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+            "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+            "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+            "building_service_threshold_dbm": -100,
+            "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+            "propagation_reach_definition": "usable receiver-power reach",
+            "surface_definition": "raw single-cell received-power surface",
+            "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+            "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+            "interference_rsrp_threshold_dbm": -110,
+            "interference_sinr_threshold_db": 0,
+            "interference_rsrq_threshold_db": -20,
+            "calibration_offset_db": 0,
+            "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+            "endpoint_scope": "canonical network RF evaluation"
+          },
+          "supported_technologies": [
+            "4g",
+            "5g",
+            "6g-research"
+          ],
+          "technology_capabilities": [
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/analyze-sector",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/analyze-sector",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/analyze-sector",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/simulate",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/simulate",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/simulate",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/coverage-surface",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/coverage-surface",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/coverage-surface",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/optimize-azimuth",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/optimize-azimuth",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/optimize-azimuth",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/optimize-network",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/optimize-network",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/optimize-network",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/evaluate-network",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/evaluate-network",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/evaluate-network",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/coverage-gaps",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/coverage-gaps",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/coverage-gaps",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/explain-network-cell",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/explain-network-cell",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/explain-network-cell",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/recommend-sites",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/recommend-sites",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/recommend-sites",
+              "status": "unsupported",
+              "reason": "unsupported_endpoint",
+              "note": "endpoint validation deliberately excludes this technology"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/path-profile",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/path-profile",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/path-profile",
+              "status": "research_only",
+              "reason": "research_profile_only",
+              "note": "endpoint is available only as the existing research/planning profile"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/interference",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/interference",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/interference",
+              "status": "unsupported",
+              "reason": "unsupported_endpoint",
+              "note": "endpoint validation deliberately excludes this technology"
+            },
+            {
+              "technology": "4g",
+              "frequency_ghz": 2.6,
+              "endpoint": "/api/measurements/evaluate",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "5g",
+              "frequency_ghz": 28,
+              "endpoint": "/api/measurements/evaluate",
+              "status": "supported",
+              "reason": "accepted_by_current_validation",
+              "note": "current deterministic engine accepts the technology at this endpoint"
+            },
+            {
+              "technology": "6g",
+              "frequency_ghz": 140,
+              "endpoint": "/api/measurements/evaluate",
+              "status": "unsupported",
+              "reason": "unsupported_endpoint",
+              "note": "endpoint validation deliberately excludes this technology"
+            }
+          ]
+        }
+      },
+      {
+        "path": "/api/processes/batch-experiment",
+        "method": "get",
+        "status": 200,
+        "schema_checked": false,
+        "json_sha256": "1907d041a7f3a641b91b06f7719df3e2cf2cf811b34401c986de839f2fab8c2e",
+        "request": null,
+        "response": {
+          "dimensions": [
+            "frequency_ghz",
+            "tx_power_dbm",
+            "beam_width_deg",
+            "azimuth_deg",
+            "calibration_offset_db"
+          ],
+          "id": "batch-experiment",
+          "job_control_options": [
+            "async-execute",
+            "dismiss"
+          ],
+          "max_runs": 64,
+          "version": "1.0.0"
+        }
+      },
+      {
+        "path": "/api/core/topology",
+        "method": "get",
+        "status": 200,
+        "schema_checked": false,
+        "json_sha256": "2ef0cb20cc38ed31036cf31b1eaea775000959e573ed0ad0b50ad96d3434f10f",
+        "request": null,
+        "response": {
+          "edges": [],
+          "nodes": [],
+          "route_decisions": [],
+          "state": "disabled"
+        }
+      },
+      {
+        "path": "/api/simulate",
+        "method": "post",
+        "status": 200,
+        "schema_checked": true,
+        "json_sha256": "7597566307e7e913777f13619bf5aa76ca5cb8475190dd8fe6affa2de749fcf3",
+        "request": {
+          "tower_lon": 32.85,
+          "tower_lat": 39.92,
+          "azimuth": 0,
+          "rays": 8,
+          "radius_m": 25,
+          "frequency_ghz": 28,
+          "tx_power_dbm": 30,
+          "beam_width": 120
+        },
+        "response": {
+          "geojson": {
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 0,
+                  "ray_index": 4,
+                  "segment_index": 0,
+                  "signal_dbm": -35.7,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -35.7,
+                  "path_loss_db": 90.7,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 0,
+                  "segment_end_m": 25,
+                  "candidate_checks": 0,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "los",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "no_footprint_intersection",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "los",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "no_footprint_intersection",
+                    "endpoint_case": "outdoor_to_outdoor"
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 90.72271631710674,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 90.72271631710674,
+                    "received_power_dbm": -35.722716317106745,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 79.27728368289326
+                  },
+                  "receiver_link_margin_db": 79.3
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.85000000000001,
+                      39.92022483040147
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 15,
+                  "ray_index": 5,
+                  "segment_index": 0,
+                  "signal_dbm": -35.7,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -35.7,
+                  "path_loss_db": 90.7,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 0,
+                  "segment_end_m": 25,
+                  "candidate_checks": 0,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "los",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "no_footprint_intersection",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "los",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "no_footprint_intersection",
+                    "endpoint_case": "outdoor_to_outdoor"
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 90.72271631710674,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 90.72271631710674,
+                    "received_power_dbm": -35.722716317106745,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 79.27728368289326
+                  },
+                  "receiver_link_margin_db": 79.3
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.850075873580145,
+                      39.92021716946658
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 30,
+                  "ray_index": 6,
+                  "segment_index": 0,
+                  "signal_dbm": -35.7,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -35.7,
+                  "path_loss_db": 90.7,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 0,
+                  "segment_end_m": 25,
+                  "candidate_checks": 0,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "los",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "no_footprint_intersection",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "los",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "no_footprint_intersection",
+                    "endpoint_case": "outdoor_to_outdoor"
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 90.72271631710674,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 90.72271631710674,
+                    "received_power_dbm": -35.722716317106745,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 79.27728368289326
+                  },
+                  "receiver_link_margin_db": 79.3
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.85014657645311,
+                      39.92019470874693
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 45,
+                  "ray_index": 7,
+                  "segment_index": 0,
+                  "signal_dbm": -35.7,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -35.7,
+                  "path_loss_db": 90.7,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 0,
+                  "segment_end_m": 25,
+                  "candidate_checks": 0,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "los",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "no_footprint_intersection",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "los",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "no_footprint_intersection",
+                    "endpoint_case": "outdoor_to_outdoor"
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 90.72271631710674,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 90.72271631710674,
+                    "received_power_dbm": -35.722716317106745,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 79.27728368289326
+                  },
+                  "receiver_link_margin_db": 79.3
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.85020729029976,
+                      39.920158978916945
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 300,
+                  "ray_index": 0,
+                  "segment_index": 0,
+                  "signal_dbm": -44.6,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -44.6,
+                  "path_loss_db": 99.6,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 16.9,
+                  "segment_start_m": 0,
+                  "segment_end_m": 16.9,
+                  "hit_building_id": "feature-37810",
+                  "candidate_checks": 1,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "nlos",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "conservative_2d_unknown_height",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "nlos",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "conservative_2d_unknown_height",
+                    "endpoint_case": "outdoor_to_outdoor",
+                    "unknown_height_buildings": [
+                      {
+                        "building_id": "feature-37810",
+                        "logical_building_id": "feature-37810",
+                        "part_ids": [
+                          "feature-37810"
+                        ],
+                        "height_source": "unavailable",
+                        "intervals": [
+                          {
+                            "t_entry": 0.6752999365792736,
+                            "t_exit": 0.6752999365792736,
+                            "los_height_at_entry_m": 0,
+                            "los_height_at_exit_m": 0,
+                            "minimum_los_height_m": 0,
+                            "maximum_los_height_m": 0,
+                            "roof_height_m": 0,
+                            "minimum_clearance_m": 0
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 99.60244388734219,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 99.60244388734219,
+                    "received_power_dbm": -44.60244388734219,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 70.39755611265781
+                  },
+                  "receiver_link_margin_db": 70.4
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.8498285565006,
+                      39.92007591379099
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 300,
+                  "ray_index": 0,
+                  "segment_index": 1,
+                  "signal_dbm": -67.1,
+                  "signal_start_dbm": -44.6,
+                  "signal_end_dbm": -67.1,
+                  "path_loss_db": 122.1,
+                  "wall_loss_db": 30,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 16.9,
+                  "segment_end_m": 25,
+                  "candidate_checks": 1,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "legacy_fspl_walls",
+                  "los_state": "unknown",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "receiver_inside_building",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "unknown",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "receiver_inside_building",
+                    "endpoint_case": "indoor_receiver"
+                  },
+                  "fallback_used": true,
+                  "applicability_reason": "unsupported_endpoint",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 92.10184761799198,
+                    "propagation_loss_db": 92.10184761799198,
+                    "building_loss_db": 30,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 122.10184761799198,
+                    "received_power_dbm": -67.10184761799198,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 47.89815238200802
+                  },
+                  "receiver_link_margin_db": 47.9
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.8498285565006,
+                      39.92007591379099
+                    ],
+                    [
+                      32.84974612244113,
+                      39.92011241492391
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 315,
+                  "ray_index": 1,
+                  "segment_index": 0,
+                  "signal_dbm": -44.8,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -44.8,
+                  "path_loss_db": 99.8,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 17.6,
+                  "segment_start_m": 0,
+                  "segment_end_m": 17.6,
+                  "hit_building_id": "feature-37810",
+                  "candidate_checks": 1,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "nlos",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "conservative_2d_unknown_height",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "nlos",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "conservative_2d_unknown_height",
+                    "endpoint_case": "outdoor_to_outdoor",
+                    "unknown_height_buildings": [
+                      {
+                        "building_id": "feature-37810",
+                        "logical_building_id": "feature-37810",
+                        "part_ids": [
+                          "feature-37810"
+                        ],
+                        "height_source": "unavailable",
+                        "intervals": [
+                          {
+                            "t_entry": 0.701382478813353,
+                            "t_exit": 0.701382478813353,
+                            "los_height_at_entry_m": 0,
+                            "los_height_at_exit_m": 0,
+                            "minimum_los_height_m": 0,
+                            "maximum_los_height_m": 0,
+                            "roof_height_m": 0,
+                            "minimum_clearance_m": 0
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 99.82723884012078,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 99.82723884012078,
+                    "received_power_dbm": -44.827238840120785,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 70.17276115987922
+                  },
+                  "receiver_link_margin_db": 70.2
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.84985461021573,
+                      39.920111505026846
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 315,
+                  "ray_index": 1,
+                  "segment_index": 1,
+                  "signal_dbm": -46.5,
+                  "signal_start_dbm": -44.8,
+                  "signal_end_dbm": -46.5,
+                  "path_loss_db": 101.5,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 22.4,
+                  "segment_start_m": 17.6,
+                  "segment_end_m": 22.4,
+                  "hit_building_id": "feature-37810",
+                  "candidate_checks": 1,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "nlos",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "conservative_2d_unknown_height",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "nlos",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "conservative_2d_unknown_height",
+                    "endpoint_case": "outdoor_to_outdoor",
+                    "unknown_height_buildings": [
+                      {
+                        "building_id": "feature-37810",
+                        "logical_building_id": "feature-37810",
+                        "part_ids": [
+                          "feature-37810"
+                        ],
+                        "height_source": "unavailable",
+                        "intervals": [
+                          {
+                            "t_entry": 0.701382478813353,
+                            "t_exit": 0.8931660381731482,
+                            "los_height_at_entry_m": 0,
+                            "los_height_at_exit_m": 0,
+                            "minimum_los_height_m": 0,
+                            "maximum_los_height_m": 0,
+                            "roof_height_m": 0,
+                            "minimum_clearance_m": 0
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 101.53305644877173,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 101.53305644877173,
+                    "received_power_dbm": -46.53305644877173,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 68.46694355122827
+                  },
+                  "receiver_link_margin_db": 68.5
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.84985461021573,
+                      39.920111505026846
+                    ],
+                    [
+                      32.84981485534422,
+                      39.9201419945694
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 315,
+                  "ray_index": 1,
+                  "segment_index": 2,
+                  "signal_dbm": -47.5,
+                  "signal_start_dbm": -46.5,
+                  "signal_end_dbm": -47.5,
+                  "path_loss_db": 102.5,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 22.4,
+                  "segment_end_m": 25,
+                  "candidate_checks": 1,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "nlos",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "conservative_2d_unknown_height",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "nlos",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "conservative_2d_unknown_height",
+                    "endpoint_case": "outdoor_to_outdoor",
+                    "unknown_height_buildings": [
+                      {
+                        "building_id": "feature-37810",
+                        "logical_building_id": "feature-37810",
+                        "part_ids": [
+                          "feature-37810"
+                        ],
+                        "height_source": "unavailable",
+                        "intervals": [
+                          {
+                            "t_entry": 0.701382478813353,
+                            "t_exit": 0.8931660381731482,
+                            "los_height_at_entry_m": 0,
+                            "los_height_at_exit_m": 0,
+                            "minimum_los_height_m": 0,
+                            "maximum_los_height_m": 0,
+                            "roof_height_m": 0,
+                            "minimum_clearance_m": 0
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 102.4879350075468,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 102.4879350075468,
+                    "received_power_dbm": -47.487935007546795,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 67.5120649924532
+                  },
+                  "receiver_link_margin_db": 67.5
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.84981485534422,
+                      39.9201419945694
+                    ],
+                    [
+                      32.84979270970025,
+                      39.920158978916945
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 330,
+                  "ray_index": 2,
+                  "segment_index": 0,
+                  "signal_dbm": -35.7,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -35.7,
+                  "path_loss_db": 90.7,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 0,
+                  "segment_end_m": 25,
+                  "candidate_checks": 1,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "los",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "no_footprint_intersection",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "los",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "no_footprint_intersection",
+                    "endpoint_case": "outdoor_to_outdoor"
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 90.72271631710674,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 90.72271631710674,
+                    "received_power_dbm": -35.722716317106745,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 79.27728368289326
+                  },
+                  "receiver_link_margin_db": 79.3
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.8498534235469,
+                      39.92019470874693
+                    ]
+                  ]
+                }
+              },
+              {
+                "type": "Feature",
+                "properties": {
+                  "angle_deg": 345,
+                  "ray_index": 3,
+                  "segment_index": 0,
+                  "signal_dbm": -35.7,
+                  "signal_start_dbm": -33.8,
+                  "signal_end_dbm": -35.7,
+                  "path_loss_db": 90.7,
+                  "wall_loss_db": 0,
+                  "is_blocked": false,
+                  "distance_m": 25,
+                  "segment_start_m": 0,
+                  "segment_end_m": 25,
+                  "candidate_checks": 0,
+                  "propagation_model_id": "urban_short_range",
+                  "applied_propagation_model_id": "urban_short_range",
+                  "los_state": "los",
+                  "los_classifier_id": "footprint-height-los-v1",
+                  "los_classification_basis": "no_footprint_intersection",
+                  "terrain_status": "terrain_unavailable",
+                  "los_classification": {
+                    "state": "los",
+                    "classifier_id": "footprint-height-los-v1",
+                    "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                    "terrain_status": "terrain_unavailable",
+                    "classification_basis": "no_footprint_intersection",
+                    "endpoint_case": "outdoor_to_outdoor"
+                  },
+                  "applicability_reason": "applicable",
+                  "link_budget": {
+                    "tx_power_dbm": 30,
+                    "tx_antenna_gain_dbi": 25,
+                    "antenna_gain_dbi": 25,
+                    "boresight_eirp_dbm": 55,
+                    "directional_eirp_dbm": 55,
+                    "rx_antenna_gain_dbi": 0,
+                    "system_loss_db": 0,
+                    "polarization_loss_db": 0,
+                    "calibration_offset_db": 0,
+                    "eirp_dbm": 55,
+                    "fspl_db": 0,
+                    "propagation_loss_db": 90.72271631710674,
+                    "building_loss_db": 0,
+                    "tx_pattern_attenuation_db": 0,
+                    "horizontal_pattern_attenuation_db": 0,
+                    "vertical_pattern_attenuation_db": 0,
+                    "pattern_attenuation_db": 0,
+                    "total_loss_db": 90.72271631710674,
+                    "received_power_dbm": -35.722716317106745,
+                    "receiver_sensitivity_mode": "manual",
+                    "effective_receiver_sensitivity_dbm": -115,
+                    "receiver_link_margin_db": 79.27728368289326
+                  },
+                  "receiver_link_margin_db": 79.3
+                },
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [
+                      32.85,
+                      39.92
+                    ],
+                    [
+                      32.849924126419864,
+                      39.92021716946658
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          "stats": {
+            "blocked_pct": 0,
+            "avg_rx_dbm": -41.1,
+            "min_range_m": 25,
+            "max_range_m": 25
+          },
+          "rf_profile": {
+            "schema_version": 1,
+            "network_tech": "5g",
+            "propagation_model": "urban_short_range",
+            "frequency_ghz": 28,
+            "band": "NR n257",
+            "bandwidth_mhz": 100,
+            "channel_id": "CH-1",
+            "duplex_mode": "tdd",
+            "tx_power_dbm": 30,
+            "antenna_gain_dbi": 25,
+            "rx_antenna_gain_dbi": 0,
+            "system_loss_db": 0,
+            "polarization_loss_db": 0,
+            "radius_m": 25,
+            "beam_width": 120,
+            "antenna_height_m": 25,
+            "mechanical_downtilt_deg": 0,
+            "electrical_downtilt_deg": 0,
+            "orientation_deg": 0,
+            "horizontal_pattern_id": "ideal-sector",
+            "vertical_pattern_id": "flat",
+            "load_factor": 0.7,
+            "reuse_factor": 1,
+            "receiver_height_m": 1.5,
+            "receiver_sensitivity_dbm": -115,
+            "receiver_sensitivity_mode": "manual",
+            "receiver_noise_bandwidth_hz": 100000000,
+            "receiver_noise_bandwidth_source": "channel_bandwidth_approximation",
+            "receiver_noise_figure_db": 7,
+            "receiver_required_snr_db": 3,
+            "receiver_margin_db": 0,
+            "tx_antenna_gain_dbi": 25
+          },
+          "receiver_threshold": {
+            "mode": "manual",
+            "sensitivity_dbm": -115,
+            "noise_bandwidth_source": "not_applicable",
+            "assumptions": [
+              "receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated",
+              "network interference is evaluated separately through RSRP, SINR, and RSRQ"
+            ],
+            "applicability": "manual noise-limited receiver threshold for deterministic planning"
+          },
+          "rf_contract": {
+            "model_id": "urban_short_range",
+            "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+            "applied_model_id": "urban_short_range",
+            "model_family": "3GPP TR 38.901 UMa median path loss",
+            "scenario": "urban short-range outdoor-to-outdoor planning",
+            "model_status": "deterministic planning baseline",
+            "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+            "applicability": "0.5 < f_c < 100 GHz, 10 m <= d_2D <= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+            "fallback_model_id": "legacy_fspl_walls",
+            "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+            "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+            "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+            "deterministic": true,
+            "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+            "uses_terrain": false,
+            "uses_building_height": true,
+            "uses_diffraction": false,
+            "uses_reflection": false,
+            "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+            "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+            "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+            "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+            "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+            "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+            "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+            "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+            "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+            "antenna_pattern_id": "ideal-sector",
+            "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+            "antenna_pattern_uses_hard_beam": true,
+            "absolute_terms": [
+              "conducted transmit power",
+              "absolute TX boresight gain",
+              "receive antenna gain",
+              "system loss",
+              "global calibration offset"
+            ],
+            "relative_attenuation_terms": [
+              "horizontal antenna attenuation",
+              "vertical antenna attenuation"
+            ],
+            "propagation_terms": [
+              "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+              "3GPP UMa NLOS max(LOS, PL') path loss",
+              "footprint-height-los-v1 geometric centerline classifier",
+              "conservative unknown-height fallback"
+            ],
+            "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+            "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+            "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+            "building_service_threshold_dbm": -100,
+            "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+            "propagation_reach_definition": "usable receiver-power reach",
+            "surface_definition": "raw single-cell received-power surface",
+            "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+            "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+            "interference_rsrp_threshold_dbm": -110,
+            "interference_sinr_threshold_db": 0,
+            "interference_rsrq_threshold_db": -20,
+            "calibration_offset_db": 0,
+            "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+            "endpoint_scope": "canonical network RF evaluation"
+          }
+        }
+      },
+      {
+        "path": "/api/simulate",
+        "method": "post",
+        "status": 400,
+        "schema_checked": true,
+        "json_sha256": "9563fedb18de01553adeb14b1e943b5b05876d43a855aa295e189e29043ae0c3",
+        "request": {
+          "rays": 0
+        },
+        "response": {
+          "error": "tower_lon and tower_lat are required"
+        }
+      }
+    ],
+    "rf_invariance_basis": "All backend sources hash-identical; existing deterministic/science tests pass. This probe validates representative runtime shapes; it is not a new before/after RF qualification.",
+    "all_local_references_resolved": 410
+  },
+  "openapi_repairs": [
+    {
+      "path": "/api/meta",
+      "method": "get",
+      "response_code": "200",
+      "original_invalid_structure": {
+        "description": "Build",
+        "model": null,
+        "technology": null,
+        "and active dataset metadata": null,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Meta"
+            }
+          }
+        }
+      },
+      "corrected_structure": {
+        "description": "Build, model, technology, and active dataset metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Meta"
+            }
+          }
+        }
+      }
+    },
+    {
+      "path": "/api/analyze-sector",
+      "method": "post",
+      "response_code": "200",
+      "original_invalid_structure": {
+        "description": "Nested simulation and coverage_gaps results derived from one propagation pass",
+        "each carrying the canonical RF contract": null
+      },
+      "corrected_structure": {
+        "description": "Nested simulation and coverage_gaps results derived from one propagation pass, each carrying the canonical RF contract"
+      }
+    },
+    {
+      "path": "/api/processes/batch-experiment",
+      "method": "get",
+      "response_code": "200",
+      "original_invalid_structure": {
+        "description": "Process identifier",
+        "limits": null,
+        "accepted axes": null,
+        "and job links": null
+      },
+      "corrected_structure": {
+        "description": "Process identifier, limits, accepted axes, and job links"
+      }
+    },
+    {
+      "path": "/api/core/topology",
+      "method": "get",
+      "response_code": "200",
+      "original_invalid_structure": {
+        "description": "gNB nodes",
+        "interface edges": null,
+        "and route decisions": null
+      },
+      "corrected_structure": {
+        "description": "gNB nodes, interface edges, and route decisions"
+      }
+    },
+    {
+      "path": "#/components/responses/TooComplex",
+      "method": "shared response",
+      "response_code": "422",
+      "used_by": [
+        {
+          "path": "/api/spatial-evidence/path-profile",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/analyze-sector",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/simulate",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/coverage-gaps",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/optimize-azimuth",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/evaluate-network",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/optimize-network",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/explain-network-cell",
+          "method": "post",
+          "response_code": "422"
+        },
+        {
+          "path": "/api/recommend-sites",
+          "method": "post",
+          "response_code": "422"
+        }
+      ],
+      "original_invalid_structure": {
+        "description": "Actual segmented-ray output exceeded the hard 25",
+        "000-feature response ceiling": null,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "corrected_structure": {
+        "description": "Actual segmented-ray output exceeded the hard 25,000-feature response ceiling",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "invariance": {
+    "status": "PASS",
+    "remediation_lock_sha256": "2f30251193dd43f6bf3c74a7ed2df4c89adf06f0254696da364705b9f63fcbec",
+    "baseline_files": 3262,
+    "changed_frozen_files": [
+      ".github/workflows/quality.yml",
+      "CHANGELOG.md",
+      "README.md",
+      "docs/algorithms.html",
+      "docs/algorithms.md",
+      "docs/api.html",
+      "docs/api.md",
+      "docs/architecture.html",
+      "docs/architecture.md",
+      "docs/changelog.html",
+      "docs/deployment.html",
+      "docs/deployment.md",
+      "docs/download.html",
+      "docs/faq.html",
+      "docs/faq.md",
+      "docs/features.html",
+      "docs/features.md",
+      "docs/getting-started.md",
+      "docs/index.html",
+      "docs/index.md",
+      "docs/modeling-limits.html",
+      "docs/modeling-limits.md",
+      "docs/openapi.yaml",
+      "docs/overview.md",
+      "docs/requirements.in",
+      "docs/requirements.txt",
+      "docs/search-index.json",
+      "docs/validate_docs.py",
+      "docs/visualization.html",
+      "docs/visualization.md",
+      "frontend-react/e2e/workspace.spec.js",
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/App.workflow.test.jsx",
+      "frontend-react/src/components/WorkspaceChrome.jsx",
+      "frontend-react/src/utils/apiClient.js",
+      "frontend-react/src/utils/apiClient.test.js"
+    ],
+    "new_approved_files": [
+      "docs/classify_docs.py",
+      "docs/doc-sources.json",
+      "docs/v0.12.1-claim-reconciliation.json",
+      "docs/v0.12.1-claim-reconciliation.md",
+      "docs/validate_claims.py",
+      "docs/validate_claims_test.py",
+      "docs/validate_openapi.py",
+      "docs/validate_openapi_test.py",
+      "frontend-react/src/utils/measurementScope.js",
+      "frontend-react/src/utils/measurementScope.test.js",
+      "frontend-react/src/utils/rfRecoveryMessage.js",
+      "frontend-react/src/utils/rfRecoveryMessage.test.js",
+      "scripts/v0.12.1-claim-reconciliation/baseline.json",
+      "scripts/v0.12.1-claim-reconciliation/contract-compatibility.json",
+      "scripts/v0.12.1-claim-reconciliation/current-language-inventory.json",
+      "scripts/v0.12.1-claim-reconciliation/final-checks.json",
+      "scripts/v0.12.1-claim-reconciliation/final_checks.py",
+      "scripts/v0.12.1-claim-reconciliation/fix-inventory.json",
+      "scripts/v0.12.1-claim-reconciliation/freeze.py",
+      "scripts/v0.12.1-claim-reconciliation/invariance.json",
+      "scripts/v0.12.1-claim-reconciliation/logs/adapter-race.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/adapter-vet.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/backend-race.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/backend-tests.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/backend-vet.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/claims-first.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/claims.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/classification.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/contract-compatibility.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/dependency-install.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/dependency-lock.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/diff-check.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/docs-browser.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/docs-build.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/docs-tests.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/docs-validation-first.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/docs-validation.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/frontend-build.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/frontend-focused.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/frontend-lint.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/frontend-tests.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/invariance.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/local-server.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/measurement-focused.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/openapi-references.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/openapi-validation.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/policy-tests.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/policy.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/version.log",
+      "scripts/v0.12.1-claim-reconciliation/logs/workspace-browser.log",
+      "scripts/v0.12.1-claim-reconciliation/openapi-description-repairs.json",
+      "scripts/v0.12.1-claim-reconciliation/openapi-references.json",
+      "scripts/v0.12.1-claim-reconciliation/openapi-repairs.json",
+      "scripts/v0.12.1-claim-reconciliation/openapi-wording-repairs.json",
+      "scripts/v0.12.1-claim-reconciliation/remediation-lock.json",
+      "scripts/v0.12.1-claim-reconciliation/remediation-lock.sha256",
+      "scripts/v0.12.1-claim-reconciliation/report.py",
+      "scripts/v0.12.1-claim-reconciliation/source-manifest.json",
+      "scripts/v0.12.1-claim-reconciliation/verify_contract.py",
+      "scripts/v0.12.1-claim-reconciliation/verify_invariance.py",
+      "scripts/v0.12.1-claim-reconciliation/verify_references.py"
+    ],
+    "forbidden_changes": [],
+    "groups": {
+      "rf_science": {
+        "files": 107,
+        "sha256": "985ad85371e722ad7a6abeb3d80bea4d608b7a6b44000583d1376dddb0ae2f6d",
+        "unchanged": true
+      },
+      "optimization_search": {
+        "files": 24,
+        "sha256": "08c4b7ac586ffb1729d5b886e26c6f6a60ebadb13b867158eece950c0bf744c7",
+        "unchanged": true
+      },
+      "request_budget_policy": {
+        "files": 9,
+        "sha256": "5d0ce037a311749d8c9fc2afa6ba75908e4eda28e126ba0903d769f1b86d6174",
+        "unchanged": true
+      },
+      "persistence": {
+        "files": 40,
+        "sha256": "8ab42d386502d8449c8ffb8fdd5676278a9884ffbf629b1bd0beabb33e637de1",
+        "unchanged": true
+      },
+      "resource_admission": {
+        "files": 13,
+        "sha256": "7252812d9294bb89553f44dd8bfe01986b7ae26a6189d3a78a3e9a6108aeba72",
+        "unchanged": true
+      },
+      "backend": {
+        "files": 172,
+        "sha256": "32d173ddc369dcaae2d829b8282ca0318f353e52d40f9bd336b67588544bdd4e",
+        "unchanged": true
+      },
+      "audit_evidence": {
+        "files": 45,
+        "sha256": "b73acf1cf3b977ee2e65db6c5f8fa662d5867910d9dccd00f5cf20fbc51ef1ce",
+        "unchanged": true
+      }
+    },
+    "historical_reference_design_docs_unchanged": 521,
+    "published_changelog_unchanged": true,
+    "rf_response_invariance": "Source identity plus deterministic regression suite; no RF/scientific response serializer or math changed. Representative live schema checks recorded separately; no new operational qualification inferred."
+  },
+  "documentation_classifications": {
+    "CURRENT PRODUCT DOC": 31,
+    "INTERNAL DESIGN": 11,
+    "HISTORICAL AUDIT / QUALIFICATION": 83,
+    "RESEARCH REFERENCE": 433
+  },
+  "current_language_review": {
+    "occurrences": 476,
+    "categories": {
+      "supported and scoped": 461,
+      "historical and clearly scoped": 9,
+      "aspirational / label": 6
+    },
+    "method": "Automated candidate inventory plus contextual manual review of maintained Markdown/HTML/OpenAPI and frontend copy. Inventory labels route review and are not independent proof of physical validity. Generic operation benchmarks, obsolete capability summaries and ambiguous optimization/bias wording corrected. Negative scientific boundaries, input/hash verification, timeouts and scoped historical measurements retained."
+  },
+  "changed_tracked_files": [
+    ".github/workflows/quality.yml",
+    "CHANGELOG.md",
+    "README.md",
+    "docs/algorithms.html",
+    "docs/algorithms.md",
+    "docs/api.html",
+    "docs/api.md",
+    "docs/architecture.html",
+    "docs/architecture.md",
+    "docs/changelog.html",
+    "docs/deployment.html",
+    "docs/deployment.md",
+    "docs/download.html",
+    "docs/faq.html",
+    "docs/faq.md",
+    "docs/features.html",
+    "docs/features.md",
+    "docs/getting-started.md",
+    "docs/index.html",
+    "docs/index.md",
+    "docs/modeling-limits.html",
+    "docs/modeling-limits.md",
+    "docs/openapi.yaml",
+    "docs/overview.md",
+    "docs/requirements.in",
+    "docs/requirements.txt",
+    "docs/search-index.json",
+    "docs/validate_docs.py",
+    "docs/visualization.html",
+    "docs/visualization.md",
+    "frontend-react/e2e/workspace.spec.js",
+    "frontend-react/src/App.jsx",
+    "frontend-react/src/App.workflow.test.jsx",
+    "frontend-react/src/components/WorkspaceChrome.jsx",
+    "frontend-react/src/utils/apiClient.js",
+    "frontend-react/src/utils/apiClient.test.js"
+  ],
+  "new_source_and_report_files": [
+    "docs/classify_docs.py",
+    "docs/doc-sources.json",
+    "docs/v0.12.1-claim-reconciliation.json",
+    "docs/v0.12.1-claim-reconciliation.md",
+    "docs/validate_claims.py",
+    "docs/validate_claims_test.py",
+    "docs/validate_openapi.py",
+    "docs/validate_openapi_test.py",
+    "frontend-react/src/utils/measurementScope.js",
+    "frontend-react/src/utils/measurementScope.test.js",
+    "frontend-react/src/utils/rfRecoveryMessage.js",
+    "frontend-react/src/utils/rfRecoveryMessage.test.js"
+  ],
+  "remaining_debt": [
+    {
+      "id": "P10",
+      "severity": "low",
+      "kind": "product presentation",
+      "status": "unchanged; non-blocking",
+      "description": "Light/dark documentation heroes show different UI generations; matched equivalent real-state capture remains."
+    },
+    {
+      "id": "P12",
+      "severity": "medium",
+      "kind": "ordinary workflow debt",
+      "status": "outside selected repair",
+      "description": "Novice explanation of normalized score and retained Pareto trade-offs can improve; first-task narrative now supplies a starting path."
+    },
+    {
+      "id": "P09",
+      "severity": "medium",
+      "kind": "existing persistence limitation",
+      "status": "copy clarified; behavior intentionally unchanged",
+      "description": "Large ray-bearing portable exports may reach existing guards; this task does not redesign storage."
+    },
+    {
+      "id": "P11",
+      "severity": "high for accuracy promotion",
+      "kind": "scientific evidence gap",
+      "status": "honestly bounded, not a planning/remediation blocker",
+      "description": "Real-campaign canonical accuracy/calibration cannot be promoted without resolved collector semantics and transmitter/resource truth."
+    }
+  ],
+  "methodology": {
+    "violations": [],
+    "no_subagents": true,
+    "no_science_or_backend_edits": true,
+    "no_expensive_operational_requalification": true,
+    "no_release_tag_push": true,
+    "screenshot_replaced": false,
+    "development_probes": "An initial focused UI test probe failed because sample-count text appeared twice; corrected the test selector and full suite passed. Initial runtime probe used incorrect azimuth_deg input; corrected to the existing azimuth field and checked200. These were evidence/test harness issues, not product source scope changes. Logs retained where applicable.",
+    "limitations": "No matched real-state hero replacement, new field accuracy campaign, cache/concurrency factorial attribution, new binary differential or resource qualification. Three live endpoints do not declare response body schemas; checked status only, without expanding contract scope."
+  },
+  "release": {
+    "version": "0.12.1",
+    "recommend": "0.12.2",
+    "type": "PATCH",
+    "changelog": "Unreleased",
+    "published": false
+  },
+  "freeze": "Acceptance concepts and evidence frozen; future current wording may evolve under regressions. Historical evidence remains immutable.",
+  "phases": [
+    {
+      "phase": 0,
+      "result": "Pre-edit baseline and immutable remediation lock recorded;3262 frozen files."
+    },
+    {
+      "phase": 1,
+      "result": "Exact11-finding implementation inventory, concrete sources, allowed surfaces and tests recorded."
+    },
+    {
+      "phase": 2,
+      "result": "Five evidence classes defined as editing discipline, not new UI badges."
+    },
+    {
+      "phase": 3,
+      "result": "Overview public capability and evidence boundaries reconciled."
+    },
+    {
+      "phase": 4,
+      "result": "Unscoped algorithms benchmarks removed; historical six-Cell improvement fully qualified."
+    },
+    {
+      "phase": 5,
+      "result": "Landing default/fallback/research/terrain/entry boundaries corrected."
+    },
+    {
+      "phase": 6,
+      "result": "Current network2–8 with independent Recommendation5/Measurement6; historical6 preserved."
+    },
+    {
+      "phase": 7,
+      "result": "All five actual Response Objects repaired."
+    },
+    {
+      "phase": 8,
+      "result": "Strict validator wired into normal docs validation and CI; malformed fixtures rejected."
+    },
+    {
+      "phase": 9,
+      "result": "Measurement6 helper, disabled action and defensive precheck;6/7/8 interaction tests pass."
+    },
+    {
+      "phase": 10,
+      "result": "Neutral residual-bias heading; scientific eligibility/math untouched."
+    },
+    {
+      "phase": 11,
+      "result": "Measured accuracy unestablished; latest pilot readiness linked."
+    },
+    {
+      "phase": 12,
+      "result": "Bounded sector/network/compatibility-field semantics documented."
+    },
+    {
+      "phase": 13,
+      "result": "Actual unique demand+residential+capped reach sector objective described; math unchanged."
+    },
+    {
+      "phase": 14,
+      "result": "Implemented modeled co-channel interference and its limits documented."
+    },
+    {
+      "phase": 15,
+      "result": "Numeric Retry-After recovery guidance with no redispatch/timer."
+    },
+    {
+      "phase": 16,
+      "result": "ClientIP/NAT accounting documented outside normal first-line UI."
+    },
+    {
+      "phase": 17,
+      "result": "Portable evidence exclusions and unchanged guards explained."
+    },
+    {
+      "phase": 18,
+      "result": "Draft/Version/Run/export/report distinctions explained with small helper."
+    },
+    {
+      "phase": 19,
+      "result": "Concise README configure/evaluate/compare/explain/export story added."
+    },
+    {
+      "phase": 20,
+      "result": "P10 safely deferred as low-severity; no verified equivalent real-state screenshot pair established."
+    },
+    {
+      "phase": 21,
+      "result": "First task precedes architecture; existing workflow anchor and nav retained."
+    },
+    {
+      "phase": 22,
+      "result": "RF/scientific sources, serializer, fingerprints and tests unchanged."
+    },
+    {
+      "phase": 23,
+      "result": "All caps/budgets/concurrency/deadline/worker/queue/Auto/estimator unchanged."
+    },
+    {
+      "phase": 24,
+      "result": "Current performance-language inventory reviewed; unsupported examples removed."
+    },
+    {
+      "phase": 25,
+      "result": "Accuracy-language contexts reviewed; software/data validation separated from physical validity."
+    },
+    {
+      "phase": 26,
+      "result": "558-source explicit catalog; dated evidence untouched."
+    },
+    {
+      "phase": 27,
+      "result": "High-risk concept regressions and invalid/valid fixtures added."
+    },
+    {
+      "phase": 28,
+      "result": "17-row current claim matrix emitted."
+    },
+    {
+      "phase": 29,
+      "result": "Strict contract0errors; five structures and four wording annotations only; representative live probes pass."
+    },
+    {
+      "phase": 30,
+      "result": "Full459frontend tests, lint/build,33browser checks pass;3intentional non-desktop full-journey skips."
+    },
+    {
+      "phase": 31,
+      "result": "Backend normal/race/vet and adapter race/vet pass."
+    },
+    {
+      "phase": 32,
+      "result": "Docs build/links/assets/classification/claims/strict schema checks pass."
+    },
+    {
+      "phase": 33,
+      "result": "VERSION remains0.12.1;Unreleased updated;0.12.2 PATCH recommended."
+    },
+    {
+      "phase": 34,
+      "result": "Only selected blockers re-audited; ten resolved, P10 low debt."
+    },
+    {
+      "phase": 35,
+      "result": "B — CLAIMS MOSTLY RECONCILED — NON-BLOCKING DEBT REMAINS."
+    },
+    {
+      "phase": 36,
+      "result": "Prior C resolved; no field/resource/universal-performance promotion."
+    },
+    {
+      "phase": 37,
+      "result": "Acceptance boundaries/evidence frozen; maintained product copy remains editable."
+    }
+  ],
+  "required_final_items": [
+    {
+      "number": 1,
+      "topic": "Starting baseline",
+      "result": "main at e84210dda6fb282474eda4e935f50c598fad7b34; VERSION0.12.1; tracked diff empty; inherited untracked audit artifacts preserved."
+    },
+    {
+      "number": 2,
+      "topic": "Remediation-lock SHA",
+      "result": "2f30251193dd43f6bf3c74a7ed2df4c89adf06f0254696da364705b9f63fcbec"
+    },
+    {
+      "number": 3,
+      "topic": "Audit findings selected for repair",
+      "result": "P02/P03/P04/P05/P06/P07/P08/P13/P14/P15 repaired; P10 assessed and deferred low-severity."
+    },
+    {
+      "number": 4,
+      "topic": "Files changed",
+      "result": "Current docs/generated pages, strict validators and dependency lock/CI, claim catalog/tests, Measurement6 precheck/copy, API recovery copy, project helper text and focused tests; complete source list below."
+    },
+    {
+      "number": 5,
+      "topic": "docs/overview before/after claim boundary",
+      "result": "Removed implied vendor/terrain/beamforming validation, complete operator-like data, universal scaling/deployment readiness and sub-100ms promises; retained bounded deterministic experiments, assumptions and reproducible comparisons."
+    },
+    {
+      "number": 6,
+      "topic": "Primary product definition after reconciliation",
+      "result": "Deterministic urban RF planning and experimentation workspace."
+    },
+    {
+      "number": 7,
+      "topic": "README first-use change",
+      "result": "Added configure small Cell plan -> evaluate -> inspect -> bounded optimize -> compare -> export; preserved introduction, screenshots, scope, install and contribution material."
+    },
+    {
+      "number": 8,
+      "topic": "Landing model wording change",
+      "result": "Default UMa2.6/28 with explicit applicability/fallback; research140; separate terrain diagnostics and representative facade entry."
+    },
+    {
+      "number": 9,
+      "topic": "Current capability 2–6 ->2–8 result",
+      "result": "Maintained normal network references now2–8; historical six-Cell studies unchanged."
+    },
+    {
+      "number": 10,
+      "topic": "Recommendation5 preservation",
+      "result": "Five existing input Cells preserved in code, contract, tests and copy."
+    },
+    {
+      "number": 11,
+      "topic": "Measurement6 preservation",
+      "result": "Six selected4G/5G Cells preserved; no backend or policy cap change."
+    },
+    {
+      "number": 12,
+      "topic": "Measurement frontend precheck result",
+      "result": "Six dispatches once; seven/eight show precise helper text, disable evaluation and dispatch no measurement RF; handler also checks before beginning request work."
+    },
+    {
+      "number": 13,
+      "topic": "Real-world accuracy wording result",
+      "result": "README/Overview/landing/limits explicitly state measured real-world propagation accuracy is unestablished."
+    },
+    {
+      "number": 14,
+      "topic": "2.6 GHz wording result",
+      "result": "Deterministic urban UMa planning subset with explicit LOS/NLOS/applicability/fallback."
+    },
+    {
+      "number": 15,
+      "topic": "28 GHz wording result",
+      "result": "Same bounded urban UMa scope; standards basis is distinct from field validation."
+    },
+    {
+      "number": 16,
+      "topic": "140 GHz wording result",
+      "result": "Research/reference only; ordinary radio quality and measurement evaluation unavailable."
+    },
+    {
+      "number": 17,
+      "topic": "Terrain wording result",
+      "result": "Diagnostic/path-profile evidence, outside canonical fast-network propagation."
+    },
+    {
+      "number": 18,
+      "topic": "Vendor antenna wording result",
+      "result": "Analytic/reference presets; no measured vendor hardware validation."
+    },
+    {
+      "number": 19,
+      "topic": "Beamforming wording result",
+      "result": "Sector direction/pattern planning; no array/codebook/hardware-validation or general latency claim."
+    },
+    {
+      "number": 20,
+      "topic": "Optimization wording result",
+      "result": "Bounded deterministic search; default eight-Cell578 proposals; optimal_* compatibility fields mean evaluated/discovered recommendations."
+    },
+    {
+      "number": 21,
+      "topic": "Single-sector objective wording result",
+      "result": "36 directions; unique POI and residential demand weights×10,000 plus per-ray usable reach capped at min(radius,500m), normalized to100; not area coverage."
+    },
+    {
+      "number": 22,
+      "topic": "Performance-claim reconciliation",
+      "result": "Removed unscoped runtime/scaling/memory examples from maintained docs; retained historical workload-qualified comparison."
+    },
+    {
+      "number": 23,
+      "topic": "Caching/concurrency wording result",
+      "result": "Request-local reuse removes repeated RF contribution work; worker scheduling unchanged; no controlled cache/concurrency percentage split claimed."
+    },
+    {
+      "number": 24,
+      "topic": "Unsupported timing claims removed/scoped",
+      "result": "Removed36s->250ms,4×,1000× pruning, generic<100ms p99 and unscoped operation/memory tables; no universal eight-Cell speed promise."
+    },
+    {
+      "number": 25,
+      "topic": "Profile A wording result",
+      "result": "Frozen Ankara W1 envelope,2CPU/4GiB, Go1.26.6 Linux/arm64,120rays/400m/30dBm/120°,2.6/28GHz legacy two-pass; no W2/W3/current-runtime requalification."
+    },
+    {
+      "number": 26,
+      "topic": "Retry-After UX result",
+      "result": "Known numeric429 RF waits become one-time approximate guidance; invalid/missing values preserve generic copy; no timer/countdown/automatic retry or redispatch."
+    },
+    {
+      "number": 27,
+      "topic": "Shared-IP documentation result",
+      "result": "API/FAQ explain ClientIP/NAT sharing, anchored60s,20 ordinary+8 bounded verified follow-ups and Retry-After."
+    },
+    {
+      "number": 28,
+      "topic": "Global-bias wording result",
+      "result": "Residual bias review replaces validated-sounding heading; holdout, eligibility, apply gating and math unchanged."
+    },
+    {
+      "number": 29,
+      "topic": "Persistence portability wording result",
+      "result": "Bounded retained project evidence, with separate Run History DB/reports/surfaces/view/Undo exclusions; guards unchanged."
+    },
+    {
+      "number": 30,
+      "topic": "Save/Version/export distinction",
+      "result": "Contextual project helper and docs distinguish browser draft, immutable inputs Version, retained Run, portable file and separately downloaded report."
+    },
+    {
+      "number": 31,
+      "topic": "Screenshot consistency result",
+      "result": "P10 remains low-severity: no safe matched current real-state replacement pair established; hero assets untouched."
+    },
+    {
+      "number": 32,
+      "topic": "Docs first-task hierarchy result",
+      "result": "Landing leads with planning question and links directly to the existing network workflow before architecture; navigation layout preserved."
+    },
+    {
+      "number": 33,
+      "topic": "OpenAPI defects found",
+      "result": "Five comma-bearing flow-style descriptions parsed into invalid extra Response Object keys."
+    },
+    {
+      "number": 34,
+      "topic": "OpenAPI defects fixed",
+      "result": "Quoted descriptions at /api/meta GET200, /api/analyze-sector POST200, /api/processes/batch-experiment GET200, /api/core/topology GET200 and shared TooComplex422; exact structures/uses recorded."
+    },
+    {
+      "number": 35,
+      "topic": "Strict OpenAPI validation result",
+      "result": "OpenAPI3.1 strict PASS, zero structural errors;42 paths and410 resolved local references; unresolved-reference and invalid Response/schema/shape fixtures fail as required."
+    },
+    {
+      "number": 36,
+      "topic": "Runtime/API compatibility result",
+      "result": "Five structural repairs plus four wording-only annotations; schemas/content/requests/statuses identical. Seven live probes: six200 and one400; four documented JSON schemas checked; three endpoints lack body schemas in existing contract."
+    },
+    {
+      "number": 37,
+      "topic": "Current-vs-historical docs classification",
+      "result": "558 sources explicitly classified as current product, historical audit/qualification, research/reference or internal design; current docs cannot be relabeled away to hide regression."
+    },
+    {
+      "number": 38,
+      "topic": "Claim regression tests",
+      "result": "Concept checks cover network6 drift, Measurement8, vendor validation, canonical terrain, sub100ms/multiplier/p99 benchmarks and global-optimum assertions; positive/negative fixtures plus maintained-doc checks."
+    },
+    {
+      "number": 39,
+      "topic": "Final claim matrix",
+      "result": "17 required rows below and in JSON, each with wording, evidence class, supported status, qualifier and source."
+    },
+    {
+      "number": 40,
+      "topic": "Scientific source invariance",
+      "result": "107 RF files and24 search files hash-identical; all172 backend/adapter files unchanged;521 historical/reference/design docs and45 prior audit artifacts identical."
+    },
+    {
+      "number": 41,
+      "topic": "RF response invariance",
+      "result": "RF implementations, serializers, fingerprints and request payload construction unchanged; deterministic/backend regressions pass. No new before/after binary or field qualification inferred."
+    },
+    {
+      "number": 42,
+      "topic": "Product cap invariance",
+      "result": "Normal8 / Recommendation5 / Measurement6 unchanged in policy, backend, generated bindings and OpenAPI."
+    },
+    {
+      "number": 43,
+      "topic": "Budget-policy invariance",
+      "result": "20 ordinary+8 verified follow-ups, global2/per-client1,60s deadline, experiment worker1/queue16 unchanged; generated-policy check/tests pass."
+    },
+    {
+      "number": 44,
+      "topic": "Auto/estimator invariance",
+      "result": "Auto remains observation-only; estimator admission paused; no resource/admission source changed."
+    },
+    {
+      "number": 45,
+      "topic": "Backend test result",
+      "result": "PASS: go test ./... with Go1.26.9; no backend edits."
+    },
+    {
+      "number": 46,
+      "topic": "Race result",
+      "result": "PASS: backend and adapter go test -race ./...; backend race results reused valid Go test cache."
+    },
+    {
+      "number": 47,
+      "topic": "Frontend test result",
+      "result": "PASS:72 files/459 tests. Browser checks:24 docs+9 workspace pass;3 pre-existing desktop-only journey skips at other widths."
+    },
+    {
+      "number": 48,
+      "topic": "Build/lint/vet result",
+      "result": "PASS: frontend production build, ESLint, backend and adapter vet. Existing Vite chunk-size advisory remains non-blocking."
+    },
+    {
+      "number": 49,
+      "topic": "Docs validation result",
+      "result": "PASS: build,57HTML pages/internal links/anchors/assets,42API paths, classification, claims and8 documentation unittest methods."
+    },
+    {
+      "number": 50,
+      "topic": "Version consistency",
+      "result": "PASS: canonical metadata remains consistent at0.12.1."
+    },
+    {
+      "number": 51,
+      "topic": "VERSION result",
+      "result": "Unchanged0.12.1 per release-preparation convention; recommend0.12.2."
+    },
+    {
+      "number": 52,
+      "topic": "Changelog result",
+      "result": "Added concise Unreleased claim/API/precheck/recovery/first-use/classification entries; released changelog text unchanged."
+    },
+    {
+      "number": 53,
+      "topic": "Remaining high-severity debt",
+      "result": "No high-severity remediation blocker. Field-accuracy promotion still blocked by P11 canonical evidence gap; this is disclosed and not claimed solved."
+    },
+    {
+      "number": 54,
+      "topic": "Remaining medium/low debt",
+      "result": "P10 hero mismatch(low), P12 novice score/Pareto interpretation(medium); existing bounded export limitation retained and described."
+    },
+    {
+      "number": 55,
+      "topic": "Real-world accuracy status",
+      "result": "UNESTABLISHED:53,005 raw rows, zero canonical observations, unresolved serving semantics, missing exact transmitter/resource truth; no defensible canonical MAE/RMSE."
+    },
+    {
+      "number": 56,
+      "topic": "Methodology violations",
+      "result": "None found: approved surfaces only; immutable pre-edit lock intact; no scientific/production-backend changes, expensive qualification, release/tag/push or roadmap implementation."
+    },
+    {
+      "number": 57,
+      "topic": "Missing evidence",
+      "result": "Matched real-state hero replacement pair; canonical field-accuracy data; controlled caching/concurrency attribution; universal/W2/W3/Go1.26.9 resource qualification. None is asserted."
+    },
+    {
+      "number": 58,
+      "topic": "Mini re-audit result",
+      "result": "All ten selected mandatory repairs resolved; P10 assessed/deferred; public claims, strict contract, accuracy honesty and first-use clarity pass bounded closure."
+    },
+    {
+      "number": 59,
+      "topic": "Final A/B/C/D/E remediation verdict",
+      "result": "B — CLAIMS MOSTLY RECONCILED — NON-BLOCKING DEBT REMAINS."
+    },
+    {
+      "number": 60,
+      "topic": "Whether previous C verdict is resolved",
+      "result": "Yes. The prior scientific claim-boundary defect is resolved; this does not validate measured RF accuracy."
+    },
+    {
+      "number": 61,
+      "topic": "Release recommendation",
+      "result": "Recommend0.12.2 PATCH after review for claim correction, API contract repair and bounded UX/docs consistency; no tag/publish/push performed."
+    },
+    {
+      "number": 62,
+      "topic": "Freeze decision",
+      "result": "Freeze acceptance constraints and evidence: reconciled current claims, strict3.1 validity,8/5/6, existing models, unestablished accuracy,140research and bounded search. Future maintained wording remains editable."
+    },
+    {
+      "number": 63,
+      "topic": "Single next action",
+      "result": "Review this bounded diff and prepare the0.12.2 patch release as a separate authorized task."
+    }
+  ],
+  "evidence_manifest": "scripts/v0.12.1-claim-reconciliation/completion-manifest.json"
+}

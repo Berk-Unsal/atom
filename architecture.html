@@ -305,7 +305,7 @@
           </article>
 
           <article class="sequence">
-            <header><h3>Evaluate or Optimize Network</h3><span>Two to six selected cells</span></header>
+            <header><h3>Evaluate or Optimize Network</h3><span>Two to eight selected Cells</span></header>
             <div class="sequence-steps">
               <div class="sequence-step"><strong>Score plan</strong><span>Evaluation keeps supplied azimuths; optimization sweeps candidate directions and applies overlap penalties.</span></div>
               <div class="sequence-step"><strong>Return summary</strong><span>Backend returns network score, demand coverage, overlap, and per-cell azimuth records.</span></div>
@@ -315,7 +315,7 @@
           </article>
 
           <article class="sequence">
-            <header><h3>Analyze Interference</h3><span>4G or 5G; two to six cells</span></header>
+            <header><h3>Analyze Interference</h3><span>4G or 5G; two to eight Cells</span></header>
             <div class="sequence-steps">
               <div class="sequence-step"><strong>Bound surface</strong><span>Form the union of selected-cell coverage bounds and adapt spacing to keep surface samples bounded.</span></div>
               <div class="sequence-step"><strong>Evaluate cells</strong><span>Apply sector/radius eligibility, FSPL, gain, wall loss, load, reuse channel, and receiver noise.</span></div>
@@ -446,7 +446,7 @@
           <section class="text-panel">
             <h3>Internet-facing boundary</h3>
             <p>The API has no built-in authentication. Public deployments need a trusted reverse proxy or gateway for TLS, authentication, and external rate policy.</p>
-            <ul><li>Keep <code>/healthz</code> and <code>/readyz</code> available to probes</li><li>Preserve the 120 second RF response window</li><li>Do not expose the adapter directly without need</li></ul>
+            <ul><li>Keep <code>/healthz</code> and <code>/readyz</code> available to probes</li><li>Keep the 120-second HTTP write timeout distinct from the 60-second RF computation deadline</li><li>Do not expose the adapter directly without need</li></ul>
           </section>
         </div>
       </section>
@@ -467,7 +467,7 @@
           </div>
           <div class="info-band warning">
             <span class="info-icon" aria-hidden="true">KPI</span>
-            <div><strong>Measurement limits</strong><p>RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Uploaded field data validates residuals; its optional global bias correction is not full propagation calibration.</p></div>
+            <div><strong>Measurement limits</strong><p>RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Compatible uploaded data supports residual diagnostics; its optional scalar correction is not full propagation calibration. Measured real-world propagation accuracy is not yet established.</p></div>
           </div>
           <div class="info-band warning">
             <span class="info-icon" aria-hidden="true">OPS</span>

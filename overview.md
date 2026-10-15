@@ -1,109 +1,57 @@
 # Project Overview
 
-## Background
+A.T.O.M is a local-first, open-source **deterministic urban RF planning and experimentation workspace**. It helps engineers and learners compare a small configured Cell plan, inspect the assumptions behind its estimates, and preserve the evidence for a planning decision.
 
-The exponential growth of cellular networks has created unprecedented complexity in urban network planning. Engineers must optimize antenna placement, frequency allocation, and coverage patterns across dense building environments—all while meeting regulatory constraints and cost targets.
+## One planning question
 
-Traditional network planning relies on expensive commercial simulators or empirical field measurements. A.T.O.M provides an open-source, planning-grade simulator that combines:
+For a chosen urban area: **does changing these Cells' azimuths serve the configured demand better, and what trade-offs does it create?**
 
-- **Computational efficiency** through Go's concurrent processing
-- **Spatial processing** using R-Tree indexing and polygon intersection testing
-- **Inspectable RF estimates** using explicit legacy, urban short-range, and research sub-THz propagation contracts
-- **Visual intelligence** via interactive GeoJSON rendering
+1. Configure two to eight Cells using the active dataset and explicit radio assumptions.
+2. Evaluate the baseline and inspect propagation and modeled co-channel interference.
+3. Run bounded deterministic azimuth optimization.
+4. Compare the recommendation with the baseline, inspect per-Cell explanations, and review discovered trade-offs.
+5. Save an immutable Version and export retained project evidence or a separate planning report.
 
-## Use Cases
+Start with [Getting Started](getting-started.md) or [Download and Use](download.html). This workflow compares planning hypotheses; it does not approve deployments or establish measured network performance.
 
-### 1. Network Operators
-Rapidly evaluate 5G/6G deployment strategies in target urban areas without expensive commercial licenses.
+## Who can use it today?
 
-### 2. Equipment Vendors
-Validate antenna performance characteristics across different terrain and building profiles.
+- **RF/RAN engineers and planning experimenters:** compare explicitly configured small urban networks, antenna directions, demand proxies and interference assumptions.
+- **Telecom students and researchers:** inspect deterministic propagation, link budgets, objective trade-offs and isolated research/reference calculations.
+- **Software engineers and contributors:** study and extend inspectable geospatial computation, bounded requests and reproducible local workflows.
 
-### 3. Telecommunications Researchers
-Prototype new propagation models, beamforming techniques, and optimization algorithms.
+The released tool does not validate vendor antenna hardware, implement beamforming arrays/codebooks, or provide operator inventory, traffic/capacity, mobility, permitting, cost or backhaul truth. Analytic antenna presets and configured azimuths are planning inputs.
 
-### 4. Urban Planners
-Visualize cellular infrastructure impact in smart city and IoT deployments.
+## Current workflow limits
 
-### 5. Academic Institutions
-Teach spatial algorithms, RF physics, and high-performance computing with real-world data.
+| Workflow | Released scope |
+|---|---|
+| Normal network evaluation and azimuth optimization | Two to eight selected Cells |
+| Candidate recommendations | Up to five existing input Cells; known planning records, not approved sites |
+| Measurement Validation | One to six selected 4G/5G Cells; up to 5,000 compatible RSRP samples |
 
-## Problem Statement
+These limits are independent. The eight-Cell operational qualification covers the frozen Ankara W1 workload on Profile A, not arbitrary settings, datasets, hardware or multiple instances. See the [qualification report](eight-cell-product-cap-promotion.md) for the exact historical envelope.
 
-Traditional approaches have several limitations:
+## Models and evidence
 
-- **Cost**: Commercial RF simulation software (Altair FEKO, AWR) costs tens of thousands per seat
-- **Inflexibility**: Closed-source systems don't support custom propagation models
-- **Scalability**: Legacy tools struggle with millions of building geometries
-- **Accessibility**: Limited deployment options in resource-constrained environments
+- **2.6 GHz and 28 GHz:** the default `urban_short_range` model implements a deterministic 3GPP UMa outdoor median path-loss subset, with height-aware LOS/NLOS classification, applicability checks and explicit legacy fallback.
+- **Legacy compatibility:** `legacy_fspl_walls` remains selectable. Its wall-event heuristic is not added to empirical urban NLOS loss.
+- **140 GHz:** `research_sub_thz` is research/reference only. Ordinary interference quality and measurement evaluation are unavailable for this profile.
+- **Terrain and diffraction:** optional point-to-point path-profile diagnostics remain separate from canonical fast-network propagation.
+- **Building entry:** representative facade-entry planning estimates do not establish indoor or whole-building coverage.
 
-A.T.O.M solves these by:
+**Measured real-world propagation accuracy is not yet established.** Standards-based subsets, deterministic software checks, matching scientific hashes and operational qualification provide different kinds of evidence; none is field-accuracy validation. The real Ankara pilot parsed 53,005 raw rows but produced zero canonical observations because serving semantics remained unresolved. Exact transmitter/resource truth was unavailable, and no defensible canonical MAE/RMSE resulted. See [current measurement readiness](concept-6a1-readiness.json) and [modeling limits](modeling-limits.html).
 
-| Problem | A.T.O.M Solution |
-|---------|-----------------|
-| High licensing costs | Open-source MIT license, zero upfront cost |
-| Limited customization | Modular Go architecture, easy to extend |
-| Scalability bottlenecks | In-memory R-Tree + Goroutine concurrency |
-| Desktop-only tools | Containerized web application with REST API |
-| Single-frequency testing | Multi-band simulation (4G, 5G, 6G) |
+## Data and computation
 
-## Key Innovation: Explicit Propagation Model Boundaries
+The bundled Ankara pack contains static OSM and OpenCellID-derived planning data. Geometry/hash validation checks structural usability and integrity; it does not establish complete coverage, surveyed antenna characteristics or current operator transmitter identities. POI/residential demand is a heuristic proxy, not measured subscriber traffic.
 
-A.T.O.M keeps model choice and applicability visible at every RF endpoint:
+R-tree indexing, bounded workers and request-local reuse support the existing computation. Latency depends on selected Cells, geometry, radio settings, search policy and machine resources. No general sub-100 ms response or universal scaling guarantee is claimed. Other regions can be prepared as validated dataset packs; their data quality, model applicability and workload performance need separate review.
 
-- **2.6 GHz and 28 GHz**: The default `urban_short_range` profile uses 3GPP UMa median LOS/NLOS path loss with the shared `footprint-height-los-v1` centerline classifier and explicit height provenance.
-- **Legacy compatibility**: `legacy_fspl_walls` remains selectable and is the explicit fallback when urban inputs are outside scope.
-- **140 GHz**: `research_sub_thz` is explicitly research-only; it is not presented as a validated sub-THz channel model.
+## Preserving a comparison
 
-The urban model does not convert an empirical NLOS formula into additional legacy wall dB. Responses identify the requested model, applied model, LOS/NLOS rule, applicability, and fallback reason so planners can see why coverage differs across bands.
+A working draft autosaves in the current browser. A saved Version records immutable planning inputs; retained Runs describe executions of those inputs. A portable project carries bounded Scenario/Version/embedded Run evidence and retained Scenario results. It excludes the separate Run History database, generated report files, coverage surfaces and transient view/Undo state. Download reports separately and review the [portable project contract](project-format.md) for limits.
 
-## Architectural Philosophy
+## Product direction
 
-A.T.O.M follows these design principles:
-
-1. **Separation of Concerns**: Data pipeline → API → Frontend (independent scaling)
-2. **Immutable Spatial Data**: Load GeoJSON once; query thousands of times efficiently
-3. **Real-time Interactivity**: Sub-100ms response times for beamforming adjustments
-4. **Minimal Dependencies**: Pure Go backend with no external RF libraries
-5. **Open Standards**: GeoJSON, REST, standard mapping libraries
-
-## Ankara, Turkey: The Testbed
-
-A.T.O.M is optimized for **Ankara's urban topology**:
-
-- **Building density**: 12,000+ structures in core districts
-- **Terrain complexity**: Hillsides and valleys affecting RF propagation
-- **Data availability**: Complete OSM building and 5G tower data
-- **Field calibration**: Future comparison against measured network data
-
-The same engine scales to any city or region with available GeoJSON geometry.
-
-## Roadmap
-
-### Current (v1.0)
-- ✅ 4G/5G/6G multi-band simulation
-- ✅ Deterministic demand-aware antenna optimization
-- ✅ Interactive web-based visualization
-- ✅ Docker containerization
-
-### Planned (v1.1+)
-- 🔄 Custom propagation model editor
-- 🔄 Multi-site optimization (distributed antenna systems)
-- 🔄 Time-based coverage analysis (day/night patterns)
-- 🔄 Terrain elevation integration (SRTM)
-- 🔄 Mobile target tracking
-- 🔄 REST API versioning and webhooks
-
-## Who Benefits?
-
-**A.T.O.M is designed for:**
-
-- ✅ RF Engineers planning 5G/6G networks
-- ✅ Network Operators evaluating new sites
-- ✅ Researchers in spatial algorithms and telecommunications
-- ✅ Educators teaching RF propagation and optimization
-- ✅ Open-source enthusiasts interested in high-performance computing
-
----
-
-**Next Steps**: Explore [Features](features.md) or jump to [Getting Started](getting-started.md).
+Current capability is defined by [VERSION](../VERSION), the [capability reference](features.html) and the [changelog](changelog.html). Future functionality needs a concrete planning task, authoritative inputs and a declared evidence boundary. This overview does not promise new RF models, hardware validation, larger networks or commercial planning-suite equivalence.

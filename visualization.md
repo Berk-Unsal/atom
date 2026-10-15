@@ -2,72 +2,27 @@
 
 A.T.O.M visualizes deterministic RF planning estimates across frequency bands using Ankara's urban topology. The images are model outputs, not measured coverage maps.
 
-## 4G LTE Coverage (2.6 GHz)
+## Stored band illustrations
 
-![4G Propagation](./assets/4g.png)
+The images below illustrate band-dependent model outputs. Their complete request/model lineage is not embedded in the images, so they are not current benchmark or validation evidence. For a reproducible comparison, inspect a named Run and its model, inputs, dataset and current map legend.
 
-### Characteristics
+### 4G LTE at 2.6 GHz
 
-- **Wavelength**: 11.5 cm
-- **Coverage Type**: Wide-area with building penetration
-- **Penetration Loss**: roughly +8 dB per wall crossing in the current LTE model
-- **Urban Canyon Effect**: Moderate (signals reach side streets)
+![4G planning illustration](./assets/4g.png)
 
-### Interpretation
+The normal 2.6 GHz preset uses the deterministic urban UMa LOS/NLOS subset. A lower frequency can change estimated path loss under the configured assumptions; a colored outdoor ray does not establish indoor service or an application throughput level.
 
-The 4G simulation shows:
+### 5G mmWave at 28 GHz
 
-- 🟢 **Green zones**: Strong indoor coverage (-50 to -70 dBm)
-- 🟡 **Yellow zones**: Moderate coverage (-70 to -90 dBm), usable for typical applications
-- 🔴 **Red zones**: Marginal coverage (-90 to -110 dBm), possible dead zones
+![5G planning illustration](./assets/5g.png)
 
-**Key Insight**: Lower FSPL and the model's lower per-wall loss generally let 4G estimates extend farther than higher-frequency modes.
+The normal 28 GHz preset uses the same declared model family with its frequency and antenna inputs. Urban empirical NLOS does not receive an extra legacy wall-event penalty. Inspect the applied model and any explicit legacy fallback before comparing results.
 
----
+### 140 GHz research profile
 
-## 5G mmWave Coverage (28 GHz)
+![140 GHz research illustration](./assets/6g.png)
 
-![5G Propagation](./assets/5g.png)
-
-### Characteristics
-
-- **Wavelength**: 1.07 cm
-- **Coverage Type**: Directional, urban-specific hotspots
-- **Penetration Loss**: roughly +30 dB per wall crossing in the current mmWave model
-- **Line-of-Sight Requirement**: Often necessary for usable signal
-
-### Interpretation
-
-The 5G visualization reveals:
-
-- 🟢 **Green zones**: Excellent LOS coverage on main avenues
-- 🟡 **Yellow zones**: Partial coverage after distance and wall-loss attenuation
-- 🔴 **Red zones**: Deep urban canyons blocked by building walls
-
-**Key Insight**: 5G requires careful site placement to reach street-level users. Antenna orientation (azimuth) dramatically affects coverage.
-
----
-
-## 6G Research Profile Coverage (140 GHz)
-
-![6G Propagation](./assets/6g.png)
-
-### Characteristics
-
-- **Wavelength**: 2.14 mm (near-optical)
-- **Coverage Type**: Ultra-localized comparative planning overlay
-- **Penetration Loss**: roughly +80 dB per wall crossing in the current Sub-THz model
-- **Line-of-Sight Requirement**: Mandatory for coverage
-
-### Interpretation
-
-The 6G heatmap demonstrates:
-
-- 🟢 **Green zones**: Only direct line-of-sight points
-- 🟡 **Yellow zones**: Minimal; mostly absent
-- 🔴 **Red zones**: Vast majority (blocked by buildings)
-
-**Key Insight**: The 140 GHz mode is a 6G research profile, not a standardized network-quality model. Its short-range result is useful for comparative planning and is not a deployment guarantee.
+The 140 GHz profile is research/reference only and retains a conservative attenuation heuristic. It is not a standardized or field-validated 6G service model. Ordinary radio-quality and measurement-validation workflows are unavailable for it.
 
 ---
 
@@ -77,11 +32,11 @@ The 6G heatmap demonstrates:
 
 ### Algorithm Result
 
-This simulation shows the optimal antenna azimuth computed by A.T.O.M's sweep-and-score algorithm:
+This illustration shows a recommended direction from the single-sector discrete sweep, not proof of a global optimum:
 
 - **Demand-aware score**: POI demand, residential-density demand, and capped coverage tie-breakers guide azimuth selection
 - **Beam Width**: 65° (typical 3-sector configuration)
-- **Optimization Runtime**: ~250 ms
+- **Runtime**: depends on the request, geometry and machine; this image is not a timing benchmark
 
 ### Interpretation
 
@@ -99,40 +54,11 @@ The auto-optimized placement achieves:
 
 The map uses a display-only received-power palette. It is not a universal service-quality legend: receiver sensitivity is per effective cell, building service uses a separate `-100 dBm` threshold, and interference serviceability uses RSRP/SINR/RSRQ thresholds.
 
-| Color | Signal Range | Quality | Use Case |
-|-------|-------------|---------|----------|
-| 🟢 Green | -50 to -70 dBm | Excellent | Voice, video, IoT |
-| 🟡 Yellow | -70 to -90 dBm | Good | Voice, messaging |
-| 🔴 Red | -90 to -110 dBm | Poor | Emergency services |
-| ⚫ Black | Below the configured display floor | Visually suppressed | Presentation only; raw values remain in the API |
+Read the live legend for the selected metric and Run. Stronger received power is not a guarantee of indoor, emergency, voice or data service. RSRP/SINR/RSRQ serviceability, receiver sensitivity, building service and display floors use different declared rules.
 
----
+## Comparing bands and plans
 
-## Comparative Analysis: 4G vs 5G vs 6G
-
-### Coverage Radius Comparison
-
-| Technology | Typical Radius | Max Radius |
-|-----------|---------------|-----------|
-| **4G** | 2 km (urban) | 5 km (rural) |
-| **5G mmWave** | 300 m planning preset | 1 km configurable limit |
-| **6G research profile** | 50 m (illustrative) | 200 m (illustrative planning bound) |
-
-### Site Density Required
-
-| Technology | Sites per km² | Building Density Impact |
-|-----------|------------|------------------------|
-| **4G** | 1-3 | Low (penetrates walls) |
-| **5G mmWave** | 10-50 | High (requires LOS) |
-| **6G research profile** | 100+ | Very High (illustrative street-level comparison) |
-
-### Urban Canyon Effect
-
-The visualizations clearly show how **building density** impacts each band:
-
-- **4G**: Usually produces the broadest modeled reach because FSPL and wall loss are lower.
-- **5G**: Produces more localized, directional modeled coverage at 28 GHz.
-- **6G**: Is a research profile with the strongest configured wall attenuation and shortest illustrative planning range.
+Keep selected Cells, input assumptions, dataset and result lineage visible. Compare baseline/recommendation metrics and sample locations under those conditions. Do not infer a universal coverage radius or required site density from a band label or these stored pictures; no such deployment-sizing result has been validated here.
 
 ---
 
@@ -143,15 +69,15 @@ The visualizations clearly show how **building density** impacts each band:
 Each heatmap consists of thousands of **ray segments** (colored lines):
 
 - **Start Point**: Transmitter antenna
-- **End Point**: Coverage measurement location (typically 20-100 meters away)
+- **End Point**: Modeled sample position along the configured path
 - **Color**: Represents signal strength at that distance/direction
 - **Direction**: Shows propagation pattern and antenna beam orientation
 
 ### Reading the Visualization
 
-1. **Green Zones**: Primary coverage area; reliable service expected
-2. **Yellow Zones**: Secondary coverage; service possible with optimal conditions
-3. **Red Zones**: Marginal; not recommended for primary coverage
+1. **Green segments**: Stronger modeled received power according to the current legend
+2. **Yellow segments**: Intermediate modeled power; inspect the relevant receiver and service thresholds
+3. **Red segments**: Weaker modeled power; inspect the sample and applied model before interpreting service
 4. **No Color**: Below the visual display floor or outside the rendered evidence; this does not mean the API value is NoData or that it fails every serviceability rule
 
 ### Analytical Surface Layer
@@ -168,7 +94,7 @@ The compact RF control group keeps the two evidence types independent:
 
 Until a surface is generated, rays are the visible RF fallback. Generating a received-power surface switches the map to a surface-first view and hides rays; rays can be enabled again for diagnostic inspection. Presentation-only changes are local browser state. RF settings, cell selection, or a new optimization/evaluation clear incompatible rendered evidence and require the normal explicit analysis action.
 
-The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile.
+The raster uses the resolved canonical propagation and antenna profile: the urban subset at 2.6/28 GHz, or the explicitly selected/reported legacy or research behavior. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile.
 
 Enable **Viewport buildings** in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh.
 
@@ -184,14 +110,14 @@ In the web interface, you can:
 - 📊 Switch between frequency bands and compare
 - 🧭 Focus a selected network cell while keeping the planning selection unchanged
 - 🗺️ Switch between the received-power surface and diagnostic ray evidence
-- 🎯 Toggle beamforming on/off to see impact
-- 📍 Click points to see exact signal strength (Rx dBm)
+- Inspect configured analytic antenna directions and patterns; array/codebook beamforming is not implemented
+- 📍 Inspect sampled modeled received power (Rx dBm) and its source Run
 
 ---
 
 ## Validation Boundary
 
-A.T.O.M has not been calibrated against operator drive tests or UE measurements. Treat Rx, RSRP, SINR, and RSRQ values as planning estimates for scenario comparison, then validate deployment decisions with calibrated tools and field measurements.
+Measured real-world propagation accuracy is not yet established. A.T.O.M has not been calibrated against operator drive tests or UE measurements. Treat Rx, RSRP, SINR, and RSRQ values as planning estimates for scenario comparison, then validate deployment decisions with calibrated tools and field measurements.
 
 ---
 

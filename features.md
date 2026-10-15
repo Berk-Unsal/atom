@@ -69,7 +69,7 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 - Coverage gaps identify demand-building centroids that are inside a sector but below the service threshold.
 - Demand scoring distinguishes POI and residential signals from empty geometry.
 - Single-sector optimization performs a deterministic azimuth sweep.
-- Network evaluation scores two to six selected cells using coverage, unique demand, and overlap.
+- Network evaluation scores two to eight selected cells using coverage, unique demand, and overlap.
 - Network optimization coordinates selected-cell azimuths using selected objectives/weights, optional minimum coverage/demand and maximum-overlap constraints, feasibility violations, and an explained Pareto frontier. Tilt, power, and site selection are not silently adjusted.
 
 ## Batch Experiments
@@ -106,12 +106,12 @@ Planning-grade 4G and 5G interference analysis calculates:
 
 Near-equal co-channel powers can correctly produce SINR near `0 dB`; the Inspector explains this and other no-signal or poor-quality states.
 
-## Candidate Site Recommendations
+## Candidate Cell Recommendations
 
 - Uses unselected towers from the active dataset as candidate records.
 - Restricts candidates to the user-drawn planning area.
 - Prefilters at most 50 records by proximity to unmet demand and evaluates a bounded subset.
-- Keeps existing selected-cell azimuths fixed and optimizes only the candidate in v1.
+- Accepts up to five existing input Cells; keeps their azimuths fixed and optimizes only the candidate in v1.
 - Returns up to five deterministic options with recommended azimuth, marginal KPIs, score components, and reasons.
 - Applies a recommendation as a new scenario without overwriting the baseline.
 
@@ -119,6 +119,7 @@ Recommendations are RF planning options, not claims of rooftop availability, own
 
 ## Measurement Validation
 
+- Accepts one to six selected 4G/5G Cells, independently of normal network8 and Recommendation5 limits.
 - Imports up to 5,000 CSV records with ID, longitude, latitude, technology, measured RSRP, and optional cell ID.
 - Predicts RSRP at each measurement location using the active selected cells and RF assumptions.
 - Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal count, and per-cell statistics.

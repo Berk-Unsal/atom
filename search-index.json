@@ -113,7 +113,7 @@
       "page": "Algorithms and RF Physics",
       "title": "Computational Geometry: Polygon Intersection",
       "url": "./algorithms.html#computational-geometry-polygon-intersection",
-      "text": "Problem : Does a ray (line segment) intersect a building (polygon)? Solution : Query the R-Tree's segment bounding box, then test each candidate polygon with exact segment-edge intersections and point-in-polygon checks. Duplicate boundary points for the same building are collapsed within the current 5 cm tolerance, and intersections are processed in distance order. func SegmentIntersectsPolygon ( segment Line , polygon Polygon ) bool { // Test the segment against all polygon edges for i := 0 ; i < len ( polygon . Edges ); i ++ { edge := polygon . Edges [ i ] if SegmentIntersectsSegment ( segment , edge ) { return true } } // Test if segment start/end is inside the polygon return PointInPolygon ( segment . Start , polygon ) || PointInPolygon ( segment . End , polygon ) } func SegmentIntersectsSegment ( s1 , s2 Line ) bool { // Standard 2D line intersection test // (Cross product method) d1 := cross_product ( s2 . Start - s1 . Start , s1 . Dir ) d2 := cross_product ( s2 . End - s1 . Start , s1 . Dir ) d3 := cross_product ( s1 . Start - s2 . Start , s2 . Dir ) d4 := cross_product ( s1 . End - s2 . Start , s2 . Dir ) return (( d1 > 0 && d2 < 0 ) || ( d1 < 0 && d2 > 0 )) && (( d3 > 0 && d4 < 0 ) || ( d3 < 0 && d4 > 0 )) } Complexity : O(log n) per ray thanks to R-Tree spatial indexing."
+      "text": "Problem : Does a ray (line segment) intersect a building (polygon)? Solution : Query the R-Tree's segment bounding box, then test each candidate polygon with exact segment-edge intersections and point-in-polygon checks. Duplicate boundary points for the same building are collapsed within the current 5 cm tolerance, and intersections are processed in distance order. func SegmentIntersectsPolygon ( segment Line , polygon Polygon ) bool { // Test the segment against all polygon edges for i := 0 ; i < len ( polygon . Edges ); i ++ { edge := polygon . Edges [ i ] if SegmentIntersectsSegment ( segment , edge ) { return true } } // Test if segment start/end is inside the polygon return PointInPolygon ( segment . Start , polygon ) || PointInPolygon ( segment . End , polygon ) } func SegmentIntersectsSegment ( s1 , s2 Line ) bool { // Standard 2D line intersection test // (Cross product method) d1 := cross_product ( s2 . Start - s1 . Start , s1 . Dir ) d2 := cross_product ( s2 . End - s1 . Start , s1 . Dir ) d3 := cross_product ( s1 . Start - s2 . Start , s2 . Dir ) d4 := cross_product ( s1 . End - s2 . Start , s2 . Dir ) return (( d1 > 0 && d2 < 0 ) || ( d1 < 0 && d2 > 0 )) && (( d3 > 0 && d4 < 0 ) || ( d3 < 0 && d4 > 0 )) } Query cost : the R-tree prunes non-overlapping bounds before polygon tests. Cost depends on tree overlap, returned candidates and geometry; it is not a universal logarithmic-time guarantee."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -125,7 +125,7 @@
       "page": "Algorithms and RF Physics",
       "title": "Why R-Tree?",
       "url": "./algorithms.html#why-r-tree",
-      "text": "RF simulations require millions of queries: Naive approach (linear scan): O(n) per query × 90,000 rays = 1+ billion operations R-Tree approach (spatial index): O(log n) per query × 90,000 rays = 1+ million operations Speedup : 1000× faster"
+      "text": "RF evaluation repeats spatial queries. A linear scan tests every footprint; the R-tree first selects overlapping bounds and then checks candidate geometry. Candidate counts and runtime depend on the dataset and queried paths. This is an implementation description, not a measured speedup claim."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -137,7 +137,7 @@
       "page": "Algorithms and RF Physics",
       "title": "Query Algorithm",
       "url": "./algorithms.html#query-algorithm",
-      "text": "func RTtree . Query ( ray LineSegment ) [] Building { candidates := [] Building {} // Recursively check which nodes overlap with ray func traverse ( node * RNode ) { if node . bbox . Intersects ( ray ) { if node . IsLeaf () { candidates . append ( node . buildings ) } else { for child in node . Children { traverse ( child ) } } } } traverse ( rtree . Root ) return candidates } Result : Typically 5-20 building candidates per ray (vs 12,000 total buildings)."
+      "text": "func RTtree . Query ( ray LineSegment ) [] Building { candidates := [] Building {} // Recursively check which nodes overlap with ray func traverse ( node * RNode ) { if node . bbox . Intersects ( ray ) { if node . IsLeaf () { candidates . append ( node . buildings ) } else { for child in node . Children { traverse ( child ) } } } } traverse ( rtree . Root ) return candidates } Result : a path-dependent candidate set. Counts are workload evidence, not a fixed property of the index."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -155,7 +155,7 @@
       "page": "Algorithms and RF Physics",
       "title": "Eligibility Function",
       "url": "./algorithms.html#eligibility-function",
-      "text": "func IsInsideSector ( direction float64 , antennaAzimuth float64 , beamWidth float64 ) bool { offset := abs ( normalize_angle ( direction - antennaAzimuth )) return offset <= beamWidth / 2 } Samples outside the configured sector or radius do not contribute. Configured antenna gain is applied separately in the link budget; the diagram's zero value means zero relative preset attenuation at boresight. Version 1 does not model sidelobes or a continuous vendor antenna diagram."
+      "text": "func IsInsideSector ( direction float64 , antennaAzimuth float64 , beamWidth float64 ) bool { offset := abs ( normalize_angle ( direction - antennaAzimuth )) return offset <= beamWidth / 2 } Samples outside the configured sector or radius do not contribute. Configured antenna gain is applied separately in the link budget; the diagram's zero value means zero relative preset attenuation at boresight. Compatibility sector presets use hard eligibility; omni and the optional single-element reference have their separately documented full-azimuth behavior. These are analytic patterns, not vendor antenna diagrams."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -167,25 +167,19 @@
       "page": "Algorithms and RF Physics",
       "title": "Problem Statement",
       "url": "./algorithms.html#problem-statement",
-      "text": "Find : The antenna azimuth that best serves demand-weighted coverage Constraints : Distance range: 25 m to 5 km Beam width: user configured Frequency: user selected"
+      "text": "Find : The recommended azimuth among 36 evaluated 10-degree directions, using POI demand and residential-demand scores plus capped usable-ray reach as a tie-break component. Constraints : Distance range: 25 m to 5 km Beam width: user configured Frequency: user selected"
     },
     {
       "page": "Algorithms and RF Physics",
       "title": "Algorithm",
       "url": "./algorithms.html#algorithm",
-      "text": "func OptimizeAzimuth ( tx Location , request SimulationRequest ) float64 { bestAzimuth := 0.0 bestScore := 0.0 // Sweep all azimuths in 10° increments for azimuth := 0 ; azimuth < 360 ; azimuth += 10 { // Run simulation at this azimuth rays := TraceSector ( tx , request . withAzimuth ( azimuth )) // Track unique buildings reached by the sector demandScore := 0.0 residentialScore := 0.0 hitBuildings := NewSet () for ray in rays { for building in ray . hitBuildings { if hitBuildings . add ( building . id ) { demandScore += building . demandWeight * 10000 residentialScore += building . residentialDemand * 10000 } } } // Coverage is capped and used as a tie-breaker coverageTieBreaker := 0.0 for ray in rays { coverageTieBreaker += min ( ray . distance , 500 ) / 500 * 100 } score := demandScore + residentialScore + coverageTieBreaker // Track best if score > bestScore { bestScore = score bestAzimuth = azimuth } } return bestAzimuth }"
+      "text": "func OptimizeAzimuth ( tx Location , request SimulationRequest ) float64 { bestAzimuth := 0.0 bestScore := 0.0 // Sweep all azimuths in 10° increments for azimuth := 0 ; azimuth < 360 ; azimuth += 10 { // Run simulation at this azimuth rays := TraceSector ( tx , request . withAzimuth ( azimuth )) // Track unique buildings reached by the sector demandScore := 0.0 residentialScore := 0.0 hitBuildings := NewSet () for ray in rays { for building in ray . hitBuildings { if hitBuildings . add ( building . id ) { demandScore += building . demandWeight * 10000 residentialScore += building . residentialDemand * 10000 } } } // Usable ray reach contributes a capped planning score reachScore := 0.0 reachCap := min ( request . radius_m , 500 ) for ray in rays { reachScore += min ( ray . distance , reachCap ) / reachCap * 100 } score := demandScore + residentialScore + reachScore // Track best if score > bestScore { bestScore = score bestAzimuth = azimuth } } return bestAzimuth }"
     },
     {
       "page": "Algorithms and RF Physics",
-      "title": "Complexity Analysis",
-      "url": "./algorithms.html#complexity-analysis",
-      "text": "Loop iterations : 360° / 10° = 36 Per iteration : Ray tracing: O(90,000 rays × log n intersections) ~1 second Coverage calculation: O(90,000) Total time : ~36 seconds (naive) Optimized time : ~250 ms (with parallelization)"
-    },
-    {
-      "page": "Algorithms and RF Physics",
-      "title": "Parallelization",
-      "url": "./algorithms.html#parallelization",
-      "text": "Go's Goroutines enable embarrassingly parallel optimization: // Create worker pool type Job struct { azimuth float64 } type Result struct { azimuth float64 coverage float64 } // Dispatch all azimuths to workers jobs := make ( chan Job , 36 ) results := make ( chan Result , 36 ) // 4 workers process in parallel for w := 1 ; w <= 4 ; w ++ { go worker ( jobs , results ) } for azimuth := 0 ; azimuth < 360 ; azimuth += 10 { jobs <- Job { azimuth } } // Collect results for i := 1 ; i <= 36 ; i ++ { result := <- results if result . coverage > bestCoverage { bestCoverage = result . coverage bestAzimuth = result . azimuth } } Result : 4× speedup on quad-core machine."
+      "title": "Search scope and runtime evidence",
+      "url": "./algorithms.html#search-scope-and-runtime-evidence",
+      "text": "The single-sector sweep evaluates 36 directions from 0° through 350°. For each direction, it sums unique POI demand weight × 10,000, unique residential demand × 10,000, and per-ray usable reach capped at min(radius_m, 500 m) and normalized to 100 per ray. These are demand proxies and a reach component, not a continuous-area coverage percentage. The chosen direction has the highest combined score among those evaluated; ties preserve the established deterministic order. The compatibility field optimal_azimuth means this bounded recommendation, not a global optimum over arbitrary angles or radio parameters. The sector implementation uses at most four workers, bounded by available CPUs and candidate count. This does not establish a proportional speedup or a general latency promise. A separate historical network optimization audit records an affected six-Cell, 28 GHz Ankara request at 120 rays, 400 m, 30 dBm and a 120° beam , using legacy two-pass search, default priorities and no positive radio-quality objective. In the recorded Go 1.26.6 Linux/arm64 Docker controls on an Apple M4 host (10 logical CPUs, GOMAXPROCS=10, no container CPU/memory quota), uncached request times were approximately 94.7–112.7 s , versus corrected isolated controls of 6.72–6.76 s . The first uncached run overlapped host measurements; these small samples are descriptive, not population latency guarantees. All 434 network proposals remained. The scorer still requested 2,604 independent Cell contributions , but request-local reuse reduced expensive work to 180 misses plus 2,424 hits ; two selected IDs had identical locations/profiles. Removal of repeated RF contribution work was the demonstrated implementation change. Worker counts and scheduling were unchanged. There is no controlled factorial percentage split for caching versus concurrency. These are admitted-request measurements, excluding the full browser journey, dataset startup and later map refreshes; request-local reuse starts fresh on each request. OS/runtime warm state and other workloads can affect timing. No universal speedup, eight-Cell latency or current-hardware guarantee follows. Network optimization is also bounded: the default two-pass coordinate search proposes 72 × Cell count + 2 evaluations, or 578 proposals for eight Cells . Its recommendation and discovered Pareto set do not prove global mathematical optimality."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -201,15 +195,9 @@
     },
     {
       "page": "Algorithms and RF Physics",
-      "title": "Benchmarks (Ankara Dataset)",
-      "url": "./algorithms.html#benchmarks-ankara-dataset",
-      "text": "Operation Time Scaling Load GeoJSON 500 ms O(n) where n=12,000 buildings Build R-Tree 1 second O(n log n) Single ray trace < 1 μs O(log n) Up to 25,000 returned ray features Bounded O(n log n) parallelized Network optimization See BenchmarkCanonicalAnkaraNetworkOptimization in the repository Fixed-domain entity discovery is prepared once; candidate RF scoring remains the dominant work API response < 100 ms p99 Network + serialization"
-    },
-    {
-      "page": "Algorithms and RF Physics",
-      "title": "Memory Usage",
-      "url": "./algorithms.html#memory-usage",
-      "text": "Component Size Buildings (GeoJSON) 80 MB (disk) → 40 MB (RAM) R-Tree indices 150 MB Tower locations 2 MB Returned ray features per request 25,000 maximum Total footprint ~200 MB typical"
+      "title": "Workload-dependent runtime and memory",
+      "url": "./algorithms.html#workload-dependent-runtime-and-memory",
+      "text": "Runtime depends on dataset geometry, Cell count, band, rays, radius, selected model and objective, hardware, and concurrent host work. The historical six-Cell comparison above is the supported timing example; it is not a general response-time promise. BenchmarkCanonicalAnkaraNetworkOptimization provides a repeatable developer workload, not a product latency guarantee. Memory depends on the loaded dataset, spatial indices, active requests and retained results. The 25,000-feature response ceiling bounds one output dimension; it does not establish a universal process-memory footprint. See the eight-Cell qualification for the bounded Profile A envelope and measurements."
     },
     {
       "page": "Algorithms and RF Physics",
@@ -233,13 +221,13 @@
       "page": "Algorithms and RF Physics",
       "title": "Model Limitations",
       "url": "./algorithms.html#model-limitations",
-      "text": "Flat Earth : No terrain elevation (can add with GeoTIFF) No multipath : Doesn't model reflections/scattering Ideal antennas : Assumes perfect omnidirectional at low freq Static buildings : Doesn't model moving obstructions Weather : No rain/weather fading"
+      "text": "Canonical network propagation does not consume terrain. Optional terrain, Fresnel and single-edge path-profile diagnostics are separate evidence. Canonical RF excludes multipath reflection, fading, array/codebook beamforming, MIMO scheduling and UE behavior. Isolated reference panels do not silently add those effects. Antenna presets are analytic or single-element references, not measured/vendor hardware patterns. Geometry and demand are static, incomplete planning inputs; missing height evidence and model fallback are explicit. Building-entry estimates apply just inside a representative facade, not throughout rooms or floors."
     },
     {
       "page": "Algorithms and RF Physics",
-      "title": "When to Use A.T.O.M",
+      "title": "When to use A.T.O.M",
       "url": "./algorithms.html#when-to-use-atom",
-      "text": "✅ Good for : Network planning and site selection Quick feasibility studies Education and training Comparison between sites Coverage mapping ❌ Not suitable for : Detailed link budget analysis Precise handover prediction Interference modeling Non-stationary targets Next : Explore the API Reference to integrate A.T.O.M into your systems."
+      "text": "Use it for bounded configuration comparisons, azimuth recommendations, inspectable link budgets, building-service estimates and modeled co-channel interference. The interference ledger uses explicit resource assumptions and finite per-Cell horizons; it is not measured UE interference, adjacent-channel full-system modeling or commercial network KPI truth. Measured real-world propagation accuracy is not yet established. Deployment approval, calibrated antenna/terrain performance, mobility/handover prediction, dynamic traffic/capacity and complete operator-network validation require evidence and capabilities outside the released scope. Next : Explore the API Reference to integrate A.T.O.M into your systems."
     },
     {
       "page": "API Reference",
@@ -389,7 +377,7 @@
       "page": "API Reference",
       "title": "Optimize Antenna Placement",
       "url": "./api.html#optimize-antenna-placement",
-      "text": "Endpoint : POST /api/optimize-azimuth Automatically find the optimal antenna azimuth for maximum coverage. Request Body : { \"tower_lon\" : 32.8541 , \"tower_lat\" : 39.9208 , \"rays\" : 120 , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"azimuth\" : 45 , \"beam_width\" : 120 } Parameters : Parameter Type Required Description tower_lon number Yes Tower longitude tower_lat number Yes Tower latitude rays number Yes Ray count used to sample the sector radius_m number Yes Maximum requested simulation radius frequency_ghz number Yes Network frequency in GHz tx_power_dbm number Yes Conducted TX power before antenna gain azimuth number Yes Current azimuth seed value beam_width number Yes Sector width in degrees Response : { \"optimal_azimuth\" : 42 , \"propagation_reach_score\" : 18320.5 , \"coverage_score\" : 18320.5 , \"demand_score\" : 140000 , \"residential_score\" : 86000 , \"hit_demand_buildings\" : 18 , \"data_quality\" : \"good\" , \"rf_contract\" : { \"model_id\" : \"urban_short_range\" } } Response Fields : Field Description optimal_azimuth Recommended antenna direction (0-360°) propagation_reach_score Capped aggregate usable-ray reach score coverage_score Compatibility alias for propagation_reach_score demand_score POI/commercial/critical-building score residential_score Residential-density demand score hit_demand_buildings Unique demand-weighted buildings reached by the winning sector data_quality Summary of local demand metadata quality Status Codes : 200 OK - Optimization succeeded 400 Bad Request - Invalid parameters 413 Content Too Large - Request body exceeds 1 MiB 429 Too Many Requests - RF worker capacity is busy 500 Internal Server Error - Optimization error Performance : Typical response time: 3-5 seconds Parallelization: Up to four workers per RF request Server write timeout: 120 seconds"
+      "text": "Endpoint : POST /api/optimize-azimuth Recommend an azimuth from 36 evaluated 10-degree directions using unique POI demand and residential-demand scores plus capped usable-ray reach. Other radio inputs remain fixed. The compatibility field optimal_azimuth identifies the highest-scoring evaluated direction, not a global optimum or a maximum continuous-area coverage guarantee. Request Body : { \"tower_lon\" : 32.8541 , \"tower_lat\" : 39.9208 , \"rays\" : 120 , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"azimuth\" : 45 , \"beam_width\" : 120 } Parameters : Parameter Type Required Description tower_lon number Yes Tower longitude tower_lat number Yes Tower latitude rays number Yes Ray count used to sample the sector radius_m number Yes Maximum requested simulation radius frequency_ghz number Yes Network frequency in GHz tx_power_dbm number Yes Conducted TX power before antenna gain azimuth number Yes Current azimuth seed value beam_width number Yes Sector width in degrees Response : { \"optimal_azimuth\" : 40 , \"propagation_reach_score\" : 18320.5 , \"coverage_score\" : 18320.5 , \"demand_score\" : 140000 , \"residential_score\" : 86000 , \"hit_demand_buildings\" : 18 , \"data_quality\" : \"good\" , \"rf_contract\" : { \"model_id\" : \"urban_short_range\" } } Response Fields : Field Description optimal_azimuth Recommended direction from the evaluated 0°–350° sweep in 10° steps; compatibility field name, not a global guarantee propagation_reach_score Capped aggregate usable-ray reach score coverage_score Compatibility alias for propagation_reach_score demand_score POI/commercial/critical-building score residential_score Residential-density demand score hit_demand_buildings Unique demand-weighted buildings reached by the winning sector data_quality Summary of local demand metadata quality Status Codes : 200 OK - Optimization succeeded 400 Bad Request - Invalid parameters 413 Content Too Large - Request body exceeds 1 MiB 429 Too Many Requests - RF worker capacity is busy 500 Internal Server Error - Optimization error Performance : Latency depends on rays, radius, geometry and machine resources; no universal response-time guarantee is established. The single-sector sweep uses at most four workers, also bounded by available CPUs; this is not a measured speedup claim. HTTP write timeout: 120 seconds; protected RF computation retains its separate 60-second default deadline."
     },
     {
       "page": "API Reference",
@@ -419,7 +407,7 @@
       "page": "API Reference",
       "title": "Evaluate Field Measurements",
       "url": "./api.html#evaluate-field-measurements",
-      "text": "Endpoint : POST /api/measurements/evaluate Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model. At least one selected cell is required. With 20 or more valid predictions, at least five distinct 50 m spatial areas, and a campaign span of at least 100 m, the response includes a robust global bias suggestion evaluated through deterministic spatially blocked five-fold validation. { \"network_tech\" : \"5g\" , \"towers\" : [ { \"id\" : \"101\" , \"tower_lon\" : 32.85 , \"tower_lat\" : 39.92 , \"azimuth\" : 90 } ] , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"beam_width\" : 120 , \"bandwidth_mhz\" : 100 , \"noise_figure_db\" : 7 , \"calibration_provenance\" : { \"campaign_id\" : \"ankara-drive-2026-07\" , \"source\" : \"drive-test.csv\" , \"collected_at\" : \"2026-07-01T10:00:00Z\" , \"expires_at\" : \"2027-01-01T00:00:00Z\" }, \"samples\" : [ { \"id\" : \"drive-001\" , \"lon\" : 32.851 , \"lat\" : 39.921 , \"technology\" : \"5g\" , \"rsrp_dbm\" : -91 , \"cell_id\" : \"101\" } ] } The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE/RMSE/bias, P50/P90 absolute error, per-cell and per-band summaries, distance/obstruction bins, robust MAD outliers, fold metrics, a 95% median-adjustment interval, and provenance/expiration state. It also returns request defaults, effective per-cell profiles, and the canonical RF contract. The correction remains a single dB path-loss offset, not full propagation calibration. When applied, send calibration_offset_db with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is -40 to 40 dB."
+      "text": "Endpoint : POST /api/measurements/evaluate Compares one to 5,000 compatible user-supplied 4G or 5G RSRP points with the deterministic model using one to six selected Cells. Measurement6 is independent of normal network8; reduce the measurement selection before submitting. This is a diagnostic capability, not evidence that the released RF model has passed field validation. With 20 or more valid predictions, at least five distinct 50 m spatial areas, and a campaign span of at least 100 m, the response includes a robust global bias suggestion evaluated through deterministic spatially blocked five-fold validation. { \"network_tech\" : \"5g\" , \"towers\" : [ { \"id\" : \"101\" , \"tower_lon\" : 32.85 , \"tower_lat\" : 39.92 , \"azimuth\" : 90 } ] , \"radius_m\" : 400 , \"frequency_ghz\" : 28 , \"tx_power_dbm\" : 30 , \"beam_width\" : 120 , \"bandwidth_mhz\" : 100 , \"noise_figure_db\" : 7 , \"calibration_provenance\" : { \"campaign_id\" : \"ankara-drive-2026-07\" , \"source\" : \"drive-test.csv\" , \"collected_at\" : \"2026-07-01T10:00:00Z\" , \"expires_at\" : \"2027-01-01T00:00:00Z\" }, \"samples\" : [ { \"id\" : \"drive-001\" , \"lon\" : 32.851 , \"lat\" : 39.921 , \"technology\" : \"5g\" , \"rsrp_dbm\" : -91 , \"cell_id\" : \"101\" } ] } The response separates valid predictions, no-signal samples, and requested-cell mismatches before reporting residual MAE/RMSE/bias, P50/P90 absolute error, per-cell and per-band summaries, distance/obstruction bins, robust MAD outliers, fold metrics, a 95% median-adjustment interval, and provenance/expiration state. It also returns request defaults, effective per-cell profiles, and the canonical RF contract. The correction remains a single dB path-loss offset, not full propagation calibration. When applied, send calibration_offset_db with compatible simulation, network, interference, recommendation, and measurement requests. Accepted range is -40 to 40 dB."
     },
     {
       "page": "API Reference",
@@ -503,7 +491,7 @@
       "page": "API Reference",
       "title": "Capacity and Rate Limiting",
       "url": "./api.html#capacity-and-rate-limiting",
-      "text": "The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with MAX_CONCURRENT_RF_REQUESTS , MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT , and RF_REQUESTS_PER_MINUTE . Rejected requests return 429 with Retry-After , RateLimit-Limit , RateLimit-Remaining , and RateLimit-Reset . Client identity comes from the socket peer unless TRUSTED_PROXIES explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget. The budget counts protected HTTP POST attempts before handler validation and computation, including failures, cancellations, and concurrency/capacity rejections. Requests already denied for exhausted budget do not add a charge or extend the window. The 60-second fixed window starts on the client's first protected request; reset occurs on the next request at or after expiry. RateLimit-Reset and budget-exhaustion Retry-After are relative seconds rounded up to expiry. Concurrency/capacity rejections use Retry-After: 1 . All protected RF routes share the ordinary bucket, including independent tools, exports and experiments. Internal optimizer evaluations do not consume HTTP units. With advertised bounded-followups-v1 , network Evaluate/Optimize roots prebook their exact sequential map children using up to eight shared verified units, then ordinary units. Normal eight-Cell Evaluate/maps uses ordinary1/extra8; a full cycle uses11/8; cycle→Optimize/maps uses20/8 across28 successful calls. Standalone Simulate remains ordinary and attempt21 is denied. Capabilities are one-time, input-bound, owner-bound, finite, and carried holds survive reset. Legacy clients remain ordinary-only. See the validated policy implementation and product promotion. Set RF_REQUEST_TIMEOUT_SECONDS to bound compute time; the default is 60 seconds and expiration returns 504 . Keep RF concurrency aligned with CPU allocation and set RF_API_KEY for any non-private backend hop. GET /api/buildings has a separate transfer budget because each cache miss serves the complete dataset. Its conditional 304 responses bypass transfer admission, while uncached responses return the same RateLimit-* and Retry-After headers as RF routes when applicable. Configure a gateway-level bandwidth budget for multi-replica or i"
+      "text": "The server allows two RF jobs globally but only one active job per client by default. A client also has a 20-request-per-minute budget. Configure these with MAX_CONCURRENT_RF_REQUESTS , MAX_CONCURRENT_RF_REQUESTS_PER_CLIENT , and RF_REQUESTS_PER_MINUTE . Rejected requests return 429 with Retry-After , RateLimit-Limit , RateLimit-Remaining , and RateLimit-Reset . Client identity comes from the socket peer unless TRUSTED_PROXIES explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget. The budget counts protected HTTP POST attempts before handler validation and computation, including failures, cancellations, and concurrency/capacity rejections. Requests already denied for exhausted budget do not add a charge or extend the window. The 60-second fixed window starts on the client's first protected request; reset occurs on the next request at or after expiry. RateLimit-Reset and budget-exhaustion Retry-After are relative seconds rounded up to expiry. Concurrency/capacity rejections use Retry-After: 1 . Clients should present a one-time approximate retry delay from that response; it is not a countdown, completion ETA or instruction to retry automatically. Clients behind one NAT/shared IP share this allowance, so another user can consume the remaining budget. Let active work finish and retry after the advertised delay; do not repeatedly submit while blocked. All protected RF routes share the ordinary bucket, including independent tools, exports and experiments. Internal optimizer evaluations do not consume HTTP units. With advertised bounded-followups-v1 , network Evaluate/Optimize roots prebook their exact sequential map children using up to eight shared verified units, then ordinary units. Normal eight-Cell Evaluate/maps uses ordinary1/extra8; a full cycle uses11/8; cycle→Optimize/maps uses20/8 across28 successful calls. Standalone Simulate remains ordinary and attempt21 is denied. Capabilities are one-time, input-bound, owner-bound, finite, and carried holds survive reset. Legacy clients remain ordinary-only. See the validated policy implementation and product promotion. Set RF_REQUEST_TIMEOUT_SECONDS to bound compute time; the default is 60 seconds and expiration returns 504 . Keep RF concurrency aligned with CPU allocation and set RF_API_KEY for "
     },
     {
       "page": "API Reference",
@@ -521,7 +509,7 @@
       "page": "API Reference",
       "title": "503 Service Unavailable",
       "url": "./api.html#503-service-unavailable",
-      "text": "Cause : Data not yet loaded at startup Solution : Wait 5-10 seconds and retry"
+      "text": "Cause : A required runtime dependency may be unavailable. Solution : Inspect /readyz and server logs, correct missing dependencies, and retry when readiness succeeds."
     },
     {
       "page": "API Reference",
@@ -611,13 +599,13 @@
       "page": "System Architecture",
       "title": "Evaluate or Optimize Network",
       "url": "./architecture.html#requests-heading",
-      "text": "Two to six selected cells Score plan Evaluation keeps supplied azimuths; optimization sweeps candidate directions and applies overlap penalties. Return summary Backend returns network score, demand coverage, overlap, and per-cell azimuth records. Render sequentially The frontend queues one /api/simulate call per selected cell to avoid RF-capacity collisions. Combine Ray collections merge client-side; Results selects the network evaluation or comparison view."
+      "text": "Two to eight selected Cells Score plan Evaluation keeps supplied azimuths; optimization sweeps candidate directions and applies overlap penalties. Return summary Backend returns network score, demand coverage, overlap, and per-cell azimuth records. Render sequentially The frontend queues one /api/simulate call per selected cell to avoid RF-capacity collisions. Combine Ray collections merge client-side; Results selects the network evaluation or comparison view."
     },
     {
       "page": "System Architecture",
       "title": "Analyze Interference",
       "url": "./architecture.html#requests-heading",
-      "text": "4G or 5G; two to six cells Bound surface Form the union of selected-cell coverage bounds and adapt spacing to keep surface samples bounded. Evaluate cells Apply sector/radius eligibility, FSPL, gain, wall loss, load, reuse channel, and receiver noise. Select and sum Strongest RSRP serves; co-channel interference and noise are added in linear power. Present Return SINR/RSRP/RSRQ/RSSI samples, demand impacts, percentiles, assumptions, and per-cell summaries."
+      "text": "4G or 5G; two to eight Cells Bound surface Form the union of selected-cell coverage bounds and adapt spacing to keep surface samples bounded. Evaluate cells Apply sector/radius eligibility, FSPL, gain, wall loss, load, reuse channel, and receiver noise. Select and sum Strongest RSRP serves; co-channel interference and noise are added in linear power. Present Return SINR/RSRP/RSRQ/RSSI samples, demand impacts, percentiles, assumptions, and per-cell summaries."
     },
     {
       "page": "System Architecture",
@@ -695,13 +683,13 @@
       "page": "System Architecture",
       "title": "Internet-facing boundary",
       "url": "./architecture.html#deployment-heading",
-      "text": "The API has no built-in authentication. Public deployments need a trusted reverse proxy or gateway for TLS, authentication, and external rate policy. Keep /healthz and /readyz available to probes Preserve the 120 second RF response window Do not expose the adapter directly without need"
+      "text": "The API has no built-in authentication. Public deployments need a trusted reverse proxy or gateway for TLS, authentication, and external rate policy. Keep /healthz and /readyz available to probes Keep the 120-second HTTP write timeout distinct from the 60-second RF computation deadline Do not expose the adapter directly without need"
     },
     {
       "page": "System Architecture",
       "title": "Model and trust boundaries",
       "url": "./architecture.html#limits-heading",
-      "text": "Architecture quality includes stating what the system does not claim. These limits apply to the current implementation and reports. RF Propagation limits No diffraction, reflection-heavy multipath, fast fading, sidelobes, MIMO beamforming gain, scheduling, adjacent-channel leakage, or uplink model. DB Data limits Static OSM/OpenCellID-derived geometry and synthetic demand can be incomplete or stale. Confidence is context, not calibration. KPI Measurement limits RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Uploaded field data validates residuals; its optional global bias correction is not full propagation calibration. OPS Operational limits No authentication, server-side project database, multi-user collaboration, or job queue is included. Project history is durable only in the current browser or an exported project file. Run the system Inspect the equations Review release history"
+      "text": "Architecture quality includes stating what the system does not claim. These limits apply to the current implementation and reports. RF Propagation limits No diffraction, reflection-heavy multipath, fast fading, sidelobes, MIMO beamforming gain, scheduling, adjacent-channel leakage, or uplink model. DB Data limits Static OSM/OpenCellID-derived geometry and synthetic demand can be incomplete or stale. Confidence is context, not calibration. KPI Measurement limits RSRP, SINR, RSRQ, RSSI, and coverage values remain deterministic planning estimates. Compatible uploaded data supports residual diagnostics; its optional scalar correction is not full propagation calibration. Measured real-world propagation accuracy is not yet established. OPS Operational limits No authentication, server-side project database, multi-user collaboration, or job queue is included. Project history is durable only in the current browser or an exported project file. Run the system Inspect the equations Review release history"
     },
     {
       "page": "Locked Estimator Validation",
@@ -1155,6 +1143,18 @@
     },
     {
       "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Reconcile current product, model, accuracy, optimization and performance claims with the released planning scope; clarify independent network8/Recommendation5/Measurement6 and portable-evidence limits. Repair five malformed OpenAPI Response Objects and enforce strict OpenAPI 3.1 validation with structural regression tests. Disclose Measurement Validation's six-Cell limit before submission, prevent out-of-scope requests, and use neutral residual-bias review wording. Present known RF Retry-After delays as recovery guidance without automatic retry or changes to request accounting."
+    },
+    {
+      "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Lead current documentation with a concrete baseline-to-recommendation planning task and classify current product docs separately from historical qualification, research and design evidence."
+    },
+    {
+      "page": "Changelog",
       "title": "0.12.1 - 2026-10-09",
       "url": "./changelog.html#0121---2026-10-09",
       "text": ""
@@ -1162,13 +1162,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed",
+      "url": "./changelog.html#changed-1",
       "text": "Refresh the README for 0.12.1 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Wait for imported projects to finish saving and keep narrow tool drawers within their viewport. Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities."
     },
     {
@@ -1198,13 +1198,13 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Make six-Cell result-bearing project exports importable using lossless columnar GeoJSON, retaining scientific results, Version provenance and independent imported identity mappings under bounded validation. Preserve newly saved immutable Version history when a concurrently queued autosave contains the previous Scenario, retaining the latest working draft. Persist Scenario Delete → Undo through captured callbacks and immediate reload by checking the latest workspace, restoring the active Scenario, and promptly committing writes on the reusable workspace database connection."
     },
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-1",
+      "url": "./changelog.html#changed-2",
       "text": "Export project file schema v3; continue importing valid v1/v2 files. Keep workspace schema v2, the 16 MiB file ceiling, and existing encoded JSON guards; add explicit 32 MiB / one-million-value decoded-content budgets."
     },
     {
@@ -1216,7 +1216,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-2",
+      "url": "./changelog.html#changed-3",
       "text": "Give network optimization a stable, quiet busy action and delayed inline search scope plus elapsed time, with truthful long-running feedback and unchanged requests, search behavior, results, and deadlines. Distinguish running network optimization from unavailable actions using a readable teal-accented surface, and compact its stable feedback reserve from 126 px to approximately 104 px."
     },
     {
@@ -1228,7 +1228,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Avoid retracing unchanged cells during network optimization with a bounded request-local cache of independent RF contributions; preserve the full search, scientific results, fingerprints and existing 60-second deadline. Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate → Interference → Re-evaluate workflow within the unchanged 20-request budget."
     },
     {
@@ -1246,13 +1246,13 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Reduce RF ray stroke density in both themes without changing colors, geometry or counts; correct shared dark Interference/diagnostic action variants and deliberate disabled styling while preserving readiness and light action appearance. Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives."
     },
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-3",
+      "url": "./changelog.html#changed-4",
       "text": "Use Alidade Smooth as the default light raster basemap after matched overlay/context evaluation; keep muted OpenStreetMap selectable in Layers and keep basemap choice outside RF and project state. Consolidate workspace typography, spacing, controls, panel headers, and stage menus; keep the primary Run/Evaluate action visible across tools and add relevant Results empty-state actions. Quiet the OSM basemap and available Cells, center selected Cell order labels, distinguish active/selected/inspected/focused markers, and simplify header status and stage badges without changing RF, optimization, request, or persistence semantics."
     },
     {
@@ -1270,7 +1270,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases."
     },
     {
@@ -1282,7 +1282,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-4",
+      "url": "./changelog.html#changed-5",
       "text": "Restructure workspace tools around clearer primary, secondary, and provenance details; add Plan > Scenarios, compact Run History list/detail, single-workflow RF Diagnostics research views, and denser optimization, Results, Data, Experiments, Building Entry, and Core Lab presentations without changing RF or persistence semantics. Replace full-list Cell browsing with explicit Network, Map area, and Search / Filter working sets; separate Cell detail editing, keep browse selection outside RF state, and add reviewed batch edits for three validated scalar fields."
     },
     {
@@ -1300,7 +1300,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
     },
     {
@@ -1342,13 +1342,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-5",
+      "url": "./changelog.html#changed-6",
       "text": "Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions. Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy coverage objective as propagation reach. Add lazy per-cell Pareto explanations that compare a selected solution with a single baseline-reverted counterfactual in the same target domain, preserving raw metric deltas, direction-aware interpretation, feasibility evidence, and priority-only score re-ranking. Redesign generated Markdown/HTML planning reports around network scope, authoritative recommendations, baseline/Pareto evidence, evaluated cell explanations, conditional interference summaries, and concise report-only maps. Clarify report priorities as relative 0–100 values, distinguish unconfigured hard constraints, humanize optimization-domain labels, and omit universally unavailable PCI columns. Add map-first RF display controls for received-power surfaces, scoped/hidden propagation rays, and independent selected-cell focus without launching new RF work."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-6",
+      "url": "./changelog.html#fixed-7",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -1366,13 +1366,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-6",
+      "url": "./changelog.html#changed-7",
       "text": "Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states. Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-7",
+      "url": "./changelog.html#fixed-8",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -1402,13 +1402,13 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-7",
+      "url": "./changelog.html#changed-8",
       "text": "Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations. Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports. Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules. Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected. Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors. Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window. Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-8",
+      "url": "./changelog.html#fixed-9",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -1426,7 +1426,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-9",
+      "url": "./changelog.html#fixed-10",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -1438,7 +1438,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-10",
+      "url": "./changelog.html#fixed-11",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -1462,13 +1462,13 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-11",
+      "url": "./changelog.html#fixed-12",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-8",
+      "url": "./changelog.html#changed-9",
       "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
     },
     {
@@ -4037,13 +4037,13 @@
       "page": "Deployment",
       "title": "Auto resource diagnostics",
       "url": "./deployment.html#auto-resource-diagnostics",
-      "text": "A.T.O.M automatically observes runtime CPU, Go scheduler and memory constraints once at startup for diagnostics and calibration. The startup log includes one structured Auto resource summary. Developers can inspect full JSON locally with docker exec atom-app ./server --resource-profile ; the one-shot command opens no HTTP listener. No machine-capacity diagnostics endpoint or product resource controls are added. Local diagnostic logs should stay with operators. Detection does not adapt RF admission or experiment settings: defaults remain 20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally and 1 per client, a 60-second RF deadline, six selected Cells and one experiment worker. This foundation establishes no automatic scaling or certified minimum or recommended hardware. See the foundation and measured calibration ."
+      "text": "A.T.O.M automatically observes runtime CPU, Go scheduler and memory constraints once at startup for diagnostics and calibration. The startup log includes one structured Auto resource summary. Developers can inspect full JSON locally with docker exec atom-app ./server --resource-profile ; the one-shot command opens no HTTP listener. No machine-capacity diagnostics endpoint or product resource controls are added. Local diagnostic logs should stay with operators. Detection does not adapt RF admission or experiment settings: defaults remain 20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally and 1 per client, a 60-second RF deadline, eight selected Cells (Recommendation max five; Measurement Validation max six) and one experiment worker. This foundation establishes no automatic scaling or certified minimum or recommended hardware. See the foundation and measured calibration ."
     },
     {
       "page": "Deployment",
       "title": "Qualified shipping-runtime W1 reference",
       "url": "./deployment.html#qualified-shipping-runtime-w1-reference",
-      "text": "The W1 shipping-runtime qualification names A as the minimum and B as the recommended W1 reference for A.T.O.M 0.11.0 , commit e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8 , shipping Go 1.26.6 , qualified 2026-10-05 UTC . A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy remains 20 attempts/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue 16. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations."
+      "text": "The W1 shipping-runtime qualification names A as the minimum and B as the recommended W1 reference for A.T.O.M 0.11.0 , commit e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8 , shipping Go 1.26.6 , qualified 2026-10-05 UTC . A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy retains 20 ordinary attempts plus eight bounded verified follow-ups/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, normal network eight Cells, Recommendation five, Measurement Validation six, experiment worker 1/queue 16. The historical W1 reference above remains a six-Cell study; the separate eight-Cell promotion has its own bounded Profile A evidence. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations."
     },
     {
       "page": "Deployment",
@@ -4061,7 +4061,7 @@
       "page": "Deployment",
       "title": "Health And Capacity",
       "url": "./deployment.html#health-and-capacity",
-      "text": "GET /healthz is process liveness and can succeed before the application is ready. GET /readyz requires valid data, loaded tower/building indexes, and the frontend bundle. Request bodies are limited to 1 MiB; oversized requests return 413 . Two RF jobs are admitted globally, but one client can run only one at a time by default. Each client also receives 20 expensive-route attempts per minute. Rejection returns 429 , Retry-After , and rate-budget headers. Fresh full-building-dataset responses are limited to two globally, one concurrently per client, and two per minute per client. A strong content-hash ETag and one-hour browser/shared-cache lifetime avoid retransferring the approximately 117 MB file; matching revalidations return 304 before download admission. Each expensive job has a 60-second computation deadline and uses no more than four workers. Ray, geometry, grid, measurement, and recommendation loops observe cancellation. Segmented-ray requests must satisfy rays × ceil(radius_m / 25) ≤ 25,000 ; a shared worker budget also prevents building-intersection splits from collecting or serializing more than 25,000 response features. HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle. Raise MAX_CONCURRENT_RF_REQUESTS or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget."
+      "text": "GET /healthz is process liveness and can succeed before the application is ready. GET /readyz requires valid data, loaded tower/building indexes, and the frontend bundle. Request bodies are limited to 1 MiB; oversized requests return 413 . Two RF jobs are admitted globally, but one client can run only one at a time by default. Each client also receives 20 expensive-route attempts per minute. Rejection returns 429 , Retry-After , and rate-budget headers. Fresh full-building-dataset responses are limited to two globally, one concurrently per client, and two per minute per client. A strong content-hash ETag and one-hour browser/shared-cache lifetime avoid retransferring the approximately 117 MB file; matching revalidations return 304 before download admission. Each expensive job has a 60-second computation deadline and uses no more than four workers. Ray, geometry, grid, measurement, and recommendation loops observe cancellation. Segmented-ray requests must satisfy rays × ceil(radius_m / 25) ≤ 25,000 ; a shared worker budget also prevents building-intersection splits from collecting or serializing more than 25,000 response features. HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle. Raise MAX_CONCURRENT_RF_REQUESTS or its per-client counterpart only after measuring CPU, memory, and tail latency with representative requests within the supported two-to-eight-Cell scope. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget."
     },
     {
       "page": "Deployment",
@@ -4193,7 +4193,7 @@
       "page": "Download and Use",
       "title": "Evaluate a cell cluster",
       "url": "./download.html#network-workflow",
-      "text": "1 Build the cluster Switch Setup to Network mode and select two to six towers. Numbered map badges preserve cluster order. 2 Evaluate or optimize Use Evaluate Network in the command bar, or Optimize Network from Propagation. 3 Compare evidence Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially. Workflow 03"
+      "text": "1 Build the cluster Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order. 2 Evaluate or optimize Use Evaluate Network in the command bar, or Optimize Network from Propagation. 3 Compare evidence Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially. Workflow 03"
     },
     {
       "page": "Download and Use",
@@ -4211,13 +4211,13 @@
       "page": "Download and Use",
       "title": "Save and compare scenarios",
       "url": "./download.html#project-workflow",
-      "text": "1 Name the project Use the project selector in the command bar and save a scenario after each meaningful run. 2 Compare two plans Open Results and Compare, then switch the map between A and B while reviewing KPI deltas. 3 Make it portable Export the versioned .atom-project.json file to preserve exact inputs, metadata, summaries, and recent layers. Workflow 06"
+      "text": "1 Name the project Use the project selector in the command bar and save a scenario after each meaningful run. 2 Compare two plans Open Results and Compare, then switch the map between A and B while reviewing KPI deltas. 3 Make it portable Export the bounded .atom-project.json file for retained Scenario inputs/results and provenance. Separate Run History, generated reports, coverage surfaces and view/Undo state are excluded; download reports separately. Workflow 06"
     },
     {
       "page": "Download and Use",
       "title": "Recommend and validate",
       "url": "./download.html#evidence-workflow",
-      "text": "1 Bound the search Draw an area for a 4G/5G network plan, then open Results and Candidates to rank known site records. 2 Preserve the baseline Apply an option as a new scenario, evaluate it, and run interference before considering it preferred. 3 Check field evidence Import RSRP CSV data in Data, inspect residuals, and review holdout error before applying any global bias correction."
+      "text": "1 Bound the search Select two to five existing 4G/5G Cells and draw an area, then open Results and Candidates to rank known planning records; site feasibility is not established. 2 Preserve the baseline Apply an option as a new scenario, evaluate it, and run interference before considering it preferred. 3 Check field evidence Select one to six Cells and import compatible RSRP CSV data in Data. Review residuals/holdouts before any explicit scalar correction; measured real-world propagation accuracy remains unestablished."
     },
     {
       "page": "Download and Use",
@@ -4229,7 +4229,7 @@
       "page": "Download and Use",
       "title": "Troubleshooting",
       "url": "./download.html#troubleshooting-heading",
-      "text": "Start with docker compose logs -f atom and /readyz ; they distinguish missing data from an API or browser issue. The backend reports invalid GeoJSON or never becomes ready Check data-pipeline/ankara_buildings.geojson . If it is a small text file containing a Git LFS pointer, run git lfs install and git lfs pull , then rebuild the container. Port 8080 or 5173 is already in use Stop the process or container using the port. For Docker, change the host side of the mapping in docker-compose.yml , for example 8081:8080 , and open the new host port. /healthz works but /readyz returns 503 The process is alive but a required runtime dependency is missing. Review the readiness JSON and logs for manifest/hash validation, building data, tower data, or the compiled frontend. Confirm Git LFS completed and rebuild after frontend changes. Docker exits or becomes slow during RF analysis Allocate at least 2 CPU cores and about 1 GB of memory to the main app. Allow more headroom when using the Core Lab profile or running repeated six-cell analyses. The API returns 429: RF analysis capacity is busy A.T.O.M admits two RF jobs by default to protect the host. Let the active run finish and retry after the response's Retry-After interval. Avoid launching optimization, interference, and repeated sector runs in parallel. The map is blank while controls and results still work The default OpenStreetMap tile layer needs network access. RF computation can still be local; confirm tile requests are not blocked, or configure a separate local tile service. SINR samples show no signal or approximately 0 dB No signal means no selected cell contributes at that point under the configured radius and beam geometry. Around 0 dB is expected where a serving cell and a co-channel interferer arrive at similar power; inspect the sample's serving and strongest-interferer fields."
+      "text": "Start with docker compose logs -f atom and /readyz ; they distinguish missing data from an API or browser issue. The backend reports invalid GeoJSON or never becomes ready Check data-pipeline/ankara_buildings.geojson . If it is a small text file containing a Git LFS pointer, run git lfs install and git lfs pull , then rebuild the container. Port 8080 or 5173 is already in use Stop the process or container using the port. For Docker, change the host side of the mapping in docker-compose.yml , for example 8081:8080 , and open the new host port. /healthz works but /readyz returns 503 The process is alive but a required runtime dependency is missing. Review the readiness JSON and logs for manifest/hash validation, building data, tower data, or the compiled frontend. Confirm Git LFS completed and rebuild after frontend changes. Docker exits or becomes slow during RF analysis The historical eight-Cell Profile A envelope used 2 CPUs and 4 GiB with Ankara2026.07, 120 rays, 400 m, 30 dBm, a 120° beam, 2.6/28 GHz and Go 1.26.6 Linux/arm64. Review the qualified workload and limits ; heavier settings, the Core Lab profile and other hardware or datasets need separate evidence. The API returns 429: RF analysis capacity is busy A.T.O.M admits two RF jobs by default to protect the host. Let the active run finish and retry after the response's Retry-After interval. Avoid launching optimization, interference, and repeated sector runs in parallel. The map is blank while controls and results still work The default OpenStreetMap tile layer needs network access. RF computation can still be local; confirm tile requests are not blocked, or configure a separate local tile service. SINR samples show no signal or approximately 0 dB No signal means no selected cell contributes at that point under the configured radius and beam geometry. Around 0 dB is expected where a serving cell and a co-channel interferer arrive at similar power; inspect the sample's serving and strongest-interferer fields."
     },
     {
       "page": "Download and Use",
@@ -5039,7 +5039,7 @@
       "page": "Frequently Asked Questions",
       "title": "Why did an RF request return 429?",
       "url": "./faq.html#why-did-an-rf-request-return-429",
-      "text": "A.T.O.M admits two RF jobs globally, one per client, and 20 expensive-route attempts per client each minute by default. Global capacity, per-client concurrency, or budget exhaustion returns 429 with Retry-After and rate-budget headers. Let active work finish or tune the corresponding limit cautiously."
+      "text": "A.T.O.M admits two RF jobs globally, one per client, and 20 expensive-route attempts per client each minute by default. Global capacity, per-client concurrency, or budget exhaustion returns 429 with Retry-After and rate-budget headers. Let active work finish and retry after the advertised delay. The UI presents known numeric delays without automatically retrying. The budget is scoped to ClientIP, so users behind one shared IP/NAT can consume each other's allowance; see API accounting details ."
     },
     {
       "page": "Frequently Asked Questions",
@@ -5147,7 +5147,7 @@
       "page": "Capabilities",
       "title": "Demand-Aware Planning",
       "url": "./features.html#demand-aware-planning",
-      "text": "Coverage gaps identify demand-building centroids that are inside a sector but below the service threshold. Demand scoring distinguishes POI and residential signals from empty geometry. Single-sector optimization performs a deterministic azimuth sweep. Network evaluation scores two to six selected cells using coverage, unique demand, and overlap. Network optimization coordinates selected-cell azimuths using selected objectives/weights, optional minimum coverage/demand and maximum-overlap constraints, feasibility violations, and an explained Pareto frontier. Tilt, power, and site selection are not silently adjusted."
+      "text": "Coverage gaps identify demand-building centroids that are inside a sector but below the service threshold. Demand scoring distinguishes POI and residential signals from empty geometry. Single-sector optimization performs a deterministic azimuth sweep. Network evaluation scores two to eight selected cells using coverage, unique demand, and overlap. Network optimization coordinates selected-cell azimuths using selected objectives/weights, optional minimum coverage/demand and maximum-overlap constraints, feasibility violations, and an explained Pareto frontier. Tilt, power, and site selection are not silently adjusted."
     },
     {
       "page": "Capabilities",
@@ -5169,15 +5169,15 @@
     },
     {
       "page": "Capabilities",
-      "title": "Candidate Site Recommendations",
-      "url": "./features.html#candidate-site-recommendations",
-      "text": "Uses unselected towers from the active dataset as candidate records. Restricts candidates to the user-drawn planning area. Prefilters at most 50 records by proximity to unmet demand and evaluates a bounded subset. Keeps existing selected-cell azimuths fixed and optimizes only the candidate in v1. Returns up to five deterministic options with recommended azimuth, marginal KPIs, score components, and reasons. Applies a recommendation as a new scenario without overwriting the baseline. Recommendations are RF planning options, not claims of rooftop availability, ownership, permitting, cost, or deployment approval. Candidate scoring intentionally excludes interference; analyze it after applying an option."
+      "title": "Candidate Cell Recommendations",
+      "url": "./features.html#candidate-cell-recommendations",
+      "text": "Uses unselected towers from the active dataset as candidate records. Restricts candidates to the user-drawn planning area. Prefilters at most 50 records by proximity to unmet demand and evaluates a bounded subset. Accepts up to five existing input Cells; keeps their azimuths fixed and optimizes only the candidate in v1. Returns up to five deterministic options with recommended azimuth, marginal KPIs, score components, and reasons. Applies a recommendation as a new scenario without overwriting the baseline. Recommendations are RF planning options, not claims of rooftop availability, ownership, permitting, cost, or deployment approval. Candidate scoring intentionally excludes interference; analyze it after applying an option."
     },
     {
       "page": "Capabilities",
       "title": "Measurement Validation",
       "url": "./features.html#measurement-validation",
-      "text": "Imports up to 5,000 CSV records with ID, longitude, latitude, technology, measured RSRP, and optional cell ID. Predicts RSRP at each measurement location using the active selected cells and RF assumptions. Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal count, and per-cell statistics. With at least 20 valid points, requires at least five distinct 50 m spatial areas spanning at least 100 m, then evaluates a robust global bias through deterministic spatially blocked five-fold validation. Reports per-cell and per-band residuals, residual-versus-distance and residual-versus-obstruction bins, robust MAD outliers, P50/P90 errors, a median-adjustment confidence interval, fold evidence, and provenance/expiration state. Applies correction only after explicit user confirmation and stores the profile with the project. Invalidates calibration when technology, frequency, model version, or dataset changes. This is global path-loss bias correction, not full propagation calibration."
+      "text": "Accepts one to six selected 4G/5G Cells, independently of normal network8 and Recommendation5 limits. Imports up to 5,000 CSV records with ID, longitude, latitude, technology, measured RSRP, and optional cell ID. Predicts RSRP at each measurement location using the active selected cells and RF assumptions. Reports residual GeoJSON, MAE, RMSE, mean/median bias, no-signal count, and per-cell statistics. With at least 20 valid points, requires at least five distinct 50 m spatial areas spanning at least 100 m, then evaluates a robust global bias through deterministic spatially blocked five-fold validation. Reports per-cell and per-band residuals, residual-versus-distance and residual-versus-obstruction bins, robust MAD outliers, P50/P90 errors, a median-adjustment confidence interval, fold evidence, and provenance/expiration state. Applies correction only after explicit user confirmation and stores the profile with the project. Invalidates calibration when technology, frequency, model version, or dataset changes. This is global path-loss bias correction, not full propagation calibration."
     },
     {
       "page": "Capabilities",
@@ -5301,27 +5301,27 @@
     },
     {
       "page": "Overview",
-      "title": "Understand the model. Run the system. Inspect every result.",
+      "title": "Compare a small urban Cell plan. Explain the recommendation.",
       "url": "./index.html#home-title",
-      "text": "A.T.O.M is a local-first telecom planning workspace for deterministic 4G LTE, 5G mmWave, and the 6G research profile at 140 GHz across Ankara. These docs explain how the focused workspace, Go RF engines, spatial data, interference model, and optional 5G Core path fit together. Run A.T.O.M locally Explore the architecture Current workspace: compact command bar, focused tools, persistent map, and contextual results."
+      "text": "A.T.O.M is a local-first deterministic urban RF planning and experimentation workspace. Configure a small Cell plan, evaluate a baseline, compare a bounded azimuth recommendation, inspect its assumptions, and export the evidence. Measured real-world propagation accuracy is not yet established. Run A.T.O.M locally Follow the first planning task Current workspace: compact command bar, focused tools, persistent map, and contextual results."
     },
     {
       "page": "Overview",
       "title": "Choose your starting point",
       "url": "./index.html#start-heading",
-      "text": "The documentation is organized around two questions: how the system works internally, and how to get from a fresh clone to a useful RF planning result. System design"
+      "text": "Start with one comparison: configure, evaluate, compare, explain and preserve the evidence. Use the architecture guide afterward to inspect how the system produces it. Installation and operation"
+    },
+    {
+      "page": "Overview",
+      "title": "Run your first baseline-to-recommendation comparison",
+      "url": "./index.html#start-heading",
+      "text": "Clone with Git LFS, start Docker Compose, configure two to eight Cells, evaluate and compare a bounded recommendation, then export evidence. Open download guide → System design"
     },
     {
       "page": "Overview",
       "title": "Trace data from the browser to the RF engines",
       "url": "./index.html#start-heading",
-      "text": "See component boundaries, request lifecycles, R-tree queries, worker limits, interference calculations, and 5G communication paths. Open architecture guide → Installation and operation"
-    },
-    {
-      "page": "Overview",
-      "title": "Download, start, and use the current application",
-      "url": "./index.html#start-heading",
-      "text": "Clone the Git LFS dataset, run Docker Compose, verify readiness, and complete sector, network, interference, and report workflows. Open download guide →"
+      "text": "See component boundaries, request lifecycles, R-tree queries, worker limits, interference calculations, and 5G communication paths. Open architecture guide →"
     },
     {
       "page": "Overview",
@@ -5333,13 +5333,13 @@
       "page": "Overview",
       "title": "Sector propagation",
       "url": "./index.html#capabilities-heading",
-      "text": "Samples a directional beam with FSPL, antenna gain, building intersections, and frequency-dependent cumulative wall loss. Rays, Rx power, range, gaps"
+      "text": "Estimates 2.6/28 GHz propagation with the deterministic urban UMa LOS/NLOS subset and explicit legacy fallback. The 140 GHz profile is research/reference only. Rays, Rx power, range, gaps"
     },
     {
       "page": "Overview",
       "title": "Demand optimization",
       "url": "./index.html#capabilities-heading",
-      "text": "Sweeps sector azimuths or selected-cell plans against POI demand, residential-density demand, and an overlap-aware network score. Before/after score and azimuths"
+      "text": "Recommends evaluated azimuths using POI/residential demand and reach objectives. Normal networks accept two to eight Cells; bounded search does not prove a global optimum. Before/after score and azimuths"
     },
     {
       "page": "Overview",
@@ -5357,7 +5357,7 @@
       "page": "Overview",
       "title": "Planning reports",
       "url": "./index.html#capabilities-heading",
-      "text": "Combines the active plan, RF evidence, interference assumptions, Core Lab state, comparisons, and map context for review. Print/PDF and Markdown"
+      "text": "Preserves the plan, assumptions, source Run and comparisons in separately downloaded reports. Portable projects contain bounded retained Scenario evidence, not every workspace artifact. Print/PDF and Markdown"
     },
     {
       "page": "Overview",
@@ -5369,7 +5369,7 @@
       "page": "Overview",
       "title": "Know the confidence boundary",
       "url": "./index.html#boundary-heading",
-      "text": "A.T.O.M is intentionally deterministic and inspectable. Its results support planning, education, and system evaluation; they do not replace calibrated propagation tools or field measurements. RF Local computation, explicit inputs Validated dataset packs are loaded into memory. Projects preserve exact requests, model versions, and dataset identity for repeatable comparisons. ! Planning estimate, not a measurement Fast fading, reflection-heavy multipath, multiple-edge diffraction, MIMO scheduling, vendor antenna diagrams, and uplink interference remain outside the model; the 2.5D path tool is an inspectable planning approximation."
+      "text": "A.T.O.M supports comparisons under explicit assumptions. Normal network8, Recommendation5 and Measurement6 are independent limits. Optional terrain/path-profile evidence does not modify canonical fast-network propagation; building entry estimates one representative facade, not complete indoor coverage. RF Local computation, explicit inputs Validated dataset packs are loaded into memory. Projects preserve exact requests, model versions, and dataset identity for repeatable comparisons. ! Planning estimate, not a measurement Measured real-world propagation accuracy is not yet established. Fast fading, canonical multipath, MIMO scheduling, measured/vendor antenna diagrams and uplink behavior remain outside the model. Standards-based subsets and operational qualification do not establish field accuracy."
     },
     {
       "page": "Overview",
@@ -5430,6 +5430,12 @@
       "title": "Appropriate Interpretation",
       "url": "./modeling-limits.html#appropriate-interpretation",
       "text": "Use A.T.O.M to compare configurations, find deterministic coverage gaps, understand co-channel relationships, inspect communication-path fallbacks, and communicate planning assumptions. Validate deployment decisions with calibrated propagation models, current operator data, spectrum assumptions, link-budget engineering, and field measurements."
+    },
+    {
+      "page": "Modeling Limits",
+      "title": "Field-accuracy status",
+      "url": "./modeling-limits.html#field-accuracy-status",
+      "text": "Measured real-world propagation accuracy is not yet established. The real Ankara pilot parsed 53,005 raw rows, but serving-state semantics remained unresolved and zero canonical observations were promoted. Exact transmitter/resource truth was unavailable; no defensible canonical MAE/RMSE resulted. The later serving-state reconciliation preserved that blocked decision. See current readiness and the semantics report . Input validation, deterministic regression, scientific hash equality, standards-based model subsets and frozen operational qualification address different evidence boundaries; none independently establishes measured RF accuracy. Suitable user CSV data can support residual diagnostics and an explicitly applied, holdout-checked scalar correction, which is not full propagation calibration."
     },
     {
       "page": "Modeling Limits",
@@ -5721,57 +5727,27 @@
     },
     {
       "page": "Reading Propagation Maps",
-      "title": "4G LTE Coverage (2.6 GHz)",
-      "url": "./visualization.html#4g-lte-coverage-26-ghz",
-      "text": ""
+      "title": "Stored band illustrations",
+      "url": "./visualization.html#stored-band-illustrations",
+      "text": "The images below illustrate band-dependent model outputs. Their complete request/model lineage is not embedded in the images, so they are not current benchmark or validation evidence. For a reproducible comparison, inspect a named Run and its model, inputs, dataset and current map legend."
     },
     {
       "page": "Reading Propagation Maps",
-      "title": "Characteristics",
-      "url": "./visualization.html#characteristics",
-      "text": "Wavelength : 11.5 cm Coverage Type : Wide-area with building penetration Penetration Loss : roughly +8 dB per wall crossing in the current LTE model Urban Canyon Effect : Moderate (signals reach side streets)"
+      "title": "4G LTE at 2.6 GHz",
+      "url": "./visualization.html#4g-lte-at-26-ghz",
+      "text": "The normal 2.6 GHz preset uses the deterministic urban UMa LOS/NLOS subset. A lower frequency can change estimated path loss under the configured assumptions; a colored outdoor ray does not establish indoor service or an application throughput level."
     },
     {
       "page": "Reading Propagation Maps",
-      "title": "Interpretation",
-      "url": "./visualization.html#interpretation",
-      "text": "The 4G simulation shows: 🟢 Green zones : Strong indoor coverage (-50 to -70 dBm) 🟡 Yellow zones : Moderate coverage (-70 to -90 dBm), usable for typical applications 🔴 Red zones : Marginal coverage (-90 to -110 dBm), possible dead zones Key Insight : Lower FSPL and the model's lower per-wall loss generally let 4G estimates extend farther than higher-frequency modes."
+      "title": "5G mmWave at 28 GHz",
+      "url": "./visualization.html#5g-mmwave-at-28-ghz",
+      "text": "The normal 28 GHz preset uses the same declared model family with its frequency and antenna inputs. Urban empirical NLOS does not receive an extra legacy wall-event penalty. Inspect the applied model and any explicit legacy fallback before comparing results."
     },
     {
       "page": "Reading Propagation Maps",
-      "title": "5G mmWave Coverage (28 GHz)",
-      "url": "./visualization.html#5g-mmwave-coverage-28-ghz",
-      "text": ""
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Characteristics",
-      "url": "./visualization.html#characteristics-1",
-      "text": "Wavelength : 1.07 cm Coverage Type : Directional, urban-specific hotspots Penetration Loss : roughly +30 dB per wall crossing in the current mmWave model Line-of-Sight Requirement : Often necessary for usable signal"
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Interpretation",
-      "url": "./visualization.html#interpretation-1",
-      "text": "The 5G visualization reveals: 🟢 Green zones : Excellent LOS coverage on main avenues 🟡 Yellow zones : Partial coverage after distance and wall-loss attenuation 🔴 Red zones : Deep urban canyons blocked by building walls Key Insight : 5G requires careful site placement to reach street-level users. Antenna orientation (azimuth) dramatically affects coverage."
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "6G Research Profile Coverage (140 GHz)",
-      "url": "./visualization.html#6g-research-profile-coverage-140-ghz",
-      "text": ""
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Characteristics",
-      "url": "./visualization.html#characteristics-2",
-      "text": "Wavelength : 2.14 mm (near-optical) Coverage Type : Ultra-localized comparative planning overlay Penetration Loss : roughly +80 dB per wall crossing in the current Sub-THz model Line-of-Sight Requirement : Mandatory for coverage"
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Interpretation",
-      "url": "./visualization.html#interpretation-2",
-      "text": "The 6G heatmap demonstrates: 🟢 Green zones : Only direct line-of-sight points 🟡 Yellow zones : Minimal; mostly absent 🔴 Red zones : Vast majority (blocked by buildings) Key Insight : The 140 GHz mode is a 6G research profile, not a standardized network-quality model. Its short-range result is useful for comparative planning and is not a deployment guarantee."
+      "title": "140 GHz research profile",
+      "url": "./visualization.html#140-ghz-research-profile",
+      "text": "The 140 GHz profile is research/reference only and retains a conservative attenuation heuristic. It is not a standardized or field-validated 6G service model. Ordinary radio-quality and measurement-validation workflows are unavailable for it."
     },
     {
       "page": "Reading Propagation Maps",
@@ -5783,43 +5759,25 @@
       "page": "Reading Propagation Maps",
       "title": "Algorithm Result",
       "url": "./visualization.html#algorithm-result",
-      "text": "This simulation shows the optimal antenna azimuth computed by A.T.O.M's sweep-and-score algorithm: Demand-aware score : POI demand, residential-density demand, and capped coverage tie-breakers guide azimuth selection Beam Width : 65° (typical 3-sector configuration) Optimization Runtime : ~250 ms"
+      "text": "This illustration shows a recommended direction from the single-sector discrete sweep, not proof of a global optimum: Demand-aware score : POI demand, residential-density demand, and capped coverage tie-breakers guide azimuth selection Beam Width : 65° (typical 3-sector configuration) Runtime : depends on the request, geometry and machine; this image is not a timing benchmark"
     },
     {
       "page": "Reading Propagation Maps",
       "title": "Interpretation",
-      "url": "./visualization.html#interpretation-3",
+      "url": "./visualization.html#interpretation",
       "text": "The auto-optimized placement achieves: ✅ Stronger demand-serving direction within distance constraints Stronger modeled coverage toward demand-weighted locations A reproducible azimuth recommendation from the configured sweep Key Insight : The optimizer consistently compares candidate azimuths using the same demand and coverage score. It does not predict live-network spectral efficiency."
     },
     {
       "page": "Reading Propagation Maps",
       "title": "Color Mapping Reference",
       "url": "./visualization.html#color-mapping-reference",
-      "text": "The map uses a display-only received-power palette. It is not a universal service-quality legend: receiver sensitivity is per effective cell, building service uses a separate -100 dBm threshold, and interference serviceability uses RSRP/SINR/RSRQ thresholds. Color Signal Range Quality Use Case 🟢 Green -50 to -70 dBm Excellent Voice, video, IoT 🟡 Yellow -70 to -90 dBm Good Voice, messaging 🔴 Red -90 to -110 dBm Poor Emergency services ⚫ Black Below the configured display floor Visually suppressed Presentation only; raw values remain in the API"
+      "text": "The map uses a display-only received-power palette. It is not a universal service-quality legend: receiver sensitivity is per effective cell, building service uses a separate -100 dBm threshold, and interference serviceability uses RSRP/SINR/RSRQ thresholds. Read the live legend for the selected metric and Run. Stronger received power is not a guarantee of indoor, emergency, voice or data service. RSRP/SINR/RSRQ serviceability, receiver sensitivity, building service and display floors use different declared rules."
     },
     {
       "page": "Reading Propagation Maps",
-      "title": "Comparative Analysis: 4G vs 5G vs 6G",
-      "url": "./visualization.html#comparative-analysis-4g-vs-5g-vs-6g",
-      "text": ""
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Coverage Radius Comparison",
-      "url": "./visualization.html#coverage-radius-comparison",
-      "text": "Technology Typical Radius Max Radius 4G 2 km (urban) 5 km (rural) 5G mmWave 300 m planning preset 1 km configurable limit 6G research profile 50 m (illustrative) 200 m (illustrative planning bound)"
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Site Density Required",
-      "url": "./visualization.html#site-density-required",
-      "text": "Technology Sites per km² Building Density Impact 4G 1-3 Low (penetrates walls) 5G mmWave 10-50 High (requires LOS) 6G research profile 100+ Very High (illustrative street-level comparison)"
-    },
-    {
-      "page": "Reading Propagation Maps",
-      "title": "Urban Canyon Effect",
-      "url": "./visualization.html#urban-canyon-effect",
-      "text": "The visualizations clearly show how building density impacts each band: 4G : Usually produces the broadest modeled reach because FSPL and wall loss are lower. 5G : Produces more localized, directional modeled coverage at 28 GHz. 6G : Is a research profile with the strongest configured wall attenuation and shortest illustrative planning range."
+      "title": "Comparing bands and plans",
+      "url": "./visualization.html#comparing-bands-and-plans",
+      "text": "Keep selected Cells, input assumptions, dataset and result lineage visible. Compare baseline/recommendation metrics and sample locations under those conditions. Do not infer a universal coverage radius or required site density from a band label or these stored pictures; no such deployment-sizing result has been validated here."
     },
     {
       "page": "Reading Propagation Maps",
@@ -5831,13 +5789,13 @@
       "page": "Reading Propagation Maps",
       "title": "Ray Segments",
       "url": "./visualization.html#ray-segments",
-      "text": "Each heatmap consists of thousands of ray segments (colored lines): Start Point : Transmitter antenna End Point : Coverage measurement location (typically 20-100 meters away) Color : Represents signal strength at that distance/direction Direction : Shows propagation pattern and antenna beam orientation"
+      "text": "Each heatmap consists of thousands of ray segments (colored lines): Start Point : Transmitter antenna End Point : Modeled sample position along the configured path Color : Represents signal strength at that distance/direction Direction : Shows propagation pattern and antenna beam orientation"
     },
     {
       "page": "Reading Propagation Maps",
       "title": "Reading the Visualization",
       "url": "./visualization.html#reading-the-visualization",
-      "text": "Green Zones : Primary coverage area; reliable service expected Yellow Zones : Secondary coverage; service possible with optimal conditions Red Zones : Marginal; not recommended for primary coverage No Color : Below the visual display floor or outside the rendered evidence; this does not mean the API value is NoData or that it fails every serviceability rule"
+      "text": "Green segments : Stronger modeled received power according to the current legend Yellow segments : Intermediate modeled power; inspect the relevant receiver and service thresholds Red segments : Weaker modeled power; inspect the sample and applied model before interpreting service No Color : Below the visual display floor or outside the rendered evidence; this does not mean the API value is NoData or that it fails every serviceability rule"
     },
     {
       "page": "Reading Propagation Maps",
@@ -5849,7 +5807,7 @@
       "page": "Reading Propagation Maps",
       "title": "RF Map Display Controls",
       "url": "./visualization.html#rf-map-display-controls",
-      "text": "The compact RF control group keeps the two evidence types independent: Signal toggles the received-power surface when one has been generated. Rays toggles the segmented propagation paths without issuing another RF request. All cells , Selected cell , and Hidden control which network ray paths are rendered. The Selected cell choice uses the separate Focus cell selector; it does not change the Pareto solution selected in Results. Until a surface is generated, rays are the visible RF fallback. Generating a received-power surface switches the map to a surface-first view and hides rays; rays can be enabled again for diagnostic inspection. Presentation-only changes are local browser state. RF settings, cell selection, or a new optimization/evaluation clear incompatible rendered evidence and require the normal explicit analysis action. The raster uses the fast sector FSPL/antenna/wall model. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile. Enable Viewport buildings in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh."
+      "text": "The compact RF control group keeps the two evidence types independent: Signal toggles the received-power surface when one has been generated. Rays toggles the segmented propagation paths without issuing another RF request. All cells , Selected cell , and Hidden control which network ray paths are rendered. The Selected cell choice uses the separate Focus cell selector; it does not change the Pareto solution selected in Results. Until a surface is generated, rays are the visible RF fallback. Generating a received-power surface switches the map to a surface-first view and hides rays; rays can be enabled again for diagnostic inspection. Presentation-only changes are local browser state. RF settings, cell selection, or a new optimization/evaluation clear incompatible rendered evidence and require the normal explicit analysis action. The raster uses the resolved canonical propagation and antenna profile: the urban subset at 2.6/28 GHz, or the explicitly selected/reported legacy or research behavior. It does not inherit optional terrain, gas, rain, vegetation, or diffraction settings from a point-to-point profile. Enable Viewport buildings in Layers at zoom 12 or closer to request only the visible building footprints. Fill hue reflects normalized material when known and opacity increases modestly with inferred height; it is contextual geometry, not a surveyed 3D mesh."
     },
     {
       "page": "Reading Propagation Maps",
@@ -5861,13 +5819,13 @@
       "page": "Reading Propagation Maps",
       "title": "Interactive Exploration",
       "url": "./visualization.html#interactive-exploration",
-      "text": "In the web interface, you can: 🔄 Adjust antenna azimuth and watch coverage rotate 📊 Switch between frequency bands and compare 🧭 Focus a selected network cell while keeping the planning selection unchanged 🗺️ Switch between the received-power surface and diagnostic ray evidence 🎯 Toggle beamforming on/off to see impact 📍 Click points to see exact signal strength (Rx dBm)"
+      "text": "In the web interface, you can: 🔄 Adjust antenna azimuth and watch coverage rotate 📊 Switch between frequency bands and compare 🧭 Focus a selected network cell while keeping the planning selection unchanged 🗺️ Switch between the received-power surface and diagnostic ray evidence Inspect configured analytic antenna directions and patterns; array/codebook beamforming is not implemented 📍 Inspect sampled modeled received power (Rx dBm) and its source Run"
     },
     {
       "page": "Reading Propagation Maps",
       "title": "Validation Boundary",
       "url": "./visualization.html#validation-boundary",
-      "text": "A.T.O.M has not been calibrated against operator drive tests or UE measurements. Treat Rx, RSRP, SINR, and RSRQ values as planning estimates for scenario comparison, then validate deployment decisions with calibrated tools and field measurements."
+      "text": "Measured real-world propagation accuracy is not yet established. A.T.O.M has not been calibrated against operator drive tests or UE measurements. Treat Rx, RSRP, SINR, and RSRQ values as planning estimates for scenario comparison, then validate deployment decisions with calibrated tools and field measurements."
     },
     {
       "page": "Reading Propagation Maps",

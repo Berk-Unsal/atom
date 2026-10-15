@@ -106,8 +106,8 @@ technologies." />
       <li><a href="#interference-and-radio-quality"
       id="toc-interference-and-radio-quality">Interference And Radio
       Quality</a></li>
-      <li><a href="#candidate-site-recommendations"
-      id="toc-candidate-site-recommendations">Candidate Site
+      <li><a href="#candidate-cell-recommendations"
+      id="toc-candidate-cell-recommendations">Candidate Cell
       Recommendations</a></li>
       <li><a href="#measurement-validation"
       id="toc-measurement-validation">Measurement Validation</a></li>
@@ -318,8 +318,8 @@ sector but below the service threshold.</li>
 geometry.</li>
 <li>Single-sector optimization performs a deterministic azimuth
 sweep.</li>
-<li>Network evaluation scores two to six selected cells using coverage,
-unique demand, and overlap.</li>
+<li>Network evaluation scores two to eight selected cells using
+coverage, unique demand, and overlap.</li>
 <li>Network optimization coordinates selected-cell azimuths using
 selected objectives/weights, optional minimum coverage/demand and
 maximum-overlap constraints, feasibility violations, and an explained
@@ -398,7 +398,7 @@ exclusion reasons, and deterministic scenario fingerprints.</li>
 <p>Near-equal co-channel powers can correctly produce SINR near
 <code>0 dB</code>; the Inspector explains this and other no-signal or
 poor-quality states.</p>
-<h2 id="candidate-site-recommendations">Candidate Site
+<h2 id="candidate-cell-recommendations">Candidate Cell
 Recommendations</h2>
 <ul>
 <li>Uses unselected towers from the active dataset as candidate
@@ -406,8 +406,8 @@ records.</li>
 <li>Restricts candidates to the user-drawn planning area.</li>
 <li>Prefilters at most 50 records by proximity to unmet demand and
 evaluates a bounded subset.</li>
-<li>Keeps existing selected-cell azimuths fixed and optimizes only the
-candidate in v1.</li>
+<li>Accepts up to five existing input Cells; keeps their azimuths fixed
+and optimizes only the candidate in v1.</li>
 <li>Returns up to five deterministic options with recommended azimuth,
 marginal KPIs, score components, and reasons.</li>
 <li>Applies a recommendation as a new scenario without overwriting the
@@ -419,6 +419,8 @@ Candidate scoring intentionally excludes interference; analyze it after
 applying an option.</p>
 <h2 id="measurement-validation">Measurement Validation</h2>
 <ul>
+<li>Accepts one to six selected 4G/5G Cells, independently of normal
+network8 and Recommendation5 limits.</li>
 <li>Imports up to 5,000 CSV records with ID, longitude, latitude,
 technology, measured RSRP, and optional cell ID.</li>
 <li>Predicts RSRP at each measurement location using the active selected

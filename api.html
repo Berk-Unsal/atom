@@ -221,8 +221,8 @@ metadata in <code>model</code></li>
 <li><code>POST /api/recommend-sites</code> returns a baseline plus
 ranked candidate records and GeoJSON</li>
 <li><code>POST /api/measurements/evaluate</code> returns residual
-GeoJSON, subgroup diagnostics, uncertainty, and spatially validated bias
-guidance</li>
+GeoJSON, subgroup diagnostics, uncertainty, and eligibility-gated
+spatial holdout bias review</li>
 <li><code>/api/processes/batch-experiment</code> and
 <code>/api/jobs/{jobID}</code> expose asynchronous experiment execution,
 progress, results, and cancellation</li>
@@ -1277,8 +1277,12 @@ zero values remain explicit: for example,
 <h3 id="optimize-antenna-placement">Optimize Antenna Placement</h3>
 <p><strong>Endpoint</strong>:
 <code>POST /api/optimize-azimuth</code></p>
-<p>Automatically find the optimal antenna azimuth for maximum
-coverage.</p>
+<p>Recommend an azimuth from 36 evaluated 10-degree directions using
+unique POI demand and residential-demand scores plus capped usable-ray
+reach. Other radio inputs remain fixed. The compatibility field
+<code>optimal_azimuth</code> identifies the highest-scoring evaluated
+direction, not a global optimum or a maximum continuous-area coverage
+guarantee.</p>
 <p><strong>Request Body</strong>:</p>
 <div class="sourceCode" id="cb21"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
@@ -1355,7 +1359,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb21-1"><a href=
 <p><strong>Response</strong>:</p>
 <div class="sourceCode" id="cb22"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;optimal_azimuth&quot;</span><span class="fu">:</span> <span class="dv">42</span><span class="fu">,</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;optimal_azimuth&quot;</span><span class="fu">:</span> <span class="dv">40</span><span class="fu">,</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;propagation_reach_score&quot;</span><span class="fu">:</span> <span class="fl">18320.5</span><span class="fu">,</span></span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;coverage_score&quot;</span><span class="fu">:</span> <span class="fl">18320.5</span><span class="fu">,</span></span>
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;demand_score&quot;</span><span class="fu">:</span> <span class="dv">140000</span><span class="fu">,</span></span>
@@ -1375,7 +1379,8 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href=
 <tbody>
 <tr>
 <td><code>optimal_azimuth</code></td>
-<td>Recommended antenna direction (0-360°)</td>
+<td>Recommended direction from the evaluated 0°–350° sweep in 10° steps;
+compatibility field name, not a global guarantee</td>
 </tr>
 <tr>
 <td><code>propagation_reach_score</code></td>
@@ -1413,9 +1418,12 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href=
 </ul>
 <p><strong>Performance</strong>:</p>
 <ul>
-<li>Typical response time: 3-5 seconds</li>
-<li>Parallelization: Up to four workers per RF request</li>
-<li>Server write timeout: 120 seconds</li>
+<li>Latency depends on rays, radius, geometry and machine resources; no
+universal response-time guarantee is established.</li>
+<li>The single-sector sweep uses at most four workers, also bounded by
+available CPUs; this is not a measured speedup claim.</li>
+<li>HTTP write timeout: 120 seconds; protected RF computation retains
+its separate 60-second default deadline.</li>
 </ul>
 <h3 id="evaluate-or-optimize-a-network">Evaluate Or Optimize A
 Network</h3>
@@ -1503,7 +1511,11 @@ than weighted composite score; changing priorities can re-rank the
 stored feasible frontier without another RF evaluation when those
 metrics are available. Up to 25 feasible non-dominated evaluated azimuth
 sets are returned. This version adjusts azimuth only.</p>
-<p>The default optimizer remains the legacy two-pass coordinate search.
+<p>The default optimizer remains the bounded legacy two-pass coordinate
+search (<code>72 × Cell count + 2</code>, or 578 proposals for eight
+Cells). It recommends a discovered feasible azimuth configuration and
+does not prove global optimality. Compatibility <code>optimal_*</code>
+fields retain their names and refer to evaluated candidates.
 <code>POST /api/optimize-network</code> accepts the explicit opt-in
 <code>search_policy: "deterministic_multistart_coordinate_v1"</code>,
 with optional <code>max_search_passes</code> (default <code>8</code>)
@@ -1682,11 +1694,14 @@ after applying a candidate.</p>
 <h3 id="evaluate-field-measurements">Evaluate Field Measurements</h3>
 <p><strong>Endpoint</strong>:
 <code>POST /api/measurements/evaluate</code></p>
-<p>Compares one to 5,000 measured 4G or 5G RSRP points with the
-deterministic model. At least one selected cell is required. With 20 or
-more valid predictions, at least five distinct 50 m spatial areas, and a
-campaign span of at least 100 m, the response includes a robust global
-bias suggestion evaluated through deterministic spatially blocked
+<p>Compares one to 5,000 compatible user-supplied 4G or 5G RSRP points
+with the deterministic model using one to six selected Cells.
+Measurement6 is independent of normal network8; reduce the measurement
+selection before submitting. This is a diagnostic capability, not
+evidence that the released RF model has passed field validation. With 20
+or more valid predictions, at least five distinct 50 m spatial areas,
+and a campaign span of at least 100 m, the response includes a robust
+global bias suggestion evaluated through deterministic spatially blocked
 five-fold validation.</p>
 <div class="sourceCode" id="cb27"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
@@ -1989,7 +2004,12 @@ window starts on the client's first protected request; reset occurs on
 the next request at or after expiry. <code>RateLimit-Reset</code> and
 budget-exhaustion <code>Retry-After</code> are relative seconds rounded
 up to expiry. Concurrency/capacity rejections use
-<code>Retry-After: 1</code>.</p>
+<code>Retry-After: 1</code>. Clients should present a one-time
+approximate retry delay from that response; it is not a countdown,
+completion ETA or instruction to retry automatically. Clients behind one
+NAT/shared IP share this allowance, so another user can consume the
+remaining budget. Let active work finish and retry after the advertised
+delay; do not repeatedly submit while blocked.</p>
 <p>All protected RF routes share the ordinary bucket, including
 independent tools, exports and experiments. Internal optimizer
 evaluations do not consume HTTP units. With advertised
@@ -2028,8 +2048,11 @@ deployments.</p>
 <hr />
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="503-service-unavailable">503 Service Unavailable</h3>
-<p><strong>Cause</strong>: Data not yet loaded at startup</p>
-<p><strong>Solution</strong>: Wait 5-10 seconds and retry</p>
+<p><strong>Cause</strong>: A required runtime dependency may be
+unavailable.</p>
+<p><strong>Solution</strong>: Inspect <code>/readyz</code> and server
+logs, correct missing dependencies, and retry when readiness
+succeeds.</p>
 <h3 id="400-bad-request">400 Bad Request</h3>
 <p><strong>Cause</strong>: Invalid parameter values</p>
 <p><strong>Solution</strong>: Check parameter types and ranges in

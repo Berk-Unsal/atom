@@ -102,6 +102,10 @@ The adapter is available only to the Compose service network and runs as a non-r
 
 The five most recently used scenarios retain complete map layers. Older scenarios keep settings and summaries and may require a rerun.
 
+### First useful planning decision
+
+Compare a small urban baseline with a bounded azimuth recommendation: configure Cells → evaluate → inspect propagation/interference → optimize → compare/explain → preserve/export. The sections below follow that loop. Measured real-world propagation accuracy is not yet established; use the result to compare declared assumptions, not to approve a deployment.
+
 ### Build A Cell Inventory
 
 1. Open **Inventory** to search or select the active local cells.
@@ -140,7 +144,7 @@ Legacy Setup/Propagation values supply defaults when a cell has no explicit over
 3. Choose exactly two scenarios to review RF, optimization, interference, demand, and communication-path deltas where available.
 4. Use the A/B map switch to inspect one scenario surface at a time, or promote either side to the active plan.
 
-### Candidate Site Recommendations
+### Candidate Cell Recommendations
 
 1. Use 4G or 5G Network mode and select two to five existing cells.
 2. Draw the planning area on the map.
@@ -153,11 +157,15 @@ Candidate records come from the active tower dataset and do not imply site avail
 ### Validate Against Measurements
 
 1. Prepare a CSV with `id`, `longitude`, `latitude`, `technology`, `rsrp_dbm`, and optional `cell_id` columns. `lon`, `lat`, and `rsrp` aliases are also accepted.
-2. Open **Data**, import up to 5,000 4G or 5G rows, and evaluate them against the selected cells.
+2. Select one to six 4G/5G Cells, open **Data**, import up to 5,000 compatible rows, and evaluate residuals. Measurement6 is independent of normal network8; the UI prevents a seven/eight-Cell measurement submission.
 3. Inspect residual points and review MAE, RMSE, median bias, and per-cell statistics.
 4. With at least 20 valid samples, review holdout error before explicitly applying the suggested global bias correction.
 
 Applied correction is stored in the project and recorded in reports. It is a global bias adjustment, not full propagation calibration.
+
+### Keep the right evidence
+
+Working drafts autosave in this browser. **Save version** records immutable inputs; a retained Run is execution evidence. **Export** downloads bounded Scenario/Version/embedded Run project evidence and retained Scenario artifacts, not the separate Run History database, generated reports, coverage surfaces or view/Undo state. Download reports separately. Existing 16 MiB encoded and 32 MiB / one-million-node decoded guards still apply; large ray-bearing projects can be rejected. See [Portable Project Format](project-format.html).
 
 ### Build Or Switch Dataset Packs
 

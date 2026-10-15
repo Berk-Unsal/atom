@@ -311,7 +311,7 @@ docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
         <section class="workflow" aria-labelledby="network-workflow">
           <div class="workflow-name"><span>Workflow 02</span><h3 id="network-workflow">Evaluate a cell cluster</h3></div>
           <div class="workflow-steps">
-            <div class="workflow-step"><span>1</span><strong>Build the cluster</strong><p>Switch Setup to Network mode and select two to six towers. Numbered map badges preserve cluster order.</p></div>
+            <div class="workflow-step"><span>1</span><strong>Build the cluster</strong><p>Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order.</p></div>
             <div class="workflow-step"><span>2</span><strong>Evaluate or optimize</strong><p>Use Evaluate Network in the command bar, or Optimize Network from Propagation.</p></div>
             <div class="workflow-step"><span>3</span><strong>Compare evidence</strong><p>Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially.</p></div>
           </div>
@@ -340,16 +340,16 @@ docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
           <div class="workflow-steps">
             <div class="workflow-step"><span>1</span><strong>Name the project</strong><p>Use the project selector in the command bar and save a scenario after each meaningful run.</p></div>
             <div class="workflow-step"><span>2</span><strong>Compare two plans</strong><p>Open Results and Compare, then switch the map between A and B while reviewing KPI deltas.</p></div>
-            <div class="workflow-step"><span>3</span><strong>Make it portable</strong><p>Export the versioned <code>.atom-project.json</code> file to preserve exact inputs, metadata, summaries, and recent layers.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Make it portable</strong><p>Export the bounded <code>.atom-project.json</code> file for retained Scenario inputs/results and provenance. Separate Run History, generated reports, coverage surfaces and view/Undo state are excluded; download reports separately.</p></div>
           </div>
         </section>
 
         <section class="workflow" aria-labelledby="evidence-workflow">
           <div class="workflow-name"><span>Workflow 06</span><h3 id="evidence-workflow">Recommend and validate</h3></div>
           <div class="workflow-steps">
-            <div class="workflow-step"><span>1</span><strong>Bound the search</strong><p>Draw an area for a 4G/5G network plan, then open Results and Candidates to rank known site records.</p></div>
+            <div class="workflow-step"><span>1</span><strong>Bound the search</strong><p>Select two to five existing 4G/5G Cells and draw an area, then open Results and Candidates to rank known planning records; site feasibility is not established.</p></div>
             <div class="workflow-step"><span>2</span><strong>Preserve the baseline</strong><p>Apply an option as a new scenario, evaluate it, and run interference before considering it preferred.</p></div>
-            <div class="workflow-step"><span>3</span><strong>Check field evidence</strong><p>Import RSRP CSV data in Data, inspect residuals, and review holdout error before applying any global bias correction.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Check field evidence</strong><p>Select one to six Cells and import compatible RSRP CSV data in Data. Review residuals/holdouts before any explicit scalar correction; measured real-world propagation accuracy remains unestablished.</p></div>
           </div>
         </section>
       </section>
@@ -397,7 +397,7 @@ docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
           </details>
           <details>
             <summary>Docker exits or becomes slow during RF analysis</summary>
-            <div class="faq-answer"><p>Allocate at least 2 CPU cores and about 1 GB of memory to the main app. Allow more headroom when using the Core Lab profile or running repeated six-cell analyses.</p></div>
+            <div class="faq-answer"><p>The historical eight-Cell Profile A envelope used 2 CPUs and 4 GiB with Ankara2026.07, 120 rays, 400 m, 30 dBm, a 120° beam, 2.6/28 GHz and Go 1.26.6 Linux/arm64. Review the <a href="./eight-cell-product-cap-promotion.html">qualified workload and limits</a>; heavier settings, the Core Lab profile and other hardware or datasets need separate evidence.</p></div>
           </details>
           <details>
             <summary>The API returns 429: RF analysis capacity is busy</summary>

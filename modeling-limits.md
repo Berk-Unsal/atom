@@ -128,6 +128,12 @@ Network responses intentionally expose separate score representations. `stats.ne
 
 Use A.T.O.M to compare configurations, find deterministic coverage gaps, understand co-channel relationships, inspect communication-path fallbacks, and communicate planning assumptions. Validate deployment decisions with calibrated propagation models, current operator data, spectrum assumptions, link-budget engineering, and field measurements.
 
+## Field-accuracy status
+
+Measured real-world propagation accuracy is not yet established. The real Ankara pilot parsed 53,005 raw rows, but serving-state semantics remained unresolved and zero canonical observations were promoted. Exact transmitter/resource truth was unavailable; no defensible canonical MAE/RMSE resulted. The later serving-state reconciliation preserved that blocked decision. See [current readiness](concept-6a1-readiness.json) and [the semantics report](concept-6a1-2-serving-state-semantics.html).
+
+Input validation, deterministic regression, scientific hash equality, standards-based model subsets and frozen operational qualification address different evidence boundaries; none independently establishes measured RF accuracy. Suitable user CSV data can support residual diagnostics and an explicitly applied, holdout-checked scalar correction, which is not full propagation calibration.
+
 ## Related References
 
 - [System architecture](./architecture.html)

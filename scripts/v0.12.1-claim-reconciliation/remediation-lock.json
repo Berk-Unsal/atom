@@ -1,0 +1,165 @@
+{
+  "objective": "v0.12.1 Claim Reconciliation + API Contract Repair",
+  "baseline": {
+    "utc": "2026-10-15T10:57:43.534818+00:00",
+    "branch": "main",
+    "head": "e84210dda6fb282474eda4e935f50c598fad7b34",
+    "version": "0.12.1",
+    "initial_status": "?? docs/v0.12.1-post-release-product-scientific-audit.json\n?? docs/v0.12.1-post-release-product-scientific-audit.md\n?? scripts/v0.12.1-post-release-audit/",
+    "freeze_status": "?? docs/v0.12.1-post-release-product-scientific-audit.json\n?? docs/v0.12.1-post-release-product-scientific-audit.md\n?? scripts/v0.12.1-claim-reconciliation/\n?? scripts/v0.12.1-post-release-audit/",
+    "diff_stat": ""
+  },
+  "source_groups": {
+    "rf_science": {
+      "files": 107,
+      "sha256": "985ad85371e722ad7a6abeb3d80bea4d608b7a6b44000583d1376dddb0ae2f6d"
+    },
+    "optimization_search": {
+      "files": 24,
+      "sha256": "08c4b7ac586ffb1729d5b886e26c6f6a60ebadb13b867158eece950c0bf744c7"
+    },
+    "request_budget_policy": {
+      "files": 9,
+      "sha256": "5d0ce037a311749d8c9fc2afa6ba75908e4eda28e126ba0903d769f1b86d6174"
+    },
+    "persistence": {
+      "files": 40,
+      "sha256": "8ab42d386502d8449c8ffb8fdd5676278a9884ffbf629b1bd0beabb33e637de1"
+    },
+    "resource_admission": {
+      "files": 13,
+      "sha256": "7252812d9294bb89553f44dd8bfe01986b7ae26a6189d3a78a3e9a6108aeba72"
+    },
+    "backend": {
+      "files": 172,
+      "sha256": "32d173ddc369dcaae2d829b8282ca0318f353e52d40f9bd336b67588544bdd4e"
+    },
+    "frontend": {
+      "files": 218,
+      "sha256": "8621029024bcde78bffe3fb86e39913716e99ee45d6425d3b042142b92d95cb6"
+    },
+    "openapi": {
+      "files": 1,
+      "sha256": "2aa64c0841a4be5564536ee9fd64c869b157b4da31fe047e5291f173f1426e7f"
+    },
+    "public_docs": {
+      "files": 1054,
+      "sha256": "39d372b4bcf8ab98ef247870a9f86115729c31c3015c9c4084b1cf4261886bfd"
+    },
+    "audit_evidence": {
+      "files": 45,
+      "sha256": "b73acf1cf3b977ee2e65db6c5f8fa662d5867910d9dccd00f5cf20fbc51ef1ce"
+    }
+  },
+  "allowed_surfaces": {
+    "current_docs": [
+      "README.md",
+      "CHANGELOG.md",
+      "docs/overview.md",
+      "docs/algorithms.md",
+      "docs/api.md",
+      "docs/architecture.md",
+      "docs/features.md",
+      "docs/modeling-limits.md",
+      "docs/getting-started.md",
+      "docs/index.md",
+      "docs/index.html",
+      "docs/architecture.html",
+      "docs/download.html",
+      "docs/faq.md",
+      "docs/project-format.md",
+      "docs/visualization.md",
+      "docs/deployment.md",
+      "docs/contributing.md"
+    ],
+    "contract_validation": [
+      "docs/openapi.yaml",
+      "docs/validate_docs.py",
+      "docs/requirements.in",
+      "docs/requirements.txt",
+      "docs/validate_openapi.py",
+      "docs/validate_openapi_test.py",
+      "docs/validate_claims.py",
+      "docs/validate_claims_test.py",
+      "docs/classify_docs.py",
+      "docs/doc-sources.json",
+      ".github/workflows/quality.yml"
+    ],
+    "frontend_copy_and_prechecks": [
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/App.test.jsx",
+      "frontend-react/src/App.workflow.test.jsx",
+      "frontend-react/src/components/WorkspaceChrome.jsx",
+      "frontend-react/src/components/WorkspaceChrome.test.jsx",
+      "frontend-react/src/utils/apiClient.js",
+      "frontend-react/src/utils/apiClient.test.js",
+      "frontend-react/src/utils/measurementScope.js",
+      "frontend-react/src/utils/measurementScope.test.js",
+      "frontend-react/src/utils/rfRecoveryMessage.js",
+      "frontend-react/src/utils/rfRecoveryMessage.test.js",
+      "frontend-react/src/components/ControlPanel.jsx",
+      "frontend-react/src/components/ControlPanel.test.jsx"
+    ],
+    "bounded_browser_tests": [
+      "frontend-react/e2e/docs-theme.spec.js",
+      "frontend-react/e2e/workspace.spec.js",
+      "frontend-react/e2e/claim-reconciliation.spec.js"
+    ],
+    "derived_docs": "Only generated HTML corresponding to approved current Markdown, generated changelog.html/search-index.json/app-theme.css if deterministic build requires it; historical output must remain identical.",
+    "screenshot": "A real captured light workspace asset/reference may replace stale hero content; no synthetic image and no historical asset overwrite.",
+    "deliverables": [
+      "docs/v0.12.1-claim-reconciliation.md",
+      "docs/v0.12.1-claim-reconciliation.json",
+      "scripts/v0.12.1-claim-reconciliation/"
+    ]
+  },
+  "request_sha256": "946a01d947b91596282fd0bcaebff49fc52f0497c084194a2241524e4ef59642",
+  "authoritative_audit_sha256": "64030fe9c836e5445e61a818d24d0fd6345736c8b0b556adf6da237e5106c121",
+  "selected_findings": [
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P10",
+    "P13",
+    "P14",
+    "P15"
+  ],
+  "additional_explicit_scope": [
+    "first-use story",
+    "portable project and draft/Version/export wording",
+    "current/historical classification",
+    "strict contract and conceptual claim regressions"
+  ],
+  "immutable": [
+    "All backend/core-adapter source and tests",
+    "RF math/classifiers/models/antenna/receiver/terrain/measurement/calibration/scientific JSON/fingerprints",
+    "search/objectives/Pareto",
+    "policy/generated policy/budget/caps/concurrency/deadline/worker/queue",
+    "persistence implementation/guards/schemas",
+    "resource admission/Auto/estimator",
+    "all historical audit/qualification/research/internal-design evidence including prior untracked audit artifacts",
+    "VERSION/package version metadata remains0.12.1; recommend0.12.2after gates"
+  ],
+  "quality_gates": [
+    "backend normal/race/vet",
+    "frontend full tests/lint/build",
+    "strict OpenAPI3.1 plus invalid-structure regression fixtures",
+    "docs build/validation/internal links/classification/claim regressions",
+    "version/generated-policy consistency",
+    "scientific/operational/historical invariance",
+    "git diff --check"
+  ],
+  "verdicts": {
+    "A": "Claim boundary reconciled",
+    "B": "Claims mostly reconciled; non-blocking debt remains",
+    "C": "Scientific claim defect remains",
+    "D": "Contract/workflow defect remains",
+    "E": "Invalid/insufficient"
+  },
+  "method": "Source identity and semantic invariance; actual structural OpenAPI repair; representative API JSON/schema comparison where feasible; no operational requalification unless forbidden source changes, then STOP.",
+  "freeze_policy": "Lock is immutable. Approved docs/UI/error-presentation/precheck/validation changes only; no release/tag/push or roadmap features."
+}

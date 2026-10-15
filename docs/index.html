@@ -83,15 +83,15 @@
     <section class="page-hero home-hero" aria-labelledby="home-title">
       <div>
         <span class="hero-label">Planning-grade RF documentation</span>
-        <h1 id="home-title">Understand the model. Run the system. Inspect every result.</h1>
+        <h1 id="home-title">Compare a small urban Cell plan. Explain the recommendation.</h1>
         <p>
-          A.T.O.M is a local-first telecom planning workspace for deterministic 4G LTE, 5G mmWave,
-          and the 6G research profile at 140 GHz across Ankara. These docs explain how the focused
-          workspace, Go RF engines, spatial data, interference model, and optional 5G Core path fit together.
+          A.T.O.M is a local-first deterministic urban RF planning and experimentation workspace.
+          Configure a small Cell plan, evaluate a baseline, compare a bounded azimuth recommendation,
+          inspect its assumptions, and export the evidence. Measured real-world propagation accuracy is not yet established.
         </p>
         <div class="hero-actions">
           <a class="button primary" href="./download.html">Run A.T.O.M locally</a>
-          <a class="button" href="./architecture.html">Explore the architecture</a>
+          <a class="button" href="./download.html#network-workflow">Follow the first planning task</a>
         </div>
       </div>
       <figure class="hero-preview">
@@ -105,22 +105,22 @@
       <div class="section-heading">
         <h2 id="start-heading">Choose your starting point</h2>
         <p>
-          The documentation is organized around two questions: how the system works internally,
-          and how to get from a fresh clone to a useful RF planning result.
+          Start with one comparison: configure, evaluate, compare, explain and preserve the evidence.
+          Use the architecture guide afterward to inspect how the system produces it.
         </p>
       </div>
       <div class="task-links">
+        <a class="task-link" href="./download.html">
+          <span class="task-type">Installation and operation</span>
+          <h3>Run your first baseline-to-recommendation comparison</h3>
+          <p>Clone with Git LFS, start Docker Compose, configure two to eight Cells, evaluate and compare a bounded recommendation, then export evidence.</p>
+          <strong>Open download guide &rarr;</strong>
+        </a>
         <a class="task-link" href="./architecture.html">
           <span class="task-type">System design</span>
           <h3>Trace data from the browser to the RF engines</h3>
           <p>See component boundaries, request lifecycles, R-tree queries, worker limits, interference calculations, and 5G communication paths.</p>
           <strong>Open architecture guide &rarr;</strong>
-        </a>
-        <a class="task-link" href="./download.html">
-          <span class="task-type">Installation and operation</span>
-          <h3>Download, start, and use the current application</h3>
-          <p>Clone the Git LFS dataset, run Docker Compose, verify readiness, and complete sector, network, interference, and report workflows.</p>
-          <strong>Open download guide &rarr;</strong>
         </a>
       </div>
     </section>
@@ -136,12 +136,12 @@
       <div class="feature-ledger">
         <article class="feature-row">
           <h3>Sector propagation</h3>
-          <p>Samples a directional beam with FSPL, antenna gain, building intersections, and frequency-dependent cumulative wall loss.</p>
+          <p>Estimates 2.6/28 GHz propagation with the deterministic urban UMa LOS/NLOS subset and explicit legacy fallback. The 140 GHz profile is research/reference only.</p>
           <span class="feature-output">Rays, Rx power, range, gaps</span>
         </article>
         <article class="feature-row">
           <h3>Demand optimization</h3>
-          <p>Sweeps sector azimuths or selected-cell plans against POI demand, residential-density demand, and an overlap-aware network score.</p>
+          <p>Recommends evaluated azimuths using POI/residential demand and reach objectives. Normal networks accept two to eight Cells; bounded search does not prove a global optimum.</p>
           <span class="feature-output">Before/after score and azimuths</span>
         </article>
         <article class="feature-row">
@@ -156,7 +156,7 @@
         </article>
         <article class="feature-row">
           <h3>Planning reports</h3>
-          <p>Combines the active plan, RF evidence, interference assumptions, Core Lab state, comparisons, and map context for review.</p>
+          <p>Preserves the plan, assumptions, source Run and comparisons in separately downloaded reports. Portable projects contain bounded retained Scenario evidence, not every workspace artifact.</p>
           <span class="feature-output">Print/PDF and Markdown</span>
         </article>
       </div>
@@ -203,8 +203,9 @@
       <div class="section-heading">
         <h2 id="boundary-heading">Know the confidence boundary</h2>
         <p>
-          A.T.O.M is intentionally deterministic and inspectable. Its results support planning,
-          education, and system evaluation; they do not replace calibrated propagation tools or field measurements.
+          A.T.O.M supports comparisons under explicit assumptions. Normal network8, Recommendation5
+          and Measurement6 are independent limits. Optional terrain/path-profile evidence does not modify
+          canonical fast-network propagation; building entry estimates one representative facade, not complete indoor coverage.
         </p>
       </div>
       <div class="split-content">
@@ -219,7 +220,7 @@
           <span class="info-icon" aria-hidden="true">!</span>
           <div>
             <strong>Planning estimate, not a measurement</strong>
-            <p>Fast fading, reflection-heavy multipath, multiple-edge diffraction, MIMO scheduling, vendor antenna diagrams, and uplink interference remain outside the model; the 2.5D path tool is an inspectable planning approximation.</p>
+            <p>Measured real-world propagation accuracy is not yet established. Fast fading, canonical multipath, MIMO scheduling, measured/vendor antenna diagrams and uplink behavior remain outside the model. Standards-based subsets and operational qualification do not establish field accuracy.</p>
           </div>
         </div>
       </div>

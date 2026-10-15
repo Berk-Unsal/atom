@@ -87,7 +87,7 @@ Yes. The [API Reference](api.html) and downloadable [OpenAPI 3.1 specification](
 
 ### Why did an RF request return 429?
 
-A.T.O.M admits two RF jobs globally, one per client, and 20 expensive-route attempts per client each minute by default. Global capacity, per-client concurrency, or budget exhaustion returns `429` with `Retry-After` and rate-budget headers. Let active work finish or tune the corresponding limit cautiously.
+A.T.O.M admits two RF jobs globally, one per client, and 20 expensive-route attempts per client each minute by default. Global capacity, per-client concurrency, or budget exhaustion returns `429` with `Retry-After` and rate-budget headers. Let active work finish and retry after the advertised delay. The UI presents known numeric delays without automatically retrying. The budget is scoped to ClientIP, so users behind one shared IP/NAT can consume each other's allowance; see [API accounting details](api.html#capacity-and-rate-limiting).
 
 ### What request limits apply?
 

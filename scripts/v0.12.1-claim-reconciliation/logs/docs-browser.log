@@ -1,0 +1,49 @@
+
+> ankara-5g-raytracer-frontend@0.12.1 test:e2e
+> playwright test e2e/docs-theme.spec.js --workers=2
+
+[WebServer] (node:53257) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 24 tests using 2 workers
+
+(node:53262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53261) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-1440] › e2e/docs-theme.spec.js:86:1 › docs initialize before styles and recover corrupt preferences (223ms)
+  ✓   3 [desktop-1440] › e2e/docs-theme.spec.js:107:1 › docs work with denied storage and unavailable matchMedia (308ms)
+  ✓   2 [desktop-1440] › e2e/docs-theme.spec.js:56:1 › docs toggle appearance and follow shared System with matching previews (774ms)
+  ✓   4 [desktop-1440] › e2e/docs-theme.spec.js:123:1 › docs synchronize appearance with app tabs and storage clearing (785ms)
+  ✓   6 [desktop-1440] › e2e/docs-theme.spec.js:188:1 › sun and moon switch supports keyboard and persists explicit choices (229ms)
+(node:53297) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [desktop-1024] › e2e/docs-theme.spec.js:56:1 › docs toggle appearance and follow shared System with matching previews (692ms)
+  ✓   8 [desktop-1024] › e2e/docs-theme.spec.js:86:1 › docs initialize before styles and recover corrupt preferences (144ms)
+  ✓   9 [desktop-1024] › e2e/docs-theme.spec.js:107:1 › docs work with denied storage and unavailable matchMedia (237ms)
+  ✓  10 [desktop-1024] › e2e/docs-theme.spec.js:123:1 › docs synchronize appearance with app tabs and storage clearing (826ms)
+  ✓  11 [desktop-1024] › e2e/docs-theme.spec.js:142:1 › docs retain responsive controls, search, navigation and code in both themes (2.0s)
+  ✓  12 [desktop-1024] › e2e/docs-theme.spec.js:188:1 › sun and moon switch supports keyboard and persists explicit choices (223ms)
+(node:53319) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [tablet-768] › e2e/docs-theme.spec.js:56:1 › docs toggle appearance and follow shared System with matching previews (663ms)
+  ✓   5 [desktop-1440] › e2e/docs-theme.spec.js:142:1 › docs retain responsive controls, search, navigation and code in both themes (6.3s)
+  ✓  14 [tablet-768] › e2e/docs-theme.spec.js:86:1 › docs initialize before styles and recover corrupt preferences (144ms)
+(node:53334) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  16 [tablet-768] › e2e/docs-theme.spec.js:107:1 › docs work with denied storage and unavailable matchMedia (343ms)
+  ✓  15 [tablet-768] › e2e/docs-theme.spec.js:123:1 › docs synchronize appearance with app tabs and storage clearing (809ms)
+  ✓  18 [tablet-768] › e2e/docs-theme.spec.js:188:1 › sun and moon switch supports keyboard and persists explicit choices (292ms)
+(node:53360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  19 [mobile-390] › e2e/docs-theme.spec.js:56:1 › docs toggle appearance and follow shared System with matching previews (674ms)
+  ✓  20 [mobile-390] › e2e/docs-theme.spec.js:86:1 › docs initialize before styles and recover corrupt preferences (160ms)
+  ✓  21 [mobile-390] › e2e/docs-theme.spec.js:107:1 › docs work with denied storage and unavailable matchMedia (265ms)
+  ✓  17 [tablet-768] › e2e/docs-theme.spec.js:142:1 › docs retain responsive controls, search, navigation and code in both themes (2.1s)
+(node:53374) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  22 [mobile-390] › e2e/docs-theme.spec.js:123:1 › docs synchronize appearance with app tabs and storage clearing (538ms)
+  ✓  24 [mobile-390] › e2e/docs-theme.spec.js:188:1 › sun and moon switch supports keyboard and persists explicit choices (250ms)
+  ✓  23 [mobile-390] › e2e/docs-theme.spec.js:142:1 › docs retain responsive controls, search, navigation and code in both themes (2.1s)
+
+  24 passed (13.1s)

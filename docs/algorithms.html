@@ -461,19 +461,17 @@ intersections are processed in distance order.</p>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">((</span>d1 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d1 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d2 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span> <span class="op">&amp;&amp;</span></span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>           <span class="op">((</span>d3 <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span>d3 <span class="op">&lt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> d4 <span class="op">&gt;</span> <span class="dv">0</span><span class="op">))</span></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Complexity</strong>: O(log n) per ray thanks to R-Tree
-spatial indexing.</p>
+<p><strong>Query cost</strong>: the R-tree prunes non-overlapping bounds
+before polygon tests. Cost depends on tree overlap, returned candidates
+and geometry; it is not a universal logarithmic-time guarantee.</p>
 <hr />
 <h2 id="spatial-indexing-r-tree">Spatial Indexing: R-Tree</h2>
 <h3 id="why-r-tree">Why R-Tree?</h3>
-<p>RF simulations require millions of queries:</p>
-<ul>
-<li><strong>Naive approach</strong> (linear scan): O(n) per query ×
-90,000 rays = 1+ billion operations</li>
-<li><strong>R-Tree approach</strong> (spatial index): O(log n) per query
-× 90,000 rays = 1+ million operations</li>
-<li><strong>Speedup</strong>: 1000× faster</li>
-</ul>
+<p>RF evaluation repeats spatial queries. A linear scan tests every
+footprint; the R-tree first selects overlapping bounds and then checks
+candidate geometry. Candidate counts and runtime depend on the dataset
+and queried paths. This is an implementation description, not a measured
+speedup claim.</p>
 <h3 id="r-tree-structure">R-Tree Structure</h3>
 <p>An R-Tree organizes rectangles (bounding boxes) in a balanced
 tree:</p>
@@ -507,8 +505,8 @@ tree:</p>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    traverse<span class="op">(</span>rtree<span class="op">.</span>Root<span class="op">)</span></span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> candidates</span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Result</strong>: Typically 5-20 building candidates per ray
-(vs 12,000 total buildings).</p>
+<p><strong>Result</strong>: a path-dependent candidate set. Counts are
+workload evidence, not a fixed property of the index.</p>
 <hr />
 <h2 id="sector-eligibility">Sector Eligibility</h2>
 <h3 id="hard-sector-model">Hard Sector Model</h3>
@@ -536,14 +534,17 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb10-1"><a href="#cb
 <p>Samples outside the configured sector or radius do not contribute.
 Configured antenna gain is applied separately in the link budget; the
 diagram's zero value means zero relative preset attenuation at
-boresight. Version 1 does not model sidelobes or a continuous vendor
-antenna diagram.</p>
+boresight. Compatibility sector presets use hard eligibility; omni and
+the optional single-element reference have their separately documented
+full-azimuth behavior. These are analytic patterns, not vendor antenna
+diagrams.</p>
 <hr />
 <h2 id="deterministic-optimization-sweep--score-algorithm">Deterministic
 Optimization: Sweep &amp; Score Algorithm</h2>
 <h3 id="problem-statement">Problem Statement</h3>
-<p><strong>Find</strong>: The antenna azimuth that best serves
-demand-weighted coverage</p>
+<p><strong>Find</strong>: The recommended azimuth among 36 evaluated
+10-degree directions, using POI demand and residential-demand scores
+plus capped usable-ray reach as a tie-break component.</p>
 <p><strong>Constraints</strong>:</p>
 <ul>
 <li>Distance range: 25 m to 5 km</li>
@@ -574,69 +575,66 @@ class="sourceCode go"><code class="sourceCode go"><span id="cb11-1"><a href="#cb
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
 <span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Coverage is capped and used as a tie-breaker</span></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        coverageTieBreaker <span class="op">:=</span> <span class="fl">0.0</span></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>            coverageTieBreaker <span class="op">+=</span> min<span class="op">(</span>ray<span class="op">.</span>distance<span class="op">,</span> <span class="dv">500</span><span class="op">)</span> <span class="op">/</span> <span class="dv">500</span> <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        score <span class="op">:=</span> demandScore <span class="op">+</span> residentialScore <span class="op">+</span> coverageTieBreaker</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track best</span></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> score <span class="op">&gt;</span> bestScore <span class="op">{</span></span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>            bestScore <span class="op">=</span> score</span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>            bestAzimuth <span class="op">=</span> azimuth</span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bestAzimuth</span>
-<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h3 id="complexity-analysis">Complexity Analysis</h3>
-<ul>
-<li><strong>Loop iterations</strong>: 360° / 10° = 36</li>
-<li><strong>Per iteration</strong>:
-<ul>
-<li>Ray tracing: O(90,000 rays × log n intersections) ~1 second</li>
-<li>Coverage calculation: O(90,000)</li>
-</ul></li>
-<li><strong>Total time</strong>: ~36 seconds (naive)</li>
-<li><strong>Optimized time</strong>: ~250 ms (with parallelization)</li>
-</ul>
-<h3 id="parallelization">Parallelization</h3>
-<p>Go's Goroutines enable <strong>embarrassingly parallel</strong>
-optimization:</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create worker pool</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Job <span class="kw">struct</span> <span class="op">{</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> Result <span class="kw">struct</span> <span class="op">{</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    azimuth <span class="dt">float64</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    coverage <span class="dt">float64</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Dispatch all azimuths to workers</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>jobs <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Job<span class="op">,</span> <span class="dv">36</span><span class="op">)</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>results <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> Result<span class="op">,</span> <span class="dv">36</span><span class="op">)</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">// 4 workers process in parallel</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> w <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> w <span class="op">&lt;=</span> <span class="dv">4</span><span class="op">;</span> w<span class="op">++</span> <span class="op">{</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">go</span> worker<span class="op">(</span>jobs<span class="op">,</span> results<span class="op">)</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> azimuth <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> azimuth <span class="op">&lt;</span> <span class="dv">360</span><span class="op">;</span> azimuth <span class="op">+=</span> <span class="dv">10</span> <span class="op">{</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    jobs <span class="op">&lt;-</span> Job<span class="op">{</span>azimuth<span class="op">}</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co">// Collect results</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;=</span> <span class="dv">36</span><span class="op">;</span> i<span class="op">++</span> <span class="op">{</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> <span class="op">&lt;-</span>results</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> result<span class="op">.</span>coverage <span class="op">&gt;</span> bestCoverage <span class="op">{</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>        bestCoverage <span class="op">=</span> result<span class="op">.</span>coverage</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        bestAzimuth <span class="op">=</span> result<span class="op">.</span>azimuth</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Result</strong>: 4× speedup on quad-core machine.</p>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Usable ray reach contributes a capped planning score</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        reachScore <span class="op">:=</span> <span class="fl">0.0</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        reachCap <span class="op">:=</span> min<span class="op">(</span>request<span class="op">.</span>radius_m<span class="op">,</span> <span class="dv">500</span><span class="op">)</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> ray in rays <span class="op">{</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>            reachScore <span class="op">+=</span> min<span class="op">(</span>ray<span class="op">.</span>distance<span class="op">,</span> reachCap<span class="op">)</span> <span class="op">/</span> reachCap <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        score <span class="op">:=</span> demandScore <span class="op">+</span> residentialScore <span class="op">+</span> reachScore</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Track best</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> score <span class="op">&gt;</span> bestScore <span class="op">{</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>            bestScore <span class="op">=</span> score</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>            bestAzimuth <span class="op">=</span> azimuth</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bestAzimuth</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="search-scope-and-runtime-evidence">Search scope and runtime
+evidence</h3>
+<p>The single-sector sweep evaluates 36 directions from 0° through 350°.
+For each direction, it sums unique POI demand weight × 10,000, unique
+residential demand × 10,000, and per-ray usable reach capped at
+<code>min(radius_m, 500 m)</code> and normalized to 100 per ray. These
+are demand proxies and a reach component, not a continuous-area coverage
+percentage. The chosen direction has the highest combined score among
+those evaluated; ties preserve the established deterministic order. The
+compatibility field <code>optimal_azimuth</code> means this bounded
+recommendation, not a global optimum over arbitrary angles or radio
+parameters.</p>
+<p>The sector implementation uses at most four workers, bounded by
+available CPUs and candidate count. This does not establish a
+proportional speedup or a general latency promise.</p>
+<p>A separate <a
+href="./network-optimization-deadline-audit.html">historical network
+optimization audit</a> records an affected <strong>six-Cell, 28
+GHz</strong> Ankara request at <strong>120 rays, 400 m, 30 dBm and a
+120° beam</strong>, using legacy two-pass search, default priorities and
+no positive radio-quality objective. In the recorded Go 1.26.6
+Linux/arm64 Docker controls on an Apple M4 host (10 logical CPUs,
+GOMAXPROCS=10, no container CPU/memory quota), uncached request times
+were approximately <strong>94.7–112.7 s</strong>, versus corrected
+isolated controls of <strong>6.72–6.76 s</strong>. The first uncached
+run overlapped host measurements; these small samples are descriptive,
+not population latency guarantees.</p>
+<p>All <strong>434 network proposals</strong> remained. The scorer still
+requested <strong>2,604 independent Cell contributions</strong>, but
+request-local reuse reduced expensive work to <strong>180 misses plus
+2,424 hits</strong>; two selected IDs had identical locations/profiles.
+Removal of repeated RF contribution work was the demonstrated
+implementation change. Worker counts and scheduling were unchanged.
+There is no controlled factorial percentage split for caching versus
+concurrency. These are admitted-request measurements, excluding the full
+browser journey, dataset startup and later map refreshes; request-local
+reuse starts fresh on each request. OS/runtime warm state and other
+workloads can affect timing. No universal speedup, eight-Cell latency or
+current-hardware guarantee follows.</p>
+<p>Network optimization is also bounded: the default two-pass coordinate
+search proposes <code>72 × Cell count + 2</code> evaluations, or
+<strong>578 proposals for eight Cells</strong>. Its recommendation and
+discovered Pareto set do not prove global mathematical optimality.</p>
 <h2 id="network-objective-model">Network Objective Model</h2>
 <p>Network azimuth optimization keeps the existing RF evaluation and
 hard feasibility checks separate from preference scoring. Each feasible
@@ -674,81 +672,19 @@ converted into score penalties. The same stored frontier can therefore
 be re-ranked when priorities change without repeating RF evaluation.</p>
 <hr />
 <h2 id="performance-characteristics">Performance Characteristics</h2>
-<h3 id="benchmarks-ankara-dataset">Benchmarks (Ankara Dataset)</h3>
-<table>
-<thead>
-<tr>
-<th>Operation</th>
-<th>Time</th>
-<th>Scaling</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Load GeoJSON</td>
-<td>500 ms</td>
-<td>O(n) where n=12,000 buildings</td>
-</tr>
-<tr>
-<td>Build R-Tree</td>
-<td>1 second</td>
-<td>O(n log n)</td>
-</tr>
-<tr>
-<td>Single ray trace</td>
-<td>&lt; 1 μs</td>
-<td>O(log n)</td>
-</tr>
-<tr>
-<td>Up to 25,000 returned ray features</td>
-<td>Bounded</td>
-<td>O(n log n) parallelized</td>
-</tr>
-<tr>
-<td>Network optimization</td>
-<td>See <code>BenchmarkCanonicalAnkaraNetworkOptimization</code> in the
-repository</td>
-<td>Fixed-domain entity discovery is prepared once; candidate RF scoring
-remains the dominant work</td>
-</tr>
-<tr>
-<td>API response</td>
-<td>&lt; 100 ms p99</td>
-<td>Network + serialization</td>
-</tr>
-</tbody>
-</table>
-<h3 id="memory-usage">Memory Usage</h3>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Size</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Buildings (GeoJSON)</td>
-<td>80 MB (disk) → 40 MB (RAM)</td>
-</tr>
-<tr>
-<td>R-Tree indices</td>
-<td>150 MB</td>
-</tr>
-<tr>
-<td>Tower locations</td>
-<td>2 MB</td>
-</tr>
-<tr>
-<td>Returned ray features per request</td>
-<td>25,000 maximum</td>
-</tr>
-<tr>
-<td><strong>Total footprint</strong></td>
-<td>~200 MB typical</td>
-</tr>
-</tbody>
-</table>
+<h3 id="workload-dependent-runtime-and-memory">Workload-dependent
+runtime and memory</h3>
+<p>Runtime depends on dataset geometry, Cell count, band, rays, radius,
+selected model and objective, hardware, and concurrent host work. The
+historical six-Cell comparison above is the supported timing example; it
+is not a general response-time promise.
+<code>BenchmarkCanonicalAnkaraNetworkOptimization</code> provides a
+repeatable developer workload, not a product latency guarantee.</p>
+<p>Memory depends on the loaded dataset, spatial indices, active
+requests and retained results. The 25,000-feature response ceiling
+bounds one output dimension; it does not establish a universal
+process-memory footprint. See the eight-Cell qualification for the
+bounded Profile A envelope and measurements.</p>
 <hr />
 <h2 id="validation--limitations">Validation &amp; Limitations</h2>
 <h3 id="response-complexity-bound">Response Complexity Bound</h3>
@@ -793,33 +729,32 @@ the per-ray slices when the top-level operation finishes.</p>
 </tbody>
 </table>
 <h3 id="model-limitations">Model Limitations</h3>
-<ol type="1">
-<li><strong>Flat Earth</strong>: No terrain elevation (can add with
-GeoTIFF)</li>
-<li><strong>No multipath</strong>: Doesn't model
-reflections/scattering</li>
-<li><strong>Ideal antennas</strong>: Assumes perfect omnidirectional at
-low freq</li>
-<li><strong>Static buildings</strong>: Doesn't model moving
-obstructions</li>
-<li><strong>Weather</strong>: No rain/weather fading</li>
-</ol>
-<h3 id="when-to-use-atom">When to Use A.T.O.M</h3>
-<p>✅ <strong>Good for</strong>:</p>
 <ul>
-<li>Network planning and site selection</li>
-<li>Quick feasibility studies</li>
-<li>Education and training</li>
-<li>Comparison between sites</li>
-<li>Coverage mapping</li>
+<li>Canonical network propagation does not consume terrain. Optional
+terrain, Fresnel and single-edge path-profile diagnostics are separate
+evidence.</li>
+<li>Canonical RF excludes multipath reflection, fading, array/codebook
+beamforming, MIMO scheduling and UE behavior. Isolated reference panels
+do not silently add those effects.</li>
+<li>Antenna presets are analytic or single-element references, not
+measured/vendor hardware patterns.</li>
+<li>Geometry and demand are static, incomplete planning inputs; missing
+height evidence and model fallback are explicit.</li>
+<li>Building-entry estimates apply just inside a representative facade,
+not throughout rooms or floors.</li>
 </ul>
-<p>❌ <strong>Not suitable for</strong>:</p>
-<ul>
-<li>Detailed link budget analysis</li>
-<li>Precise handover prediction</li>
-<li>Interference modeling</li>
-<li>Non-stationary targets</li>
-</ul>
+<h3 id="when-to-use-atom">When to use A.T.O.M</h3>
+<p>Use it for bounded configuration comparisons, azimuth
+recommendations, inspectable link budgets, building-service estimates
+and modeled co-channel interference. The interference ledger uses
+explicit resource assumptions and finite per-Cell horizons; it is not
+measured UE interference, adjacent-channel full-system modeling or
+commercial network KPI truth.</p>
+<p>Measured real-world propagation accuracy is not yet established.
+Deployment approval, calibrated antenna/terrain performance,
+mobility/handover prediction, dynamic traffic/capacity and complete
+operator-network validation require evidence and capabilities outside
+the released scope.</p>
 <hr />
 <p><strong>Next</strong>: Explore the <a href="./api.html">API
 Reference</a> to integrate A.T.O.M into your systems.</p>

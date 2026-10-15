@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import ControlPanel from "./components/ControlPanel.jsx";
 import { describeOptimizationScope } from "./utils/optimizationOperation.js";
+import { MAX_MEASUREMENT_CELLS, measurementCellLimitMessage } from "./utils/measurementScope.js";
 import DisclosureSection from "./components/DisclosureSection.jsx";
 import InterferenceResultsPanel from "./components/InterferenceResultsPanel.jsx";
 import AnalysisEmptyState from "./components/AnalysisEmptyState.jsx";
@@ -2126,6 +2127,11 @@ export default function App() {
 
   const evaluateMeasurements = useCallback(async () => {
     const measurementTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
+    const scopeError = measurementCellLimitMessage(measurementTowers.length);
+    if (scopeError) {
+      setError(scopeError);
+      return;
+    }
     if (measurementSamples.length === 0) {
       setError("Import a measurement CSV before evaluating residuals");
       return;
@@ -3972,6 +3978,7 @@ export default function App() {
               calibrationProfile={calibrationProfile}
               measurementAnalysis={measurementAnalysis}
               measurementCount={measurementSamples.length}
+              measurementCellCount={planningMode === "network" ? selectedNetworkTowers.length : Number(Boolean(selectedTower))}
               onApplyCalibration={applyCalibration}
               onEvaluateMeasurements={evaluateMeasurements}
               onMeasurementFile={loadMeasurementFile}
@@ -5392,6 +5399,7 @@ function DataPanel({
   interferenceModel,
   measurementAnalysis,
   measurementCount,
+  measurementCellCount,
   networkTech,
   onApplyCalibration,
   onEvaluateMeasurements,
@@ -5404,6 +5412,7 @@ function DataPanel({
 	onSwitchDataset,
 }) {
   const dataQuality = diagnostics?.data_quality ?? summary?.data_quality ?? (appMeta?.dataset?.quality ? "good" : "unknown");
+  const measurementScopeError = measurementCellLimitMessage(measurementCellCount);
   const totalBuildings = summary?.total_buildings ?? null;
   const residential = summary?.residential_weighted_buildings ?? null;
 	const demand = summary?.demand_weighted_buildings ?? null;
@@ -5544,12 +5553,14 @@ function DataPanel({
           <span>Measurement Validation</span>
         </div>
         <p className="data-note">Import up to 5,000 RSRP samples with columns <code>id, longitude, latitude, technology, rsrp_dbm, cell_id</code>. Short <code>lon</code>/<code>lat</code> headers are also accepted.</p>
+        <p className="data-note">Measurement Validation accepts one to {MAX_MEASUREMENT_CELLS} selected 4G/5G Cells, independently of the normal network limit.</p>
+        {measurementScopeError ? <p className="data-note" role="status">{measurementScopeError}</p> : null}
         <label className="measurement-file-button">
           <Upload size={15} />
           <span>{measurementCount ? `${measurementCount} samples loaded` : "Import measurement CSV"}</span>
           <input type="file" accept=".csv,text/csv" onChange={(event) => onMeasurementFile(event.target.files?.[0])} />
         </label>
-        <button type="button" className="panel-primary-action" onClick={onEvaluateMeasurements} disabled={!measurementCount || evaluatingMeasurements}>
+        <button type="button" className="panel-primary-action" onClick={onEvaluateMeasurements} disabled={!measurementCount || evaluatingMeasurements || Boolean(measurementScopeError)}>
           {evaluatingMeasurements ? "Evaluating measurements..." : "Evaluate residuals"}
         </button>
         {measurementAnalysis?.stats ? (
@@ -5565,7 +5576,7 @@ function DataPanel({
               <MiniDatum label="P90 absolute error" value={formatMetric(measurementAnalysis.stats.p90_abs_error_db, "dB")} />
             </div>
             <div className="calibration-review">
-              <strong>Spatially validated global bias</strong>
+              <strong>Residual bias review</strong>
               <p>{measurementAnalysis.calibration?.reason}</p>
               <div className="dataset-grid">
                 <MiniDatum label="Spatial areas" value={(measurementAnalysis.calibration?.spatial_group_count ?? 0).toLocaleString()} />

@@ -1,0 +1,60 @@
+{
+  "note": "git diff --no-index returns1 for added-file differences even with --check and no whitespace diagnostics; any diagnostics or exit outside0/1would fail.",
+  "files": [
+    {
+      "path": "scripts/v0.12.1-post-release-audit/audit.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "scripts/v0.12.1-post-release-audit/completion.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "scripts/v0.12.1-post-release-audit/checks.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "scripts/v0.12.1-post-release-audit/build_report.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "scripts/v0.12.1-post-release-audit/assess_language.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "scripts/v0.12.1-post-release-audit/frozen_evidence.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "scripts/v0.12.1-post-release-audit/contracts.py",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "docs/v0.12.1-post-release-product-scientific-audit.md",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    },
+    {
+      "path": "docs/v0.12.1-post-release-product-scientific-audit.json",
+      "exit_code": 1,
+      "output": "",
+      "whitespace_check_passed": true
+    }
+  ],
+  "all_passed": true
+}

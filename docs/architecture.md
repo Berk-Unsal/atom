@@ -42,7 +42,7 @@ The React application is organized around a map-first focused workspace:
 
 - **Command bar**: active plan context, run state, RF action, and latest result summary.
 - **Project menu**: local projects, autosaved drafts, versioned import/export, and named scenario snapshots.
-- **Workflow rail**: Setup, Propagation, Interference, 5G Core, Results, Data, and Report.
+- **Workflow rail**: Plan, Simulate, Analyze and Review group the focused tools, including Setup, Propagation, Interference, Results, Data and Report.
 - **Overlay drawer**: opens one focused tool without resizing or recentering the map.
 - **MapCanvas**: renders towers, the selected-cell received-power surface, scoped rays, coverage gaps, selection geometry, interference samples, measurement residuals, candidate records, and 5G communication paths.
 - **Inspector**: persistent details for towers, gaps, communication paths, and interference samples.
@@ -65,6 +65,8 @@ This prevents slow responses from replacing results produced by newer settings.
 ### Local Project Persistence
 
 The browser stores projects in IndexedDB without adding a server database. Workspace commits are serialized and carry monotonic persistence revisions. Local storage is written only when the IndexedDB commit fails; if both copies exist after a partial failure, loading selects the newest revision and uses content timestamps to arbitrate legacy copies. Each scenario records exact inputs, selected cells, area geometry, compact KPI summaries, application/model metadata, and active dataset identity. Full GeoJSON layers are retained for the five most recently used scenarios; older scenarios preserve reproducible requests and are marked for rerun. Exported `.atom-project.json` files use a versioned schema and warn when the active dataset hash differs.
+
+Portable project files contain retained Scenario/Version/embedded Run evidence, not the separate Run History database, generated report files, coverage surfaces or transient view/Undo state. A local autosaved draft, immutable Version, portable project and separately downloaded report are distinct artifacts; see [the format contract](project-format.html).
 
 ## Go API Boundary
 
@@ -194,7 +196,7 @@ These KPIs are deterministic planning estimates. They are not UE, drive-test, or
 
 ## Measurement Validation
 
-Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same radius, beam, FSPL, wall-intersection, resource-block, and serving-cell rules used by interference analysis, then returns per-point residuals, aggregate uncertainty, per-cell/per-band statistics, distance/obstruction bins, and robust outliers. With at least 20 valid points and sufficient spatial diversity, five deterministic contiguous spatial blocks validate a robust median dB adjustment. The optional correction is a global path-loss offset, not full propagation calibration.
+Measurement evaluation accepts up to 5,000 4G or 5G RSRP points. It applies the same resolved propagation model, radius, beam, resource assumptions and serving-cell rules used by the planning interference path, then returns per-point residuals, aggregate uncertainty, per-cell/per-band statistics, distance/obstruction bins, and robust outliers. With at least 20 valid points and sufficient spatial diversity, five deterministic contiguous spatial blocks validate a robust median dB adjustment. The optional correction is a global path-loss offset, not full propagation calibration.
 
 ## Request Lifecycles
 

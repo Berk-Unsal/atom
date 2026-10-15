@@ -20,7 +20,9 @@
 
 A.T.O.M is a full-stack spatial planning engine for visualizing and evaluating cellular networks across multiple generations (4G LTE, 5G mmWave, and an experimental 6G research profile at 140 GHz) in dense urban environments. Built on OpenStreetMap (OSM) and OpenCellID-derived data, it combines deterministic RF estimation with interactive geospatial analysis so telecommunications engineers and students can compare coverage, antenna configurations, interference, demand impact, and network topology in Ankara, Turkey.
 
-The engine combines bounded Go worker pools, spatial indexing, deterministic ray tracing, and demand-aware search to evaluate urban RF planning scenarios. Results are planning estimates derived from static OSM and OpenCellID data; they are not drive-test, UE, or PHY measurements.
+The engine combines bounded Go worker pools, spatial indexing, deterministic ray tracing, and demand-aware search to evaluate urban RF planning scenarios. Results are planning estimates derived from static OSM and OpenCellID data; they are not drive-test, UE, or PHY measurements. **Measured real-world propagation accuracy is not yet established.**
+
+A first planning question: **does changing a small urban Cell plan's azimuths better serve the configured demand?** Configure two to eight Cells, evaluate a baseline, inspect propagation and 4G/5G interference, run bounded azimuth optimization, compare the recommendation and its explanations, then export the planning evidence. The recommendation reflects the model, inputs and priorities; it is not deployment approval. Start with the [first planning workflow](docs/getting-started.md#network-evaluation-and-optimization).
 
 ---
 
@@ -73,7 +75,7 @@ The eight-cell operational qualification covers the Ankara2026.07 dataset at 120
 
 - **Operational Safeguards**: Uses request cancellation, latest-response protection, bounded worker pools, request-size limits, readiness probes, and explicit `429` overload responses. The request budget retains 20 ordinary attempts per client IP per 60 seconds, with up to eight shared, input-bound verified follow-up units for eligible network-map and azimuth refreshes.
 
-- **Local Projects, Scenario Versions, and Run History**: Autosaves drafts in IndexedDB, saves immutable scenario Versions, supports branching and input comparisons, and retains Run lineage with explicit current, stale, and historical result context. Project schema-v3 exports preserve retained results and provenance, with valid v1/v2 imports supported. Imports retain a 16 MiB file ceiling and decoded-content limits; large ray-bearing exports can still exceed those guards.
+- **Local Projects, Scenario Versions, and Run History**: Autosaves drafts in IndexedDB, saves immutable scenario Versions, supports branching and input comparisons, and retains Run lineage with explicit current, stale, and historical result context. Project schema-v3 exports preserve retained Scenario results and Version/embedded Run provenance, with valid v1/v2 imports supported. They exclude the separate Run History database, generated report files, coverage surfaces and transient view/Undo state; download reports separately. Imports retain a 16 MiB file ceiling and decoded-content limits; large ray-bearing exports can still exceed those guards.
 
 - **Reproducible Planning Reports**: Generates local Markdown/HTML report artifacts from current or historical Runs, with exact scenario Version/Run lineage, SHA-256 verification, baseline/Pareto evidence, and offline downloads.
 

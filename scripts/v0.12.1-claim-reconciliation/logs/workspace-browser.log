@@ -1,0 +1,36 @@
+
+> ankara-5g-raytracer-frontend@0.12.1 test:e2e
+> playwright test e2e/workspace.spec.js --grep completes the Run, optimization, apply, Version|shared dark actions preserve|keeps the focused workspace usable --workers=2
+
+[WebServer] (node:52643) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 2 workers
+
+(node:52654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52653) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-1440] › e2e/workspace.spec.js:2195:1 › keeps the focused workspace usable without horizontal overflow (681ms)
+  ✓   3 [desktop-1440] › e2e/workspace.spec.js:4392:1 › shared dark actions preserve readiness, focus and visible RF budget errors (1.3s)
+(node:52682) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -   4 [desktop-1024] › e2e/workspace.spec.js:1842:1 › completes the Run, optimization, apply, Version, and historical Report journey
+  ✓   5 [desktop-1024] › e2e/workspace.spec.js:2195:1 › keeps the focused workspace usable without horizontal overflow (402ms)
+  ✓   6 [desktop-1024] › e2e/workspace.spec.js:4392:1 › shared dark actions preserve readiness, focus and visible RF budget errors (1.4s)
+  ✓   2 [desktop-1440] › e2e/workspace.spec.js:1842:1 › completes the Run, optimization, apply, Version, and historical Report journey (4.3s)
+(node:52694) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52695) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -   7 [tablet-768] › e2e/workspace.spec.js:1842:1 › completes the Run, optimization, apply, Version, and historical Report journey
+  ✓   8 [tablet-768] › e2e/workspace.spec.js:2195:1 › keeps the focused workspace usable without horizontal overflow (473ms)
+(node:52709) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  -  10 [mobile-390] › e2e/workspace.spec.js:1842:1 › completes the Run, optimization, apply, Version, and historical Report journey
+  ✓  11 [mobile-390] › e2e/workspace.spec.js:2195:1 › keeps the focused workspace usable without horizontal overflow (383ms)
+  ✓   9 [tablet-768] › e2e/workspace.spec.js:4392:1 › shared dark actions preserve readiness, focus and visible RF budget errors (2.2s)
+  ✓  12 [mobile-390] › e2e/workspace.spec.js:4392:1 › shared dark actions preserve readiness, focus and visible RF budget errors (2.3s)
+
+  3 skipped
+  9 passed (9.3s)

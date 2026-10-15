@@ -1,0 +1,86 @@
+2026/10/15 14:07:02 building spatial index ready: 161784 footprints indexed from ../data-pipeline/ankara_buildings.geojson
+2026/10/15 14:07:02 building demand data: good (5957/161784 demand-weighted, avg 44.18, max 240.00)
+2026/10/15 14:07:02 tower store ready: 451 cells loaded from ../data-pipeline/ankara_5g_nodes.geojson
+2026/10/15 14:07:02 INFO Auto resource profile resource_mode=auto environment=native cpu_visible=10 gomaxprocs=10 cpu_quota=absent cpu_observed=10 memory_observed=25769803776 rf_global_slots=2 experiment_workers=1 dataset_footprints=161784 diagnostic_fingerprint=a2b80139cead3b29b603990b91117a070a0cdedf1493e5d75d1cb1e669683139 warnings=[]
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /healthz                  --> main.main.func3 (7 handlers)
+[GIN-debug] GET    /readyz                   --> main.main.runtimeReadinessHandler.func25 (7 handlers)
+[GIN-debug] DELETE /api/rf-workflows         --> main.(*rfRequestLimiter).cleanupWorkflow-fm (8 handlers)
+[GIN-debug] GET    /api/meta                 --> main.main.func4 (8 handlers)
+[GIN-debug] GET    /api/towers               --> main.main.serveRuntimeTowerGeoJSON.func27 (8 handlers)
+[GIN-debug] GET    /api/buildings            --> main.main.func5 (10 handlers)
+[GIN-debug] GET    /api/buildings/summary    --> main.main.func6 (8 handlers)
+[GIN-debug] GET    /api/conformance          --> main.registerBuildingFeatureRoutes.func1 (8 handlers)
+[GIN-debug] GET    /api/collections          --> main.registerBuildingFeatureRoutes.func2 (8 handlers)
+[GIN-debug] GET    /api/collections/buildings --> main.registerBuildingFeatureRoutes.func3 (8 handlers)
+[GIN-debug] GET    /api/collections/buildings/items --> main.registerBuildingFeatureRoutes.func4 (10 handlers)
+[GIN-debug] GET    /api/datasets             --> main.registerDatasetRoutes.func1 (8 handlers)
+[GIN-debug] POST   /api/datasets/switch      --> main.registerDatasetRoutes.func2 (9 handlers)
+[GIN-debug] GET    /api/spatial-evidence     --> main.registerSpatialEvidenceRoutes.func1 (8 handlers)
+[GIN-debug] GET    /api/spatial-evidence/buildings/:id --> main.registerSpatialEvidenceRoutes.func2 (8 handlers)
+[GIN-debug] POST   /api/spatial-evidence/path-profile --> main.registerSpatialEvidenceRoutes.func3 (8 handlers)
+[GIN-debug] GET    /api/processes/batch-experiment --> main.registerExperimentRoutes.func1 (8 handlers)
+[GIN-debug] POST   /api/processes/batch-experiment/execution --> main.registerExperimentRoutes.func2 (8 handlers)
+[GIN-debug] GET    /api/jobs/:jobID          --> main.registerExperimentRoutes.func3 (8 handlers)
+[GIN-debug] DELETE /api/jobs/:jobID          --> main.registerExperimentRoutes.func4 (8 handlers)
+[GIN-debug] POST   /api/path-profile         --> main.registerPathProfileRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/sub-thz-reference    --> main.registerSubTHZReferenceRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/sub-thz-p1411-reference --> main.registerSubTHZP1411ReferenceRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/sub-thz-validation   --> main.registerSubTHZValidationRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/sub-thz-material-reference --> main.registerSubTHZMaterialReferenceRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/sub-thz-reflection-reference --> main.registerSubTHZReflectionReferenceRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/coverage-surface     --> main.registerCoverageSurfaceRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/analyze-sector       --> main.main.func7 (8 handlers)
+[GIN-debug] POST   /api/simulate             --> main.main.func8 (8 handlers)
+[GIN-debug] POST   /api/optimize-azimuth     --> main.main.func9 (8 handlers)
+[GIN-debug] POST   /api/optimize-network     --> main.registerNetworkOptimizationRoute.func1 (8 handlers)
+[GIN-debug] POST   /api/explain-network-cell --> main.main.func11 (8 handlers)
+[GIN-debug] POST   /api/evaluate-network     --> main.main.func12 (8 handlers)
+[GIN-debug] POST   /api/building-entry-analysis --> main.main.func13 (8 handlers)
+[GIN-debug] POST   /api/coverage-gaps        --> main.main.func14 (8 handlers)
+[GIN-debug] POST   /api/interference         --> main.registerInterferenceRouteProvider.func1 (8 handlers)
+[GIN-debug] POST   /api/recommend-sites      --> main.registerRecommendationRouteProvider.func1 (8 handlers)
+[GIN-debug] POST   /api/measurements/evaluate --> main.registerMeasurementRouteProvider.func1 (8 handlers)
+[GIN-debug] GET    /api/core/status          --> main.registerCoreLabRoutes.proxyCoreLabGET.func1 (8 handlers)
+[GIN-debug] GET    /api/core/topology        --> main.registerCoreLabRoutes.proxyCoreLabGET.func2 (8 handlers)
+[GIN-debug] GET    /api/core/sessions        --> main.registerCoreLabRoutes.proxyCoreLabGET.func3 (8 handlers)
+[GIN-debug] GET    /api/core/events          --> main.registerCoreLabRoutes.proxyCoreLabGET.func4 (8 handlers)
+[GIN-debug] POST   /api/core/scenario        --> main.registerCoreLabRoutes.proxyCoreLabScenario.func5 (8 handlers)
+[GIN-debug] GET    /assets/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (8 handlers)
+[GIN-debug] HEAD   /assets/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (8 handlers)
+[GIN-debug] GET    /icon/*filepath           --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (8 handlers)
+[GIN-debug] HEAD   /icon/*filepath           --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (8 handlers)
+[GIN-debug] GET    /                         --> main.registerFrontendRoutes.serveIndex.func3 (8 handlers)
+2026/10/15 14:07:02 A.T.O.M API listening on 127.0.0.1:18082
+[GIN] 2026/10/15 - 14:15:38 | 200 |  71.18ms |       127.0.0.1 | GET      "/healthz"
+[GIN] 2026/10/15 - 14:15:38 | 200 | 10.708µs |       127.0.0.1 | GET      "/readyz"
+[GIN] 2026/10/15 - 14:15:38 | 200 | 316.667µs |       127.0.0.1 | GET      "/api/meta"
+[GIN] 2026/10/15 - 14:15:38 | 200 |  16.25µs |       127.0.0.1 | GET      "/api/processes/batch-experiment"
+[GIN] 2026/10/15 - 14:15:38 | 200 | 12.125µs |       127.0.0.1 | GET      "/api/core/topology"
+2026/10/15 14:15:38 rejected invalid simulation JSON: json: unknown field "azimuth_deg"
+[GIN] 2026/10/15 - 14:15:38 | 400 | 144.584µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:15:38 | 400 | 42.875µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:16:11 | 200 |  80.52ms |       127.0.0.1 | GET      "/healthz"
+[GIN] 2026/10/15 - 14:16:11 | 200 | 12.833µs |       127.0.0.1 | GET      "/readyz"
+[GIN] 2026/10/15 - 14:16:11 | 200 | 88.791µs |       127.0.0.1 | GET      "/api/meta"
+[GIN] 2026/10/15 - 14:16:11 | 200 | 17.916µs |       127.0.0.1 | GET      "/api/processes/batch-experiment"
+[GIN] 2026/10/15 - 14:16:11 | 200 | 15.084µs |       127.0.0.1 | GET      "/api/core/topology"
+[GIN] 2026/10/15 - 14:16:11 | 200 | 638.166µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:16:11 | 400 |  25.75µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:18:08 | 200 |  71.43ms |       127.0.0.1 | GET      "/healthz"
+[GIN] 2026/10/15 - 14:18:08 | 200 |     14µs |       127.0.0.1 | GET      "/readyz"
+[GIN] 2026/10/15 - 14:18:08 | 200 | 80.583µs |       127.0.0.1 | GET      "/api/meta"
+[GIN] 2026/10/15 - 14:18:08 | 200 |   19.5µs |       127.0.0.1 | GET      "/api/processes/batch-experiment"
+[GIN] 2026/10/15 - 14:18:08 | 200 |  8.542µs |       127.0.0.1 | GET      "/api/core/topology"
+[GIN] 2026/10/15 - 14:18:08 | 200 | 220.917µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:18:08 | 400 | 26.792µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:18:50 | 200 |   71.3ms |       127.0.0.1 | GET      "/healthz"
+[GIN] 2026/10/15 - 14:18:50 | 200 | 13.208µs |       127.0.0.1 | GET      "/readyz"
+[GIN] 2026/10/15 - 14:18:50 | 200 | 92.916µs |       127.0.0.1 | GET      "/api/meta"
+[GIN] 2026/10/15 - 14:18:50 | 200 |    9.5µs |       127.0.0.1 | GET      "/api/processes/batch-experiment"
+[GIN] 2026/10/15 - 14:18:50 | 200 |  6.958µs |       127.0.0.1 | GET      "/api/core/topology"
+[GIN] 2026/10/15 - 14:18:50 | 200 | 224.75µs |       127.0.0.1 | POST     "/api/simulate"
+[GIN] 2026/10/15 - 14:18:50 | 400 | 30.459µs |       127.0.0.1 | POST     "/api/simulate"

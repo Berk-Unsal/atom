@@ -6,8 +6,9 @@ Use the [documentation hub](index.html) for the maintained browser experience. I
 
 ## Start Here
 
-- [Architecture](architecture.html): browser-to-backend request paths, spatial indexing, RF engines, reliability controls, and 5G communication paths.
-- [Download and use](download.html): Git LFS cloning, Docker Compose, local development, readiness checks, and first workflows.
+- [First planning workflow](getting-started.md#network-evaluation-and-optimization): configure a small Cell plan, evaluate, compare a bounded azimuth recommendation, explain and export.
+- [Download and use](download.html): Git LFS cloning, Docker Compose, readiness checks and task-based workflows.
+- [Architecture](architecture.html): internal request paths, RF engines, spatial data and reliability controls after the first planning task.
 - [Capabilities](features.html): current supported planning workflows and technology boundaries.
 - [Modeling limits](modeling-limits.html): what the deterministic model includes and excludes.
 - [Concept 4D urban propagation](concept-4d-urban-propagation.md): selectable model modes, UMa equations, LOS/NLOS rule, fallback policy, and baseline artifact. The [canonical comparison](concept-4d-canonical-comparison.json) records the real Ankara legacy-versus-urban run.
@@ -46,4 +47,4 @@ The current source version is [`0.12.1`](../VERSION). User-visible changes are p
 
 ## Model Boundary
 
-Results are deterministic planning estimates based on static dataset packs, an explicit propagation mode, configured antenna behavior, beam eligibility, and shared footprint geometry. The separate 2.5D path profiler can also use optional COG/GeoTIFF terrain, building height, LOS/Fresnel geometry, and selected sensitivity components. None of these outputs are drive-test, UE, PHY, or live-network measurements. See [modeling limits](modeling-limits.html) before using outputs for engineering decisions.
+Results are deterministic planning estimates based on static dataset packs, an explicit propagation mode, configured antenna behavior, beam eligibility, and shared footprint geometry. The separate 2.5D path profiler can also use optional COG/GeoTIFF terrain, building height, LOS/Fresnel geometry, and selected sensitivity components. None of these outputs are drive-test, UE, PHY, or live-network measurements. Measured real-world propagation accuracy is not yet established. Normal network8, Recommendation5 and Measurement6 are independent limits. See [modeling limits](modeling-limits.html) before using outputs for engineering decisions.

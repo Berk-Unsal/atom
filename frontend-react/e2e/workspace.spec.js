@@ -4413,10 +4413,11 @@ test("shared dark actions preserve readiness, focus and visible RF budget errors
   const gate = new Promise((resolveGate) => { finish = resolveGate; });
   let requestCount = 0;
   const message = "RF analysis request budget exceeded; retry after the current rate-limit window";
+  const recovery = "RF request budget reached. Try again in about 18 seconds.";
   await page.route("**/api/interference", async (route) => {
     requestCount++;
     await gate;
-    await route.fulfill({ status: 429, json: { error: message } });
+    await route.fulfill({ status: 429, headers: { "Retry-After": "18" }, json: { error: message } });
   });
   await button.click();
   await expect(button).toBeDisabled();
@@ -4427,11 +4428,11 @@ test("shared dark actions preserve readiness, focus and visible RF budget errors
   await expect(page.locator(".command-run-button")).toBeDisabled();
   expect((await style(page.locator(".command-run-button"))).background).toBe("rgb(38, 49, 57)");
   finish();
-  await expect(page.getByText(message, { exact: true })).toBeVisible();
+  await expect(page.getByText(recovery, { exact: true })).toBeVisible();
   await expect(button).toBeEnabled();
   for (const theme of ["Light", "Dark"]) {
     await selectTheme(page, theme);
-    await expect(page.getByText(message, { exact: true })).toBeVisible();
+    await expect(page.getByText(recovery, { exact: true })).toBeVisible();
   }
   expect(requestCount).toBe(1);
 });

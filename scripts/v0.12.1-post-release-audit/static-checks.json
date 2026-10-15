@@ -1,0 +1,72 @@
+[
+  {
+    "name": "docs-validation",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.434,
+    "log": "logs/docs-validation.log"
+  },
+  {
+    "name": "version",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.022,
+    "log": "logs/version.log"
+  },
+  {
+    "name": "policy",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "scripts/generate_policy.py",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.039,
+    "log": "logs/policy.log"
+  },
+  {
+    "name": "openapi-contracts",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/v0.12.1-post-release-audit/contracts.py"
+    ],
+    "cwd": ".",
+    "exit_code": 1,
+    "seconds": 0.698,
+    "log": "logs/openapi-contracts.log"
+  },
+  {
+    "name": "invariance",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/v0.12.1-post-release-audit/audit.py",
+      "verify"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.31,
+    "log": "logs/invariance.log"
+  },
+  {
+    "name": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.008,
+    "log": "logs/diff-check.log"
+  }
+]

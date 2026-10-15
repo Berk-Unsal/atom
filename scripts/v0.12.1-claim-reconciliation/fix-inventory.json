@@ -1,0 +1,218 @@
+[
+  {
+    "finding": "P02",
+    "title": "Current capability reference still says network 2\u20136",
+    "current_sources": [
+      "features_cap",
+      "readme_caps",
+      "cap_tests"
+    ],
+    "current_wording_behavior": "Current features normal network2\u20136",
+    "required_correction": "Current normal2\u20138; independent Recommendation5/Measurement6",
+    "allowed_surface": "docs/features.md + generated HTML",
+    "tests_needed": "current-claim/cap regressions",
+    "source_files": [
+      "docs/features.md",
+      "docs/architecture.html",
+      "docs/download.html",
+      "docs/deployment.md"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P03",
+    "title": "Landing propagation summary describes the legacy model as the general engine",
+    "current_sources": [
+      "landing_default",
+      "setup",
+      "algorithms"
+    ],
+    "current_wording_behavior": "Landing describes FSPL/walls as general default",
+    "required_correction": "Simple UMa2.6/28/default/fallback and separate research/terrain/entry scope",
+    "allowed_surface": "docs/index.html",
+    "tests_needed": "model-scope and landing-content checks",
+    "source_files": [
+      "docs/index.html",
+      "docs/index.md",
+      "docs/architecture.md"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P04",
+    "title": "Old algorithm timing examples lack reproducible benchmark support",
+    "current_sources": [
+      "legacy_benchmark",
+      "performance",
+      "concurrency"
+    ],
+    "current_wording_behavior": "Unscoped1000\u00d7/36s\u2192250ms/4\u00d7 and API3\u20135s claims",
+    "required_correction": "Remove unproven timing comparisons; scope historical reuse evidence",
+    "allowed_surface": "docs/algorithms.md,docs/api.md + derived HTML",
+    "tests_needed": "performance claim regressions",
+    "source_files": [
+      "docs/algorithms.md",
+      "docs/api.md",
+      "docs/visualization.md"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P05",
+    "title": "Strict OpenAPI consumers encounter five invalid Response Objects",
+    "current_sources": [
+      "openapi"
+    ],
+    "current_wording_behavior": "Five invalid Response Objects",
+    "required_correction": "Quote malformed descriptions; strict validator in quality path",
+    "allowed_surface": "docs/openapi.yaml, validation/dependency/CI files",
+    "tests_needed": "strict schema + invalid response/ref/placement/shape fixtures; semantic diff",
+    "source_files": [
+      "docs/openapi.yaml",
+      "docs/validate_openapi.py",
+      "docs/validate_openapi_test.py",
+      "docs/validate_docs.py",
+      "docs/requirements.in",
+      "docs/requirements.txt",
+      ".github/workflows/quality.yml"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P06",
+    "title": "Measurement 6 is not visible before the eight-Cell request",
+    "current_sources": [
+      "measurement_handler",
+      "measurement_ui",
+      "measurements"
+    ],
+    "current_wording_behavior": "Eight-Cell measurement action reaches backend rejection",
+    "required_correction": "Expose max6; disable/precheck7/8; retain independent backend check",
+    "allowed_surface": "frontend App/UI helper + tests",
+    "tests_needed": "6dispatches;7/8no RF;8normalnetwork/5recommendation regressions",
+    "source_files": [
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/App.workflow.test.jsx",
+      "frontend-react/src/utils/measurementScope.js",
+      "frontend-react/src/utils/measurementScope.test.js"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P07",
+    "title": "Retry-After is captured but not used for actionable wait guidance",
+    "current_sources": [
+      "api_client",
+      "api_budget",
+      "protection"
+    ],
+    "current_wording_behavior": "Captured Retry-After not displayed",
+    "required_correction": "Static approximate retry guidance for known headers; no automatic requests",
+    "allowed_surface": "frontend apiClient/error helper + tests; docs/API troubleshooting",
+    "tests_needed": "valid/missing/invalid headers; one fetch only; capacity/budget distinction",
+    "source_files": [
+      "frontend-react/src/utils/apiClient.js",
+      "frontend-react/src/utils/apiClient.test.js",
+      "frontend-react/src/utils/rfRecoveryMessage.js",
+      "frontend-react/src/utils/rfRecoveryMessage.test.js",
+      "frontend-react/e2e/workspace.spec.js",
+      "docs/api.md",
+      "docs/faq.md"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P08",
+    "title": "Cell/tower/site and optimization/recommendation are contextual aliases",
+    "current_sources": [
+      "guide",
+      "api_optimal",
+      "tools",
+      "features"
+    ],
+    "current_wording_behavior": "Optimal/maximumcoverage and site meanings overbroad",
+    "required_correction": "Recommended evaluated candidate and actual weighted sector objective; preserve API fields",
+    "allowed_surface": "currentAPI/algorithm/visualization and UI copy",
+    "tests_needed": "bounded-search/sector-objective wording checks",
+    "source_files": [
+      "docs/api.md",
+      "docs/openapi.yaml",
+      "docs/features.md",
+      "docs/algorithms.md"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P10",
+    "title": "Theme-specific docs hero screenshots show different interface generations",
+    "current_sources": [
+      "landing_light",
+      "readme_gallery",
+      "tools"
+    ],
+    "current_wording_behavior": "Older light hero versus current dark",
+    "required_correction": "Real equivalent-state light capture when bounded; otherwise explicit remaining debt",
+    "allowed_surface": "docs hero asset/reference and browser capture test",
+    "tests_needed": "currentDOM/theme/equivalent scenario assertions; real screenshot",
+    "source_files": [
+      "docs/index.html",
+      "frontend-react/e2e/docs-theme.spec.js"
+    ],
+    "result": "DEFERRED LOW-SEVERITY",
+    "reason": "No matched current real-state capture was established for a safe equivalent light/dark replacement. Existing screenshot/browser fixtures are UI-test evidence, not a verified replacement pair. Original hero assets and references remain; no synthetic screenshot generated. User explicitly allows bounded deferral."
+  },
+  {
+    "finding": "P13",
+    "title": "Global-bias heading precedes validation eligibility",
+    "current_sources": [
+      "bias_heading",
+      "measurement_ui"
+    ],
+    "current_wording_behavior": "Validated-sounding global bias heading",
+    "required_correction": "Neutral residual-bias review; same eligibility/holdout/Apply",
+    "allowed_surface": "frontend App.jsx + tests",
+    "tests_needed": "ineligible result heading and Apply gating",
+    "source_files": [
+      "frontend-react/src/App.jsx",
+      "frontend-react/src/App.workflow.test.jsx"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P14",
+    "title": "Unarchived Project Overview implies vendor/terrain/beamforming validation and universal readiness",
+    "current_sources": [
+      "overview",
+      "overview_perf",
+      "overview_data",
+      "overview_scale",
+      "overview_roadmap"
+    ],
+    "current_wording_behavior": "Overview vendor/terrain/beamforming/data/performance overclaims",
+    "required_correction": "Current bounded planning thesis with explicit missing accuracy/research/applicability",
+    "allowed_surface": "docs/overview.md",
+    "tests_needed": "high-risk concept regressions",
+    "source_files": [
+      "docs/overview.md"
+    ],
+    "result": "RESOLVED"
+  },
+  {
+    "finding": "P15",
+    "title": "Algorithm suitability/limitations contradict present interference and budget capabilities",
+    "current_sources": [
+      "algorithm_suitability",
+      "interference_ui",
+      "app_model"
+    ],
+    "current_wording_behavior": "Algorithms says interference/link budgets unsuitable",
+    "required_correction": "Document implemented planning interference and inspectable budget within limits",
+    "allowed_surface": "docs/algorithms.md + derivedHTML",
+    "tests_needed": "capability/finite-horizon/measurement exclusions",
+    "source_files": [
+      "docs/algorithms.md",
+      "docs/visualization.md"
+    ],
+    "result": "RESOLVED"
+  }
+]

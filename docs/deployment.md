@@ -37,13 +37,13 @@ controls are added. Local diagnostic logs should stay with operators.
 
 Detection does not adapt RF admission or experiment settings: defaults remain
 20 attempts per ClientIP per anchored 60-second window, concurrency 2 globally
-and 1 per client, a 60-second RF deadline, six selected Cells and one experiment
+and 1 per client, a 60-second RF deadline, eight selected Cells (Recommendation max five; Measurement Validation max six) and one experiment
 worker. This foundation establishes no automatic scaling or certified minimum
 or recommended hardware. See the [foundation and measured calibration](./auto-resource-profile-foundation.md).
 
 ## Qualified shipping-runtime W1 reference
 
-The [W1 shipping-runtime qualification](./w1-shipping-runtime-qualification.md) names **A** as the minimum and **B** as the recommended W1 reference for A.T.O.M **0.11.0**, commit `e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8`, shipping **Go 1.26.6**, qualified **2026-10-05 UTC**. A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy remains 20 attempts/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, six Cells, experiment worker 1/queue 16. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations.
+The [W1 shipping-runtime qualification](./w1-shipping-runtime-qualification.md) names **A** as the minimum and **B** as the recommended W1 reference for A.T.O.M **0.11.0**, commit `e5c4cb60d0427e5feb5d4895c6d9ebf3124247a8`, shipping **Go 1.26.6**, qualified **2026-10-05 UTC**. A: 2 CPU / 4 GiB; B: 4 CPU / 8 GiB; C: 8 CPU / 10 GiB. These are tested resource floors under the exact Ankara 2026.07 hashes, eight layouts and frozen six-Cell W1 envelope, Linux arm64/cgroup v2/shared-host and shipping binary assumptions. CPU quota does not reserve dedicated cores. Current policy retains 20 ordinary attempts plus eight bounded verified follow-ups/ClientIP/anchored 60 s, global 2/per-client 1, RF deadline 60 s, normal network eight Cells, Recommendation five, Measurement Validation six, experiment worker 1/queue 16. The historical W1 reference above remains a six-Cell study; the separate eight-Cell promotion has its own bounded Profile A evidence. Unknown runtime/resource evidence never establishes eligibility. This is not a universal hardware requirement, arbitrary pack/layout guarantee, heavier-workload qualification, or eight-Cell approval. Auto remains observation-only; no resource selector or admission change. See the qualification for GC-trace observability, memory/timing gates, actual HTTP evidence and limitations.
 
 ## Configuration
 
@@ -128,7 +128,7 @@ Missing files, hash mismatches, invalid EPSG:4326 bounds, duplicate tower IDs, o
 - Segmented-ray requests must satisfy `rays × ceil(radius_m / 25) ≤ 25,000`; a shared worker budget also prevents building-intersection splits from collecting or serializing more than 25,000 response features.
 - HTTP timeouts are 5 seconds for headers, 15 seconds for reads, 120 seconds for writes, and 60 seconds idle.
 
-Raise `MAX_CONCURRENT_RF_REQUESTS` or its per-client counterpart only after measuring CPU, memory, and tail latency with representative two-to-six-cell requests. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget.
+Raise `MAX_CONCURRENT_RF_REQUESTS` or its per-client counterpart only after measuring CPU, memory, and tail latency with representative requests within the supported two-to-eight-Cell scope. Admission and request budgets are process-local; use a gateway for a shared multi-replica budget.
 
 ## Reverse Proxy Boundary
 

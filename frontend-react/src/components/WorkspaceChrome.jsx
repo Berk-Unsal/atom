@@ -298,6 +298,7 @@ export function ProjectMenu({
             <button type="button" onClick={downloadProject}><Download size={14} /> Export</button>
             <input ref={fileRef} hidden type="file" accept=".json,.atom-project.json" onChange={importFile} />
           </div>
+          <p className="project-menu-save-note">Drafts autosave in this browser. Save version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.</p>
           <div className="scenario-menu-header">
             <strong>Scenarios / Versions</strong>
             <button type="button" onClick={saveScenario} disabled={savingScenario} aria-label="Save current">

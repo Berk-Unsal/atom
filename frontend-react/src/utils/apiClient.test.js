@@ -33,6 +33,23 @@ describe("API client", () => {
     expect(fetchMock.mock.calls[0][1].cache).toBe("no-store");
   });
 
+  it("shows Retry-After guidance without retrying or changing the submitted RF request", async () => {
+    const response = mockResponse({ ok: false, status: 429, json: { error: "RF analysis request budget exceeded; retry after the current rate-limit window" } });
+    const getHeader = response.headers.get;
+    response.headers.get = (name) => name.toLowerCase() === "retry-after" ? "18" : getHeader(name);
+    const fetchMock = vi.fn().mockResolvedValue(response);
+    vi.stubGlobal("fetch", fetchMock);
+    const payload = { towers: [{ id: "cell-a" }], rays: 120 };
+    await expect(postJSON("/api/evaluate-network", payload, "fallback")).rejects.toMatchObject({
+      message: "RF request budget reached. Try again in about 18 seconds.",
+      status: 429,
+      retryAfter: "18",
+    });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual(payload);
+  });
+
   it("rejects JSON responses whose declared size exceeds the client limit", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse({
       ok: true,

@@ -1,0 +1,142 @@
+[
+  {
+    "path": "/api/meta",
+    "method": "get",
+    "response_code": "200",
+    "original_invalid_structure": {
+      "description": "Build",
+      "model": null,
+      "technology": null,
+      "and active dataset metadata": null,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      }
+    },
+    "corrected_structure": {
+      "description": "Build, model, technology, and active dataset metadata",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      }
+    }
+  },
+  {
+    "path": "/api/analyze-sector",
+    "method": "post",
+    "response_code": "200",
+    "original_invalid_structure": {
+      "description": "Nested simulation and coverage_gaps results derived from one propagation pass",
+      "each carrying the canonical RF contract": null
+    },
+    "corrected_structure": {
+      "description": "Nested simulation and coverage_gaps results derived from one propagation pass, each carrying the canonical RF contract"
+    }
+  },
+  {
+    "path": "/api/processes/batch-experiment",
+    "method": "get",
+    "response_code": "200",
+    "original_invalid_structure": {
+      "description": "Process identifier",
+      "limits": null,
+      "accepted axes": null,
+      "and job links": null
+    },
+    "corrected_structure": {
+      "description": "Process identifier, limits, accepted axes, and job links"
+    }
+  },
+  {
+    "path": "/api/core/topology",
+    "method": "get",
+    "response_code": "200",
+    "original_invalid_structure": {
+      "description": "gNB nodes",
+      "interface edges": null,
+      "and route decisions": null
+    },
+    "corrected_structure": {
+      "description": "gNB nodes, interface edges, and route decisions"
+    }
+  },
+  {
+    "path": "#/components/responses/TooComplex",
+    "method": "shared response",
+    "response_code": "422",
+    "used_by": [
+      {
+        "path": "/api/spatial-evidence/path-profile",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/analyze-sector",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/simulate",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/coverage-gaps",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/optimize-azimuth",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/evaluate-network",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/optimize-network",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/explain-network-cell",
+        "method": "post",
+        "response_code": "422"
+      },
+      {
+        "path": "/api/recommend-sites",
+        "method": "post",
+        "response_code": "422"
+      }
+    ],
+    "original_invalid_structure": {
+      "description": "Actual segmented-ray output exceeded the hard 25",
+      "000-feature response ceiling": null,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      }
+    },
+    "corrected_structure": {
+      "description": "Actual segmented-ray output exceeded the hard 25,000-feature response ceiling",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      }
+    }
+  }
+]

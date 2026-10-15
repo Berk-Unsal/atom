@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "scope": "Audit deliverables and evidence/freeze verification; intentionally does not repair frozen release defects.",
+  "checks": [
+    {
+      "requirement": "Requested exact Markdown/JSON paths exist",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Pre-evaluation criteria lock preserved",
+      "passed": true,
+      "evidence": "4035e4a3ce4cde804a161c7deef9f5061ddaaa29e006b7bad18f4f5934a8cd91"
+    },
+    {
+      "requirement": "All requested phases0–39 accounted for",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "All required final items1–51 answered",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Every phase and final item appears in Markdown",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Exactly one overall verdict",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Atomic claim inventory has unique IDs and one A–F grade each",
+      "passed": true,
+      "evidence": 56
+    },
+    {
+      "requirement": "Requested minimum claim-matrix topics included",
+      "passed": true,
+      "evidence": [
+        "eight",
+        "2.6",
+        "28",
+        "140",
+        "speedup",
+        "2 CPU",
+        "3GPP",
+        "accuracy",
+        "optimization",
+        "Interference",
+        "Measurement",
+        "Persistence"
+      ]
+    },
+    {
+      "requirement": "All claim-matrix columns populated",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "At most five ranked options and one recommendation",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Each option has benefit/evidence/cost/risk/dependency/success",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Exact requested ordinal scorecard with rationales",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "All five requested personas evaluated",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Workflow includes intent/UI/backend/state/next action/friction",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Tools/terms/use cases/commercial gaps/feedback are classified",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Product debt has evidence/impact/severity/blockers/fix-soon",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Scientific debt separated",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Screenshots inspected are recorded",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "All cited evidence paths and lines resolve",
+      "passed": true,
+      "evidence": []
+    },
+    {
+      "requirement": "Latest serving-state evidence and zero canonical observations retained",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Overview applicability claims explicitly determine final verdict",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Project-export exclusions acknowledged",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Every lexical occurrence retained and routed once",
+      "passed": true,
+      "evidence": 3330
+    },
+    {
+      "requirement": "Occurrence routing references known atomic claims",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Unsupported wording exceptions explicitly retained",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Strict OpenAPI failure preserved, not reported green",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Current8/8/5/6 contracts and410references verified",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Historical82source identities compared without extrapolation",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Required quality checks recorded with available logs",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Current suite outputs substantiate counts",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Mock/live/historical/skip evidence boundaries explicit",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Limits, methodology errors, raw policy and freeze decision disclosed",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Historical raw archive availability recorded",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Audit Python support scripts parse",
+      "passed": true,
+      "evidence": []
+    },
+    {
+      "requirement": "Audit JSON artifacts parse",
+      "passed": true,
+      "evidence": []
+    },
+    {
+      "requirement": "Every originally tracked source unchanged",
+      "passed": true,
+      "evidence": 3217
+    },
+    {
+      "requirement": "HEAD branch version frozen",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "Only requested audit additions; no production diff",
+      "passed": true,
+      "evidence": []
+    },
+    {
+      "requirement": "git diff --check completed",
+      "passed": true,
+      "evidence": null
+    },
+    {
+      "requirement": "New audit text has no trailing whitespace",
+      "passed": true,
+      "evidence": []
+    }
+  ],
+  "passed": 40,
+  "total": 40,
+  "known_product_gate_failures": [
+    "Strict OpenAPI3.1 schema has five invalid Response Objects; reported and left unchanged."
+  ],
+  "source_status": "?? docs/v0.12.1-post-release-product-scientific-audit.json\n?? docs/v0.12.1-post-release-product-scientific-audit.md\n?? scripts/v0.12.1-post-release-audit/"
+}

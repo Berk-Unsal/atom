@@ -149,6 +149,8 @@ jobs:
       - run: git diff --exit-code -- docs/*.html docs/search-index.json docs/assets/app-theme.css
       - run: node --check docs/assets/docs.js
       - run: node --check docs/assets/docs-theme.js
+      - run: python -m unittest discover -s docs -p '*_test.py'
+      - run: python docs/validate_claims.py
       - run: python docs/validate_docs.py
 
   container-security:

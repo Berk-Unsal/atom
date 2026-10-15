@@ -239,7 +239,7 @@ func SegmentIntersectsSegment(s1, s2 Line) bool {
 }
 ```
 
-**Complexity**: O(log n) per ray thanks to R-Tree spatial indexing.
+**Query cost**: the R-tree prunes non-overlapping bounds before polygon tests. Cost depends on tree overlap, returned candidates and geometry; it is not a universal logarithmic-time guarantee.
 
 ---
 
@@ -247,10 +247,7 @@ func SegmentIntersectsSegment(s1, s2 Line) bool {
 
 ### Why R-Tree?
 
-RF simulations require millions of queries:
-- **Naive approach** (linear scan): O(n) per query × 90,000 rays = 1+ billion operations
-- **R-Tree approach** (spatial index): O(log n) per query × 90,000 rays = 1+ million operations
-- **Speedup**: 1000× faster
+RF evaluation repeats spatial queries. A linear scan tests every footprint; the R-tree first selects overlapping bounds and then checks candidate geometry. Candidate counts and runtime depend on the dataset and queried paths. This is an implementation description, not a measured speedup claim.
 
 ### R-Tree Structure
 
@@ -293,7 +290,7 @@ func RTtree.Query(ray LineSegment) []Building {
 }
 ```
 
-**Result**: Typically 5-20 building candidates per ray (vs 12,000 total buildings).
+**Result**: a path-dependent candidate set. Counts are workload evidence, not a fixed property of the index.
 
 ---
 
@@ -328,7 +325,7 @@ func IsInsideSector(direction float64, antennaAzimuth float64,
 }
 ```
 
-Samples outside the configured sector or radius do not contribute. Configured antenna gain is applied separately in the link budget; the diagram's zero value means zero relative preset attenuation at boresight. Version 1 does not model sidelobes or a continuous vendor antenna diagram.
+Samples outside the configured sector or radius do not contribute. Configured antenna gain is applied separately in the link budget; the diagram's zero value means zero relative preset attenuation at boresight. Compatibility sector presets use hard eligibility; omni and the optional single-element reference have their separately documented full-azimuth behavior. These are analytic patterns, not vendor antenna diagrams.
 
 ---
 
@@ -336,7 +333,7 @@ Samples outside the configured sector or radius do not contribute. Configured an
 
 ### Problem Statement
 
-**Find**: The antenna azimuth that best serves demand-weighted coverage
+**Find**: The recommended azimuth among 36 evaluated 10-degree directions, using POI demand and residential-demand scores plus capped usable-ray reach as a tie-break component.
 
 **Constraints**:
 - Distance range: 25 m to 5 km
@@ -368,12 +365,13 @@ func OptimizeAzimuth(tx Location, request SimulationRequest) float64 {
             }
         }
         
-        // Coverage is capped and used as a tie-breaker
-        coverageTieBreaker := 0.0
+        // Usable ray reach contributes a capped planning score
+        reachScore := 0.0
+        reachCap := min(request.radius_m, 500)
         for ray in rays {
-            coverageTieBreaker += min(ray.distance, 500) / 500 * 100
+            reachScore += min(ray.distance, reachCap) / reachCap * 100
         }
-        score := demandScore + residentialScore + coverageTieBreaker
+        score := demandScore + residentialScore + reachScore
         
         // Track best
         if score > bestScore {
@@ -386,54 +384,17 @@ func OptimizeAzimuth(tx Location, request SimulationRequest) float64 {
 }
 ```
 
-### Complexity Analysis
+### Search scope and runtime evidence
 
-- **Loop iterations**: 360° / 10° = 36
-- **Per iteration**:
-  - Ray tracing: O(90,000 rays × log n intersections) ~1 second
-  - Coverage calculation: O(90,000)
-- **Total time**: ~36 seconds (naive)
-- **Optimized time**: ~250 ms (with parallelization)
+The single-sector sweep evaluates 36 directions from 0° through 350°. For each direction, it sums unique POI demand weight × 10,000, unique residential demand × 10,000, and per-ray usable reach capped at `min(radius_m, 500 m)` and normalized to 100 per ray. These are demand proxies and a reach component, not a continuous-area coverage percentage. The chosen direction has the highest combined score among those evaluated; ties preserve the established deterministic order. The compatibility field `optimal_azimuth` means this bounded recommendation, not a global optimum over arbitrary angles or radio parameters.
 
-### Parallelization
+The sector implementation uses at most four workers, bounded by available CPUs and candidate count. This does not establish a proportional speedup or a general latency promise.
 
-Go's Goroutines enable **embarrassingly parallel** optimization:
+A separate [historical network optimization audit](network-optimization-deadline-audit.md) records an affected **six-Cell, 28 GHz** Ankara request at **120 rays, 400 m, 30 dBm and a 120° beam**, using legacy two-pass search, default priorities and no positive radio-quality objective. In the recorded Go 1.26.6 Linux/arm64 Docker controls on an Apple M4 host (10 logical CPUs, GOMAXPROCS=10, no container CPU/memory quota), uncached request times were approximately **94.7–112.7 s**, versus corrected isolated controls of **6.72–6.76 s**. The first uncached run overlapped host measurements; these small samples are descriptive, not population latency guarantees.
 
-```go
-// Create worker pool
-type Job struct {
-    azimuth float64
-}
+All **434 network proposals** remained. The scorer still requested **2,604 independent Cell contributions**, but request-local reuse reduced expensive work to **180 misses plus 2,424 hits**; two selected IDs had identical locations/profiles. Removal of repeated RF contribution work was the demonstrated implementation change. Worker counts and scheduling were unchanged. There is no controlled factorial percentage split for caching versus concurrency. These are admitted-request measurements, excluding the full browser journey, dataset startup and later map refreshes; request-local reuse starts fresh on each request. OS/runtime warm state and other workloads can affect timing. No universal speedup, eight-Cell latency or current-hardware guarantee follows.
 
-type Result struct {
-    azimuth float64
-    coverage float64
-}
-
-// Dispatch all azimuths to workers
-jobs := make(chan Job, 36)
-results := make(chan Result, 36)
-
-// 4 workers process in parallel
-for w := 1; w <= 4; w++ {
-    go worker(jobs, results)
-}
-
-for azimuth := 0; azimuth < 360; azimuth += 10 {
-    jobs <- Job{azimuth}
-}
-
-// Collect results
-for i := 1; i <= 36; i++ {
-    result := <-results
-    if result.coverage > bestCoverage {
-        bestCoverage = result.coverage
-        bestAzimuth = result.azimuth
-    }
-}
-```
-
-**Result**: 4× speedup on quad-core machine.
+Network optimization is also bounded: the default two-pass coordinate search proposes `72 × Cell count + 2` evaluations, or **578 proposals for eight Cells**. Its recommendation and discovered Pareto set do not prove global mathematical optimality.
 
 ## Network Objective Model
 
@@ -450,26 +411,11 @@ Utilities are clamped to `[0, 1]`; they are not normalized against the current c
 
 ## Performance Characteristics
 
-### Benchmarks (Ankara Dataset)
+### Workload-dependent runtime and memory
 
-| Operation | Time | Scaling |
-|-----------|------|---------|
-| Load GeoJSON | 500 ms | O(n) where n=12,000 buildings |
-| Build R-Tree | 1 second | O(n log n) |
-| Single ray trace | < 1 μs | O(log n) |
-| Up to 25,000 returned ray features | Bounded | O(n log n) parallelized |
-| Network optimization | See `BenchmarkCanonicalAnkaraNetworkOptimization` in the repository | Fixed-domain entity discovery is prepared once; candidate RF scoring remains the dominant work |
-| API response | < 100 ms p99 | Network + serialization |
+Runtime depends on dataset geometry, Cell count, band, rays, radius, selected model and objective, hardware, and concurrent host work. The historical six-Cell comparison above is the supported timing example; it is not a general response-time promise. `BenchmarkCanonicalAnkaraNetworkOptimization` provides a repeatable developer workload, not a product latency guarantee.
 
-### Memory Usage
-
-| Component | Size |
-|-----------|------|
-| Buildings (GeoJSON) | 80 MB (disk) → 40 MB (RAM) |
-| R-Tree indices | 150 MB |
-| Tower locations | 2 MB |
-| Returned ray features per request | 25,000 maximum |
-| **Total footprint** | ~200 MB typical |
+Memory depends on the loaded dataset, spatial indices, active requests and retained results. The 25,000-feature response ceiling bounds one output dimension; it does not establish a universal process-memory footprint. See the [eight-Cell qualification](eight-cell-product-cap-promotion.md) for the bounded Profile A envelope and measurements.
 
 ---
 
@@ -490,26 +436,17 @@ Before ray allocation, the API requires `rays × ceil(radius_m / 25) ≤ 25,000`
 
 ### Model Limitations
 
-1. **Flat Earth**: No terrain elevation (can add with GeoTIFF)
-2. **No multipath**: Doesn't model reflections/scattering
-3. **Ideal antennas**: Assumes perfect omnidirectional at low freq
-4. **Static buildings**: Doesn't model moving obstructions
-5. **Weather**: No rain/weather fading
+- Canonical network propagation does not consume terrain. Optional terrain, Fresnel and single-edge path-profile diagnostics are separate evidence.
+- Canonical RF excludes multipath reflection, fading, array/codebook beamforming, MIMO scheduling and UE behavior. Isolated reference panels do not silently add those effects.
+- Antenna presets are analytic or single-element references, not measured/vendor hardware patterns.
+- Geometry and demand are static, incomplete planning inputs; missing height evidence and model fallback are explicit.
+- Building-entry estimates apply just inside a representative facade, not throughout rooms or floors.
 
-### When to Use A.T.O.M
+### When to use A.T.O.M
 
-✅ **Good for**:
-- Network planning and site selection
-- Quick feasibility studies
-- Education and training
-- Comparison between sites
-- Coverage mapping
+Use it for bounded configuration comparisons, azimuth recommendations, inspectable link budgets, building-service estimates and modeled co-channel interference. The interference ledger uses explicit resource assumptions and finite per-Cell horizons; it is not measured UE interference, adjacent-channel full-system modeling or commercial network KPI truth.
 
-❌ **Not suitable for**:
-- Detailed link budget analysis
-- Precise handover prediction
-- Interference modeling
-- Non-stationary targets
+Measured real-world propagation accuracy is not yet established. Deployment approval, calibrated antenna/terrain performance, mobility/handover prediction, dynamic traffic/capacity and complete operator-network validation require evidence and capabilities outside the released scope.
 
 ---
 

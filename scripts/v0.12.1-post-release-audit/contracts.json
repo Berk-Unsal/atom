@@ -1,0 +1,67 @@
+{
+  "openapi_version": "3.1.0",
+  "spec_validator": "0.9.0",
+  "schema_validation": "failed",
+  "schema_errors": [
+    {
+      "path": [
+        "paths",
+        "/api/meta",
+        "get",
+        "responses",
+        "200"
+      ],
+      "message": "Unevaluated properties are not allowed ('and active dataset metadata', 'model', 'technology' were unexpected)"
+    },
+    {
+      "path": [
+        "paths",
+        "/api/analyze-sector",
+        "post",
+        "responses",
+        "200"
+      ],
+      "message": "Unevaluated properties are not allowed ('each carrying the canonical RF contract' was unexpected)"
+    },
+    {
+      "path": [
+        "paths",
+        "/api/processes/batch-experiment",
+        "get",
+        "responses",
+        "200"
+      ],
+      "message": "Unevaluated properties are not allowed ('accepted axes', 'and job links', 'limits' were unexpected)"
+    },
+    {
+      "path": [
+        "paths",
+        "/api/core/topology",
+        "get",
+        "responses",
+        "200"
+      ],
+      "message": "Unevaluated properties are not allowed ('and route decisions', 'interface edges' were unexpected)"
+    },
+    {
+      "path": [
+        "components",
+        "responses",
+        "TooComplex"
+      ],
+      "message": "Unevaluated properties are not allowed ('000-feature response ceiling' was unexpected)"
+    }
+  ],
+  "local_references_resolved": 410,
+  "caps": {
+    "NetworkRequest": 8,
+    "BuildingEntryAnalysisRequest": 8,
+    "RecommendationRequest": 5,
+    "MeasurementRequest": 6
+  },
+  "shipping_source_files_compared": 82,
+  "shipping_source_changed": [],
+  "historical_shipping_version": "0.12.0",
+  "current_version": "0.12.1",
+  "interpretation": "82 production source identities match historical normal cap8 shipping evidence. Go toolchain/dependency updates and frontend/docs changes do not requalify another binary or hardware profile; historical timings stay attributed to Go1.26.6 Linux/arm64 Profile A."
+}

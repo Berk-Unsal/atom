@@ -1,0 +1,1773 @@
+{
+  "wording_only_annotations": [
+    {
+      "path": "/api/optimize-azimuth",
+      "method": "post",
+      "field": "summary",
+      "before": "Optimize one sector azimuth",
+      "after": "Recommend one sector azimuth"
+    },
+    {
+      "path": "/api/optimize-azimuth",
+      "method": "post",
+      "field": "description",
+      "before": null,
+      "after": "Evaluates 36 azimuths on a 10-degree grid using unique POI demand and residential weights plus capped usable ray reach. The compatibility optimal_azimuth field identifies the best evaluated direction; no global optimum or area-coverage percentage is established."
+    },
+    {
+      "path": "/api/optimize-network",
+      "method": "post",
+      "field": "description",
+      "before": null,
+      "after": "Bounded deterministic azimuth search. Default legacy two-pass search proposes 578 evaluations for eight Cells. Compatibility optimal_* fields identify discovered candidates and do not prove global optimality."
+    },
+    {
+      "path": "/api/optimize-azimuth",
+      "method": "post",
+      "response_code": "200",
+      "field": "description",
+      "before": "Optimal azimuth, propagation-reach score, score breakdown, and canonical RF contract",
+      "after": "Recommended azimuth from the bounded sweep, propagation-reach score, score breakdown, and canonical RF contract"
+    }
+  ],
+  "baseline_strict_errors": [
+    "paths//api/meta/get/responses/200: Unevaluated properties are not allowed ('and active dataset metadata', 'model', 'technology' were unexpected)",
+    "paths//api/analyze-sector/post/responses/200: Unevaluated properties are not allowed ('each carrying the canonical RF contract' was unexpected)",
+    "paths//api/processes/batch-experiment/get/responses/200: Unevaluated properties are not allowed ('accepted axes', 'and job links', 'limits' were unexpected)",
+    "paths//api/core/topology/get/responses/200: Unevaluated properties are not allowed ('and route decisions', 'interface edges' were unexpected)",
+    "components/responses/TooComplex: Unevaluated properties are not allowed ('000-feature response ceiling' was unexpected)"
+  ],
+  "baseline_strict_error_count": 5,
+  "final_strict_error_count": 0,
+  "semantic_contract_comparison": "PASS: five Response Object description/YAML repairs plus bounded-search wording annotations; content/schemas/requests/statuses unchanged",
+  "caps": {
+    "NetworkRequest": 8,
+    "RecommendationRequest": 5,
+    "MeasurementRequest": 6
+  },
+  "probes": [
+    {
+      "path": "/healthz",
+      "method": "get",
+      "status": 200,
+      "schema_checked": true,
+      "json_sha256": "347be4183693e682fe8dac0b8f1702ddbe59367e83651ae1ea38152ec5a8cedd",
+      "request": null,
+      "response": {
+        "backend": "static-in-memory",
+        "buildingDemand": {
+          "total_buildings": 161784,
+          "demand_weighted_buildings": 5957,
+          "residential_weighted_buildings": 75446,
+          "density_weighted_buildings": 125221,
+          "avg_demand_weight": 44.18,
+          "max_demand_weight": 240,
+          "avg_residential_demand": 20.37,
+          "max_residential_demand": 108.65,
+          "avg_density_score": 49.78,
+          "max_density_score": 100,
+          "tag_coverage_pct": {
+            "amenity": 1.38,
+            "building:levels": 3.6,
+            "height": 0.69,
+            "name": 3.66,
+            "office": 0,
+            "shop": 0
+          },
+          "material_metadata_buildings": 0,
+          "material_metadata_coverage_pct": 0,
+          "material_tag_coverage_pct": {
+            "building:material": 0,
+            "facade:material": 0,
+            "material": 0,
+            "roof:material": 0
+          },
+          "material_categories": {
+            "unknown": 161784
+          },
+          "explicit_height_buildings": 1108,
+          "levels_derived_height_buildings": 4966,
+          "fallback_only_height_buildings": 155710,
+          "unavailable_height_buildings": 0,
+          "data_quality": "good"
+        },
+        "buildingIndex": {
+          "footprintCount": 161784,
+          "treeCount": 161784
+        },
+        "rtreeFootprints": 161784,
+        "status": "ok",
+        "towerCount": 451
+      }
+    },
+    {
+      "path": "/readyz",
+      "method": "get",
+      "status": 200,
+      "schema_checked": false,
+      "json_sha256": "0fc6c698578b8e661a618e657314d9b870229d1aff83a96a615f22c0b8229714",
+      "request": null,
+      "response": {
+        "buildings": true,
+        "dataset_error": "",
+        "frontend": true,
+        "status": "ready",
+        "towers": true
+      }
+    },
+    {
+      "path": "/api/meta",
+      "method": "get",
+      "status": 200,
+      "schema_checked": true,
+      "json_sha256": "8d3b80a43b7f61f635c4f30b2f92e4b9fbaeeeaae8a496ae72b16d036da5853a",
+      "request": null,
+      "response": {
+        "application_version": "dev",
+        "build_commit": "unknown",
+        "building_entry_model": {
+          "id": "3gpp_tr_38_901_o2i",
+          "reference": "3GPP TR 38.901 V19.4.0, \u00a77.4.3.1",
+          "scenario": "building-entry-just-inside-facade",
+          "description": "Deterministic median outdoor facade power plus 3GPP TR 38.901 O2I entry loss; not an indoor or whole-building coverage model",
+          "supported_frequencies_ghz": [
+            2.6,
+            28
+          ],
+          "outdoor_baseline_model": "urban_short_range",
+          "outdoor_baseline_rule": "Concept 4D 3GPP UMa LOS/NLOS to the representative facade point; outdoor wall events are not added as legacy wall loss",
+          "indoor_depth_m": 0,
+          "random_draws_used": false,
+          "material_evidence_only": true,
+          "no_whole_building_claim": true,
+          "profile_semantics": "low-loss and high-loss reference scenarios; both are retained when facade material evidence is not defensibly mapped",
+          "unsupported_frequencies_ghz": [
+            140
+          ],
+          "profiles": [
+            {
+              "id": "low_loss",
+              "label": "low_loss",
+              "frequency_scope": "o2i_low_high_profile",
+              "external_wall_loss_db": 17.828787452687028,
+              "indoor_depth_m": 0,
+              "indoor_loss_db": 0,
+              "median_entry_loss_db": 17.828787452687028,
+              "shadow_sigma_db": 0,
+              "reference_shadow_sigma_db": 4.4,
+              "reference_shadow_sigma_note": "TR 38.901 Table 7.4.3-2 reference sigma; no random draw is sampled in Concept 4E",
+              "random_draw_applied": false,
+              "equation": "PL_tw = PL_npi - 10 log10(sum_i(p_i * 10^(-L_material_i/10))); PL_in = 0.5 * d_2D-in with d_2D-in = 0 m for Concept 4E",
+              "composition_assumption": "low-loss: PL_npi = 5 dB, p_standard-glass = 0.3, p_concrete = 0.7"
+            },
+            {
+              "id": "high_loss",
+              "label": "high_loss",
+              "frequency_scope": "o2i_low_high_profile",
+              "external_wall_loss_db": 35.029019597240406,
+              "indoor_depth_m": 0,
+              "indoor_loss_db": 0,
+              "median_entry_loss_db": 35.029019597240406,
+              "shadow_sigma_db": 0,
+              "reference_shadow_sigma_db": 6.5,
+              "reference_shadow_sigma_note": "TR 38.901 Table 7.4.3-2 reference sigma; no random draw is sampled in Concept 4E",
+              "random_draw_applied": false,
+              "equation": "PL_tw = PL_npi - 10 log10(sum_i(p_i * 10^(-L_material_i/10))); PL_in = 0.5 * d_2D-in with d_2D-in = 0 m for Concept 4E",
+              "composition_assumption": "high-loss: PL_npi = 5 dB, p_IRR-glass = 0.7, p_concrete = 0.3"
+            }
+          ]
+        },
+        "dataset": {
+          "schema_version": 2,
+          "id": "ankara-open-planning",
+          "name": "Ankara Open Planning Dataset",
+          "version": "2026.07",
+          "crs": "EPSG:4326",
+          "bounds": [
+            32.45,
+            39.55,
+            33.25,
+            40.25
+          ],
+          "generated_at": "2026-07-17",
+          "sources": [
+            "OpenStreetMap",
+            "OpenCellID-derived planning records"
+          ],
+          "licenses": [
+            "ODbL 1.0 for OpenStreetMap-derived data",
+            "Review upstream OpenCellID terms before redistribution"
+          ],
+          "confidence": "Static planning dataset with synthetic demand enrichment; not an operator inventory.",
+          "files": {
+            "towers": "ankara_5g_nodes.geojson",
+            "buildings": "ankara_buildings.geojson"
+          },
+          "sha256": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          },
+          "layers": {
+            "buildings": {
+              "kind": "building_footprints",
+              "format": "geojson",
+              "crs": "EPSG:4326",
+              "optional": false,
+              "source": "OpenStreetMap",
+              "license": "ODbL 1.0",
+              "confidence": "Static footprints with heuristic demand enrichment."
+            },
+            "towers": {
+              "kind": "cell_inventory",
+              "format": "geojson",
+              "crs": "EPSG:4326",
+              "optional": false,
+              "source": "OpenCellID-derived planning records",
+              "license": "Review upstream OpenCellID terms before redistribution",
+              "confidence": "Planning inventory; not operator-verified."
+            }
+          },
+          "quality": {
+            "summary": "Geometry and hashes validated; RF inventory and demand attributes remain planning-grade.",
+            "feature_counts": {
+              "buildings": 161626,
+              "towers": 451
+            },
+            "geometry": {
+              "buildings": {
+                "invalid_input": 0,
+                "repaired": 0,
+                "dropped": 0,
+                "output": 161626
+              },
+              "towers": {
+                "invalid_input": 0,
+                "repaired": 0,
+                "dropped": 0,
+                "output": 451
+              }
+            },
+            "coverage": {
+              "requested_bounds": [
+                32.45,
+                39.55,
+                33.25,
+                40.25
+              ],
+              "data_bounds": [
+                32.45,
+                39.55,
+                33.25,
+                40.25
+              ],
+              "coverage_ratio": 1
+            }
+          },
+          "spatial_evidence": {
+            "schema_version": "atom-spatial-evidence-v1",
+            "matching_policy_version": "footprint-height-match-v1",
+            "source_precedence": [
+              "user_supplied",
+              "lidar_derived",
+              "osm_explicit_height",
+              "external_building_height",
+              "osm_levels_derived",
+              "dsm_minus_dtm",
+              "generic_fallback",
+              "unavailable"
+            ],
+            "terrain_interpolation": "bilinear",
+            "datum_transformation_policy": "explicit-compatible-datum-v1"
+          }
+        },
+        "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+        "model_id": "urban_short_range",
+        "model_version": "urban_short_range",
+        "propagation_models": [
+          {
+            "id": "urban_short_range",
+            "description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+            "model_family": "3GPP UMa outdoor urban median path loss",
+            "scenario": "urban-short-range-outdoor-to-outdoor",
+            "formula": "PL_LOS = PL1/PL2 with dBP; PL_NLOS = max(PL_LOS, PL') using Table 7.4.1-1",
+            "fallback_model_id": "legacy_fspl_walls",
+            "building_height_used": true,
+            "requires_building_data": true,
+            "requires_los_or_nlos": true,
+            "frequency_min_ghz": 0.5,
+            "frequency_max_ghz": 100,
+            "distance_min_m": 10,
+            "distance_max_m": 5000,
+            "limitations": [
+              "median outdoor path loss only",
+              "no shadow fading, Fresnel clearance, diffraction, or reflection",
+              "unknown building heights use conservative 2D NLOS",
+              "terrain is unavailable in the current Ankara network evaluator; flat-ground relative-height assumption applies"
+            ]
+          },
+          {
+            "id": "legacy_fspl_walls",
+            "description": "Legacy FSPL with frequency-dependent footprint wall-event loss",
+            "model_family": "free-space path loss plus footprint wall events",
+            "scenario": "planning-compatibility",
+            "formula": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration",
+            "fallback_model_id": "legacy_fspl_walls",
+            "building_height_used": false,
+            "requires_building_data": false,
+            "requires_los_or_nlos": false,
+            "frequency_min_ghz": 0,
+            "frequency_max_ghz": 300,
+            "distance_min_m": 0,
+            "distance_max_m": 5000,
+            "limitations": [
+              "material-agnostic wall loss",
+              "not an empirical urban path-loss model"
+            ]
+          },
+          {
+            "id": "research_sub_thz",
+            "description": "Research-only sub-THz planning profile using the legacy conservative attenuation envelope",
+            "model_family": "research planning profile",
+            "scenario": "research-sub-thz",
+            "formula": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - L_propagation - L_building - L_system - L_polarization + G_rx + calibration",
+            "fallback_model_id": "legacy_fspl_walls",
+            "building_height_used": false,
+            "requires_building_data": false,
+            "requires_los_or_nlos": false,
+            "frequency_min_ghz": 100,
+            "frequency_max_ghz": 300,
+            "distance_min_m": 0,
+            "distance_max_m": 5000,
+            "limitations": [
+              "research-only",
+              "uses conservative planning attenuation rather than a validated 140 GHz channel model"
+            ]
+          }
+        ],
+        "rf_budget_policy": "bounded-followups-v1",
+        "rf_contract": {
+          "model_id": "urban_short_range",
+          "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+          "applied_model_id": "urban_short_range",
+          "model_family": "3GPP TR 38.901 UMa median path loss",
+          "scenario": "urban short-range outdoor-to-outdoor planning",
+          "model_status": "deterministic planning baseline",
+          "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+          "applicability": "0.5 < f_c < 100 GHz, 10 m <= d_2D <= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+          "fallback_model_id": "legacy_fspl_walls",
+          "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+          "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+          "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+          "deterministic": true,
+          "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+          "uses_terrain": false,
+          "uses_building_height": true,
+          "uses_diffraction": false,
+          "uses_reflection": false,
+          "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+          "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+          "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+          "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+          "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+          "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+          "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+          "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+          "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+          "antenna_pattern_id": "ideal-sector",
+          "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+          "antenna_pattern_uses_hard_beam": true,
+          "absolute_terms": [
+            "conducted transmit power",
+            "absolute TX boresight gain",
+            "receive antenna gain",
+            "system loss",
+            "global calibration offset"
+          ],
+          "relative_attenuation_terms": [
+            "horizontal antenna attenuation",
+            "vertical antenna attenuation"
+          ],
+          "propagation_terms": [
+            "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+            "3GPP UMa NLOS max(LOS, PL') path loss",
+            "footprint-height-los-v1 geometric centerline classifier",
+            "conservative unknown-height fallback"
+          ],
+          "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+          "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+          "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+          "building_service_threshold_dbm": -100,
+          "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+          "propagation_reach_definition": "usable receiver-power reach",
+          "surface_definition": "raw single-cell received-power surface",
+          "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+          "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+          "interference_rsrp_threshold_dbm": -110,
+          "interference_sinr_threshold_db": 0,
+          "interference_rsrq_threshold_db": -20,
+          "calibration_offset_db": 0,
+          "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+          "endpoint_scope": "canonical network RF evaluation"
+        },
+        "supported_technologies": [
+          "4g",
+          "5g",
+          "6g-research"
+        ],
+        "technology_capabilities": [
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/recommend-sites",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/path-profile",
+            "status": "research_only",
+            "reason": "research_profile_only",
+            "note": "endpoint is available only as the existing research/planning profile"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/interference",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/api/processes/batch-experiment",
+      "method": "get",
+      "status": 200,
+      "schema_checked": false,
+      "json_sha256": "1907d041a7f3a641b91b06f7719df3e2cf2cf811b34401c986de839f2fab8c2e",
+      "request": null,
+      "response": {
+        "dimensions": [
+          "frequency_ghz",
+          "tx_power_dbm",
+          "beam_width_deg",
+          "azimuth_deg",
+          "calibration_offset_db"
+        ],
+        "id": "batch-experiment",
+        "job_control_options": [
+          "async-execute",
+          "dismiss"
+        ],
+        "max_runs": 64,
+        "version": "1.0.0"
+      }
+    },
+    {
+      "path": "/api/core/topology",
+      "method": "get",
+      "status": 200,
+      "schema_checked": false,
+      "json_sha256": "2ef0cb20cc38ed31036cf31b1eaea775000959e573ed0ad0b50ad96d3434f10f",
+      "request": null,
+      "response": {
+        "edges": [],
+        "nodes": [],
+        "route_decisions": [],
+        "state": "disabled"
+      }
+    },
+    {
+      "path": "/api/simulate",
+      "method": "post",
+      "status": 200,
+      "schema_checked": true,
+      "json_sha256": "7597566307e7e913777f13619bf5aa76ca5cb8475190dd8fe6affa2de749fcf3",
+      "request": {
+        "tower_lon": 32.85,
+        "tower_lat": 39.92,
+        "azimuth": 0,
+        "rays": 8,
+        "radius_m": 25,
+        "frequency_ghz": 28,
+        "tx_power_dbm": 30,
+        "beam_width": 120
+      },
+      "response": {
+        "geojson": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 0,
+                "ray_index": 4,
+                "segment_index": 0,
+                "signal_dbm": -35.7,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -35.7,
+                "path_loss_db": 90.7,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 0,
+                "segment_end_m": 25,
+                "candidate_checks": 0,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "los",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "no_footprint_intersection",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "los",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "no_footprint_intersection",
+                  "endpoint_case": "outdoor_to_outdoor"
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 90.72271631710674,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 90.72271631710674,
+                  "received_power_dbm": -35.722716317106745,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 79.27728368289326
+                },
+                "receiver_link_margin_db": 79.3
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.85000000000001,
+                    39.92022483040147
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 15,
+                "ray_index": 5,
+                "segment_index": 0,
+                "signal_dbm": -35.7,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -35.7,
+                "path_loss_db": 90.7,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 0,
+                "segment_end_m": 25,
+                "candidate_checks": 0,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "los",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "no_footprint_intersection",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "los",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "no_footprint_intersection",
+                  "endpoint_case": "outdoor_to_outdoor"
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 90.72271631710674,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 90.72271631710674,
+                  "received_power_dbm": -35.722716317106745,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 79.27728368289326
+                },
+                "receiver_link_margin_db": 79.3
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.850075873580145,
+                    39.92021716946658
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 30,
+                "ray_index": 6,
+                "segment_index": 0,
+                "signal_dbm": -35.7,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -35.7,
+                "path_loss_db": 90.7,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 0,
+                "segment_end_m": 25,
+                "candidate_checks": 0,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "los",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "no_footprint_intersection",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "los",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "no_footprint_intersection",
+                  "endpoint_case": "outdoor_to_outdoor"
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 90.72271631710674,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 90.72271631710674,
+                  "received_power_dbm": -35.722716317106745,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 79.27728368289326
+                },
+                "receiver_link_margin_db": 79.3
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.85014657645311,
+                    39.92019470874693
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 45,
+                "ray_index": 7,
+                "segment_index": 0,
+                "signal_dbm": -35.7,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -35.7,
+                "path_loss_db": 90.7,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 0,
+                "segment_end_m": 25,
+                "candidate_checks": 0,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "los",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "no_footprint_intersection",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "los",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "no_footprint_intersection",
+                  "endpoint_case": "outdoor_to_outdoor"
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 90.72271631710674,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 90.72271631710674,
+                  "received_power_dbm": -35.722716317106745,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 79.27728368289326
+                },
+                "receiver_link_margin_db": 79.3
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.85020729029976,
+                    39.920158978916945
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 300,
+                "ray_index": 0,
+                "segment_index": 0,
+                "signal_dbm": -44.6,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -44.6,
+                "path_loss_db": 99.6,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 16.9,
+                "segment_start_m": 0,
+                "segment_end_m": 16.9,
+                "hit_building_id": "feature-37810",
+                "candidate_checks": 1,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "nlos",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "conservative_2d_unknown_height",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "nlos",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "conservative_2d_unknown_height",
+                  "endpoint_case": "outdoor_to_outdoor",
+                  "unknown_height_buildings": [
+                    {
+                      "building_id": "feature-37810",
+                      "logical_building_id": "feature-37810",
+                      "part_ids": [
+                        "feature-37810"
+                      ],
+                      "height_source": "unavailable",
+                      "intervals": [
+                        {
+                          "t_entry": 0.6752999365792736,
+                          "t_exit": 0.6752999365792736,
+                          "los_height_at_entry_m": 0,
+                          "los_height_at_exit_m": 0,
+                          "minimum_los_height_m": 0,
+                          "maximum_los_height_m": 0,
+                          "roof_height_m": 0,
+                          "minimum_clearance_m": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 99.60244388734219,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 99.60244388734219,
+                  "received_power_dbm": -44.60244388734219,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 70.39755611265781
+                },
+                "receiver_link_margin_db": 70.4
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.8498285565006,
+                    39.92007591379099
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 300,
+                "ray_index": 0,
+                "segment_index": 1,
+                "signal_dbm": -67.1,
+                "signal_start_dbm": -44.6,
+                "signal_end_dbm": -67.1,
+                "path_loss_db": 122.1,
+                "wall_loss_db": 30,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 16.9,
+                "segment_end_m": 25,
+                "candidate_checks": 1,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "legacy_fspl_walls",
+                "los_state": "unknown",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "receiver_inside_building",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "unknown",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "receiver_inside_building",
+                  "endpoint_case": "indoor_receiver"
+                },
+                "fallback_used": true,
+                "applicability_reason": "unsupported_endpoint",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 92.10184761799198,
+                  "propagation_loss_db": 92.10184761799198,
+                  "building_loss_db": 30,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 122.10184761799198,
+                  "received_power_dbm": -67.10184761799198,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 47.89815238200802
+                },
+                "receiver_link_margin_db": 47.9
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.8498285565006,
+                    39.92007591379099
+                  ],
+                  [
+                    32.84974612244113,
+                    39.92011241492391
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 315,
+                "ray_index": 1,
+                "segment_index": 0,
+                "signal_dbm": -44.8,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -44.8,
+                "path_loss_db": 99.8,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 17.6,
+                "segment_start_m": 0,
+                "segment_end_m": 17.6,
+                "hit_building_id": "feature-37810",
+                "candidate_checks": 1,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "nlos",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "conservative_2d_unknown_height",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "nlos",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "conservative_2d_unknown_height",
+                  "endpoint_case": "outdoor_to_outdoor",
+                  "unknown_height_buildings": [
+                    {
+                      "building_id": "feature-37810",
+                      "logical_building_id": "feature-37810",
+                      "part_ids": [
+                        "feature-37810"
+                      ],
+                      "height_source": "unavailable",
+                      "intervals": [
+                        {
+                          "t_entry": 0.701382478813353,
+                          "t_exit": 0.701382478813353,
+                          "los_height_at_entry_m": 0,
+                          "los_height_at_exit_m": 0,
+                          "minimum_los_height_m": 0,
+                          "maximum_los_height_m": 0,
+                          "roof_height_m": 0,
+                          "minimum_clearance_m": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 99.82723884012078,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 99.82723884012078,
+                  "received_power_dbm": -44.827238840120785,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 70.17276115987922
+                },
+                "receiver_link_margin_db": 70.2
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.84985461021573,
+                    39.920111505026846
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 315,
+                "ray_index": 1,
+                "segment_index": 1,
+                "signal_dbm": -46.5,
+                "signal_start_dbm": -44.8,
+                "signal_end_dbm": -46.5,
+                "path_loss_db": 101.5,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 22.4,
+                "segment_start_m": 17.6,
+                "segment_end_m": 22.4,
+                "hit_building_id": "feature-37810",
+                "candidate_checks": 1,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "nlos",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "conservative_2d_unknown_height",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "nlos",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "conservative_2d_unknown_height",
+                  "endpoint_case": "outdoor_to_outdoor",
+                  "unknown_height_buildings": [
+                    {
+                      "building_id": "feature-37810",
+                      "logical_building_id": "feature-37810",
+                      "part_ids": [
+                        "feature-37810"
+                      ],
+                      "height_source": "unavailable",
+                      "intervals": [
+                        {
+                          "t_entry": 0.701382478813353,
+                          "t_exit": 0.8931660381731482,
+                          "los_height_at_entry_m": 0,
+                          "los_height_at_exit_m": 0,
+                          "minimum_los_height_m": 0,
+                          "maximum_los_height_m": 0,
+                          "roof_height_m": 0,
+                          "minimum_clearance_m": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 101.53305644877173,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 101.53305644877173,
+                  "received_power_dbm": -46.53305644877173,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 68.46694355122827
+                },
+                "receiver_link_margin_db": 68.5
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.84985461021573,
+                    39.920111505026846
+                  ],
+                  [
+                    32.84981485534422,
+                    39.9201419945694
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 315,
+                "ray_index": 1,
+                "segment_index": 2,
+                "signal_dbm": -47.5,
+                "signal_start_dbm": -46.5,
+                "signal_end_dbm": -47.5,
+                "path_loss_db": 102.5,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 22.4,
+                "segment_end_m": 25,
+                "candidate_checks": 1,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "nlos",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "conservative_2d_unknown_height",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "nlos",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "conservative_2d_unknown_height",
+                  "endpoint_case": "outdoor_to_outdoor",
+                  "unknown_height_buildings": [
+                    {
+                      "building_id": "feature-37810",
+                      "logical_building_id": "feature-37810",
+                      "part_ids": [
+                        "feature-37810"
+                      ],
+                      "height_source": "unavailable",
+                      "intervals": [
+                        {
+                          "t_entry": 0.701382478813353,
+                          "t_exit": 0.8931660381731482,
+                          "los_height_at_entry_m": 0,
+                          "los_height_at_exit_m": 0,
+                          "minimum_los_height_m": 0,
+                          "maximum_los_height_m": 0,
+                          "roof_height_m": 0,
+                          "minimum_clearance_m": 0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 102.4879350075468,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 102.4879350075468,
+                  "received_power_dbm": -47.487935007546795,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 67.5120649924532
+                },
+                "receiver_link_margin_db": 67.5
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.84981485534422,
+                    39.9201419945694
+                  ],
+                  [
+                    32.84979270970025,
+                    39.920158978916945
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 330,
+                "ray_index": 2,
+                "segment_index": 0,
+                "signal_dbm": -35.7,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -35.7,
+                "path_loss_db": 90.7,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 0,
+                "segment_end_m": 25,
+                "candidate_checks": 1,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "los",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "no_footprint_intersection",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "los",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "no_footprint_intersection",
+                  "endpoint_case": "outdoor_to_outdoor"
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 90.72271631710674,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 90.72271631710674,
+                  "received_power_dbm": -35.722716317106745,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 79.27728368289326
+                },
+                "receiver_link_margin_db": 79.3
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.8498534235469,
+                    39.92019470874693
+                  ]
+                ]
+              }
+            },
+            {
+              "type": "Feature",
+              "properties": {
+                "angle_deg": 345,
+                "ray_index": 3,
+                "segment_index": 0,
+                "signal_dbm": -35.7,
+                "signal_start_dbm": -33.8,
+                "signal_end_dbm": -35.7,
+                "path_loss_db": 90.7,
+                "wall_loss_db": 0,
+                "is_blocked": false,
+                "distance_m": 25,
+                "segment_start_m": 0,
+                "segment_end_m": 25,
+                "candidate_checks": 0,
+                "propagation_model_id": "urban_short_range",
+                "applied_propagation_model_id": "urban_short_range",
+                "los_state": "los",
+                "los_classifier_id": "footprint-height-los-v1",
+                "los_classification_basis": "no_footprint_intersection",
+                "terrain_status": "terrain_unavailable",
+                "los_classification": {
+                  "state": "los",
+                  "classifier_id": "footprint-height-los-v1",
+                  "classifier_description": "deterministic geometric Tx-to-Rx centerline visibility with explicit building-height provenance",
+                  "terrain_status": "terrain_unavailable",
+                  "classification_basis": "no_footprint_intersection",
+                  "endpoint_case": "outdoor_to_outdoor"
+                },
+                "applicability_reason": "applicable",
+                "link_budget": {
+                  "tx_power_dbm": 30,
+                  "tx_antenna_gain_dbi": 25,
+                  "antenna_gain_dbi": 25,
+                  "boresight_eirp_dbm": 55,
+                  "directional_eirp_dbm": 55,
+                  "rx_antenna_gain_dbi": 0,
+                  "system_loss_db": 0,
+                  "polarization_loss_db": 0,
+                  "calibration_offset_db": 0,
+                  "eirp_dbm": 55,
+                  "fspl_db": 0,
+                  "propagation_loss_db": 90.72271631710674,
+                  "building_loss_db": 0,
+                  "tx_pattern_attenuation_db": 0,
+                  "horizontal_pattern_attenuation_db": 0,
+                  "vertical_pattern_attenuation_db": 0,
+                  "pattern_attenuation_db": 0,
+                  "total_loss_db": 90.72271631710674,
+                  "received_power_dbm": -35.722716317106745,
+                  "receiver_sensitivity_mode": "manual",
+                  "effective_receiver_sensitivity_dbm": -115,
+                  "receiver_link_margin_db": 79.27728368289326
+                },
+                "receiver_link_margin_db": 79.3
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                  [
+                    32.85,
+                    39.92
+                  ],
+                  [
+                    32.849924126419864,
+                    39.92021716946658
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "stats": {
+          "blocked_pct": 0,
+          "avg_rx_dbm": -41.1,
+          "min_range_m": 25,
+          "max_range_m": 25
+        },
+        "rf_profile": {
+          "schema_version": 1,
+          "network_tech": "5g",
+          "propagation_model": "urban_short_range",
+          "frequency_ghz": 28,
+          "band": "NR n257",
+          "bandwidth_mhz": 100,
+          "channel_id": "CH-1",
+          "duplex_mode": "tdd",
+          "tx_power_dbm": 30,
+          "antenna_gain_dbi": 25,
+          "rx_antenna_gain_dbi": 0,
+          "system_loss_db": 0,
+          "polarization_loss_db": 0,
+          "radius_m": 25,
+          "beam_width": 120,
+          "antenna_height_m": 25,
+          "mechanical_downtilt_deg": 0,
+          "electrical_downtilt_deg": 0,
+          "orientation_deg": 0,
+          "horizontal_pattern_id": "ideal-sector",
+          "vertical_pattern_id": "flat",
+          "load_factor": 0.7,
+          "reuse_factor": 1,
+          "receiver_height_m": 1.5,
+          "receiver_sensitivity_dbm": -115,
+          "receiver_sensitivity_mode": "manual",
+          "receiver_noise_bandwidth_hz": 100000000,
+          "receiver_noise_bandwidth_source": "channel_bandwidth_approximation",
+          "receiver_noise_figure_db": 7,
+          "receiver_required_snr_db": 3,
+          "receiver_margin_db": 0,
+          "tx_antenna_gain_dbi": 25
+        },
+        "receiver_threshold": {
+          "mode": "manual",
+          "sensitivity_dbm": -115,
+          "noise_bandwidth_source": "not_applicable",
+          "assumptions": [
+            "receiver sensitivity is a direct configured threshold; no thermal-noise, noise-figure, SNR, or margin term is evaluated",
+            "network interference is evaluated separately through RSRP, SINR, and RSRQ"
+          ],
+          "applicability": "manual noise-limited receiver threshold for deterministic planning"
+        },
+        "rf_contract": {
+          "model_id": "urban_short_range",
+          "model_description": "3GPP TR 38.901 UMa median outdoor urban path loss with deterministic height-aware footprint LOS/NLOS classification",
+          "applied_model_id": "urban_short_range",
+          "model_family": "3GPP TR 38.901 UMa median path loss",
+          "scenario": "urban short-range outdoor-to-outdoor planning",
+          "model_status": "deterministic planning baseline",
+          "reference": "3GPP TR 38.901 V19.4.0, Table 7.4.1-1 UMa path loss",
+          "applicability": "0.5 < f_c < 100 GHz, 10 m <= d_2D <= 5000 m, known Tx/Rx heights in the deterministic UMa envelope, outdoor-to-outdoor endpoint, and footprint LOS/NLOS classification",
+          "fallback_model_id": "legacy_fspl_walls",
+          "fallback_policy": "if the requested model is outside its explicit frequency, distance, endpoint, building-data, or LOS/NLOS scope, evaluate the legacy_fspl_walls model and report the reason",
+          "los_classification_rule": "footprint-height-los-v1: no footprint is LOS; known-height footprints block only when the flat-ground geometric centerline reaches the roof; cleared known roofs are LOS; unknown-height intersections use conservative NLOS; indoor endpoints and missing footprint data are not urban-applicable",
+          "building_height_note": "explicit OSM height is observed_tag; building:levels is derived_from_levels using 3 m per level; generic 9 m fallback is never roof evidence and unknown intersections remain conservative NLOS",
+          "deterministic": true,
+          "propagation_dimensions": "height-aware 2D footprint centerline visibility with flat-ground relative heights and 3D distance in the 3GPP UMa median path-loss equation",
+          "uses_terrain": false,
+          "uses_building_height": true,
+          "uses_diffraction": false,
+          "uses_reflection": false,
+          "wall_model": "none in the urban formula; footprint boundaries classify outdoor LOS/NLOS and are not converted into legacy wall dB",
+          "link_budget_equation": "P_rx = P_tx(conducted) + G_tx,absolute - A_tx,pattern - PL_3GPP_UMa(LOS|NLOS) - L_system - L_polarization + G_rx + calibration",
+          "boresight_eirp_equation": "EIRP_boresight = P_tx(conducted) + G_tx,absolute",
+          "directional_eirp_equation": "EIRP_directional = EIRP_boresight - A_tx,pattern",
+          "tx_power_semantics": "tx_power_dbm is conducted transmitter output power before the configured absolute TX antenna gain",
+          "tx_gain_semantics": "antenna_gain_dbi is the absolute TX boresight gain; tx_antenna_gain_dbi is its preferred input alias",
+          "rx_gain_semantics": "rx_antenna_gain_dbi is an explicit receive-antenna gain applied after propagation; default 0 dBi",
+          "polarization_semantics": "polarization_loss_db is an explicit deterministic link loss; default 0 dB; no orientation/vector mismatch model is implied",
+          "system_loss_semantics": "system_loss_db is an explicit non-propagation loss applied after directional TX EIRP; default 0 dB",
+          "antenna_pattern_id": "ideal-sector",
+          "antenna_pattern_description": "Compatibility ideal sector: zero relative pattern attenuation inside the configured hard beam; flat vertical cut",
+          "antenna_pattern_uses_hard_beam": true,
+          "absolute_terms": [
+            "conducted transmit power",
+            "absolute TX boresight gain",
+            "receive antenna gain",
+            "system loss",
+            "global calibration offset"
+          ],
+          "relative_attenuation_terms": [
+            "horizontal antenna attenuation",
+            "vertical antenna attenuation"
+          ],
+          "propagation_terms": [
+            "3GPP UMa PL1/PL2 breakpoint LOS path loss",
+            "3GPP UMa NLOS max(LOS, PL') path loss",
+            "footprint-height-los-v1 geometric centerline classifier",
+            "conservative unknown-height fallback"
+          ],
+          "receiver_sensitivity_scope": "effective per-cell receiver threshold; mode and resolved terms are in receiver_threshold and rf_profile",
+          "receiver_sensitivity_equation": "manual: sensitivity = configured receiver_sensitivity_dbm; derived: Nfloor = -174 dBm/Hz + 10log10(receiver_noise_bandwidth_hz) + receiver_noise_figure_db; sensitivity = Nfloor + receiver_required_snr_db + receiver_margin_db",
+          "receiver_noise_semantics": "receiver sensitivity is noise-limited and excludes network interference; interference remains a separate RSRP/SINR/RSRQ analysis",
+          "building_service_threshold_dbm": -100,
+          "building_service_rule": "building is served when modeled received power is strictly greater than the building-service threshold",
+          "propagation_reach_definition": "usable receiver-power reach",
+          "surface_definition": "raw single-cell received-power surface",
+          "surface_nodata_definition": "NoData means radius/beam geometry exclusion; below-sensitivity numeric values remain valid",
+          "interference_serviceability_rule": "serviceable when RSRP, SINR, and RSRQ each meet their interference-planning thresholds",
+          "interference_rsrp_threshold_dbm": -110,
+          "interference_sinr_threshold_db": 0,
+          "interference_rsrq_threshold_db": -20,
+          "calibration_offset_db": 0,
+          "calibration_definition": "global calibration offset; positive dB raises predicted received power",
+          "endpoint_scope": "canonical network RF evaluation"
+        }
+      }
+    },
+    {
+      "path": "/api/simulate",
+      "method": "post",
+      "status": 400,
+      "schema_checked": true,
+      "json_sha256": "9563fedb18de01553adeb14b1e943b5b05876d43a855aa295e189e29043ae0c3",
+      "request": {
+        "rays": 0
+      },
+      "response": {
+        "error": "tower_lon and tower_lat are required"
+      }
+    }
+  ],
+  "rf_invariance_basis": "All backend sources hash-identical; existing deterministic/science tests pass. This probe validates representative runtime shapes; it is not a new before/after RF qualification."
+}

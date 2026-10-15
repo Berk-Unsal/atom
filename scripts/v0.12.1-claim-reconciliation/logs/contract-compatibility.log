@@ -1,0 +1,52 @@
+{
+  "repairs": 5,
+  "caps": {
+    "NetworkRequest": 8,
+    "RecommendationRequest": 5,
+    "MeasurementRequest": 6
+  },
+  "probes": [
+    {
+      "path": "/healthz",
+      "method": "get",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "path": "/readyz",
+      "method": "get",
+      "status": 200,
+      "schema_checked": false
+    },
+    {
+      "path": "/api/meta",
+      "method": "get",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "path": "/api/processes/batch-experiment",
+      "method": "get",
+      "status": 200,
+      "schema_checked": false
+    },
+    {
+      "path": "/api/core/topology",
+      "method": "get",
+      "status": 200,
+      "schema_checked": false
+    },
+    {
+      "path": "/api/simulate",
+      "method": "post",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "path": "/api/simulate",
+      "method": "post",
+      "status": 400,
+      "schema_checked": true
+    }
+  ]
+}

@@ -1,0 +1,1647 @@
+{
+  "status": "PASS",
+  "all_local_references_resolved": 410,
+  "references": [
+    {
+      "at": "/paths//healthz/get/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/Health"
+    },
+    {
+      "at": "/paths//api/meta/get/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/Meta"
+    },
+    {
+      "at": "/paths//api/rf-workflows/delete/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/datasets/get/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/InstalledDatasetList"
+    },
+    {
+      "at": "/paths//api/datasets/switch/post/responses/200/content/application/json/schema/properties/dataset",
+      "target": "#/components/schemas/DatasetManifest"
+    },
+    {
+      "at": "/paths//api/datasets/switch/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/datasets/switch/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/datasets/switch/post/responses/404/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/paths//api/datasets/switch/post/responses/422/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/paths//api/towers/get/responses/200/content/application/geo+json/schema",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/paths//api/buildings/get/responses/200/content/application/geo+json/schema",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/paths//api/buildings/get/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/buildings/get/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/spatial-evidence/path-profile/post/requestBody/content/application/json/schema/properties/transmitter",
+      "target": "#/components/schemas/BuildingEntryPoint"
+    },
+    {
+      "at": "/paths//api/spatial-evidence/path-profile/post/requestBody/content/application/json/schema/properties/receiver",
+      "target": "#/components/schemas/BuildingEntryPoint"
+    },
+    {
+      "at": "/paths//api/spatial-evidence/path-profile/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/spatial-evidence/path-profile/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/collections/buildings/items/get/responses/200/content/application/geo+json/schema",
+      "target": "#/components/schemas/BuildingFeatureCollection"
+    },
+    {
+      "at": "/paths//api/collections/buildings/items/get/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/collections/buildings/items/get/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/collections/buildings/items/get/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/parameters/0",
+      "target": "#/components/parameters/RFWorkflowID"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/parameters/1",
+      "target": "#/components/parameters/RFWorkflowIndex"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SectorRequest"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/responses/413",
+      "target": "#/components/responses/TooLarge"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/analyze-sector/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/simulate/post/parameters/0",
+      "target": "#/components/parameters/RFWorkflowID"
+    },
+    {
+      "at": "/paths//api/simulate/post/parameters/1",
+      "target": "#/components/parameters/RFWorkflowIndex"
+    },
+    {
+      "at": "/paths//api/simulate/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SectorRequest"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RateLimit-Limit",
+      "target": "#/components/headers/RateLimit-Limit"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RateLimit-Remaining",
+      "target": "#/components/headers/RateLimit-Remaining"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RateLimit-Reset",
+      "target": "#/components/headers/RateLimit-Reset"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RF-Budget-Policy",
+      "target": "#/components/headers/RF-Budget-Policy"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RF-Followup-Limit",
+      "target": "#/components/headers/RF-Followup-Limit"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RF-Followup-Remaining",
+      "target": "#/components/headers/RF-Followup-Remaining"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/headers/RF-Followup-Reset",
+      "target": "#/components/headers/RF-Followup-Reset"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/SimulationResponse"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/413",
+      "target": "#/components/responses/TooLarge"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/simulate/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SectorRequest"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/CoverageGapResponse"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/coverage-gaps/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/path-profile/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/PathProfileRequest"
+    },
+    {
+      "at": "/paths//api/path-profile/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/PathProfileResponse"
+    },
+    {
+      "at": "/paths//api/path-profile/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/path-profile/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/path-profile/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/path-profile/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/sub-thz-reference/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SubTHZAtmosphericReferenceRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-reference/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/SubTHZAtmosphericReferenceResponse"
+    },
+    {
+      "at": "/paths//api/sub-thz-reference/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-reference/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/sub-thz-reference/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/sub-thz-reference/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/sub-thz-p1411-reference/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/P1411ReferenceRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-p1411-reference/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/P1411ReferenceResponse"
+    },
+    {
+      "at": "/paths//api/sub-thz-p1411-reference/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-p1411-reference/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/sub-thz-p1411-reference/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/sub-thz-p1411-reference/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/sub-thz-validation/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SubTHZValidationRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-validation/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/SubTHZValidationResponse"
+    },
+    {
+      "at": "/paths//api/sub-thz-validation/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-validation/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/sub-thz-validation/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/sub-thz-validation/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/sub-thz-material-reference/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/MaterialReferenceRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-material-reference/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/MaterialReferenceResponse"
+    },
+    {
+      "at": "/paths//api/sub-thz-material-reference/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-material-reference/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/sub-thz-material-reference/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/sub-thz-material-reference/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/sub-thz-reflection-reference/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SpecularReflectionReferenceRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-reflection-reference/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/SpecularReflectionReferenceResponse"
+    },
+    {
+      "at": "/paths//api/sub-thz-reflection-reference/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/sub-thz-reflection-reference/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/sub-thz-reflection-reference/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/sub-thz-reflection-reference/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/CoverageSurfaceRequest"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/CoverageSurfaceResponse"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/responses/200/content/application/geo+json/schema",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/coverage-surface/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/parameters/0",
+      "target": "#/components/parameters/RFAzimuthWorkflow"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/SectorRequest"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RateLimit-Limit",
+      "target": "#/components/headers/RateLimit-Limit"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RateLimit-Remaining",
+      "target": "#/components/headers/RateLimit-Remaining"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RateLimit-Reset",
+      "target": "#/components/headers/RateLimit-Reset"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Budget-Policy",
+      "target": "#/components/headers/RF-Budget-Policy"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Followup-Limit",
+      "target": "#/components/headers/RF-Followup-Limit"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Followup-Remaining",
+      "target": "#/components/headers/RF-Followup-Remaining"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Followup-Reset",
+      "target": "#/components/headers/RF-Followup-Reset"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Workflow-ID",
+      "target": "#/components/headers/RF-Workflow-ID"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Workflow-Remaining",
+      "target": "#/components/headers/RF-Workflow-Remaining"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/headers/RF-Workflow-Expires",
+      "target": "#/components/headers/RF-Workflow-Expires"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/OptimizeAzimuthResponse"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/optimize-azimuth/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/parameters/0",
+      "target": "#/components/parameters/RFNetworkWorkflow"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/NetworkRequest"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RateLimit-Limit",
+      "target": "#/components/headers/RateLimit-Limit"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RateLimit-Remaining",
+      "target": "#/components/headers/RateLimit-Remaining"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RateLimit-Reset",
+      "target": "#/components/headers/RateLimit-Reset"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Budget-Policy",
+      "target": "#/components/headers/RF-Budget-Policy"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Followup-Limit",
+      "target": "#/components/headers/RF-Followup-Limit"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Followup-Remaining",
+      "target": "#/components/headers/RF-Followup-Remaining"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Followup-Reset",
+      "target": "#/components/headers/RF-Followup-Reset"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Workflow-ID",
+      "target": "#/components/headers/RF-Workflow-ID"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Workflow-Remaining",
+      "target": "#/components/headers/RF-Workflow-Remaining"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/headers/RF-Workflow-Expires",
+      "target": "#/components/headers/RF-Workflow-Expires"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/NetworkOptimizationResponse"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/evaluate-network/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/BuildingEntryAnalysisRequest"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/BuildingEntryAnalysisResponse"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/responses/413",
+      "target": "#/components/responses/TooLarge"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/building-entry-analysis/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/parameters/0",
+      "target": "#/components/parameters/RFNetworkWorkflow"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/NetworkRequest"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RateLimit-Limit",
+      "target": "#/components/headers/RateLimit-Limit"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RateLimit-Remaining",
+      "target": "#/components/headers/RateLimit-Remaining"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RateLimit-Reset",
+      "target": "#/components/headers/RateLimit-Reset"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Budget-Policy",
+      "target": "#/components/headers/RF-Budget-Policy"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Followup-Limit",
+      "target": "#/components/headers/RF-Followup-Limit"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Followup-Remaining",
+      "target": "#/components/headers/RF-Followup-Remaining"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Followup-Reset",
+      "target": "#/components/headers/RF-Followup-Reset"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Workflow-ID",
+      "target": "#/components/headers/RF-Workflow-ID"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Workflow-Remaining",
+      "target": "#/components/headers/RF-Workflow-Remaining"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/headers/RF-Workflow-Expires",
+      "target": "#/components/headers/RF-Workflow-Expires"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/NetworkOptimizationResponse"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/optimize-network/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/NetworkCellExplanationRequest"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/NetworkCellExplanationResponse"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/explain-network-cell/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/interference/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/InterferenceRequest"
+    },
+    {
+      "at": "/paths//api/interference/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/InterferenceResponse"
+    },
+    {
+      "at": "/paths//api/interference/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/interference/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/interference/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/interference/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/RecommendationRequest"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/RecommendationResponse"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/responses/422",
+      "target": "#/components/responses/TooComplex"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/recommend-sites/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/MeasurementRequest"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/MeasurementResponse"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/responses/413",
+      "target": "#/components/responses/TooLarge"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/measurements/evaluate/post/responses/504",
+      "target": "#/components/responses/TimedOut"
+    },
+    {
+      "at": "/paths//api/processes/batch-experiment/execution/post/requestBody/content/application/json/schema",
+      "target": "#/components/schemas/ExperimentDefinition"
+    },
+    {
+      "at": "/paths//api/processes/batch-experiment/execution/post/responses/202/content/application/json/schema",
+      "target": "#/components/schemas/ExperimentJob"
+    },
+    {
+      "at": "/paths//api/processes/batch-experiment/execution/post/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/ExperimentJob"
+    },
+    {
+      "at": "/paths//api/processes/batch-experiment/execution/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/processes/batch-experiment/execution/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/paths//api/processes/batch-experiment/execution/post/responses/429",
+      "target": "#/components/responses/Busy"
+    },
+    {
+      "at": "/paths//api/jobs/{jobID}/get/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/ExperimentJob"
+    },
+    {
+      "at": "/paths//api/jobs/{jobID}/delete/responses/200/content/application/json/schema",
+      "target": "#/components/schemas/ExperimentJob"
+    },
+    {
+      "at": "/paths//api/core/scenario/post/responses/400",
+      "target": "#/components/responses/BadRequest"
+    },
+    {
+      "at": "/paths//api/core/scenario/post/responses/401",
+      "target": "#/components/responses/Unauthorized"
+    },
+    {
+      "at": "/components/responses/BadRequest/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/components/responses/TooLarge/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/components/responses/TooComplex/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/components/responses/Unauthorized/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/components/responses/Busy/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/components/responses/TimedOut/content/application/json/schema",
+      "target": "#/components/schemas/Error"
+    },
+    {
+      "at": "/components/schemas/Meta/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/Meta/properties/dataset",
+      "target": "#/components/schemas/DatasetManifest"
+    },
+    {
+      "at": "/components/schemas/DatasetManifest/properties/layers/additionalProperties",
+      "target": "#/components/schemas/DatasetLayer"
+    },
+    {
+      "at": "/components/schemas/DatasetManifest/properties/quality",
+      "target": "#/components/schemas/DatasetQuality"
+    },
+    {
+      "at": "/components/schemas/InstalledDataset/allOf/0",
+      "target": "#/components/schemas/DatasetManifest"
+    },
+    {
+      "at": "/components/schemas/InstalledDatasetList/properties/datasets/items",
+      "target": "#/components/schemas/InstalledDataset"
+    },
+    {
+      "at": "/components/schemas/EffectiveCellRFProfile/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/EffectiveCellRFProfile/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/RFRequestDefaults/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/SimulationResponse/properties/geojson",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/components/schemas/SimulationResponse/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/SimulationResponse/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/SimulationResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/LOSBuildingEvidence/properties/intervals/items",
+      "target": "#/components/schemas/LOSBuildingInterval"
+    },
+    {
+      "at": "/components/schemas/LOSClassification/properties/blocking_buildings/items",
+      "target": "#/components/schemas/LOSBuildingEvidence"
+    },
+    {
+      "at": "/components/schemas/LOSClassification/properties/cleared_buildings/items",
+      "target": "#/components/schemas/LOSBuildingEvidence"
+    },
+    {
+      "at": "/components/schemas/LOSClassification/properties/unknown_height_buildings/items",
+      "target": "#/components/schemas/LOSBuildingEvidence"
+    },
+    {
+      "at": "/components/schemas/CoverageGapResponse/properties/geojson",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/components/schemas/CoverageGapResponse/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/CoverageGapResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryModelMetadata/properties/profiles/items",
+      "target": "#/components/schemas/BuildingEntryModelProfile"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/representative_point",
+      "target": "#/components/schemas/BuildingEntryPoint"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/facade_entry_point",
+      "target": "#/components/schemas/BuildingEntryPoint"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/outdoor_los_classification",
+      "target": "#/components/schemas/LOSClassification"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/outdoor_link_budget",
+      "target": "#/components/schemas/RFLinkBudgetTerms"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/material_evidence",
+      "target": "#/components/schemas/BuildingEntryMaterialEvidence"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/applicability",
+      "target": "#/components/schemas/BuildingEntryApplicability"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryEstimate/properties/entry_geometry",
+      "target": "#/components/schemas/BuildingEntryGeometry"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/model",
+      "target": "#/components/schemas/BuildingEntryModelMetadata"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/applicability",
+      "target": "#/components/schemas/BuildingEntryApplicability"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/summary",
+      "target": "#/components/schemas/BuildingEntrySummary"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/results/items",
+      "target": "#/components/schemas/BuildingEntryEstimate"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/cell_summaries/items",
+      "target": "#/components/schemas/BuildingEntryCellSummary"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/effective_cell_profiles/items",
+      "target": "#/components/schemas/EffectiveCellRFProfile"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/diagnostics",
+      "target": "#/components/schemas/BuildingEntryDiagnostics"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/Tower/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/SectorRequest/allOf/0",
+      "target": "#/components/schemas/CommonRFSettings"
+    },
+    {
+      "at": "/components/schemas/SectorRequest/allOf/1/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/NetworkRequest/allOf/0",
+      "target": "#/components/schemas/CommonRFSettings"
+    },
+    {
+      "at": "/components/schemas/NetworkRequest/allOf/1/properties/towers/items",
+      "target": "#/components/schemas/Tower"
+    },
+    {
+      "at": "/components/schemas/NetworkRequest/allOf/1/properties/optimization",
+      "target": "#/components/schemas/OptimizationConfig"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisRequest/allOf/0",
+      "target": "#/components/schemas/CommonRFSettings"
+    },
+    {
+      "at": "/components/schemas/BuildingEntryAnalysisRequest/allOf/1/properties/towers/items",
+      "target": "#/components/schemas/Tower"
+    },
+    {
+      "at": "/components/schemas/OptimizationConfig/properties/constraints",
+      "target": "#/components/schemas/OptimizationConstraints"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationBreakdown/properties/demand",
+      "target": "#/components/schemas/NetworkOptimizationContribution"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationBreakdown/properties/residential",
+      "target": "#/components/schemas/NetworkOptimizationContribution"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationBreakdown/properties/coverage",
+      "target": "#/components/schemas/NetworkOptimizationContribution"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationBreakdown/properties/overlap",
+      "target": "#/components/schemas/NetworkOptimizationContribution"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationBreakdown/properties/radio_quality",
+      "target": "#/components/schemas/NetworkOptimizationContribution"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationStats/properties/raw_metrics",
+      "target": "#/components/schemas/NetworkOptimizationRawMetrics"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationStats/properties/objectives",
+      "target": "#/components/schemas/NetworkOptimizationUtilities"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationStats/properties/objective_breakdown",
+      "target": "#/components/schemas/NetworkOptimizationBreakdown"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationStats/properties/objective_status/additionalProperties",
+      "target": "#/components/schemas/OptimizationObjectiveStatus"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationCellConfiguration/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationCellConfiguration/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationSolution/properties/cell_configurations/items",
+      "target": "#/components/schemas/NetworkOptimizationCellConfiguration"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationSolution/properties/parameters",
+      "target": "#/components/schemas/NetworkOptimizationParameters"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationSolution/properties/stats",
+      "target": "#/components/schemas/NetworkOptimizationStats"
+    },
+    {
+      "at": "/components/schemas/OptimizationOutcome/properties/objective_status/additionalProperties",
+      "target": "#/components/schemas/OptimizationObjectiveStatus"
+    },
+    {
+      "at": "/components/schemas/OptimizationOutcome/properties/constraints",
+      "target": "#/components/schemas/OptimizationConstraints"
+    },
+    {
+      "at": "/components/schemas/OptimizationOutcome/properties/radio_quality",
+      "target": "#/components/schemas/OptimizationRadioQualityMetadata"
+    },
+    {
+      "at": "/components/schemas/OptimizationOutcome/properties/search",
+      "target": "#/components/schemas/NetworkOptimizationSearchMetadata"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationStartTrace/properties/accepted_updates/items",
+      "target": "#/components/schemas/NetworkOptimizationSearchUpdate"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationSearchMetadata/properties/start_traces/items",
+      "target": "#/components/schemas/NetworkOptimizationStartTrace"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationSearchMetadata/properties/archive_growth/items",
+      "target": "#/components/schemas/NetworkOptimizationArchiveRound"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizedTower/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizedTower/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/NetworkParetoSolution/properties/stats",
+      "target": "#/components/schemas/NetworkOptimizationStats"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/optimized_towers/items",
+      "target": "#/components/schemas/NetworkOptimizedTower"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/stats",
+      "target": "#/components/schemas/NetworkOptimizationStats"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/request_defaults",
+      "target": "#/components/schemas/RFRequestDefaults"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/effective_cell_profiles/items",
+      "target": "#/components/schemas/EffectiveCellRFProfile"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/optimization_domain",
+      "target": "#/components/schemas/OptimizationDomainMetadata"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/optimization",
+      "target": "#/components/schemas/OptimizationOutcome"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/pareto_frontier/items",
+      "target": "#/components/schemas/NetworkParetoSolution"
+    },
+    {
+      "at": "/components/schemas/NetworkOptimizationResponse/properties/baseline",
+      "target": "#/components/schemas/NetworkOptimizationSolution"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationRequest/properties/baseline",
+      "target": "#/components/schemas/NetworkOptimizationSolution"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationRequest/properties/solution",
+      "target": "#/components/schemas/NetworkParetoSolution"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationRequest/properties/optimization",
+      "target": "#/components/schemas/OptimizationConfig"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationRequest/properties/optimization_domain",
+      "target": "#/components/schemas/OptimizationDomainMetadata"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationSide/properties/raw_metrics",
+      "target": "#/components/schemas/NetworkOptimizationRawMetrics"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/cell",
+      "target": "#/components/schemas/NetworkCellExplanationCell"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/actual",
+      "target": "#/components/schemas/NetworkCellExplanationSide"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/counterfactual",
+      "target": "#/components/schemas/NetworkCellExplanationSide"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/delta",
+      "target": "#/components/schemas/NetworkCellExplanationDelta"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/score",
+      "target": "#/components/schemas/NetworkCellExplanationScore"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/objective_status/additionalProperties",
+      "target": "#/components/schemas/OptimizationObjectiveStatus"
+    },
+    {
+      "at": "/components/schemas/NetworkCellExplanationResponse/properties/optimization_domain",
+      "target": "#/components/schemas/OptimizationDomainMetadata"
+    },
+    {
+      "at": "/components/schemas/InterferenceRequest/allOf/0",
+      "target": "#/components/schemas/NetworkRequest"
+    },
+    {
+      "at": "/components/schemas/RecommendationRequest/allOf/0",
+      "target": "#/components/schemas/NetworkRequest"
+    },
+    {
+      "at": "/components/schemas/RecommendationRequest/allOf/1/properties/towers/items",
+      "target": "#/components/schemas/Tower"
+    },
+    {
+      "at": "/components/schemas/Recommendation/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/RecommendationResponse/properties/request_defaults",
+      "target": "#/components/schemas/RFRequestDefaults"
+    },
+    {
+      "at": "/components/schemas/RecommendationResponse/properties/effective_cell_profiles/items",
+      "target": "#/components/schemas/EffectiveCellRFProfile"
+    },
+    {
+      "at": "/components/schemas/RecommendationResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/RecommendationResponse/properties/recommendations/items",
+      "target": "#/components/schemas/Recommendation"
+    },
+    {
+      "at": "/components/schemas/RecommendationResponse/properties/geojson/properties/features/items",
+      "target": "#/components/schemas/RecommendationFeature"
+    },
+    {
+      "at": "/components/schemas/MeasurementRequest/allOf/0",
+      "target": "#/components/schemas/InterferenceRequest"
+    },
+    {
+      "at": "/components/schemas/MeasurementRequest/allOf/1/properties/towers/items",
+      "target": "#/components/schemas/Tower"
+    },
+    {
+      "at": "/components/schemas/PathProfileRequest/properties/transmitter",
+      "target": "#/components/schemas/LonLat"
+    },
+    {
+      "at": "/components/schemas/PathProfileRequest/properties/receiver",
+      "target": "#/components/schemas/LonLat"
+    },
+    {
+      "at": "/components/schemas/PathProfileRequest/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/CoverageSurfaceRequest/allOf/0",
+      "target": "#/components/schemas/SectorRequest"
+    },
+    {
+      "at": "/components/schemas/CoverageSurfaceResponse/properties/contours",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/components/schemas/CoverageSurfaceResponse/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/CoverageSurfaceResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/OptimizeAzimuthResponse/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/OptimizeAzimuthResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/terrain",
+      "target": "#/components/schemas/TerrainMetadata"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/fresnel_clearance",
+      "target": "#/components/schemas/FresnelClearanceDiagnostics"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/obstruction_ledger/items",
+      "target": "#/components/schemas/DiffractionEdgeCandidate"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/diffraction_diagnostic",
+      "target": "#/components/schemas/DiffractionDiagnostic"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/canonical_comparison",
+      "target": "#/components/schemas/CanonicalDiagnosticComparison"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/loss_budget",
+      "target": "#/components/schemas/PathLossBudget"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/rf_profile",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/PathProfileResponse/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceRequest/properties/transmitter",
+      "target": "#/components/schemas/SubTHZReferencePoint"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceRequest/properties/receiver",
+      "target": "#/components/schemas/SubTHZReferencePoint"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceRequest/properties/atmosphere",
+      "target": "#/components/schemas/SubTHZReferenceAtmosphere"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceRequest/properties/rain",
+      "target": "#/components/schemas/SubTHZReferenceRain"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceRequest/properties/local_fog",
+      "target": "#/components/schemas/SubTHZReferenceLocalFog"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceRequest/properties/link_budget",
+      "target": "#/components/schemas/SubTHZReferenceLinkBudgetInput"
+    },
+    {
+      "at": "/components/schemas/P1411ReferenceRequest/properties/transmitter",
+      "target": "#/components/schemas/SubTHZReferencePoint"
+    },
+    {
+      "at": "/components/schemas/P1411ReferenceRequest/properties/receiver",
+      "target": "#/components/schemas/SubTHZReferencePoint"
+    },
+    {
+      "at": "/components/schemas/P1411ReferenceRequest/properties/provenance",
+      "target": "#/components/schemas/P1411ReferenceProvenance"
+    },
+    {
+      "at": "/components/schemas/P1411ReferenceRequest/properties/atmospheric_reference",
+      "target": "#/components/schemas/SubTHZAtmosphericReferenceRequest"
+    },
+    {
+      "at": "/components/schemas/SubTHZValidationRequest/properties/campaigns/items",
+      "target": "#/components/schemas/MeasurementCampaign"
+    },
+    {
+      "at": "/components/schemas/SubTHZValidationRequest/properties/strategy",
+      "target": "#/components/schemas/ValidationStrategy"
+    },
+    {
+      "at": "/components/schemas/MeasurementCampaign/properties/measurements/items",
+      "target": "#/components/schemas/MeasurementRecord"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceUserMaterial/properties/complex_relative_permittivity",
+      "target": "#/components/schemas/MaterialReferenceComplexInput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceRequest/properties/user_material",
+      "target": "#/components/schemas/MaterialReferenceUserMaterial"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceRequest/properties/incident_medium",
+      "target": "#/components/schemas/MaterialReferenceMedium"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceRequest/properties/exit_medium",
+      "target": "#/components/schemas/MaterialReferenceMedium"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceRequest/properties/geometry_context",
+      "target": "#/components/schemas/MaterialReferenceGeometryContext"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceMaterialOutput/properties/coefficients",
+      "target": "#/components/schemas/MaterialReferenceCoefficientSet"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceMaterialOutput/properties/complex_relative_permittivity",
+      "target": "#/components/schemas/MaterialReferenceComplexOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceSlabLedger/properties/reflection_coefficient",
+      "target": "#/components/schemas/MaterialReferenceComplexOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceSlabLedger/properties/transmission_coefficient",
+      "target": "#/components/schemas/MaterialReferenceComplexOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceSlabLedger/properties/first_interface_reflection_coefficient",
+      "target": "#/components/schemas/MaterialReferenceComplexOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceSlabLedger/properties/propagation_constant",
+      "target": "#/components/schemas/MaterialReferenceComplexOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceSlabLedger/properties/normal_phase_thickness",
+      "target": "#/components/schemas/MaterialReferenceComplexOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/reference",
+      "target": "#/components/schemas/MaterialReferenceCitation"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/material",
+      "target": "#/components/schemas/MaterialReferenceMaterialOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/geometry",
+      "target": "#/components/schemas/MaterialReferenceGeometryOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/media/properties/incident",
+      "target": "#/components/schemas/MaterialReferenceMediumOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/media/properties/exit",
+      "target": "#/components/schemas/MaterialReferenceMediumOutput"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/applicability",
+      "target": "#/components/schemas/MaterialReferenceApplicability"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/ledger",
+      "target": "#/components/schemas/MaterialReferenceSlabLedger"
+    },
+    {
+      "at": "/components/schemas/MaterialReferenceResponse/properties/comparison",
+      "target": "#/components/schemas/MaterialReferenceComparison"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferencePosition/properties/enu",
+      "target": "#/components/schemas/SpecularReflectionReferenceVector"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFrame/properties/origin",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceEndpoint/properties/position",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceEndpoint/properties/antenna",
+      "target": "#/components/schemas/SpecularReflectionReferenceAntenna"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferencePolygonContext/properties/vertices/items",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/start",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/end",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/segment_start",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/segment_end",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/plane_point",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/outward_normal",
+      "target": "#/components/schemas/SpecularReflectionReferenceVector"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceFacade/properties/polygon_context",
+      "target": "#/components/schemas/SpecularReflectionReferencePolygonContext"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceMaterial/properties/user_material",
+      "target": "#/components/schemas/MaterialReferenceUserMaterial"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceMaterial/properties/incident_medium",
+      "target": "#/components/schemas/MaterialReferenceMedium"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceMaterial/properties/exit_medium",
+      "target": "#/components/schemas/MaterialReferenceMedium"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceObstacle/properties/polygon/items",
+      "target": "#/components/schemas/SpecularReflectionReferencePosition"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/coordinate_frame",
+      "target": "#/components/schemas/SpecularReflectionReferenceFrame"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/tx",
+      "target": "#/components/schemas/SpecularReflectionReferenceEndpoint"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/rx",
+      "target": "#/components/schemas/SpecularReflectionReferenceEndpoint"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/facade",
+      "target": "#/components/schemas/SpecularReflectionReferenceFacade"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/material",
+      "target": "#/components/schemas/SpecularReflectionReferenceMaterial"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/terrain",
+      "target": "#/components/schemas/SpecularReflectionReferenceTerrain"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/link_budget",
+      "target": "#/components/schemas/SpecularReflectionReferenceLinkBudget"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceRequest/properties/obstructions/items",
+      "target": "#/components/schemas/SpecularReflectionReferenceObstacle"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceResponse/properties/material/properties/reflection_coefficient",
+      "target": "#/components/schemas/SpecularReflectionReferenceCoefficient"
+    },
+    {
+      "at": "/components/schemas/SpecularReflectionReferenceResponse/properties/material/properties/interface_coefficient",
+      "target": "#/components/schemas/SpecularReflectionReferenceCoefficient"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceResponse/properties/transmitter",
+      "target": "#/components/schemas/SubTHZReferenceEndpoint"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceResponse/properties/receiver",
+      "target": "#/components/schemas/SubTHZReferenceEndpoint"
+    },
+    {
+      "at": "/components/schemas/SubTHZAtmosphericReferenceResponse/properties/applicability/properties/components/items",
+      "target": "#/components/schemas/SubTHZReferenceComponentStatus"
+    },
+    {
+      "at": "/components/schemas/PathLossBudget/properties/link_budget",
+      "target": "#/components/schemas/RFLinkBudgetTerms"
+    },
+    {
+      "at": "/components/schemas/PathLossBudget/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/DiffractionGeometry/properties/transmitter",
+      "target": "#/components/schemas/LonLat"
+    },
+    {
+      "at": "/components/schemas/DiffractionGeometry/properties/receiver",
+      "target": "#/components/schemas/LonLat"
+    },
+    {
+      "at": "/components/schemas/DiffractionGeometry/properties/candidates/items",
+      "target": "#/components/schemas/DiffractionEdgeCandidate"
+    },
+    {
+      "at": "/components/schemas/DiffractionDiagnostic/properties/geometry",
+      "target": "#/components/schemas/DiffractionGeometry"
+    },
+    {
+      "at": "/components/schemas/DiffractionDiagnostic/properties/selected_edge/allOf/0",
+      "target": "#/components/schemas/DiffractionEdgeCandidate"
+    },
+    {
+      "at": "/components/schemas/DiffractionDiagnostic/properties/link_budget",
+      "target": "#/components/schemas/RFLinkBudgetTerms"
+    },
+    {
+      "at": "/components/schemas/InterferencePowerLedgerEntry/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/InterferenceFeatureProperties/properties/power_ledger/items",
+      "target": "#/components/schemas/InterferencePowerLedgerEntry"
+    },
+    {
+      "at": "/components/schemas/InterferenceFeatureProperties/properties/receiver_threshold",
+      "target": "#/components/schemas/ReceiverThreshold"
+    },
+    {
+      "at": "/components/schemas/InterferenceFeatureProperties/properties/link_budget",
+      "target": "#/components/schemas/RFLinkBudgetTerms"
+    },
+    {
+      "at": "/components/schemas/InterferenceModel/properties/request_defaults",
+      "target": "#/components/schemas/RFRequestDefaults"
+    },
+    {
+      "at": "/components/schemas/InterferenceModel/properties/effective_cell_profiles/items",
+      "target": "#/components/schemas/EffectiveCellRFProfile"
+    },
+    {
+      "at": "/components/schemas/InterferenceModel/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/InterferenceModel/properties/profiles/items",
+      "target": "#/components/schemas/RFProfile"
+    },
+    {
+      "at": "/components/schemas/InterferenceModel/properties/radio_quality_references/items",
+      "target": "#/components/schemas/RadioQualityReference"
+    },
+    {
+      "at": "/components/schemas/InterferenceResponse/properties/geojson",
+      "target": "#/components/schemas/InterferenceFeatureCollection"
+    },
+    {
+      "at": "/components/schemas/InterferenceResponse/properties/demand_geojson",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/components/schemas/InterferenceResponse/properties/stats",
+      "target": "#/components/schemas/InterferenceStats"
+    },
+    {
+      "at": "/components/schemas/InterferenceResponse/properties/model",
+      "target": "#/components/schemas/InterferenceModel"
+    },
+    {
+      "at": "/components/schemas/MeasurementResponse/properties/rf_contract",
+      "target": "#/components/schemas/RFContractMetadata"
+    },
+    {
+      "at": "/components/schemas/MeasurementResponse/properties/request_defaults",
+      "target": "#/components/schemas/RFRequestDefaults"
+    },
+    {
+      "at": "/components/schemas/MeasurementResponse/properties/effective_cell_profiles/items",
+      "target": "#/components/schemas/EffectiveCellRFProfile"
+    },
+    {
+      "at": "/components/schemas/ExperimentDefinition/properties/base",
+      "target": "#/components/schemas/SectorRequest"
+    },
+    {
+      "at": "/components/schemas/BuildingFeatureCollection/allOf/0",
+      "target": "#/components/schemas/FeatureCollection"
+    },
+    {
+      "at": "/components/schemas/InterferenceFeatureCollection/properties/features/items/properties/properties",
+      "target": "#/components/schemas/InterferenceFeatureProperties"
+    }
+  ],
+  "method": "Supplementary pointer traversal; genuine OpenAPI3.1 structural validation remains mandatory."
+}

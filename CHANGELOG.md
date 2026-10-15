@@ -4,6 +4,17 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Fixed
+
+- Reconcile current product, model, accuracy, optimization and performance claims with the released planning scope; clarify independent network8/Recommendation5/Measurement6 and portable-evidence limits.
+- Repair five malformed OpenAPI Response Objects and enforce strict OpenAPI 3.1 validation with structural regression tests.
+- Disclose Measurement Validation's six-Cell limit before submission, prevent out-of-scope requests, and use neutral residual-bias review wording.
+- Present known RF Retry-After delays as recovery guidance without automatic retry or changes to request accounting.
+
+### Changed
+
+- Lead current documentation with a concrete baseline-to-recommendation planning task and classify current product docs separately from historical qualification, research and design evidence.
+
 ## [0.12.1] - 2026-10-09
 
 ### Changed

@@ -1,0 +1,122 @@
+[
+  {
+    "name": "backend race suite",
+    "command": "cd backend-go && GOTOOLCHAIN=go1.26.9 go test -race ./...",
+    "exit_code": 0,
+    "result": "Pass: API/root 123.814 s, resourceprofile 1.243 s, raytracer 20.394 s; gated artifact/qualification generators intentionally not enabled.",
+    "log": "logs/backend-tests.log",
+    "scope": "Actual engine and API tests; controlled fixtures, not a new operational qualification."
+  },
+  {
+    "name": "backend vet",
+    "command": "cd backend-go && GOTOOLCHAIN=go1.26.9 go vet ./...",
+    "exit_code": 0,
+    "result": "Pass.",
+    "log": "logs/backend-vet.log",
+    "scope": "Go static diagnostics."
+  },
+  {
+    "name": "frontend suite",
+    "command": "cd frontend-react && npm test (bundled Node on PATH)",
+    "exit_code": 0,
+    "result": "70 files / 439 tests passed.",
+    "log": "logs/frontend-tests.log",
+    "scope": "Workflow, source context, limits, reports, persistence and helper regression tests."
+  },
+  {
+    "name": "frontend lint",
+    "command": "npm --prefix frontend-react run lint (bundled Node)",
+    "exit_code": 0,
+    "result": "Pass.",
+    "log": "logs/frontend-lint.log",
+    "scope": "Existing source/browser lint configuration."
+  },
+  {
+    "name": "frontend build",
+    "command": "cd frontend-react && npm run build (bundled Node)",
+    "exit_code": 0,
+    "result": "Pass; existing >500kB chunk warning.",
+    "log": "logs/frontend-build.log",
+    "scope": "Ignored production bundle for live local observation."
+  },
+  {
+    "name": "appearance/eight-Cell browser checks",
+    "command": "npx playwright test e2e/eight-cell-presentation.spec.js e2e/docs-theme.spec.js --project=desktop-1440 --project=mobile-390 --workers=2",
+    "exit_code": 0,
+    "result": "16 passed, 0 skipped.",
+    "log": "logs/browser-checks.log",
+    "scope": "Mocked RF for presentation; docs/theme/navigation/storage behavior, desktop 1440 and mobile 390 Chromium."
+  },
+  {
+    "name": "workflow browser checks",
+    "command": "npx playwright test e2e/workspace.spec.js --project=desktop-1440 --project=mobile-390 --workers=2 --grep <six named journeys>",
+    "exit_code": 0,
+    "result": "11 passed, 1 declared skip; full Run/apply/Version/historical-report journey desktop only.",
+    "log": "logs/workflow-browser-checks.log",
+    "scope": "Mocked backend responses; sector/scenario, project/history isolation, unsaved draft, Pareto, lazy explanation. Not fresh eight-Cell real RF or full mobile journey proof."
+  },
+  {
+    "name": "dataset validation",
+    "command": "cd backend-go && GOTOOLCHAIN=go1.26.9 go run ./cmd/validate-dataset ../data-pipeline",
+    "exit_code": 0,
+    "result": "Ankara 2026.07 valid: 451 towers / 161,784 indexed buildings.",
+    "log": "logs/dataset-validation.log",
+    "scope": "Dataset integrity, not transmitter truth or RF accuracy."
+  },
+  {
+    "name": "docs validation",
+    "command": "python docs/validate_docs.py (Python 3.12/PyYAML 6.0.3)",
+    "exit_code": 0,
+    "result": "57 HTML pages /42 API paths valid.",
+    "log": "logs/docs-validation.log",
+    "scope": "Links/theme/search assets and YAML/basic OpenAPI shape; not strict OpenAPI schema."
+  },
+  {
+    "name": "OpenAPI schema and semantic contracts",
+    "command": "python scripts/v0.12.1-post-release-audit/contracts.py",
+    "exit_code": 1,
+    "result": "FAIL:5 invalid Response Objects.410 local refs resolve;8/8/5/6 caps correct;82/82 historical shipping source identities match.",
+    "log": "logs/openapi-contracts.log",
+    "scope": "Strict OpenAPI 3.1 via openapi-spec-validator 0.9.0; no repair made."
+  },
+  {
+    "name": "version consistency",
+    "command": "python scripts/versioning.py check",
+    "exit_code": 0,
+    "result": "0.12.1 consistent.",
+    "log": "logs/version.log",
+    "scope": "Canonical release metadata."
+  },
+  {
+    "name": "generated-policy consistency",
+    "command": "python scripts/generate_policy.py --check",
+    "exit_code": 0,
+    "result": "Bindings current.",
+    "log": "logs/policy.log",
+    "scope": "No generated file write."
+  },
+  {
+    "name": "UI mechanical detector",
+    "command": "impeccable detect --json <WorkspaceChrome,ControlPanel,InterferenceResultsPanel>",
+    "exit_code": 0,
+    "result": "Empty finding list for the three scoped files.",
+    "log": "logs/ui-detector.json",
+    "scope": "Scoped mechanical rules only; not a formal WCAG/performance audit."
+  },
+  {
+    "name": "source/lock freeze",
+    "command": "python scripts/v0.12.1-post-release-audit/audit.py verify",
+    "exit_code": 0,
+    "result": "All 3,217 original tracked file identities, HEAD, VERSION and lock unchanged; rerun at completion.",
+    "log": "logs/invariance.log",
+    "scope": "Strong no-production-change evidence; report/new-file coverage checked separately."
+  },
+  {
+    "name": "whitespace",
+    "command": "git diff --check; audit added text checked separately by completion.py",
+    "exit_code": 0,
+    "result": "No tracked whitespace errors; final new-file check retained separately.",
+    "log": "logs/diff-check.log",
+    "scope": "Untracked audit artifacts need the separate completion check."
+  }
+]

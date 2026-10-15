@@ -1,0 +1,129 @@
+[
+  {
+    "gate": "docs-build",
+    "command": [
+      "sh",
+      "docs/build-reference-pages.sh"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/docs-build.log"
+  },
+  {
+    "gate": "docs-validation",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/docs-validation.log"
+  },
+  {
+    "gate": "classification",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "docs/classify_docs.py"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/classification.log"
+  },
+  {
+    "gate": "claims",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "docs/validate_claims.py",
+      "--inventory",
+      "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/v0.12.1-claim-reconciliation/current-language-inventory.json"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/claims.log"
+  },
+  {
+    "gate": "docs-tests",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "docs",
+      "-p",
+      "*_test.py"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/docs-tests.log"
+  },
+  {
+    "gate": "openapi-validation",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "docs/validate_openapi.py"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/openapi-validation.log"
+  },
+  {
+    "gate": "version",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/version.log"
+  },
+  {
+    "gate": "policy",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "scripts/generate_policy.py",
+      "--check"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/policy.log"
+  },
+  {
+    "gate": "policy-tests",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "generate_policy_test.py"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/policy-tests.log"
+  },
+  {
+    "gate": "invariance",
+    "command": [
+      "/tmp/atom-v0121-audit-py312/bin/python",
+      "/Users/berkunsal/Desktop/urban-ray-tracer/scripts/v0.12.1-claim-reconciliation/verify_invariance.py"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/invariance.log"
+  },
+  {
+    "gate": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "status": "PASS",
+    "log": "scripts/v0.12.1-claim-reconciliation/logs/diff-check.log"
+  }
+]

@@ -702,6 +702,44 @@ describe("App planning workflow", () => {
     expect(api.postJSON).not.toHaveBeenCalled();
   });
 
+  it.each([6, 7, 8])("discloses Measurement6 and prevents out-of-scope RF with %i selected Cells", async (count) => {
+    const cells = { type: "FeatureCollection", features: Array.from({ length: count }, (_, i) => point(`tower-${i + 1}`, String(101 + i), 32.85 + i * .001, 39.92 + i * .001)) };
+    api.getJSON.mockImplementation((path) => Promise.resolve(path === "/api/towers" ? cells : {}));
+    api.postJSON.mockResolvedValue({
+      geojson: { type: "FeatureCollection", features: [] },
+      stats: { sample_count: 1, valid_sample_count: 1, mae_db: 2 },
+      calibration: { eligible: false, reason: "Insufficient spatial evidence for a correction." },
+    });
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    for (let i = 1; i < count; i += 1) fireEvent.click(screen.getByRole("button", { name: `Select map tower ${101 + i}` }));
+    expect(screen.getByRole("button", { name: `Network mode, ${count} selected` })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Evaluate Network", exact: true })).toBeEnabled();
+    openWorkspaceTool("Data");
+    fireEvent.click(screen.getByRole("button", { name: /^Research \/ reference/ }));
+    expect(screen.getByText(/accepts one to 6 selected 4G\/5G Cells/)).toBeInTheDocument();
+    const csv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";
+    fireEvent.change(screen.getByLabelText(/Import measurement CSV/i), { target: { files: [{ size: csv.length, text: () => Promise.resolve(csv) }] } });
+    await waitFor(() => expect(screen.getAllByText("1 samples loaded").length).toBeGreaterThan(0));
+    const action = screen.getByRole("button", { name: "Evaluate residuals" });
+    if (count > 6) {
+      expect(action).toBeDisabled();
+      expect(screen.getByText(/Measurement Validation accepts up to 6 Cells/)).toBeInTheDocument();
+      fireEvent.click(action);
+      expect(api.postJSON).not.toHaveBeenCalled();
+    } else {
+      expect(action).toBeEnabled();
+      fireEvent.click(action);
+      await waitFor(() => expect(api.postJSON).toHaveBeenCalledOnce());
+      expect(api.postJSON.mock.calls[0][0]).toBe("/api/measurements/evaluate");
+      expect(api.postJSON.mock.calls[0][1].towers).toHaveLength(6);
+      expect(await screen.findByText("Residual bias review")).toBeInTheDocument();
+      expect(screen.queryByText("Spatially validated global bias")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Apply correction to plan" })).not.toBeInTheDocument();
+    }
+  });
+
   it("dispatches the six-cell RF workflow exactly once per action under StrictMode", async () => {
     const sixCells = { type: "FeatureCollection", features: Array.from({ length: 6 }, (_, index) =>
       point(`tower-${index + 1}`, String(101 + index), 32.85 + index * 0.001, 39.92 + index * 0.001)) };

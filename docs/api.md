@@ -50,7 +50,7 @@ Most responses are **JSON**. Explicit GIS export representations use GeoJSON, CS
 - `POST /api/interference` returns `{ geojson, demand_geojson, stats, model }`, with defaults, effective profiles, per-cell finite interference horizons, and threshold metadata in `model`
 - `POST /api/optimize-azimuth` returns `{ optimal_azimuth, propagation_reach_score, coverage_score, demand_score, residential_score, rf_contract }`
 - `POST /api/recommend-sites` returns a baseline plus ranked candidate records and GeoJSON
-- `POST /api/measurements/evaluate` returns residual GeoJSON, subgroup diagnostics, uncertainty, and spatially validated bias guidance
+- `POST /api/measurements/evaluate` returns residual GeoJSON, subgroup diagnostics, uncertainty, and eligibility-gated spatial holdout bias review
 - `/api/processes/batch-experiment` and `/api/jobs/{jobID}` expose asynchronous experiment execution, progress, results, and cancellation
 
 Error responses use a simple object with an `error` message.
@@ -781,7 +781,7 @@ Optional numeric fields receive defaults only when omitted. Explicit zero values
 
 **Endpoint**: `POST /api/optimize-azimuth`
 
-Automatically find the optimal antenna azimuth for maximum coverage.
+Recommend an azimuth from 36 evaluated 10-degree directions using unique POI demand and residential-demand scores plus capped usable-ray reach. Other radio inputs remain fixed. The compatibility field `optimal_azimuth` identifies the highest-scoring evaluated direction, not a global optimum or a maximum continuous-area coverage guarantee.
 
 **Request Body**:
 
@@ -815,7 +815,7 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 
 ```json
 {
-  "optimal_azimuth": 42,
+  "optimal_azimuth": 40,
   "propagation_reach_score": 18320.5,
   "coverage_score": 18320.5,
   "demand_score": 140000,
@@ -830,7 +830,7 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 
 | Field | Description |
 |-------|-------------|
-| `optimal_azimuth` | Recommended antenna direction (0-360°) |
+| `optimal_azimuth` | Recommended direction from the evaluated 0°–350° sweep in 10° steps; compatibility field name, not a global guarantee |
 | `propagation_reach_score` | Capped aggregate usable-ray reach score |
 | `coverage_score` | Compatibility alias for `propagation_reach_score` |
 | `demand_score` | POI/commercial/critical-building score |
@@ -846,9 +846,9 @@ Automatically find the optimal antenna azimuth for maximum coverage.
 - `500 Internal Server Error` - Optimization error
 
 **Performance**:
-- Typical response time: 3-5 seconds
-- Parallelization: Up to four workers per RF request
-- Server write timeout: 120 seconds
+- Latency depends on rays, radius, geometry and machine resources; no universal response-time guarantee is established.
+- The single-sector sweep uses at most four workers, also bounded by available CPUs; this is not a measured speedup claim.
+- HTTP write timeout: 120 seconds; protected RF computation retains its separate 60-second default deadline.
 
 ### Evaluate Or Optimize A Network
 
@@ -891,7 +891,7 @@ If a domain has no relevant entities for an objective, that objective is reporte
 
 The response also includes `stats.objective_breakdown` for compatibility and `objective_status`, where each objective exposes availability, configured priority, effective weight, and nullable utility/contribution metadata. The contribution sum equals `stats.composite_score` within floating-point tolerance for available objectives. Existing feasibility constraints remain independent of priorities: an infeasible candidate is excluded from the Pareto frontier and cannot be returned as the optimized recommendation. The Pareto frontier is based on available objective utilities rather than weighted composite score; changing priorities can re-rank the stored feasible frontier without another RF evaluation when those metrics are available. Up to 25 feasible non-dominated evaluated azimuth sets are returned. This version adjusts azimuth only.
 
-The default optimizer remains the legacy two-pass coordinate search. `POST /api/optimize-network` accepts the explicit opt-in `search_policy: "deterministic_multistart_coordinate_v1"`, with optional `max_search_passes` (default `8`) and `max_unique_evaluations` (default `5000`) for candidate-state RF evaluations. The existing compatibility tower summaries still perform their final per-tower recomputation. The opt-in policy evaluates the baseline plus deterministic uniform global rotations, descends through the 10-degree azimuth grid until each start is stable or a bound is reached, memoizes states within the request, and builds the reported Pareto frontier from the union of unique evaluated states. Its `optimization.search` metadata reports starts, accepted updates, cache/evaluation counts, archive size, termination reasons, and an explicit `heuristic_local_search` guarantee; it does not claim exhaustive or globally optimal search. Because weighted priorities affect discovery, a priority change can alter which states are found even though the stored archive can still be re-ranked without repeating RF evaluation.
+The default optimizer remains the bounded legacy two-pass coordinate search (`72 × Cell count + 2`, or 578 proposals for eight Cells). It recommends a discovered feasible azimuth configuration and does not prove global optimality. Compatibility `optimal_*` fields retain their names and refer to evaluated candidates. `POST /api/optimize-network` accepts the explicit opt-in `search_policy: "deterministic_multistart_coordinate_v1"`, with optional `max_search_passes` (default `8`) and `max_unique_evaluations` (default `5000`) for candidate-state RF evaluations. The existing compatibility tower summaries still perform their final per-tower recomputation. The opt-in policy evaluates the baseline plus deterministic uniform global rotations, descends through the 10-degree azimuth grid until each start is stable or a bound is reached, memoizes states within the request, and builds the reported Pareto frontier from the union of unique evaluated states. Its `optimization.search` metadata reports starts, accepted updates, cache/evaluation counts, archive size, termination reasons, and an explicit `heuristic_local_search` guarantee; it does not claim exhaustive or globally optimal search. Because weighted priorities affect discovery, a priority change can alter which states are found even though the stored archive can still be re-ranked without repeating RF evaluation.
 
 The separate experimental `search_policy: "deterministic_pareto_archive_search_v1"` is priority-independent during discovery. It seeds the same four deterministic starts, expands every cell's absolute 10-degree neighborhood from a FIFO evaluated Pareto archive, and uses only feasibility, objective availability, and exact normalized utilities for archive admission and expansion. User priorities are applied afterward for ranking and recommendation. `max_unique_evaluations` bounds RF states; `max_expanded_states` (default `128`) and `max_search_rounds` (default `16`) bound traversal. The response reports `discovery_fingerprint` (which excludes weights), `ranking_fingerprint`, objective availability/set, archive policy, active Pareto size, removed states, neighbor/cache counts, archive growth, and `budget_complete`. A budget-limited result is explicitly incomplete. The public 25-solution view is selected by stable state identity before ranking, so changing priorities can reorder or recommend a discovered solution but cannot change that bounded membership. This remains a bounded heuristic and must not be described as a complete or global Pareto frontier. See the [Concept 5C audit](concept-5c-pareto-search.md) and its JSON evidence artifacts.
 
@@ -988,7 +988,7 @@ Candidate records are not approved deployment sites. `marginal_network_score` is
 
 **Endpoint**: `POST /api/measurements/evaluate`
 
-Compares one to 5,000 measured 4G or 5G RSRP points with the deterministic model. At least one selected cell is required. With 20 or more valid predictions, at least five distinct 50 m spatial areas, and a campaign span of at least 100 m, the response includes a robust global bias suggestion evaluated through deterministic spatially blocked five-fold validation.
+Compares one to 5,000 compatible user-supplied 4G or 5G RSRP points with the deterministic model using one to six selected Cells. Measurement6 is independent of normal network8; reduce the measurement selection before submitting. This is a diagnostic capability, not evidence that the released RF model has passed field validation. With 20 or more valid predictions, at least five distinct 50 m spatial areas, and a campaign span of at least 100 m, the response includes a robust global bias suggestion evaluated through deterministic spatially blocked five-fold validation.
 
 ```json
 {
@@ -1272,7 +1272,7 @@ The server allows two RF jobs globally but only one active job per client by def
 
 Rejected requests return `429` with `Retry-After`, `RateLimit-Limit`, `RateLimit-Remaining`, and `RateLimit-Reset`. Client identity comes from the socket peer unless `TRUSTED_PROXIES` explicitly lists the proxy CIDRs allowed to supply forwarding headers. These controls are process-local; a multi-replica deployment still needs a gateway-level shared budget.
 
-The budget counts protected HTTP POST attempts before handler validation and computation, including failures, cancellations, and concurrency/capacity rejections. Requests already denied for exhausted budget do not add a charge or extend the window. The 60-second fixed window starts on the client's first protected request; reset occurs on the next request at or after expiry. `RateLimit-Reset` and budget-exhaustion `Retry-After` are relative seconds rounded up to expiry. Concurrency/capacity rejections use `Retry-After: 1`.
+The budget counts protected HTTP POST attempts before handler validation and computation, including failures, cancellations, and concurrency/capacity rejections. Requests already denied for exhausted budget do not add a charge or extend the window. The 60-second fixed window starts on the client's first protected request; reset occurs on the next request at or after expiry. `RateLimit-Reset` and budget-exhaustion `Retry-After` are relative seconds rounded up to expiry. Concurrency/capacity rejections use `Retry-After: 1`. Clients should present a one-time approximate retry delay from that response; it is not a countdown, completion ETA or instruction to retry automatically. Clients behind one NAT/shared IP share this allowance, so another user can consume the remaining budget. Let active work finish and retry after the advertised delay; do not repeatedly submit while blocked.
 
 All protected RF routes share the ordinary bucket, including independent tools, exports and experiments. Internal optimizer evaluations do not consume HTTP units. With advertised `bounded-followups-v1`, network Evaluate/Optimize roots prebook their exact sequential map children using up to eight shared verified units, then ordinary units. Normal eight-Cell Evaluate/maps uses ordinary1/extra8; a full cycle uses11/8; cycle→Optimize/maps uses20/8 across28 successful calls. Standalone Simulate remains ordinary and attempt21 is denied. Capabilities are one-time, input-bound, owner-bound, finite, and carried holds survive reset. Legacy clients remain ordinary-only. See the [validated policy implementation](bounded-followup-policy-implementation.md) and [product promotion](eight-cell-product-cap-promotion.md).
 
@@ -1300,9 +1300,9 @@ Breaking changes will increment major version (e.g., `/v2`).
 
 ### 503 Service Unavailable
 
-**Cause**: Data not yet loaded at startup
+**Cause**: A required runtime dependency may be unavailable.
 
-**Solution**: Wait 5-10 seconds and retry
+**Solution**: Inspect `/readyz` and server logs, correct missing dependencies, and retry when readiness succeeds.
 
 ### 400 Bad Request
 

@@ -1,0 +1,31 @@
+[
+  {
+    "path": "/api/optimize-azimuth",
+    "method": "post",
+    "field": "summary",
+    "before": "Optimize one sector azimuth",
+    "after": "Recommend one sector azimuth"
+  },
+  {
+    "path": "/api/optimize-azimuth",
+    "method": "post",
+    "field": "description",
+    "before": null,
+    "after": "Evaluates 36 azimuths on a 10-degree grid using unique POI demand and residential weights plus capped usable ray reach. The compatibility optimal_azimuth field identifies the best evaluated direction; no global optimum or area-coverage percentage is established."
+  },
+  {
+    "path": "/api/optimize-network",
+    "method": "post",
+    "field": "description",
+    "before": null,
+    "after": "Bounded deterministic azimuth search. Default legacy two-pass search proposes 578 evaluations for eight Cells. Compatibility optimal_* fields identify discovered candidates and do not prove global optimality."
+  },
+  {
+    "path": "/api/optimize-azimuth",
+    "method": "post",
+    "response_code": "200",
+    "field": "description",
+    "before": "Optimal azimuth, propagation-reach score, score breakdown, and canonical RF contract",
+    "after": "Recommended azimuth from the bounded sweep, propagation-reach score, score breakdown, and canonical RF contract"
+  }
+]

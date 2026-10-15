@@ -1,3 +1,5 @@
+import { rfRecoveryMessage } from "./rfRecoveryMessage.js";
+
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;
 export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;
@@ -28,9 +30,10 @@ export async function requestJSON(path, {
       : typeof responsePayload === "string" && responsePayload.trim()
         ? responsePayload.trim()
         : fallbackMessage;
-    const error = new Error(message);
+    const retryAfter = response.headers.get("Retry-After");
+    const error = new Error(rfRecoveryMessage(message, { status: response.status, retryAfter }));
     error.status = response.status;
-    error.retryAfter = response.headers.get("Retry-After");
+    error.retryAfter = retryAfter;
     throw error;
   }
   return responsePayload;

@@ -1,0 +1,2238 @@
+{
+  "schema_version": 1,
+  "policy": "Claim cleanup targets CURRENT PRODUCT DOC; dated audit/qualification, research and design sources are preserved. Root/generated changelog: Unreleased only is current; released sections remain evidence.",
+  "sources": {
+    "CHANGELOG.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "PRODUCT.md": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Product/design or generated navigation infrastructure; search entries inherit the referenced page scope."
+    },
+    "README.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/algorithms.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/algorithms.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/ankara-140ghz-measurement-campaign-spec.md": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Dated design/collection proposal; no implementation or qualification inferred."
+    },
+    "docs/api.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/api.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/architecture.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/architecture.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/assets/basemap-alidade/evidence.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/concept-8h/after/evidence.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/concept-8h/before/evidence.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/dark-mode-follow-up/after.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/dark-mode-follow-up/before.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/dark-mode/evidence.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/10-desktop-1440.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/10-export.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/10.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/12-desktop-1024.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/12-desktop-1440.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/12-export.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/12-mobile-390.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/12-tablet-768.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/12.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/6-desktop-1440.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/6-export.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/6.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/8-desktop-1440.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/inventory-selection.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/reports.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/network-capacity-audit/undo-observations.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/persistence-reliability/baseline.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/persistence-reliability/browser-timings.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/persistence-reliability/export-measurements.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/persistence-reliability/undo-timeline.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/assets/reference-template.html": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Product/design or generated navigation infrastructure; search entries inherit the referenced page scope."
+    },
+    "docs/auto-resource-estimator-locked-validation.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-estimator-locked-validation.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-estimator-locked-validation.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-geometry-calibration.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-geometry-calibration.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-geometry-calibration.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-profile-calibration.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-profile-foundation.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/auto-resource-profile-foundation.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/basemap-alidade-foundation.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/basemap-alidade-post-change-comparison.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/basemap-alidade-pre-change-baseline.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/basemap-alidade-provider-audit.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/basemap-alidade-test-evidence.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/basemap-alidade-visual-comparison.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/bounded-followup-policy-implementation.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/bounded-followup-policy-implementation.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/bounded-followup-policy-implementation.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/bug-fixes.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/bug-fixes.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/changelog.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/concept-4d-canonical-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4d-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4d-urban-propagation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4e-building-entry.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4e-building-entry.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f1-canonical-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f1-height-aware-obstruction.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f1-height-aware-obstruction.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f2-canonical-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f2-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f2-diffraction-diagnostic.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f2-diffraction-diagnostic.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f2-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a-ankara-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a-data-quality-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a-source-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a-spatial-evidence-foundation.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a-spatial-evidence-foundation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-acquisition-manifest.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-data-quality-impact.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-external-height-source.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-external-height-source.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-height-agreement.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-matching-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a1-readiness-impact.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-acquisition-manifest.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-data-quality-impact.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-gba-height-source.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-gba-height-source.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-height-agreement.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-policy-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-raster-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a2-readiness-impact.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-building-base-impact.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-fabdem-manifest.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-nasadem-manifest.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-readiness-impact.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-source-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-terrain-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a3-terrain-source-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-clearance-distribution.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-datum-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-endpoint-analysis.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-readiness-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-representative-profiles.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a4-terrain-clearance-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-clearance-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-clearance-distribution.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-representative-profiles.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-source-manifests.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4f3a5-terrain-clearance-primitive.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g1-antenna-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g1-antenna-link-budget.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g1-antenna-link-budget.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g1-antenna-pattern-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g2-canonical-receiver-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g2-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g2-receiver-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g2-receiver-noise-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g2-receiver-noise-sensitivity.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4g2-receiver-noise-sensitivity.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h1-interference-radio-quality.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h1-interference-radio-quality.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h1-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h2-canonical-experiment.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h2-radio-quality-optimization.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4h2-radio-quality-optimization.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i1-140ghz-applicability.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i1-140ghz-audit.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i1-140ghz-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i1-140ghz-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i1-pre-change-140ghz-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2a-atmospheric-reference.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2a-atmospheric-reference.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2a-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2a-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-p1411-applicability.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-p1411-reference.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-p1411-reference.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i2b-reference-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-external-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-measurement-validation.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-measurement-validation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-synthetic-validation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i3-validation-schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-material-applicability.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-material-facade-reference.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-material-facade-reference.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i4-reference-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5a-ankara-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5a-controlled-derivation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5a-reflection-applicability.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5a-reflection-audit.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5a-reflection-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5b-controlled-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5b-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5b-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5b-reference-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5b-specular-reflection-reference.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-4i5b-specular-reflection-reference.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-exhaustive-fixtures.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-optimizer-search-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-pareto-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-performance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-search-sensitivity.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5a-six-cell-robustness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-ankara-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-exhaustive-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-multistart-search.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-multistart-search.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-pareto-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-performance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5b-start-policy-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-ankara-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-discovery-policy-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-exhaustive-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-multi-priority-recovery.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-pareto-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-pareto-search.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-pareto-search.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-performance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5c-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-ankara-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-budget-curves.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-exhaustive-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-multi-priority-cost.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-policy-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-product-use-cases.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-search-policy-selection.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-5d-search-policy-selection.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-campaign-design.json": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Dated design/collection proposal; no implementation or qualification inferred."
+    },
+    "docs/concept-6a-canonical-rf-validation.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-canonical-rf-validation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-dataset-source-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-synthetic-validation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a-validation-schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-applicability.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-b7-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-bandwidth-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-campaign-manifest.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-gnss-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-radio-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-raw-file-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-real-pilot-ingestion.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-real-pilot-ingestion.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-session-quality.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-transmitter-reconciliation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-1-transmitter-truth.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-service-state-consistency.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-serving-state-semantics.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-serving-state-semantics.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-source-state-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-transition-consistency.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-2-vendor-questions.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-campaign-manifest.schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-campaign-tooling.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-campaign-tooling.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-collector-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-dry-run-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-dry-run-validation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a1-transmitter-map.schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-benchmark-fitness-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-candidate-matrix.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-external-benchmark-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-inventory-capability.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-next-phase.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-selected-benchmark.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a2-shortlist.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-chongqing-reconciliation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-field-semantics.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-frequency-reconciliation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-id-reconciliation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-inventory-mapping.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-6a21-readiness.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-domain-model.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-indexeddb-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-migration-plan.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-next-phase.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-persistence-architecture.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-schema-draft.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-state-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7a-storage-classification.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-compatibility-matrix.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-domain-implementation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-domain-schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-field-coverage.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-next-phase.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-repository-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-request-equivalence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7b-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-input-coverage.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-next-phase.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-request-invariance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-retention-policy.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-run-history.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-run-history.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-run-schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-storage-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-storage-size.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7c-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-artifact-schema.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-artifact-types.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-report-artifacts.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-report-artifacts.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-report-source-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-storage-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-storage-size.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7d-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-scenario-ux.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-scenario-ux.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-source-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-terminology.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7e-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-bundle-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-navigation-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-next-phase.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-product-debt.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-product-ux-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-screen-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-state-communication.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-task-matrix.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7f-terminology-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-action-safety.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-lineage-context.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-results-lineage.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-results-lineage.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-state-matrix.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-state-vocabulary.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7g-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-classification.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-control-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-interaction-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-navigation-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-profile-visibility.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-rf-progressive-disclosure.html": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-rf-progressive-disclosure.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7h-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-chunk-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-feature-load-matrix.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-initial-load-metrics.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-module-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-safe-lazy-loading.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-split-plan.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-state-continuity.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7i-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-app-state-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-effect-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-frontend-boundaries.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-invalidation-matrix.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-orchestrator-boundaries.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-report-equivalence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-run-snapshot-equivalence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-state-ownership.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-7j-workflow-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-8b-test-plan.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-command-bar-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-implementation-risk.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-navigation-chrome-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-navigation-depth.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-navigation-options.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-redundancy-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-responsive-analysis.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-tool-map.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-ui-layer-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8a-wireframes.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-accessibility-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-command-bar-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-invariance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-lazy-loading-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-navigation-chrome.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-navigation-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-accessibility-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-chrome-geometry.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-invariance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-navigation-polish.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-visual-polish.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8b1-visual-principles.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-accessibility-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-focus-inspection.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-interaction-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-map-chrome.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-map-control-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-message-ownership.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-request-invariance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8c-visualization-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-8e-test-plan.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-container-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-cvat-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-implementation-risk.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-information-priority.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-inspector-candidates.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-panel-coexistence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-role-classification.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-selection-semantics.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-tool-inventory.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-wireframes.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8d-workspace-roles-audit.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8e-implementation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8e-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8e-pre-change-selection-flow.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8e-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8e-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-action-visibility.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-data-hierarchy.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-density-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-lazy-loading-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-optimization-priorities.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-request-invariance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-results-hierarchy.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-rf-diagnostics-ia.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-run-history-hierarchy.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-scenarios-relocation.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-tool-hierarchy.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8f-tool-information-architecture.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-accessibility-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-bulk-edit-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-bulk-field-safety.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-cell-editor-flow.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-density-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-full-inventory-decision.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-inventory-behavior-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-inventory-working-set.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-map-area-scope.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-marker-density-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-network-scope.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-pre-change-visual-capture.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-request-invariance.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-responsive-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-result-density-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-scale-fixture.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-search-filter-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-selection-semantics.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8g-working-set-contract.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8h-design-tokens.json": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Dated design/collection proposal; no implementation or qualification inferred."
+    },
+    "docs/concept-8h-post-change-comparison.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8h-pre-change-baseline.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8h-test-evidence.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8h-visual-audit.json": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8h-visual-comparison.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/concept-8h-visual-system-consolidation.md": {
+      "classification": "RESEARCH REFERENCE",
+      "reason": "Scoped concept/model/research record; historical results and non-promotion boundaries preserved."
+    },
+    "docs/contributing.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/contributing.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/dark-mode-follow-up.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/dark-mode-visual-comparison.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/dark-mode.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/dataset-pack-studio.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/dataset-pack-studio.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/deployment.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/deployment.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/doc-sources.json": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Product/design or generated navigation infrastructure; search entries inherit the referenced page scope."
+    },
+    "docs/download.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/eight-cell-operational-budget-audit.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-operational-budget-audit.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-operational-budget-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-operational-budget-successor.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-operational-budget-successor.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-operational-budget-successor.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-product-cap-promotion.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-product-cap-promotion.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-product-cap-promotion.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/eight-cell-request-budget-policy-design.html": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Dated design/collection proposal; no implementation or qualification inferred."
+    },
+    "docs/eight-cell-request-budget-policy-design.json": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Dated design/collection proposal; no implementation or qualification inferred."
+    },
+    "docs/eight-cell-request-budget-policy-design.md": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Dated design/collection proposal; no implementation or qualification inferred."
+    },
+    "docs/faq.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/faq.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/features.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/features.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/fixed-deployment-profile-certification.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/fixed-deployment-profile-certification.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/fixed-deployment-profile-certification.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/getting-started.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/index.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/index.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/modeling-limits.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/modeling-limits.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/network-optimization-deadline-audit.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/network-optimization-deadline-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/network-optimization-deadline-measurements.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/network-size-capacity-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/network-size-capacity-cap-inventory.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/network-size-capacity-measurements.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/openapi.yaml": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/optimization-operation-feedback.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/overview.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/persistence-reliability-audit.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/persistence-reliability-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/project-format.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/project-format.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/rf-analysis-request-budget-audit.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/rf-analysis-request-budget-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/rf-request-budget-policy-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/rf-request-budget-policy-measurements.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/rf-resource-admission-measurements.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/rf-resource-admission-study.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/search-index.json": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Product/design or generated navigation infrastructure; search entries inherit the referenced page scope."
+    },
+    "docs/v0.12.1-claim-reconciliation.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Dated audit/remediation evidence, not maintained product copy."
+    },
+    "docs/v0.12.1-claim-reconciliation.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Dated audit/remediation evidence, not maintained product copy."
+    },
+    "docs/v0.12.1-post-release-product-scientific-audit.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Dated audit/remediation evidence, not maintained product copy."
+    },
+    "docs/v0.12.1-post-release-product-scientific-audit.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Dated audit/remediation evidence, not maintained product copy."
+    },
+    "docs/visualization.html": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/visualization.md": {
+      "classification": "CURRENT PRODUCT DOC",
+      "reason": "Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable."
+    },
+    "docs/w1-shipping-runtime-qualification.html": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/w1-shipping-runtime-qualification.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/w1-shipping-runtime-qualification.md": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "planning/product-compass.md": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Product/design or generated navigation infrastructure; search entries inherit the referenced page scope."
+    }
+  }
+}

@@ -1,0 +1,35 @@
+
+> ankara-5g-raytracer-frontend@0.12.1 test
+> vitest run src/utils/apiClient.test.js src/utils/rfRecoveryMessage.test.js src/utils/measurementScope.test.js src/App.workflow.test.jsx
+
+
+ RUN  v4.1.11 /Users/berkunsal/Desktop/urban-ray-tracer/frontend-react
+
+ ❯ src/App.workflow.test.jsx (36 tests | 3 failed) 21973ms
+     × discloses Measurement6 and prevents out-of-scope RF with 6 selected Cells 5010ms
+     × discloses Measurement6 and prevents out-of-scope RF with 7 selected Cells 5006ms
+     × discloses Measurement6 and prevents out-of-scope RF with 8 selected Cells 5004ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.workflow.test.jsx > App planning workflow > discloses Measurement6 and prevents out-of-scope RF with 6 selected Cells
+ FAIL  src/App.workflow.test.jsx > App planning workflow > discloses Measurement6 and prevents out-of-scope RF with 7 selected Cells
+ FAIL  src/App.workflow.test.jsx > App planning workflow > discloses Measurement6 and prevents out-of-scope RF with 8 selected Cells
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/App.workflow.test.jsx:705:20
+    703|   });
+    704|
+    705|   it.each([6, 7, 8])("discloses Measurement6 and prevents out-of-scope…
+       |                    ^
+    706|     const cells = { type: "FeatureCollection", features: Array.from({ …
+    707|     api.getJSON.mockImplementation((path) => Promise.resolve(path === …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  3 failed | 55 passed (58)
+   Start at  14:01:13
+   Duration  23.21s (transform 571ms, setup 307ms, import 663ms, tests 22.00s, environment 1.63s)
+

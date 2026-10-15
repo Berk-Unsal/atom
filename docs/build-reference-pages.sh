@@ -4,6 +4,18 @@ set -eu
 DOCS_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$DOCS_DIR"
 
+# Keep generated HTML identical to the CI and Pages deployment builds.
+required_pandoc_version=3.10
+if ! command -v pandoc >/dev/null 2>&1; then
+  printf 'Documentation requires Pandoc %s; install the version pinned in the documentation workflows.\n' "$required_pandoc_version" >&2
+  exit 1
+fi
+pandoc_version=$(pandoc --version | sed -n '1s/^pandoc //p')
+if [ "$pandoc_version" != "$required_pandoc_version" ]; then
+  printf 'Documentation requires Pandoc %s (found %s); install the version pinned in the documentation workflows.\n' "$required_pandoc_version" "$pandoc_version" >&2
+  exit 1
+fi
+
 python3 build_theme_assets.py
 
 build_page() {

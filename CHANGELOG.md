@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Changed
+
+- Add a planning glossary for Cells, sectors, physical sites, tower records, candidate feasibility and dataset identity, linked from setup, inventory, first-use help and documentation navigation.
+
 ## [0.12.2] - 2026-10-15
 
 ### Fixed

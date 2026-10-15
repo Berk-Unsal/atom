@@ -50,7 +50,7 @@ To bound browser storage, complete GeoJSON artifacts are retained for the five m
 
 ### What does candidate recommendation guarantee?
 
-It ranks unselected records from the active tower dataset by bounded, deterministic RF and demand scoring inside the drawn area. It does not establish ownership, rooftop access, permitting, cost, power, fiber, backhaul, or construction feasibility. Analyze interference after applying a recommendation.
+It ranks unselected records from the active tower dataset by bounded, deterministic RF and demand scoring inside the drawn area. It does not establish ownership, site availability, rooftop access, permission or permitting, cost, power, fiber, backhaul, or construction feasibility. Analyze interference after applying a recommendation. See [Cell, sector, site, and tower record terminology](terminology.html).
 
 ## Data
 

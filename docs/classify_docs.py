@@ -12,6 +12,7 @@ CURRENT = {'README.md', 'CHANGELOG.md', *('docs/' + name for name in [
     'getting-started.md', 'download.html', 'modeling-limits.md', 'modeling-limits.html',
     'visualization.md', 'visualization.html', 'deployment.md', 'deployment.html',
     'dataset-pack-studio.md', 'dataset-pack-studio.html', 'faq.md', 'faq.html',
+    'terminology.md', 'terminology.html',
     'project-format.md', 'project-format.html', 'contributing.md', 'contributing.html',
     'changelog.html',
 ])}
@@ -20,7 +21,7 @@ CLASSES = {'CURRENT PRODUCT DOC', 'HISTORICAL AUDIT / QUALIFICATION', 'RESEARCH 
 
 def source_paths():
     return sorted({'docs/doc-sources.json', 'README.md', 'CHANGELOG.md', 'PRODUCT.md', 'planning/product-compass.md',
-                   *(str(p.relative_to(ROOT)) for p in (ROOT/'docs').rglob('*')
+                   *(p.relative_to(ROOT).as_posix() for p in (ROOT/'docs').rglob('*')
                      if p.is_file() and p.suffix in ('.md', '.html', '.json', '.yaml', '.yml'))})
 
 

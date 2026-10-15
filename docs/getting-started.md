@@ -106,7 +106,11 @@ The five most recently used scenarios retain complete map layers. Older scenario
 
 Compare a small urban baseline with a bounded azimuth recommendation: configure Cells → evaluate → inspect propagation/interference → optimize → compare/explain → preserve/export. The sections below follow that loop. Measured real-world propagation accuracy is not yet established; use the result to compare declared assumptions, not to approve a deployment.
 
+Before starting, see [Cell, sector, site, and tower record terminology](terminology.html) to distinguish planning Cells and dataset records from verified physical sites.
+
 ### Build A Cell Inventory
+
+Inventory Cells are planning records; a Cell or sector does not necessarily represent a separate physical site. See [the terminology guide](terminology.html#planning-cell).
 
 1. Open **Inventory** to search or select the active local cells.
 2. Choose **Place cell**, click the map, and drag the new marker or edit its coordinates precisely.
@@ -117,6 +121,8 @@ Compare a small urban baseline with a bounded azimuth recommendation: configure 
 Legacy Setup/Propagation values supply defaults when a cell has no explicit override. Use **Reset profile** to return a selected cell to those defaults.
 
 ### Single-Cell Sector Planning
+
+The tower selected in Setup is a dataset planning record. See [tower record and candidate terminology](terminology.html#tower-record-and-candidate).
 
 1. Open **Setup**, select **Single** mode and a network technology, then choose a tower.
 2. Open **Propagation** and set ray count, radius, azimuth, and beam width.
@@ -152,7 +158,7 @@ Legacy Setup/Propagation values supply defaults when a cell has no explicit over
 4. Review deterministic candidate reasons and marginal KPIs, then use **Apply as scenario** to preserve the baseline.
 5. Evaluate and analyze interference for the applied scenario before treating it as a preferred RF option.
 
-Candidate records come from the active tower dataset and do not imply site availability, approval, cost, or backhaul feasibility.
+Candidate records come from the active tower dataset and do not imply ownership, site availability, permission or permitting, cost, power, fiber, backhaul, rooftop access, or construction feasibility. See [Cell, sector, site, and tower record terminology](terminology.html#tower-record-and-candidate).
 
 ### Validate Against Measurements
 

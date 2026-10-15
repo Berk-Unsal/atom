@@ -1143,6 +1143,12 @@
     },
     {
       "page": "Changelog",
+      "title": "Changed",
+      "url": "./changelog.html#changed",
+      "text": "Add a planning glossary for Cells, sectors, physical sites, tower records, candidate feasibility and dataset identity, linked from setup, inventory, first-use help and documentation navigation."
+    },
+    {
+      "page": "Changelog",
       "title": "0.12.2 - 2026-10-15",
       "url": "./changelog.html#0122---2026-10-15",
       "text": ""
@@ -1156,7 +1162,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed",
+      "url": "./changelog.html#changed-1",
       "text": "Lead current documentation with a concrete baseline-to-recommendation planning task and classify current product docs separately from historical qualification, research and design evidence."
     },
     {
@@ -1168,7 +1174,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-1",
+      "url": "./changelog.html#changed-2",
       "text": "Refresh the README for 0.12.1 capabilities, qualified eight-cell planning and independent workflow limits, with four current Ankara workspace screenshots."
     },
     {
@@ -1210,7 +1216,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-2",
+      "url": "./changelog.html#changed-3",
       "text": "Export project file schema v3; continue importing valid v1/v2 files. Keep workspace schema v2, the 16 MiB file ceiling, and existing encoded JSON guards; add explicit 32 MiB / one-million-value decoded-content budgets."
     },
     {
@@ -1222,7 +1228,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-3",
+      "url": "./changelog.html#changed-4",
       "text": "Give network optimization a stable, quiet busy action and delayed inline search scope plus elapsed time, with truthful long-running feedback and unchanged requests, search behavior, results, and deadlines. Distinguish running network optimization from unavailable actions using a readable teal-accented surface, and compact its stable feedback reserve from 126 px to approximately 104 px."
     },
     {
@@ -1258,7 +1264,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-4",
+      "url": "./changelog.html#changed-5",
       "text": "Use Alidade Smooth as the default light raster basemap after matched overlay/context evaluation; keep muted OpenStreetMap selectable in Layers and keep basemap choice outside RF and project state. Consolidate workspace typography, spacing, controls, panel headers, and stage menus; keep the primary Run/Evaluate action visible across tools and add relevant Results empty-state actions. Quiet the OSM basemap and available Cells, center selected Cell order labels, distinguish active/selected/inspected/focused markers, and simplify header status and stage badges without changing RF, optimization, request, or persistence semantics."
     },
     {
@@ -1288,7 +1294,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-5",
+      "url": "./changelog.html#changed-6",
       "text": "Restructure workspace tools around clearer primary, secondary, and provenance details; add Plan > Scenarios, compact Run History list/detail, single-workflow RF Diagnostics research views, and denser optimization, Results, Data, Experiments, Building Entry, and Core Lab presentations without changing RF or persistence semantics. Replace full-list Cell browsing with explicit Network, Map area, and Search / Filter working sets; separate Cell detail editing, keep browse selection outside RF state, and add reviewed batch edits for three validated scalar fields."
     },
     {
@@ -1348,7 +1354,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-6",
+      "url": "./changelog.html#changed-7",
       "text": "Replace network optimization's arbitrary raw weighted score with stable 0–1 objective utilities, normalized importance priorities, a 0–100 composite score, raw metric preservation, contribution breakdowns, and preference-ranked feasible Pareto solutions. Scope demand and residential normalization to a deterministic selected-cell radius-union domain, report unavailable objectives as N/A with effective weights, and present the legacy coverage objective as propagation reach. Add lazy per-cell Pareto explanations that compare a selected solution with a single baseline-reverted counterfactual in the same target domain, preserving raw metric deltas, direction-aware interpretation, feasibility evidence, and priority-only score re-ranking. Redesign generated Markdown/HTML planning reports around network scope, authoritative recommendations, baseline/Pareto evidence, evaluated cell explanations, conditional interference summaries, and concise report-only maps. Clarify report priorities as relative 0–100 values, distinguish unconfigured hard constraints, humanize optimization-domain labels, and omit universally unavailable PCI columns. Add map-first RF display controls for received-power surfaces, scoped/hidden propagation rays, and independent selected-cell focus without launching new RF work."
     },
     {
@@ -1372,7 +1378,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-7",
+      "url": "./changelog.html#changed-8",
       "text": "Reorganize the frontend into four labeled workflow stages with contextual tool navigation and run actions, stronger text contrast, and clearer focus states. Standardize RF unit and unavailable-value formatting, replace side-stripe status treatments, and align drawer, layer, and result transitions to one reduced-motion-safe timing system."
     },
     {
@@ -1408,7 +1414,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-8",
+      "url": "./changelog.html#changed-9",
       "text": "Upgrade project files and dataset manifests to schema v2 with backward-compatible v1 import/loading migrations. Include resolved per-cell RF profiles and dataset QA/provenance in reproducibility outputs and planning reports. Extract frontend workspace formatting/state helpers and backend RF/segment geometry math from the application and simulation monoliths into focused, tested modules. Refresh Open5GS reachability outside the adapter cache mutex, serve stale probe state during refresh, and treat HTTP client/server failures as disconnected. Remove redundant RF convenience APIs that created background contexts and silently discarded computation errors. Drain in-flight backend and Core Lab adapter requests on interrupt or termination signals with a bounded graceful-shutdown window. Consolidate report escaping, numeric/Markdown formatting, and printable table construction behind one tested utility."
     },
     {
@@ -1474,7 +1480,7 @@
     {
       "page": "Changelog",
       "title": "Changed",
-      "url": "./changelog.html#changed-9",
+      "url": "./changelog.html#changed-10",
       "text": "Establish a canonical VERSION file, automated version checks, release-note generation, and tag-driven GitHub Releases. Publish the latest container tag only for stable releases, never prerelease tags."
     },
     {
@@ -4997,7 +5003,7 @@
       "page": "Frequently Asked Questions",
       "title": "What does candidate recommendation guarantee?",
       "url": "./faq.html#what-does-candidate-recommendation-guarantee",
-      "text": "It ranks unselected records from the active tower dataset by bounded, deterministic RF and demand scoring inside the drawn area. It does not establish ownership, rooftop access, permitting, cost, power, fiber, backhaul, or construction feasibility. Analyze interference after applying a recommendation."
+      "text": "It ranks unselected records from the active tower dataset by bounded, deterministic RF and demand scoring inside the drawn area. It does not establish ownership, site availability, rooftop access, permission or permitting, cost, power, fiber, backhaul, or construction feasibility. Analyze interference after applying a recommendation. See Cell, sector, site, and tower record terminology ."
     },
     {
       "page": "Frequently Asked Questions",
@@ -5129,7 +5135,7 @@
       "page": "Capabilities",
       "title": "Cell Inventory And RF Profiles",
       "url": "./features.html#cell-inventory-and-rf-profiles",
-      "text": "Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories. Search the inventory and select cells without losing their per-cell overrides. Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and either manual receiver sensitivity or a derived receiver mode with noise bandwidth, noise figure, required SNR, and receiver margin independently for every cell. Validate technology/frequency compatibility and all numeric/text limits before RF execution. Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable. Include resolved per-cell profiles and effective receiver-threshold metadata in simulation, network, interference, recommendation, measurement, and planning-report contracts. Legacy top-level RF controls remain request defaults. A nested rf_profile overrides those defaults for its cell, so older API clients continue to work while heterogeneous networks can be modeled explicitly."
+      "text": "Cells and imported tower records are planning inputs. See Cell, sector, site, and tower record terminology before interpreting a Cell as a physical site. Place cells manually on the map, drag editable cells, edit coordinates, duplicate or delete them, and import bounded CSV or GeoJSON inventories. Search the inventory and select cells without losing their per-cell overrides. Configure technology, band, frequency, bandwidth, channel, duplex mode, conducted TX power, absolute TX boresight gain, scalar RX gain, system loss, deterministic polarization loss, radius, beam width, height, mechanical/electrical downtilt, orientation, horizontal/vertical pattern, load, reuse, PCI, receiver height, and either manual receiver sensitivity or a derived receiver mode with noise bandwidth, noise figure, required SNR, and receiver margin independently for every cell. Validate technology/frequency compatibility and all numeric/text limits before RF execution. Persist the complete inventory and profile overrides in schema-v2 project drafts and scenarios; schema-v1 files remain importable. Include resolved per-cell profiles and effective receiver-threshold metadata in simulation, network, interference, recommendation, measurement, and planning-report contracts. Legacy top-level RF controls remain request defaults. A nested rf_profile overrides those defaults for its cell, so older API clients continue to work while heterogeneous networks can be modeled explicitly."
     },
     {
       "page": "Capabilities",
@@ -5724,6 +5730,48 @@
       "title": "Remaining limits and next action",
       "url": "./rf-analysis-request-budget-audit.html#remaining-limits-and-next-action",
       "text": "The precise old error event is not reconstructable: retained live-container logs contain no 429 for that event. The user-confirmed preceding activity, code accounting, isolated measured trace, and deterministic exhaustion test establish the mechanism without inventing earlier requests. This resolves the investigation and premature retry defect; it intentionally does not eliminate legitimate rate-limit responses after earlier runs. Large batch jobs use existing worker/queue controls; multi-replica deployments still require a shared gateway budget. Native IP pooling behind proxies/NAT remains intentional unless operators explicitly configure trusted proxies. Changes are in the working tree; the existing local container remains on its previous build. Review the change and rebuild/restart the local container when ready. After a legitimate budget hit, wait for the advertised expiry and retry deliberately. No further UI, RF-model, or measurement research work is part of this resolution."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Cell, Sector, Site, and Tower Record",
+      "url": "./terminology.html",
+      "text": "Definitions that distinguish planning Cells, directional sectors, physical sites, tower dataset records, and candidate feasibility. View Markdown source System architecture Use these terms to distinguish a planning object from a real telecom installation. A.T.O.M keeps the established API names such as towers[] for compatibility; those names do not certify that a record is a physical tower or an operator-owned asset."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Planning Cell",
+      "url": "./terminology.html#planning-cell",
+      "text": "A Cell is the planning record you select and configure in Inventory. It carries the coordinates, technology, carrier, antenna assumptions, and other per-cell inputs used by an analysis. The UI calls these objects Cells; existing API requests may expose them under names such as towers[] . A selected planning Cell is not, by itself, proof of a distinct physical installation."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Sector",
+      "url": "./terminology.html#sector",
+      "text": "A sector is a directional planning view of radio coverage associated with a Cell, using settings such as azimuth and beam width. Several Cells or sectors may be planned at one location, for example to represent different directions. This describes the plan; it does not establish how many antennas or sectors are physically installed."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Physical Site and Co-location",
+      "url": "./terminology.html#physical-site-and-co-location",
+      "text": "A physical site is a real place or structure where telecommunications equipment is installed. Co-location means multiple planned Cells are assigned to the same planned location. Matching or nearby coordinates can help represent co-location in a plan, but the dataset does not verify that equipment shares a real site, building, rooftop, or support structure."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Tower Record and Candidate",
+      "url": "./terminology.html#tower-record-and-candidate",
+      "text": "A tower record is an input feature from the active tower dataset. It supplies a location and dataset identifier for planning; it is not an operator inventory. The current tower locations are derived from OpenCellID-oriented source processing, as described under Data Confidence . A candidate is a record surfaced for consideration by the planning workflow. Candidate status is not evidence of ownership, site availability, permission or permitting, cost, power, fiber, backhaul, rooftop access, or construction feasibility. Those items require independent verification before any real-world decision."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Dataset Identity",
+      "url": "./terminology.html#dataset-identity",
+      "text": "Each active dataset pack has an identity and provenance. Saved scenarios stay bound to the dataset identity they used; switching packs can make results stale instead of silently reinterpreting them. See Validated Dataset Packs and Modeling Limits ."
+    },
+    {
+      "page": "Cell, Sector, Site, and Tower Record",
+      "title": "Quick distinction",
+      "url": "./terminology.html#quick-distinction",
+      "text": "Term In A.T.O.M What it does not establish Cell Configurable planning record used by an analysis A verified physical cell or site Sector Directional coverage settings associated with a planned Cell Installed antenna count or orientation Site Real-world equipment location Verified by a dataset point alone Tower record Location feature supplied by a dataset Ownership, operational status, or a tower structure Candidate Dataset record suggested for further planning Feasibility, permission, cost, or availability For the model's broader data and scientific boundaries, see Modeling Limits ."
     },
     {
       "page": "Reading Propagation Maps",

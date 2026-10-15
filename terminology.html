@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Definitions that distinguish
+planning Cells, directional sectors, physical sites, tower dataset
+records, and candidate feasibility." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Cell, Sector, Site, and Tower
+Record | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./terminology.html">Terminology</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Cell, Sector,
+Site, and Tower Record page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#planning-cell" id="toc-planning-cell">Planning
+      Cell</a></li>
+      <li><a href="#sector" id="toc-sector">Sector</a></li>
+      <li><a href="#physical-site-and-co-location"
+      id="toc-physical-site-and-co-location">Physical Site and
+      Co-location</a></li>
+      <li><a href="#tower-record-and-candidate"
+      id="toc-tower-record-and-candidate">Tower Record and
+      Candidate</a></li>
+      <li><a href="#dataset-identity" id="toc-dataset-identity">Dataset
+      Identity</a></li>
+      <li><a href="#quick-distinction" id="toc-quick-distinction">Quick
+      distinction</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Planning glossary</span>
+        <h1>Cell, Sector, Site, and Tower Record</h1>
+        <p>Definitions that distinguish planning Cells, directional
+sectors, physical sites, tower dataset records, and candidate
+feasibility.</p>
+        <div class="hero-actions">
+          <a class="button" href="./terminology.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Use these terms to distinguish a planning object from a real telecom
+installation. A.T.O.M keeps the established API names such as
+<code>towers[]</code> for compatibility; those names do not certify that
+a record is a physical tower or an operator-owned asset.</p>
+<h2 id="planning-cell">Planning Cell</h2>
+<p>A <strong>Cell</strong> is the planning record you select and
+configure in Inventory. It carries the coordinates, technology, carrier,
+antenna assumptions, and other per-cell inputs used by an analysis. The
+UI calls these objects Cells; existing API requests may expose them
+under names such as <code>towers[]</code>. A selected planning Cell is
+not, by itself, proof of a distinct physical installation.</p>
+<h2 id="sector">Sector</h2>
+<p>A <strong>sector</strong> is a directional planning view of radio
+coverage associated with a Cell, using settings such as azimuth and beam
+width. Several Cells or sectors may be planned at one location, for
+example to represent different directions. This describes the plan; it
+does not establish how many antennas or sectors are physically
+installed.</p>
+<h2 id="physical-site-and-co-location">Physical Site and
+Co-location</h2>
+<p>A <strong>physical site</strong> is a real place or structure where
+telecommunications equipment is installed. <strong>Co-location</strong>
+means multiple planned Cells are assigned to the same planned location.
+Matching or nearby coordinates can help represent co-location in a plan,
+but the dataset does not verify that equipment shares a real site,
+building, rooftop, or support structure.</p>
+<h2 id="tower-record-and-candidate">Tower Record and Candidate</h2>
+<p>A <strong>tower record</strong> is an input feature from the active
+tower dataset. It supplies a location and dataset identifier for
+planning; it is not an operator inventory. The current tower locations
+are derived from OpenCellID-oriented source processing, as described
+under <a href="modeling-limits.html#data-confidence">Data
+Confidence</a>.</p>
+<p>A <strong>candidate</strong> is a record surfaced for consideration
+by the planning workflow. Candidate status is not evidence of ownership,
+site availability, permission or permitting, cost, power, fiber,
+backhaul, rooftop access, or construction feasibility. Those items
+require independent verification before any real-world decision.</p>
+<h2 id="dataset-identity">Dataset Identity</h2>
+<p>Each active dataset pack has an identity and provenance. Saved
+scenarios stay bound to the dataset identity they used; switching packs
+can make results stale instead of silently reinterpreting them. See <a
+href="features.html#validated-dataset-packs">Validated Dataset Packs</a>
+and <a href="modeling-limits.html">Modeling Limits</a>.</p>
+<h2 id="quick-distinction">Quick distinction</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>In A.T.O.M</th>
+<th>What it does not establish</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cell</td>
+<td>Configurable planning record used by an analysis</td>
+<td>A verified physical cell or site</td>
+</tr>
+<tr>
+<td>Sector</td>
+<td>Directional coverage settings associated with a planned Cell</td>
+<td>Installed antenna count or orientation</td>
+</tr>
+<tr>
+<td>Site</td>
+<td>Real-world equipment location</td>
+<td>Verified by a dataset point alone</td>
+</tr>
+<tr>
+<td>Tower record</td>
+<td>Location feature supplied by a dataset</td>
+<td>Ownership, operational status, or a tower structure</td>
+</tr>
+<tr>
+<td>Candidate</td>
+<td>Dataset record suggested for further planning</td>
+<td>Feasibility, permission, cost, or availability</td>
+</tr>
+</tbody>
+</table>
+<p>For the model's broader data and scientific boundaries, see <a
+href="modeling-limits.html">Modeling Limits</a>.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

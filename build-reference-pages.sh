@@ -66,6 +66,8 @@ build_page dataset-pack-studio.md dataset-pack-studio.html "Dataset Pack Studio"
   "Inspect, repair, reproject, package, validate, install, and safely switch arbitrary-region A.T.O.M dataset packs."
 build_page faq.md faq.html "Frequently Asked Questions" "Help and troubleshooting" \
   "Answers for setup, RF interpretation, performance, data, API access, and common operating problems."
+build_page terminology.md terminology.html "Cell, Sector, Site, and Tower Record" "Planning glossary" \
+  "Definitions that distinguish planning Cells, directional sectors, physical sites, tower dataset records, and candidate feasibility."
 build_page contributing.md contributing.html "Contributing" "Contributor guide" \
   "Repository structure, development setup, testing expectations, and contribution workflow for A.T.O.M."
 build_page modeling-limits.md modeling-limits.html "Modeling Limits" "Confidence boundary" \

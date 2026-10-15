@@ -1,0 +1,106 @@
+
+name: Planning bug report
+description: Report a reproducible A.T.O.M. planning or application bug
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting, [search existing issues](https://github.com/Berk-Unsal/atom/issues) for duplicates.
+
+        Never include passwords, API keys, access tokens, private campaign locations, raw routes, or other sensitive data. Share only sanitized logs and the minimum evidence needed to reproduce the issue.
+
+        A.T.O.M provides deterministic planning estimates. Its outputs are not field measurements or proof of real-world RF accuracy.
+
+  - type: input
+    id: app_version
+    attributes:
+      label: A.T.O.M version
+      description: Provide the released version or commit, if known.
+      placeholder: "e.g. v0.12.2"
+    validations:
+      required: true
+
+  - type: input
+    id: dataset_model
+    attributes:
+      label: Dataset and model identity
+      description: Identify the dataset and propagation model involved, if applicable. Do not upload private datasets.
+      placeholder: "e.g. dataset identifier and model ID"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Affected workflow
+      description: Select the workflow closest to the problem.
+      options:
+        - Application setup or startup
+        - Network planning or optimization
+        - Coverage or received-signal surface
+        - Interference or radio quality
+        - Path-profile diagnostic
+        - Data import or validation
+        - API
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: technology
+    attributes:
+      label: Technology or environment
+      description: Provide the relevant technology, frequency profile, operating system, or runtime details.
+      placeholder: "e.g. OS, Docker version, 5G / 28 GHz, or N/A"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Minimal reproduction steps
+      description: Include the smallest safe input and exact steps needed to reproduce the problem. Setup-only bugs do not require RF data.
+      placeholder: |
+        1. Open...
+        2. Select...
+        3. Observe...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: What happened instead? Include any error message.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant safe logs and evidence
+      description: Include sanitized error messages or relevant evidence only. Redact credentials, private locations, raw routes, and personal data. Write "Not applicable" if none.
+      render: text
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues for duplicates.
+          required: true
+        - label: I removed secrets and sensitive location or route data.
+          required: true

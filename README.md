@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.12.2-0f766e?style=for-the-badge)](VERSION)
+[![Version](https://img.shields.io/badge/version-0.12.3-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -26,9 +26,9 @@ A first planning question: **does changing a small urban Cell plan's azimuths be
 
 ---
 
-## Current Version: 0.12.2
+## Current Version: 0.12.3
 
-Version **0.12.2** reconciles current product and scientific claims, repairs the API contract and enforces strict OpenAPI validation, and clarifies Measurement Validation's six-cell limit, RF retry guidance, and portable project evidence. RF models and the independent network8/Recommendation5/Measurement6 limits remain unchanged.
+Version **0.12.3** clarifies planning terminology throughout setup and workflow documentation, adds a contribution-readiness audit and structured contributor templates, and makes generated reference pages reproducible with the pinned documentation toolchain. Product scope and RF behavior remain unchanged.
 
 | Workflow | Current scope |
 |----------|---------------|

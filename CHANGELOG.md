@@ -4,9 +4,16 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
-### Changed
+## [0.12.3] - 2026-10-16
 
-- Add a planning glossary for Cells, sectors, physical sites, tower records, candidate feasibility and dataset identity, linked from setup, inventory, first-use help and documentation navigation.
+### Added
+
+- Add a planning glossary that distinguishes Cells, sectors, physical sites, tower records, candidate feasibility and dataset identity, linked from setup, inventory, first-use help and documentation navigation.
+- Add a roadmap and contribution-readiness audit, structured planning issue forms, and a scoped pull-request template.
+
+### Fixed
+
+- Make generated reference pages match the pinned Pandoc output for reproducible documentation builds.
 
 ## [0.12.2] - 2026-10-15
 
@@ -323,7 +330,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.2...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.3...HEAD
+[0.12.3]: https://github.com/Berk-Unsal/atom/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/Berk-Unsal/atom/compare/v0.11.0...v0.12.0

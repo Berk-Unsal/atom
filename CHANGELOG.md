@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers.
+
 ## [0.12.3] - 2026-10-16
 
 ### Added

@@ -15,8 +15,8 @@ paths:
     get:
       summary: Dataset and frontend readiness
       responses:
-        "200": { description: Ready }
-        "503": { description: A required dataset or frontend asset is unavailable }
+        "200": { description: Ready, content: { application/json: { schema: { $ref: "#/components/schemas/ReadinessReady" } } } }
+        "503": { description: A required dataset or frontend asset is unavailable, content: { application/json: { schema: { $ref: "#/components/schemas/ReadinessNotReady" } } } }
   /api/meta:
     get:
       summary: Reproducibility metadata
@@ -508,7 +508,7 @@ paths:
     get:
       summary: Describe the batch experiment process
       responses:
-        "200": { description: "Process identifier, limits, accepted axes, and job links" }
+        "200": { description: "Process identifier, version, job control options, accepted axes, and run limit", content: { application/json: { schema: { $ref: "#/components/schemas/BatchExperimentProcess" } } } }
   /api/processes/batch-experiment/execution:
     post:
       summary: Queue an asynchronous batch experiment
@@ -659,6 +659,54 @@ components:
         backend: { type: string }
         rtreeFootprints: { type: integer }
         towerCount: { type: integer }
+    Readiness:
+      type: object
+      description: Operational availability of dataset and frontend assets, not RF evidence. All fields are always present; status depends only on the three availability flags.
+      required: [status, buildings, towers, frontend, dataset_error]
+      properties:
+        status: { type: string, enum: [ready, not_ready] }
+        buildings: { type: boolean }
+        towers: { type: boolean }
+        frontend: { type: boolean }
+        dataset_error:
+          type: string
+          enum: ["", "dataset unavailable"]
+          description: Empty when no non-whitespace dataset load error is recorded; otherwise a sanitized diagnostic. Internal paths and dependency errors are never exposed.
+    ReadinessReady:
+      allOf:
+        - { $ref: "#/components/schemas/Readiness" }
+        - type: object
+          properties:
+            status: { const: ready }
+            buildings: { const: true }
+            towers: { const: true }
+            frontend: { const: true }
+    ReadinessNotReady:
+      allOf:
+        - { $ref: "#/components/schemas/Readiness" }
+        - type: object
+          properties:
+            status: { const: not_ready }
+          anyOf:
+            - properties: { buildings: { const: false } }
+            - properties: { towers: { const: false } }
+            - properties: { frontend: { const: false } }
+    BatchExperimentProcess:
+      type: object
+      description: Operational process discovery only; these capabilities and limits do not define an RF evidence class.
+      required: [id, version, job_control_options, dimensions, max_runs]
+      properties:
+        id: { type: string, const: batch-experiment }
+        version: { type: string, const: 1.0.0 }
+        job_control_options:
+          type: array
+          items: { type: string }
+          const: [async-execute, dismiss]
+        dimensions:
+          type: array
+          items: { type: string }
+          const: [frequency_ghz, tx_power_dbm, beam_width_deg, azimuth_deg, calibration_offset_db]
+        max_runs: { type: integer, const: 64 }
     Meta:
       type: object
       required: [application_version, build_commit, model_version, model_id, model_description, supported_technologies, propagation_models, rf_contract]

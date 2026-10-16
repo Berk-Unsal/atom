@@ -1,0 +1,149 @@
+[
+  {
+    "name": "ready",
+    "path": "/readyz",
+    "status": 200,
+    "readiness": {
+      "buildings": true,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": ""
+    },
+    "body": {
+      "status": "ready",
+      "buildings": true,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": ""
+    }
+  },
+  {
+    "name": "buildings_unavailable",
+    "path": "/readyz",
+    "status": 503,
+    "readiness": {
+      "buildings": false,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": ""
+    },
+    "body": {
+      "status": "not_ready",
+      "buildings": false,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": ""
+    }
+  },
+  {
+    "name": "towers_unavailable",
+    "path": "/readyz",
+    "status": 503,
+    "readiness": {
+      "buildings": true,
+      "towers": false,
+      "frontend": true,
+      "dataset_error": ""
+    },
+    "body": {
+      "status": "not_ready",
+      "buildings": true,
+      "towers": false,
+      "frontend": true,
+      "dataset_error": ""
+    }
+  },
+  {
+    "name": "frontend_unavailable",
+    "path": "/readyz",
+    "status": 503,
+    "readiness": {
+      "buildings": true,
+      "towers": true,
+      "frontend": false,
+      "dataset_error": ""
+    },
+    "body": {
+      "status": "not_ready",
+      "buildings": true,
+      "towers": true,
+      "frontend": false,
+      "dataset_error": ""
+    }
+  },
+  {
+    "name": "dataset_error_redacted",
+    "path": "/readyz",
+    "status": 503,
+    "readiness": {
+      "buildings": false,
+      "towers": false,
+      "frontend": true,
+      "dataset_error": "/private/data/manifest.json: checksum mismatch"
+    },
+    "body": {
+      "status": "not_ready",
+      "buildings": false,
+      "towers": false,
+      "frontend": true,
+      "dataset_error": "dataset unavailable"
+    }
+  },
+  {
+    "name": "whitespace_dataset_error",
+    "path": "/readyz",
+    "status": 200,
+    "readiness": {
+      "buildings": true,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": " \t\n"
+    },
+    "body": {
+      "status": "ready",
+      "buildings": true,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": ""
+    }
+  },
+  {
+    "name": "ready_with_recorded_dataset_error",
+    "path": "/readyz",
+    "status": 200,
+    "readiness": {
+      "buildings": true,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": "/private/data/other-pack: permission denied"
+    },
+    "body": {
+      "status": "ready",
+      "buildings": true,
+      "towers": true,
+      "frontend": true,
+      "dataset_error": "dataset unavailable"
+    }
+  },
+  {
+    "name": "batch_experiment_process",
+    "path": "/api/processes/batch-experiment",
+    "status": 200,
+    "body": {
+      "id": "batch-experiment",
+      "version": "1.0.0",
+      "job_control_options": [
+        "async-execute",
+        "dismiss"
+      ],
+      "dimensions": [
+        "frequency_ghz",
+        "tx_power_dbm",
+        "beam_width_deg",
+        "azimuth_deg",
+        "calibration_offset_db"
+      ],
+      "max_runs": 64
+    }
+  }
+]

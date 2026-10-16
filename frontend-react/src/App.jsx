@@ -3487,7 +3487,13 @@ export default function App() {
             onDeleteProject={(id) => { clearSpatialContext(); deleteProjectWithHistory(id); }}
             onDeleteScenario={deleteScenarioWithUndo}
             onDuplicateProject={() => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
-            onImportProject={(text) => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); return projectWorkspace.importProject(text); }}
+            onImportProject={(text) => {
+              // File guards run synchronously before any current evidence is cleared.
+              const imported = projectWorkspace.importProject(text);
+              clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null);
+              restoredProjectRef.current = null; setWorkspaceRestored(false);
+              return imported;
+            }}
             onOpenScenario={openSavedScenario}
             onRenameProject={projectWorkspace.renameProject}
             onSaveScenario={saveCurrentScenario}

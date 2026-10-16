@@ -1806,6 +1806,88 @@ test("keeps the inspector and map practical across the seven Concept 8E referenc
   }
 });
 
+test("project budget recovery preserves evidence and offers working Report and New actions", async ({ page }, info) => {
+  const computeRequests = [];
+  const downloads = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST" && new URL(request.url()).pathname.startsWith("/api/")) computeRequests.push(request.url());
+  });
+  page.on("download", (download) => downloads.push(download));
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  const trigger = page.getByRole("button", { name: "Open project menu" });
+  await trigger.click();
+  const menu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await menu.getByRole("button", { name: "Save current" }).click();
+  await expect(menu.getByRole("status")).toHaveText("Version saved");
+  const readWorkspace = () => page.evaluate(async () => {
+    const request = indexedDB.open("atom-planning-workspace");
+    const db = await new Promise((resolve, reject) => {
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const workspace = await new Promise((resolve, reject) => {
+      const read = db.transaction("workspace", "readonly").objectStore("workspace").get("current");
+      read.onsuccess = () => resolve(read.result);
+      read.onerror = () => reject(read.error);
+    });
+    db.close();
+    return workspace;
+  });
+  const before = await readWorkspace();
+  const original = before.projects.find((project) => project.id === before.activeProjectId);
+  const rfCount = computeRequests.length;
+  const text = JSON.stringify(Array.from({ length: 45 }).reduce((value) => ({ nested: value }), {}));
+  await menu.locator('input[type="file"]').setInputFiles({ name: "too-deep.atom-project.json", mimeType: "application/json", buffer: Buffer.from(text) });
+  await expect(menu.getByRole("status")).toContainText("nesting-depth limit");
+  const limits = menu.getByRole("link", { name: "Portable project format limits" });
+  await limits.scrollIntoViewIfNeeded();
+  await expect(limits).toBeVisible();
+  await expect(menu.getByRole("status")).toContainText("A report is not a full editable project backup");
+  const bounds = await menu.boundingBox();
+  expect(bounds.y + bounds.height).toBeLessThanOrEqual(page.viewportSize().height);
+  expect(await menu.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  expect(downloads).toHaveLength(0);
+  expect(await readWorkspace()).toEqual(before);
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+  if (["desktop-1440", "mobile-390"].includes(info.project.name)) {
+    await menu.screenshot({ path: info.outputPath("project-budget-recovery.png") });
+  }
+  await trigger.click();
+  await selectWorkspaceTool(page, "Report");
+  const downloadEvent = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Markdown", exact: true }).click();
+  const report = await downloadEvent;
+  expect(report.suggestedFilename()).toMatch(/\.md$/);
+  expect(await readFile(await report.path(), "utf8")).toContain("-72");
+  const retainedDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: /^Download / }).first().click();
+  expect(await readFile(await (await retainedDownload).path(), "utf8")).toContain("-72");
+  await page.context().addInitScript(() => {
+    window.print = () => { window.reportPrintRequested = true; };
+  });
+  const popupEvent = page.waitForEvent("popup");
+  await page.getByRole("button", { name: "PDF / Print", exact: true }).click();
+  const printedReport = await popupEvent;
+  await expect(printedReport.locator("body")).toContainText("-72");
+  await expect.poll(() => printedReport.evaluate(() => window.reportPrintRequested)).toBe(true);
+  await printedReport.close();
+  expect(computeRequests).toHaveLength(rfCount);
+  await trigger.click();
+  await menu.getByRole("button", { name: "New", exact: true }).click();
+  await expect(trigger).toContainText("Untitled Plan");
+  await trigger.click();
+  await menu.getByRole("combobox", { name: "Project", exact: true }).selectOption(original.id);
+  const restored = await readWorkspace();
+  const retained = restored.projects.find((project) => project.id === original.id);
+  expect(retained.scenarios).toMatchObject(original.scenarios);
+  expect(retained.scenarios[0].artifacts).toEqual(original.scenarios[0].artifacts);
+  expect(restored.projects).toHaveLength(2);
+  expect(computeRequests).toHaveLength(rfCount);
+});
+
 test("switching Projects clears the live Run association and scopes Run History", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();

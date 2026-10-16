@@ -46,6 +46,14 @@ v3 additionally preflights the complete reconstructed project before allocating 
 
 Export checks both budgets too. A larger or more complex project fails explicitly with its limit reason; it does not download an artifact this importer would reject or silently remove scientific data. This is six-Cell reliability coverage, not a larger-network support guarantee or unbounded archival storage.
 
+### Recovering from a limit failure
+
+The Project menu explains known encoded-size, decoded-expansion, node, depth, string, array and field-limit failures. A rejected export downloads no project file; a rejected import leaves the original file unchanged. The active project and retained evidence remain in the current browser. Keep that browser's site data: browser-local storage is not a portable backup.
+
+To preserve an available report, close the Project menu, open **Review → Report**, and download **Markdown** or use **PDF / Print**. Previously retained report artifacts also have a **Download** action. Reports are separate documents for review, not full editable project backups, and are not included in the portable project file.
+
+For future work with smaller exports, choose **New** in the Project menu to start a separate project and save fewer or smaller Scenarios there. The original project remains selectable in the Project list. Fewer Cells in a future plan can reduce new result size; changing the current selection does not shrink retained Scenario evidence, archive the original project, or guarantee that an export fits. For a rejected import, ask its author for a smaller, separately created project. Recovery guidance never retries RF work, trims retained scientific data, or deletes Scenarios automatically.
+
 ## Reproduction and validation
 
 See [the persistence reliability audit](persistence-reliability-audit.md). `node scripts/persistence-reliability-audit.mjs` reproduces byte composition and timings from the compressed real UI export fixture. The dedicated browser workflow replays captured six-Cell backend responses through the ordinary Evaluate / Interference / Optimize / Save Version / Export / Import UI. Run it with:

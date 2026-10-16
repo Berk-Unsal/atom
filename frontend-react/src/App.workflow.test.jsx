@@ -279,6 +279,28 @@ describe("App planning workflow", () => {
     useNetworkFixture = false;
   });
 
+  it("preserves current RF evidence and local project when an import hits a budget guard", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await screen.findByRole("button", { name: /Open Current result details/i });
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+    fireEvent.click(within(menu).getByRole("button", { name: "Save current" }));
+    await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+    const storageBefore = window.localStorage.getItem("atom.planning.workspace.v1");
+    const rfCalls = api.postJSON.mock.calls.length;
+    const text = JSON.stringify(Array.from({ length: 45 }).reduce((value) => ({ nested: value }), {}));
+    const file = { size: text.length, text: async () => text };
+    fireEvent.change(menu.querySelector('input[type="file"]'), { target: { files: [file] } });
+    await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("nesting-depth limit"));
+    expect(screen.getByRole("button", { name: /Open Current result details/i })).toBeInTheDocument();
+    expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument();
+    expect(window.localStorage.getItem("atom.planning.workspace.v1")).toBe(storageBefore);
+    expect(api.postJSON).toHaveBeenCalledTimes(rfCalls);
+    expect(await file.text()).toBe(text);
+  });
+
   it("keeps Setup focused on planning and opens Scenarios as a separate Plan tool", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());

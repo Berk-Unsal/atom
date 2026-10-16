@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./workspaceTools.js";
 import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
+import { projectFileRecoveryReason } from "../utils/projectFileRecovery.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
 import PanelHeader from "./PanelHeader.jsx";
 
@@ -196,6 +197,7 @@ export function ProjectMenu({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(activeProject?.name ?? "");
   const [message, setMessage] = useState("");
+  const [fileRecovery, setFileRecovery] = useState(null);
   const [savingScenario, setSavingScenario] = useState(false);
   const [confirmProjectDelete, setConfirmProjectDelete] = useState(false);
   const rootRef = useRef(null);
@@ -214,6 +216,7 @@ export function ProjectMenu({
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+    setFileRecovery(null);
     try {
       if (file.size > MAX_PROJECT_FILE_BYTES) {
         throw new Error(`Project file must be no larger than ${MAX_PROJECT_FILE_BYTES / (1024 * 1024)} MiB`);
@@ -222,10 +225,13 @@ export function ProjectMenu({
       setMessage("Project imported");
     } catch (error) {
       setMessage(error.message);
+      const reason = projectFileRecoveryReason(error);
+      setFileRecovery(reason ? { reason, operation: "import" } : null);
     }
   };
 
   const downloadProject = () => {
+    setFileRecovery(null);
     try {
       const blob = new Blob([exportContent()], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -237,10 +243,13 @@ export function ProjectMenu({
       setMessage("Project exported");
     } catch (error) {
       setMessage(error.message);
+      const reason = projectFileRecoveryReason(error);
+      setFileRecovery(reason ? { reason, operation: "export" } : null);
     }
   };
 
   const saveScenario = async () => {
+    setFileRecovery(null);
     setSavingScenario(true);
     setMessage("Saving scenario…");
     try {
@@ -298,6 +307,19 @@ export function ProjectMenu({
             <button type="button" onClick={downloadProject}><Download size={14} /> Export</button>
             <input ref={fileRef} hidden type="file" accept=".json,.atom-project.json" onChange={importFile} />
           </div>
+          {message && fileRecovery ? (
+            <div className="project-menu-message" role="status">
+              <p>{message}</p>
+              <div className="project-menu-recovery">
+                <p><strong>{fileRecovery.operation === "export" ? "Export stopped." : "Import stopped."}</strong> {fileRecovery.reason}</p>
+                <p>Your current project and retained evidence remain in this browser. Keep this browser’s site data.</p>
+                {fileRecovery.operation === "import" ? <p>The original file is unchanged. Ask its author for a smaller, separately created project.</p> : null}
+                <p>Close this menu, then open Review → Report. Download an available report separately with Markdown, or use PDF / Print. A report is not a full editable project backup.</p>
+                <p>For future smaller exports, use New to start a separate project with fewer Cells or saved Scenarios. This does not archive this project or shrink its retained evidence.</p>
+                <a href="https://berk-unsal.github.io/atom/project-format.html#resource-and-error-contract" target="_blank" rel="noreferrer">Portable project format limits</a>
+              </div>
+            </div>
+          ) : null}
           <p className="project-menu-save-note">Drafts autosave in this browser. Save version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.</p>
           <div className="scenario-menu-header">
             <strong>Scenarios / Versions</strong>
@@ -317,7 +339,7 @@ export function ProjectMenu({
               </div>
             )) : <p className="project-menu-empty">Save the current plan to create a comparison baseline.</p>}
           </div>
-          {message ? <p className="project-menu-message" role="status">{message}</p> : null}
+          {message && !fileRecovery ? <p className="project-menu-message" role="status">{message}</p> : null}
         </div>
       ) : null}
     </div>

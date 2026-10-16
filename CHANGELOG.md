@@ -8,6 +8,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 - Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers.
 
+### Fixed
+
+- Explain recovery after portable-project size and complexity limits, preserve current result context on rejected imports, and link to the unchanged format limits.
+
 ## [0.12.3] - 2026-10-16
 
 ### Added

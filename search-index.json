@@ -1149,6 +1149,12 @@
     },
     {
       "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed",
+      "text": "Explain recovery after portable-project size and complexity limits, preserve current result context on rejected imports, and link to the unchanged format limits."
+    },
+    {
+      "page": "Changelog",
       "title": "0.12.3 - 2026-10-16",
       "url": "./changelog.html#0123---2026-10-16",
       "text": ""
@@ -1162,7 +1168,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed",
+      "url": "./changelog.html#fixed-1",
       "text": "Make generated reference pages match the pinned Pandoc output for reproducible documentation builds."
     },
     {
@@ -1174,7 +1180,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Reconcile current product, model, accuracy, optimization and performance claims with the released planning scope; clarify independent network8/Recommendation5/Measurement6 and portable-evidence limits. Repair five malformed OpenAPI Response Objects and enforce strict OpenAPI 3.1 validation with structural regression tests. Disclose Measurement Validation's six-Cell limit before submission, prevent out-of-scope requests, and use neutral residual-bias review wording. Present known RF Retry-After delays as recovery guidance without automatic retry or changes to request accounting."
     },
     {
@@ -1198,7 +1204,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Wait for imported projects to finish saving and keep narrow tool drawers within their viewport. Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities."
     },
     {
@@ -1228,7 +1234,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Make six-Cell result-bearing project exports importable using lossless columnar GeoJSON, retaining scientific results, Version provenance and independent imported identity mappings under bounded validation. Preserve newly saved immutable Version history when a concurrently queued autosave contains the previous Scenario, retaining the latest working draft. Persist Scenario Delete → Undo through captured callbacks and immediate reload by checking the latest workspace, restoring the active Scenario, and promptly committing writes on the reusable workspace database connection."
     },
     {
@@ -1258,7 +1264,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Avoid retracing unchanged cells during network optimization with a bounded request-local cache of independent RF contributions; preserve the full search, scientific results, fingerprints and existing 60-second deadline. Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate → Interference → Re-evaluate workflow within the unchanged 20-request budget."
     },
     {
@@ -1276,7 +1282,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Reduce RF ray stroke density in both themes without changing colors, geometry or counts; correct shared dark Interference/diagnostic action variants and deliberate disabled styling while preserving readiness and light action appearance. Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives."
     },
     {
@@ -1300,7 +1306,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-6",
+      "url": "./changelog.html#fixed-7",
       "text": "Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases."
     },
     {
@@ -1330,7 +1336,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-7",
+      "url": "./changelog.html#fixed-8",
       "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
     },
     {
@@ -1378,7 +1384,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-8",
+      "url": "./changelog.html#fixed-9",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -1402,7 +1408,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-9",
+      "url": "./changelog.html#fixed-10",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -1438,7 +1444,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-10",
+      "url": "./changelog.html#fixed-11",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -1456,7 +1462,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-11",
+      "url": "./changelog.html#fixed-12",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -1468,7 +1474,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-12",
+      "url": "./changelog.html#fixed-13",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -1492,7 +1498,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-13",
+      "url": "./changelog.html#fixed-14",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
@@ -5688,6 +5694,12 @@
       "title": "Resource and error contract",
       "url": "./project-format.html#resource-and-error-contract",
       "text": "The UI rejects files over 16 MiB before reading their contents. The store independently checks UTF-8 bytes before parsing. All file versions retain the encoded JSON budget: depth 40; 250,000 nodes; 2,000 object keys; 25,000 elements per array; 1 MiB per string; 100 Scenarios; forbidden __proto__ , prototype and constructor keys. v3 additionally preflights the complete reconstructed project before allocating any decoded rows: 32 MiB of compact logical JSON and 1,000,000 decoded nodes . Reconstruction then rechecks depth, object/array/string bounds and result shapes. The decoded-node limit is separate from the unchanged 250,000-node encoded-file limit. A numeric-vector comma count is checked before splitting and every number token must be finite and valid JSON syntax. Export checks both budgets too. A larger or more complex project fails explicitly with its limit reason; it does not download an artifact this importer would reject or silently remove scientific data. This is six-Cell reliability coverage, not a larger-network support guarantee or unbounded archival storage."
+    },
+    {
+      "page": "Portable Project Format",
+      "title": "Recovering from a limit failure",
+      "url": "./project-format.html#recovering-from-a-limit-failure",
+      "text": "The Project menu explains known encoded-size, decoded-expansion, node, depth, string, array and field-limit failures. A rejected export downloads no project file; a rejected import leaves the original file unchanged. The active project and retained evidence remain in the current browser. Keep that browser's site data: browser-local storage is not a portable backup. To preserve an available report, close the Project menu, open Review → Report , and download Markdown or use PDF / Print . Previously retained report artifacts also have a Download action. Reports are separate documents for review, not full editable project backups, and are not included in the portable project file. For future work with smaller exports, choose New in the Project menu to start a separate project and save fewer or smaller Scenarios there. The original project remains selectable in the Project list. Fewer Cells in a future plan can reduce new result size; changing the current selection does not shrink retained Scenario evidence, archive the original project, or guarantee that an export fits. For a rejected import, ask its author for a smaller, separately created project. Recovery guidance never retries RF work, trims retained scientific data, or deletes Scenarios automatically."
     },
     {
       "page": "Portable Project Format",

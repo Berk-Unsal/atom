@@ -10238,3 +10238,44 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
   font-weight: var(--weight-title);
   cursor: pointer;
 }
+
+/* #105: map chrome must never block map work or overprint other controls. */
+.focused-map-legend.passive {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Scroll shadows show that a tall legend continues instead of looking clipped. */
+.focused-map-legend:not(.collapsed) {
+  overscroll-behavior: contain;
+  background:
+    linear-gradient(var(--surface-raised, #ffffff) 30%, transparent) center top / 100% 20px no-repeat local,
+    linear-gradient(transparent, var(--surface-raised, #ffffff) 70%) center bottom / 100% 20px no-repeat local,
+    radial-gradient(farthest-side at 50% 0, rgba(15, 23, 42, 0.16), transparent) center top / 100% 8px no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, rgba(15, 23, 42, 0.16), transparent) center bottom / 100% 8px no-repeat scroll,
+    var(--surface-raised, #ffffff);
+}
+
+/* Command-bar RF context truncates (label, then technology) instead of overprinting RF details. */
+.rf-context-primary { overflow: hidden; }
+.rf-context-primary > .context-primary,
+.rf-context-primary > .rf-context-tech {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rf-context-primary > .rf-context-frequency { flex: 0 0 auto; white-space: nowrap; }
+
+/* Every Results tab stays visible: the strip wraps rather than scrolling tabs out of view. */
+.result-view-tabs { flex-wrap: wrap; overflow-x: visible; row-gap: var(--space-1); }
+
+/* Programmatic heading focus is announced but should not look like an editable field. */
+.tool-drawer-header h2:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-color: var(--ui-focus, var(--focus));
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}

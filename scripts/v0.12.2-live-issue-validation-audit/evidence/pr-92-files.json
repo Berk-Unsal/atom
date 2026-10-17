@@ -1,0 +1,50 @@
+[
+  {
+    "sha": "901a8be80a5b1e8d97f05741c5753131bf097d7e",
+    "filename": ".github/ISSUE_TEMPLATE/bug_report.yml",
+    "status": "added",
+    "additions": 106,
+    "deletions": 0,
+    "changes": 106,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/c0b7c48f565734f50737015f8b599b8a8d01fb85/.github%2FISSUE_TEMPLATE%2Fbug_report.yml",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/c0b7c48f565734f50737015f8b599b8a8d01fb85/.github%2FISSUE_TEMPLATE%2Fbug_report.yml",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/.github%2FISSUE_TEMPLATE%2Fbug_report.yml?ref=c0b7c48f565734f50737015f8b599b8a8d01fb85",
+    "patch": "@@ -0,0 +1,106 @@\n+\n+name: Planning bug report\n+description: Report a reproducible A.T.O.M. planning or application bug\n+title: \"[Bug]: \"\n+labels:\n+  - bug\n+body:\n+  - type: markdown\n+    attributes:\n+      value: |\n+        Before submitting, [search existing issues](https://github.com/Berk-Unsal/atom/issues) for duplicates.\n+\n+        Never include passwords, API keys, access tokens, private campaign locations, raw routes, or other sensitive data. Share only sanitized logs and the minimum evidence needed to reproduce the issue.\n+\n+        A.T.O.M provides deterministic planning estimates. Its outputs are not field measurements or proof of real-world RF accuracy.\n+\n+  - type: input\n+    id: app_version\n+    attributes:\n+      label: A.T.O.M version\n+      description: Provide the released version or commit, if known.\n+      placeholder: \"e.g. v0.12.2\"\n+    validations:\n+      required: true\n+\n+  - type: input\n+    id: dataset_model\n+    attributes:\n+      label: Dataset and model identity\n+      description: Identify the dataset and propagation model involved, if applicable. Do not upload private datasets.\n+      placeholder: \"e.g. dataset identifier and model ID\"\n+    validations:\n+      required: true\n+\n+  - type: dropdown\n+    id: workflow\n+    attributes:\n+      label: Affected workflow\n+      description: Select the workflow closest to the problem.\n+      options:\n+        - Application setup or startup\n+        - Network planning or optimization\n+        - Coverage or received-signal surface\n+        - Interference or radio quality\n+        - Path-profile diagnostic\n+        - Data import or validation\n+        - API\n+        - Other\n+    validations:\n+      required: true\n+\n+  - type: input\n+    id: technology\n+    attributes:\n+      label: Technology or environment\n+      description: Provide the relevant technology, frequency profile, operating system, or runtime details.\n+      placeholder: \"e.g. OS, Docker version, 5G / 28 GHz, or N/A\"\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: steps\n+    attributes:\n+      label: Minimal reproduction steps\n+      description: Include the smallest safe input and exact steps needed to reproduce the problem. Setup-only bugs do not require RF data.\n+      placeholder: |\n+        1. Open...\n+        2. Select...\n+        3. Observe...\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: expected\n+    attributes:\n+      label: Expected result\n+      description: What should happen?\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: actual\n+    attributes:\n+      label: Actual result\n+      description: What happened instead? Include any error message.\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: logs\n+    attributes:\n+      label: Relevant safe logs and evidence\n+      description: Include sanitized error messages or relevant evidence only. Redact credentials, private locations, raw routes, and personal data. Write \"Not applicable\" if none.\n+      render: text\n+    validations:\n+      required: true\n+\n+  - type: checkboxes\n+    id: safety\n+    attributes:\n+      label: Submission checks\n+      options:\n+        - label: I searched existing issues for duplicates.\n+          required: true\n+        - label: I removed secrets and sensitive location or route data.\n+          required: true"
+  },
+  {
+    "sha": "ec4bb386bcf8a4946923eff961cc7cdf70c0aedf",
+    "filename": ".github/ISSUE_TEMPLATE/config.yml",
+    "status": "added",
+    "additions": 1,
+    "deletions": 0,
+    "changes": 1,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/c0b7c48f565734f50737015f8b599b8a8d01fb85/.github%2FISSUE_TEMPLATE%2Fconfig.yml",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/c0b7c48f565734f50737015f8b599b8a8d01fb85/.github%2FISSUE_TEMPLATE%2Fconfig.yml",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/.github%2FISSUE_TEMPLATE%2Fconfig.yml?ref=c0b7c48f565734f50737015f8b599b8a8d01fb85",
+    "patch": "@@ -0,0 +1 @@\n+blank_issues_enabled: false\n\\ No newline at end of file"
+  },
+  {
+    "sha": "23412865428bdc37b59581c0e9fc650f7b71770f",
+    "filename": ".github/ISSUE_TEMPLATE/feature_research_proposal.yml",
+    "status": "added",
+    "additions": 89,
+    "deletions": 0,
+    "changes": 89,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/c0b7c48f565734f50737015f8b599b8a8d01fb85/.github%2FISSUE_TEMPLATE%2Ffeature_research_proposal.yml",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/c0b7c48f565734f50737015f8b599b8a8d01fb85/.github%2FISSUE_TEMPLATE%2Ffeature_research_proposal.yml",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/.github%2FISSUE_TEMPLATE%2Ffeature_research_proposal.yml?ref=c0b7c48f565734f50737015f8b599b8a8d01fb85",
+    "patch": "@@ -0,0 +1,89 @@\n+\n+name: Feature or research proposal\n+description: Propose a bounded improvement to A.T.O.M. planning decisions\n+title: \"[Proposal]: \"\n+labels:\n+  - enhancement\n+body:\n+  - type: markdown\n+    attributes:\n+      value: |\n+        Before submitting, [search existing issues](https://github.com/Berk-Unsal/atom/issues) for duplicates.\n+\n+        Explain the planning decision this proposal would improve. Keep the work bounded and identify what is explicitly out of scope.\n+\n+        Never include credentials, private campaign locations, raw routes, private datasets, or other sensitive information. Do not upload raw measurements or campaign data.\n+\n+        A.T.O.M provides deterministic planning estimates, and measured real-world propagation accuracy has not been established. Scientifically uncertain work requires maintainer review; a proposal is not evidence of scientific validity or approval for production use.\n+\n+  - type: textarea\n+    id: problem\n+    attributes:\n+      label: Planning decision to improve\n+      description: Which specific planning decision or workflow would this proposal improve, and what limitation motivates the change?\n+      placeholder: Describe the current limitation and the decision it affects.\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: evidence\n+    attributes:\n+      label: Evidence and rationale\n+      description: Provide safe, reproducible evidence, references, or examples supporting the problem. Distinguish established facts from hypotheses.\n+      placeholder: |\n+        - Observed limitation:\n+        - Supporting evidence or references:\n+        - Remaining uncertainty:\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: prerequisites\n+    attributes:\n+      label: Prerequisites and dependencies\n+      description: Identify required inputs, datasets, model assumptions, dependencies, or validation work. Do not provide private datasets or campaign data.\n+      placeholder: List prerequisites, or explain why none are required.\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: scope\n+    attributes:\n+      label: Proposed bounded scope\n+      description: Describe the smallest useful change and how its outcome could be evaluated.\n+      placeholder: |\n+        - Included:\n+        - Expected outcome:\n+        - Validation approach:\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: non_goals\n+    attributes:\n+      label: Non-goals and exclusions\n+      description: State what this proposal will not implement or claim.\n+      placeholder: List excluded functionality, assumptions, and claims.\n+    validations:\n+      required: true\n+\n+  - type: textarea\n+    id: scientific_uncertainty\n+    attributes:\n+      label: Scientific assumptions and uncertainty\n+      description: Explain uncertain assumptions, applicability limits, and evidence still needed. Maintainers must review scientifically uncertain work.\n+      placeholder: Describe known limitations and unresolved questions.\n+    validations:\n+      required: true\n+\n+  - type: checkboxes\n+    id: safety\n+    attributes:\n+      label: Submission checks\n+      options:\n+        - label: I searched existing issues for duplicates.\n+          required: true\n+        - label: I excluded credentials, private campaign locations, raw routes, and confidential data.\n+          required: true\n+        - label: I understand that scientifically uncertain work requires maintainer review.\n+          required: true"
+  },
+  {
+    "sha": "b06272887d07eb37f683d0cc498a3f7494d93e9c",
+    "filename": ".gitignore",
+    "status": "modified",
+    "additions": 2,
+    "deletions": 0,
+    "changes": 2,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/c0b7c48f565734f50737015f8b599b8a8d01fb85/.gitignore",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/c0b7c48f565734f50737015f8b599b8a8d01fb85/.gitignore",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/.gitignore?ref=c0b7c48f565734f50737015f8b599b8a8d01fb85",
+    "patch": "@@ -46,6 +46,8 @@ data-pipeline/ankara_5g_nodes.csv\n .impeccable/\n .github/*\n !.github/dependabot.yml\n+!.github/ISSUE_TEMPLATE/\n+!.github/ISSUE_TEMPLATE/**\n !.github/workflows/\n !.github/workflows/**\n "
+  }
+]

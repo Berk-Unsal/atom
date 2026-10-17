@@ -1,0 +1,489 @@
+{
+  "schema_version": 1,
+  "proposal_only": true,
+  "executed": false,
+  "snapshot_at": "2026-10-17T10:07:54.119755+00:00",
+  "main_sha": "a712097dd2da47d95aa06d0050ba4a2cc5b09070",
+  "precondition": "Before any separately authorized mutation, refetch issue state/body/updated_at; stop if it differs from the saved snapshot.",
+  "summary": {
+    "update-body": 4,
+    "leave-unchanged": 11,
+    "close": 0,
+    "reopen": 0,
+    "relabel": 0,
+    "remove-label": 0,
+    "update-title": 0
+  },
+  "changes": [
+    {
+      "issue_number": 76,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "frontend-react/src/App.jsx",
+          "line": 5155,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/App.jsx#L5155"
+        },
+        {
+          "path": "frontend-react/src/App.jsx",
+          "line": 4829,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/App.jsx#L4829"
+        },
+        {
+          "path": "frontend-react/src/components/OptimizationGoalsPanel.jsx",
+          "line": 12,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/components/OptimizationGoalsPanel.jsx#L12"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:21Z",
+      "expected_body_sha256": "f104c282eb99eedb87b85a4ed991ac783b8d8c84f59cbfe3ce5814f73d1ef5ac",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 77,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "frontend-react/src/utils/projectFileRecovery.js",
+          "line": 3,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/utils/projectFileRecovery.js#L3"
+        },
+        {
+          "path": "frontend-react/src/components/WorkspaceChrome.jsx",
+          "line": 315,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/components/WorkspaceChrome.jsx#L315"
+        },
+        {
+          "path": "frontend-react/src/components/ProjectMenu.fileRecovery.test.jsx",
+          "line": 47,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/components/ProjectMenu.fileRecovery.test.jsx#L47"
+        },
+        {
+          "path": "frontend-react/src/App.workflow.test.jsx",
+          "line": 282,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/App.workflow.test.jsx#L282"
+        },
+        {
+          "path": "docs/project-format.md",
+          "line": 33,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/project-format.md#L33"
+        },
+        {
+          "pr": 95,
+          "url": "https://github.com/Berk-Unsal/atom/pull/95",
+          "merge_commit": "a712097dd2da47d95aa06d0050ba4a2cc5b09070",
+          "merged_at": "2026-10-16T07:35:55Z",
+          "link_evidence": "closing keyword + issue timeline + actual source changes"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-16T07:35:57Z",
+      "expected_body_sha256": "4b321e52a824ff94d9b4a244c1c3d9433ba58da609b601470df409cf70cf5cfa",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 78,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/getting-started.md",
+          "line": 105,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/getting-started.md#L105"
+        },
+        {
+          "path": "examples/ankara-sample.atom-project.json",
+          "line": 34,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/examples/ankara-sample.atom-project.json#L34"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:22Z",
+      "expected_body_sha256": "0159ac56268abe5227e46816b91ff859ff68fb30f2464433acbb1ca2cf8b944d",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 79,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/index.html",
+          "line": 99,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/index.html#L99"
+        },
+        {
+          "path": "frontend-react/e2e/docs-theme.spec.js",
+          "line": 53,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/e2e/docs-theme.spec.js#L53"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:23Z",
+      "expected_body_sha256": "5dfaf34f36ead01042edfbdee156d6d780e3741c8e58ae94e7517905c544114c",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 80,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/terminology.md",
+          "line": 5,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/terminology.md#L5"
+        },
+        {
+          "path": "docs/terminology.md",
+          "line": 17,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/terminology.md#L17"
+        },
+        {
+          "path": "docs/getting-started.md",
+          "line": 109,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/getting-started.md#L109"
+        },
+        {
+          "path": "docs/features.md",
+          "line": 27,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/features.md#L27"
+        },
+        {
+          "pr": 93,
+          "url": "https://github.com/Berk-Unsal/atom/pull/93",
+          "merge_commit": "23df9fd96f73c1453c9d33af2276127e8d48780f",
+          "merged_at": "2026-10-15T16:16:36Z",
+          "link_evidence": "closing keyword + issue timeline + actual source changes"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T16:16:37Z",
+      "expected_body_sha256": "ca2c2e5f75fbde86f9f144b5cdf1a845a418eea90921ae97f881e1952fe2b498",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 81,
+      "action": "update-body",
+      "reason": "Account for PR #95 retention guidance and repair the remaining full-project/archive sentence while delivering the existing report guide.",
+      "evidence": [
+        {
+          "path": "docs/getting-started.md",
+          "line": 101,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/getting-started.md#L101"
+        },
+        {
+          "path": "docs/getting-started.md",
+          "line": 194,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/getting-started.md#L194"
+        },
+        {
+          "path": "frontend-react/src/components/ReportArtifactsPanel.jsx",
+          "line": 5,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/components/ReportArtifactsPanel.jsx#L5"
+        },
+        {
+          "path": "frontend-react/src/utils/reportExport.js",
+          "line": 719,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/frontend-react/src/utils/reportExport.js#L719"
+        },
+        {
+          "path": "docs/project-format.md",
+          "line": 53,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/project-format.md#L53"
+        }
+      ],
+      "risk": "low; wording only; preserve status, assignee, labels and original acceptance gates",
+      "expected_updated_at": "2026-10-15T12:36:24Z",
+      "expected_body_sha256": "5ceccc75be997776e90b23b4613a0591187b2bebd5aacf694d7b79815befd8ef",
+      "exact_proposed_change": {
+        "body": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nThe report already contains an executive summary, baseline comparison, Pareto table, source lineage and limitations. User help mainly says export Markdown or printable PDF; it does not teach an outside reader to check historical/current source, missing analyses, ray sampling or integrity meaning.\n\n## Scope\n\nAdd a bounded reader guide tied to the existing report sections. Reuse the export-recovery guidance merged in PR #95 and correct Getting Started \u2192 Create A Repeatable Project, which still promises moving the \u201cfull project\u201d or an \u201cexternal archive\u201d: portable files carry bounded Draft/retained Scenario evidence, while separate Run History, reports and coverage surfaces have their own retention/download contracts. Do not add an archive mode. Explain source Scenario/Version/Run, evaluated versus recommended status, absent interference, map sampling, offline HTML/Markdown/PDF delivery and separate report/project retention.\n\n## Acceptance criteria\n\n- [ ] An annotated example or section map shows where to find assumptions, achieved metrics, baseline, alternatives and limitations without inventing new metrics.\n- [ ] The guide explains historical/unsaved source context and that hashes verify artifact bytes rather than physical accuracy.\n- [ ] It states map sampling and absent-analysis behavior and separates stored HTML/Markdown download from printing to PDF and portable project export.\n- [ ] Steps are checked against existing report renderer/fixtures and linked from the current help; docs validation passes.\n\n## Non-goals\n\nNo report renderer redesign, new report calculations, new archives, scientific claims or template-system implementation.\n\n## Evidence / references\n\n- [docs/getting-started.md:L184](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/getting-started.md#L184)\n- [frontend-react/src/components/ReportArtifactsPanel.jsx:L51](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/components/ReportArtifactsPanel.jsx#L51)\n- [frontend-react/src/utils/reportExport.js:L458](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/reportExport.js#L458)\n- [frontend-react/src/utils/reportExport.js:L713](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/reportExport.js#L713)\n- [frontend-react/src/utils/reportExport.test.js:L572](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/src/utils/reportExport.test.js#L572)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **beginner-safe**. Rough effort: **S** (planning estimate, not a promise). Priority: **P3**.\n\nUse docs/getting-started.md/faq.md and existing reportExport fixtures as references. No RF code change or deep RF judgement is needed. Do not duplicate a new executive summary: it already exists.\n"
+      }
+    },
+    {
+      "issue_number": 82,
+      "action": "update-body",
+      "reason": "Contributor setup now requires pinned Pandoc 3.10 and must not depend on an ignored, unpublished Product Compass.",
+      "evidence": [
+        {
+          "path": "docs/contributing.md",
+          "line": 202,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/contributing.md#L202"
+        },
+        {
+          "path": "docs/contributing.md",
+          "line": 222,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/contributing.md#L222"
+        },
+        {
+          "path": "docs/contributing.md",
+          "line": 367,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/contributing.md#L367"
+        },
+        {
+          "path": "README.md",
+          "line": 217,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/README.md#L217"
+        },
+        {
+          "path": "docs/build-reference-pages.sh",
+          "line": 8,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/build-reference-pages.sh#L8"
+        }
+      ],
+      "risk": "low; wording only; preserve status, assignee, labels and original acceptance gates",
+      "expected_updated_at": "2026-10-15T12:36:25Z",
+      "expected_body_sha256": "cb0e7ede765d8129cabc2739028a215e7cd6efb086e1c827a0d2ee67fc72c294",
+      "exact_proposed_change": {
+        "body": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nGitHub detects docs/contributing.md, but no root CONTRIBUTING.md or README contribution entry exists. The guide calls Vitest tests Jest, invokes golint, demonstrates nonexistent RF helper/import paths, prescribes editing main.go for releases, links absent community files, and recommends disabled Discussions and speculative RF priorities.\n\n## Scope\n\nCreate a discoverable canonical contribution entry and repair the maintained guide against AGENTS.md, package scripts, CI and VERSION tooling. Include a small-change route from issue to files to focused checks, architecture/ownership boundaries, Docker/LFS prerequisites and current release process.\n\n## Acceptance criteria\n\n- [ ] README and a GitHub-recognized contribution entry lead to one maintained source without contradictory duplicate instructions.\n- [ ] Fresh-clone Docker and frontend/backend development steps include LFS, readiness and correct working directories; documented snippets use real symbols/files or are explicitly pseudocode.\n- [ ] The test matrix names Vitest, frontend lint/build/Playwright, Go vet/race, docs and version/policy checks, with focused-versus-full guidance matching CI.\n- [ ] VERSION is canonical; contributor PRs use Unreleased rather than instructions to edit main.go or publish tags. Missing CoC/contributor promises are removed or linked only if real.\n- [ ] Communication uses available Issues while Discussions is disabled; RF changes are routed to maintainer review and bounded newcomer work to the roadmap. Commands/links are checked and docs validation passes.\n\n## Non-goals\n\nNo enabling Discussions, inventing CODEOWNERS/maintainers or community policy, adding RF models, changing CI gates, runtime upgrades or releasing software.\n\n## Evidence / references\n\n- [docs/contributing.md:L58](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L58)\n- [docs/contributing.md:L207](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L207)\n- [docs/contributing.md:L332](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L332)\n- [docs/contributing.md:L432](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L432)\n- [README.md:L210](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/README.md#L210)\n- [AGENTS.md:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/AGENTS.md#L1)\n- [.github/workflows/quality.yml:L45](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/quality.yml#L45)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **M** (planning estimate, not a promise). Priority: **P2**.\n\ndocs/contributing.md, README.md, a root CONTRIBUTING.md and docs build mapping are the likely surfaces. This is editorial/tooling verification; do not change working production code to match stale examples. GitHub community-profile snapshot confirms the detected guide.\n\n## Live validation refresh \u2014 17 October 2026\n\nCurrent main is `a712097dd2da47d95aa06d0050ba4a2cc5b09070` (VERSION 0.12.3). Documentation builds require exactly Pandoc 3.10 after `fcdf6cb0368ca68248b18126481ccf63bb04c1c4`; include that prerequisite and the hash-pinned Python documentation dependencies in contributor setup. README currently links `planning/product-compass.md`, which is ignored and absent from both public main and the original audit commit. Make all required newcomer references publicly available or replace the broken route with maintained public guidance; do not depend on a maintainer-local file or automatically publish its contents. Issue forms, the PR template, the terminology glossary and discovery response schemas are already implemented by PRs #91\u2013#94 and should be used as existing surfaces.\n"
+      }
+    },
+    {
+      "issue_number": 83,
+      "action": "update-body",
+      "reason": "Remove the one non-public source reference; completed forms remain correctly closed.",
+      "evidence": [
+        {
+          "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+          "line": 2,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/.github/ISSUE_TEMPLATE/bug_report.yml#L2"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/feature_research_proposal.yml",
+          "line": 2,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/.github/ISSUE_TEMPLATE/feature_research_proposal.yml#L2"
+        },
+        {
+          "path": ".github/ISSUE_TEMPLATE/config.yml",
+          "line": 1,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/.github/ISSUE_TEMPLATE/config.yml#L1"
+        },
+        {
+          "pr": 92,
+          "url": "https://github.com/Berk-Unsal/atom/pull/92",
+          "merge_commit": "515ea821a9c08ccaa38ac751cf988a15110062ab",
+          "merged_at": "2026-10-15T15:20:21Z",
+          "link_evidence": "Issue #83 contributor completion comment and matching changed files"
+        }
+      ],
+      "risk": "low; wording only; preserve status, assignee, labels and original acceptance gates",
+      "expected_updated_at": "2026-10-15T15:35:46Z",
+      "expected_body_sha256": "9ad97860303bd5ab4bde82066dd5c21fd731cc4fe4e588a4cdf4cdf43fe708e0",
+      "exact_proposed_change": {
+        "body": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nNeither the tracked .github tree nor GitHub community profile has an issue template. A useful planning bug needs model/dataset identity, supported workflow, expected/actual result and reproducible inputs; arbitrary screenshots or private campaigns are insufficient.\n\n## Scope\n\nAdd lightweight bug and feature/research proposal forms that request the evidence appropriate to the problem, point to duplicate search and model limits, and keep private route data and credentials out of submissions.\n\n## Acceptance criteria\n\n- [ ] Bug form captures app version, dataset/model identity, workflow/technology, minimal steps, expected/actual and relevant safe logs; setup-only bugs do not require RF data.\n- [ ] Proposal form asks which planning decision improves, evidence/prerequisites, bounded scope and non-goals.\n- [ ] Forms explicitly discourage secrets, private campaign locations and raw routes, and direct scientifically uncertain work to maintainer review.\n- [ ] Templates validate as GitHub issue-form YAML, use existing labels, and do not route users to disabled Discussions or require inaccessible private datasets.\n\n## Non-goals\n\nNo auto-triage bots, permission changes, forced raw measurement upload, new support service or reopening resolved security findings.\n\n## Evidence / references\n\n- [.github/workflows/quality.yml:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/quality.yml#L1)\n- [docs/contributing.md:L7](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/contributing.md#L7)\n- [Merged implementation PR #92](https://github.com/Berk-Unsal/atom/pull/92)\n- [docs/modeling-limits.md:L131](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/modeling-limits.md#L131)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P2**.\n\nCreate .github/ISSUE_TEMPLATE/*.yml and optionally config.yml. Cross-check supported YAML syntax and existing issue labels; no deep RF implementation knowledge is required. No workflow automation is needed.\n\n## Live validation note \u2014 17 October 2026\n\nAcceptance criteria are satisfied on main by PR #92 (`515ea821a9c08ccaa38ac751cf988a15110062ab`). The removed Product Compass citation pointed to an ignored, unpublished file, including at the original pinned commit. This reference correction does not change completion status or request additional implementation.\n"
+      }
+    },
+    {
+      "issue_number": 84,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": ".github/PULL_REQUEST_TEMPLATE.md",
+          "line": 1,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/.github/PULL_REQUEST_TEMPLATE.md#L1"
+        },
+        {
+          "path": ".github/PULL_REQUEST_TEMPLATE.md",
+          "line": 13,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/.github/PULL_REQUEST_TEMPLATE.md#L13"
+        },
+        {
+          "path": ".github/PULL_REQUEST_TEMPLATE.md",
+          "line": 24,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/.github/PULL_REQUEST_TEMPLATE.md#L24"
+        },
+        {
+          "pr": 91,
+          "url": "https://github.com/Berk-Unsal/atom/pull/91",
+          "merge_commit": "007abc94fa9e366b4f6c63093c902855a97ad98a",
+          "merged_at": "2026-10-15T13:10:43Z",
+          "link_evidence": "closing keyword + issue timeline + actual source changes"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T13:10:45Z",
+      "expected_body_sha256": "447c3ba1b86be53237c23098f6d57aaed0df374959c5917b45e576a2a6d3c030",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 85,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/openapi.yaml",
+          "line": 14,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/openapi.yaml#L14"
+        },
+        {
+          "path": "docs/openapi.yaml",
+          "line": 507,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/openapi.yaml#L507"
+        },
+        {
+          "path": "backend-go/operational_response_contract_test.go",
+          "line": 17,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/backend-go/operational_response_contract_test.go#L17"
+        },
+        {
+          "path": "docs/validate_openapi_test.py",
+          "line": 59,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/validate_openapi_test.py#L59"
+        },
+        {
+          "pr": 94,
+          "url": "https://github.com/Berk-Unsal/atom/pull/94",
+          "merge_commit": "63ce2a7ebc4de1cdd3c8868f109ff94800174a50",
+          "merged_at": "2026-10-16T07:01:29Z",
+          "link_evidence": "closing keyword + issue timeline + actual source changes"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-16T07:01:31Z",
+      "expected_body_sha256": "399e970921c78bb5ebe59971f91bef990839942e20e20587f857d409423c6c7c",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 86,
+      "action": "update-body",
+      "reason": "Rebase roadmap reconciliation evidence on v0.12.3/current main and include its broken mandatory Product Compass link.",
+      "evidence": [
+        {
+          "path": "planning/future_plans.md",
+          "line": 5,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/planning/future_plans.md#L5"
+        },
+        {
+          "path": "planning/future_plans.md",
+          "line": 19,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/planning/future_plans.md#L19"
+        },
+        {
+          "path": "docs/api.md",
+          "line": 1289,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/api.md#L1289"
+        }
+      ],
+      "risk": "low; wording only; preserve status, assignee, labels and original acceptance gates",
+      "expected_updated_at": "2026-10-15T12:36:28Z",
+      "expected_body_sha256": "b02b83fdb8001f2a79d8d627e1257fcdd45211818ac5e04a998a70e629e444d1",
+      "exact_proposed_change": {
+        "body": "## Context\n\nThe A.T.O.M v0.12.2 roadmap/contribution audit rechecked this against released source at `0310bd8`. This is a bounded follow-up; existing scientific and operational limits remain in force.\n\n## Problem\n\nplanning/future_plans.md still calls tagged images, browser coverage and an additional pack release-completion work despite current release workflow/E2E/sample-pack evidence. docs/api.md says future versions will add webhooks and other capabilities without an admitted objective or milestone.\n\n## Scope\n\nReconcile maintained roadmap rows with the released source and this evidence-backed issue backlog. Replace unconditional API future promises with supported current behavior or clearly gated candidates. Preserve dated historical research and qualification reports.\n\n## Acceptance criteria\n\n- [ ] Each maintained roadmap row is marked implemented, partial, blocked or deferred with current source/issue evidence; existing sample-pack and release/E2E work is not recreated.\n- [ ] Measurement reference-set text distinguishes synthetic/tooling fixtures from a usable real field-validation dataset.\n- [ ] API documentation makes no uncommitted webhook, terrain, custom-model or release promise; API contract version is kept distinct from application VERSION.\n- [ ] Current docs build/classification/link checks pass and historical artifacts are unchanged.\n\n## Non-goals\n\nNo v0.13.0 milestone or release commitment, qualification reopening, new APIs, new field measurements or implementation of listed ideas.\n\n## Evidence / references\n\n- [planning/future_plans.md:L21](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/planning/future_plans.md#L21)\n- [docs/api.md:L1285](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/docs/api.md#L1285)\n- [backend-go/raytracer/testdata/sample-pack/manifest.json:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/backend-go/raytracer/testdata/sample-pack/manifest.json#L1)\n- [.github/workflows/release.yml:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/.github/workflows/release.yml#L1)\n- [frontend-react/playwright.config.js:L1](../blob/0310bd8dea2e807ea57696a1bc5b3e11286db39e/frontend-react/playwright.config.js#L1)\n\n## Dependencies\n\nNone in this backlog.\n\n## Contributor notes\n\nSuitability: **contributor-friendly**. Rough effort: **S** (planning estimate, not a promise). Priority: **P3**.\n\nEdit only current planning/future_plans.md and docs/api.md plus regenerated current docs as needed. Verify completion evidence rather than marking all broad rows complete. Maintainer reviews roadmap wording; no RF math changes.\n\n## Live validation refresh \u2014 17 October 2026\n\nReconcile against current main `a712097dd2da47d95aa06d0050ba4a2cc5b09070`, VERSION 0.12.3, published v0.12.3 at `13e261c2a45ad8fe201276be870dc3c7448e0c0f`, and completed issues #77/#80/#83/#84/#85. Also repair the maintained roadmap\u2019s mandatory Product Compass link: `planning/product-compass.md` is not tracked on public main. Link existing public scope guidance or explicitly scope a public replacement; do not assume a maintainer-local ignored document is available to contributors. Retain the distinction between API contract 1.0 and application 0.12.3. No new feature/release commitment is authorized.\n"
+      }
+    },
+    {
+      "issue_number": 87,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/concept-6a1-readiness.json",
+          "line": 7,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-readiness.json#L7"
+        },
+        {
+          "path": "docs/concept-6a1-2-serving-state-semantics.md",
+          "line": 99,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-2-serving-state-semantics.md#L99"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:29Z",
+      "expected_body_sha256": "1834282f5834ed839d3d1adfad0c45fc435a065c6c11053032ee3df83671c8be",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 88,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/concept-6a1-1-transmitter-truth.json",
+          "line": 5,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-1-transmitter-truth.json#L5"
+        },
+        {
+          "path": "docs/concept-6a1-1-transmitter-reconciliation.json",
+          "line": 2,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-1-transmitter-reconciliation.json#L2"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:30Z",
+      "expected_body_sha256": "b6f1a1010b131308fd103028170abace7d8d05699533be21bab73c417ee90b84",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 89,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/concept-6a1-1-bandwidth-audit.json",
+          "line": 11,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-1-bandwidth-audit.json#L11"
+        },
+        {
+          "path": "docs/concept-6a1-1-applicability.json",
+          "line": 21,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-1-applicability.json#L21"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:31Z",
+      "expected_body_sha256": "19f5b90d1e0dbea84f366b46067f309066adb87a89b7b100c3f2880755228a98",
+      "exact_proposed_change": {
+        "change": null
+      }
+    },
+    {
+      "issue_number": 90,
+      "action": "leave-unchanged",
+      "reason": "Current state, priority, labels, acceptance scope and suitability are supported by main.",
+      "evidence": [
+        {
+          "path": "docs/concept-6a1-readiness.json",
+          "line": 11,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-readiness.json#L11"
+        },
+        {
+          "path": "docs/concept-6a1-1-applicability.json",
+          "line": 30,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-1-applicability.json#L30"
+        },
+        {
+          "path": "docs/concept-6a1-1-applicability.json",
+          "line": 48,
+          "url": "https://github.com/Berk-Unsal/atom/blob/a712097dd2da47d95aa06d0050ba4a2cc5b09070/docs/concept-6a1-1-applicability.json#L48"
+        }
+      ],
+      "risk": "none; preserve current state",
+      "expected_updated_at": "2026-10-15T12:36:31Z",
+      "expected_body_sha256": "38d3bf50934d98192bb27fac9aa00bfead2e5b94291ee829d375734c3aef6791",
+      "exact_proposed_change": {
+        "change": null
+      }
+    }
+  ]
+}

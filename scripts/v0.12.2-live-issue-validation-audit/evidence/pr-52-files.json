@@ -1,0 +1,26 @@
+[
+  {
+    "sha": "2bb8d5febfec495b70c7a15255b39d928ddc7400",
+    "filename": "frontend-react/package-lock.json",
+    "status": "modified",
+    "additions": 18,
+    "deletions": 18,
+    "changes": 36,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/fe94785dd14695699123a9a13cd9655309b665a3/frontend-react%2Fpackage-lock.json",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/fe94785dd14695699123a9a13cd9655309b665a3/frontend-react%2Fpackage-lock.json",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/frontend-react%2Fpackage-lock.json?ref=fe94785dd14695699123a9a13cd9655309b665a3",
+    "patch": "@@ -12,7 +12,7 @@\n         \"lucide-react\": \"^0.468.0\",\n         \"react\": \"^18.3.1\",\n         \"react-dom\": \"^18.3.1\",\n-        \"react-leaflet\": \"^4.2.1\"\n+        \"react-leaflet\": \"^5.0.0\"\n       },\n       \"devDependencies\": {\n         \"@eslint/js\": \"^10.0.1\",\n@@ -1255,17 +1255,6 @@\n         \"node\": \">=18\"\n       }\n     },\n-    \"node_modules/@react-leaflet/core\": {\n-      \"version\": \"2.1.0\",\n-      \"resolved\": \"https://registry.npmjs.org/@react-leaflet/core/-/core-2.1.0.tgz\",\n-      \"integrity\": \"sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==\",\n-      \"license\": \"Hippocratic-2.1\",\n-      \"peerDependencies\": {\n-        \"leaflet\": \"^1.9.0\",\n-        \"react\": \"^18.0.0\",\n-        \"react-dom\": \"^18.0.0\"\n-      }\n-    },\n     \"node_modules/@rolldown/pluginutils\": {\n       \"version\": \"1.0.0-beta.27\",\n       \"resolved\": \"https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz\",\n@@ -3357,17 +3346,28 @@\n       \"peer\": true\n     },\n     \"node_modules/react-leaflet\": {\n-      \"version\": \"4.2.1\",\n-      \"resolved\": \"https://registry.npmjs.org/react-leaflet/-/react-leaflet-4.2.1.tgz\",\n-      \"integrity\": \"sha512-p9chkvhcKrWn/H/1FFeVSqLdReGwn2qmiobOQGO3BifX+/vV/39qhY8dGqbdcPh1e6jxh/QHriLXr7a4eLFK4Q==\",\n+      \"version\": \"5.0.0\",\n+      \"resolved\": \"https://registry.npmjs.org/react-leaflet/-/react-leaflet-5.0.0.tgz\",\n+      \"integrity\": \"sha512-CWbTpr5vcHw5bt9i4zSlPEVQdTVcML390TjeDG0cK59z1ylexpqC6M1PJFjV8jD7CF+ACBFsLIDs6DRMoLEofw==\",\n       \"license\": \"Hippocratic-2.1\",\n       \"dependencies\": {\n-        \"@react-leaflet/core\": \"^2.1.0\"\n+        \"@react-leaflet/core\": \"^3.0.0\"\n       },\n       \"peerDependencies\": {\n         \"leaflet\": \"^1.9.0\",\n-        \"react\": \"^18.0.0\",\n-        \"react-dom\": \"^18.0.0\"\n+        \"react\": \"^19.0.0\",\n+        \"react-dom\": \"^19.0.0\"\n+      }\n+    },\n+    \"node_modules/react-leaflet/node_modules/@react-leaflet/core\": {\n+      \"version\": \"3.0.0\",\n+      \"resolved\": \"https://registry.npmjs.org/@react-leaflet/core/-/core-3.0.0.tgz\",\n+      \"integrity\": \"sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==\",\n+      \"license\": \"Hippocratic-2.1\",\n+      \"peerDependencies\": {\n+        \"leaflet\": \"^1.9.0\",\n+        \"react\": \"^19.0.0\",\n+        \"react-dom\": \"^19.0.0\"\n       }\n     },\n     \"node_modules/react-refresh\": {"
+  },
+  {
+    "sha": "f1eab0790b670a39181c2ab098aa409af3938863",
+    "filename": "frontend-react/package.json",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1,
+    "changes": 2,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/fe94785dd14695699123a9a13cd9655309b665a3/frontend-react%2Fpackage.json",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/fe94785dd14695699123a9a13cd9655309b665a3/frontend-react%2Fpackage.json",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/frontend-react%2Fpackage.json?ref=fe94785dd14695699123a9a13cd9655309b665a3",
+    "patch": "@@ -21,7 +21,7 @@\n     \"lucide-react\": \"^0.468.0\",\n     \"react\": \"^18.3.1\",\n     \"react-dom\": \"^18.3.1\",\n-    \"react-leaflet\": \"^4.2.1\"\n+    \"react-leaflet\": \"^5.0.0\"\n   },\n   \"devDependencies\": {\n     \"@eslint/js\": \"^10.0.1\","
+  }
+]

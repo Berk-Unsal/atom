@@ -1,0 +1,14 @@
+[
+  {
+    "sha": "9fc7bea2266e40d429bb6257bdf8f7c4eeb67e3d",
+    "filename": "Dockerfile",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1,
+    "changes": 2,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/ac3b9f279ea7beff713446721a88274659c73053/Dockerfile",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/ac3b9f279ea7beff713446721a88274659c73053/Dockerfile",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/Dockerfile?ref=ac3b9f279ea7beff713446721a88274659c73053",
+    "patch": "@@ -7,7 +7,7 @@ RUN npm ci\n COPY frontend-react/ ./\n RUN npm run build\n \n-FROM golang:1.26.9-alpine@sha256:cdfd4fe2da6b225d8b40c6b7a105736e548e83ff56d5d8f9394446eeb5eb84e0 AS backend-build\n+FROM golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d AS backend-build\n WORKDIR /src/backend-go\n \n ARG VERSION"
+  }
+]

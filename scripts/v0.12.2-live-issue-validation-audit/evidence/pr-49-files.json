@@ -1,0 +1,14 @@
+[
+  {
+    "sha": "3bafaa0e4aafeec7e03f2aa81f48ffd8627f05ec",
+    "filename": "Dockerfile",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1,
+    "changes": 2,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/26c34a9b864ee59bf635849c6f4f072718e05ed5/Dockerfile",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/26c34a9b864ee59bf635849c6f4f072718e05ed5/Dockerfile",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/Dockerfile?ref=26c34a9b864ee59bf635849c6f4f072718e05ed5",
+    "patch": "@@ -1,4 +1,4 @@\n-FROM node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS frontend-build\n+FROM node:25-alpine@sha256:bdf2cca6fe3dabd014ea60163eca3f0f7015fbd5c7ee1b0e9ccb4ced6eb02ef4 AS frontend-build\n WORKDIR /frontend\n \n COPY frontend-react/package*.json ./"
+  }
+]

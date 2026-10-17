@@ -1,0 +1,14 @@
+[
+  {
+    "sha": "68d347bc99721f7cb879660261d296605ca193ef",
+    "filename": "frontend-react/src/utils/apiClient.js",
+    "status": "modified",
+    "additions": 9,
+    "deletions": 0,
+    "changes": 9,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/416fbeec3b5082c14c15068021bc36064112a2a3/frontend-react%2Fsrc%2Futils%2FapiClient.js",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/416fbeec3b5082c14c15068021bc36064112a2a3/frontend-react%2Fsrc%2Futils%2FapiClient.js",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/frontend-react%2Fsrc%2Futils%2FapiClient.js?ref=416fbeec3b5082c14c15068021bc36064112a2a3",
+    "patch": "@@ -1,4 +1,5 @@\n export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? \"\";\n+assertSecureBaseUrl(API_BASE_URL);\n export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;\n export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;\n const MAX_ERROR_TEXT_BYTES = 4096;\n@@ -62,6 +63,14 @@ export function isAbortError(error) {\n   return error?.name === \"AbortError\";\n }\n \n+function assertSecureBaseUrl(baseUrl) {\n+  if (!baseUrl) return;\n+  const isLocalhost = /^http:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?(\\/|$)/i.test(baseUrl);\n+  if (!/^https:\\/\\//i.test(baseUrl) && !isLocalhost) {\n+    throw new Error(\"VITE_API_BASE_URL must use HTTPS to prevent downgrade/MITM attacks\");\n+  }\n+}\n+\n async function readResponsePayload(response) {\n   const contentType = response.headers.get(\"Content-Type\") ?? \"\";\n   if (contentType.toLowerCase().includes(\"json\")) {"
+  }
+]

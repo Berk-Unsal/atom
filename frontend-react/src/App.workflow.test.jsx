@@ -302,6 +302,37 @@ describe("App planning workflow", () => {
     expect(await file.text()).toBe(text);
   });
 
+  it.each([
+    ["no underserved buildings", { gap_buildings: 0, gap_pct: 0, candidate_buildings: 122, returned_gaps: 0, total_gap_demand: 0, worst_rx_dbm: 0 }, true, "—"],
+    ["underserved buildings", { gap_buildings: 3, gap_pct: 2.5, candidate_buildings: 122, returned_gaps: 3, total_gap_demand: 9, worst_rx_dbm: -121.4 }, false, "-121.4 dBm"],
+  ])("presents a result with %s and exact metric units", async (_label, gapStats, empty, worstRx) => {
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, ...args) => path === "/api/analyze-sector"
+      ? Promise.resolve({ simulation: simulationPayload, coverage_gaps: { geojson: { type: "FeatureCollection", features: [] }, stats: gapStats } })
+      : originalPost(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    openWorkspaceTool("Results");
+
+    expect(screen.getByText("Average Rx").closest(".metric-row")).toHaveTextContent("-88.0 dBm");
+    expect(screen.getByText("Max range").closest(".metric-row")).toHaveTextContent("400.0 m");
+    const panel = screen.getByRole("region", { name: "Coverage gap summary" });
+    expect(panel.classList.contains("empty")).toBe(empty);
+    expect(within(panel).getByText("Worst Rx").parentElement).toHaveTextContent(`Worst Rx${worstRx}`);
+  });
+
+  it("uses Cell terminology when no Cell is selected", async () => {
+    const originalGet = api.getJSON.getMockImplementation();
+    api.getJSON.mockImplementation((path, ...args) => path === "/api/towers"
+      ? Promise.reject(new Error("Cell inventory could not be loaded"))
+      : originalGet(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("group", { name: "RF context" })).toHaveTextContent("Single · No Cell selected"));
+    expect(screen.getByRole("group", { name: "RF context" })).not.toHaveTextContent(/tower/i);
+  });
+
   it("keeps Setup focused on planning and opens Scenarios as a separate Plan tool", async () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());

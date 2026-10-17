@@ -35,7 +35,7 @@ function ReportExportPanel({
         <span>Report</span>
       </div>
       <p className="empty-note">
-        Export the selected tower, beam direction, RF KPIs, demand hits, gap summary, and a portable map
+        Export the selected Cell, beam direction, RF KPIs, demand hits, gap summary, and a portable map
         preview for stakeholder review.
       </p>
       <div className="report-source-summary" aria-label="Report source">

@@ -61,7 +61,7 @@ import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js"
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { createRFWorkflow } from "./utils/rfWorkflow.js";
 import { runNetworkSimulationQueue } from "./utils/networkSimulationQueue.js";
-import { pointInPolygon, selectNearestTowers } from "./utils/polygonSelection.js";
+import { describeAreaSelection, pointInPolygon, selectNearestTowers } from "./utils/polygonSelection.js";
 import { MAX_NETWORK_CELLS, MAX_RECOMMENDATION_CELLS, normalizeNetworkSelection, toggleNetworkSelection } from "./utils/networkSelection.js";
 import { readMeasurementCsvFile } from "./utils/measurementCsv.js";
 import { duplicateInventoryCell } from "./utils/inventoryImport.js";
@@ -514,13 +514,13 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
-    getJSON("/api/towers", "Tower GeoJSON could not be loaded")
+    getJSON("/api/towers", "Cell inventory could not be loaded")
       .then((geojson) => {
         if (!isMounted) {
           return;
         }
         if (!geojson || typeof geojson !== "object" || !Array.isArray(geojson.features)) {
-          throw new Error("Tower endpoint returned invalid GeoJSON");
+          throw new Error("Cell inventory endpoint returned invalid GeoJSON");
         }
         const loadedTowers = (geojson.features ?? [])
           .filter((feature) => feature.geometry?.type === "Point")
@@ -960,7 +960,7 @@ export default function App() {
 
   const runSimulation = useCallback(async () => {
     if (!selectedTower) {
-      setError("No tower selected");
+      setError("No Cell selected");
       return;
     }
 
@@ -1024,7 +1024,7 @@ export default function App() {
 
   const optimizeAzimuth = useCallback(async () => {
     if (!selectedTower) {
-      setError("No tower selected");
+      setError("No Cell selected");
       return;
     }
 
@@ -1154,7 +1154,7 @@ export default function App() {
       .map((towerID) => towers.find((tower) => tower.id === towerID))
       .filter(Boolean);
     if (selectedNetworkTowers.length < 2) {
-      setError("Select at least 2 towers for network optimization");
+      setError("Select at least 2 Cells for network optimization");
       return;
     }
 
@@ -1273,7 +1273,7 @@ export default function App() {
       .map((towerID) => towers.find((tower) => tower.id === towerID))
       .filter(Boolean);
     if (selected.length < 2) {
-      setError("Select at least 2 towers to evaluate the network");
+      setError("Select at least 2 Cells to evaluate the network");
       return;
     }
 
@@ -1490,7 +1490,7 @@ export default function App() {
       return;
     }
     if (selectedNetworkTowers.length < 2) {
-      setError("Select at least 2 towers for interference analysis");
+      setError("Select at least 2 Cells for interference analysis");
       return;
     }
 
@@ -2036,7 +2036,7 @@ export default function App() {
 
     const inside = towers.filter((tower) => pointInPolygon(tower.coordinates, finalPolygon));
     if (inside.length < 2) {
-      setSelectionNotice(`${inside.length} tower${inside.length === 1 ? "" : "s"} found. Draw an area with at least 2 towers.`);
+      setSelectionNotice(describeAreaSelection(inside.length, 0, MAX_NETWORK_CELLS));
       setIsDrawingSelection(false);
       setSelectionPolygon(finalPolygon);
       return;
@@ -2054,11 +2054,7 @@ export default function App() {
     setSelectedTower((current) => selected[0] ?? current);
     setIsDrawingSelection(false);
     setSelectionPolygon(finalPolygon);
-    setSelectionNotice(
-      inside.length > MAX_NETWORK_CELLS
-        ? `${inside.length} towers found, nearest ${MAX_NETWORK_CELLS} selected.`
-        : `${selected.length} towers selected from drawn area.`,
-    );
+    setSelectionNotice(describeAreaSelection(inside.length, selected.length, MAX_NETWORK_CELLS));
   }, [invalidatePlanResults, selectionPolygon, towers]);
 
   const addSelectionPolygonPoint = useCallback((coordinate) => {
@@ -2522,7 +2518,7 @@ export default function App() {
     };
   }, [simulation, towers]);
   const gapStats = coverageGaps?.stats ?? null;
-  const selectedTowerLabel = selectedTower?.cellId ?? "No tower";
+  const selectedTowerLabel = selectedTower?.cellId ?? null;
   const resultSummary = useMemo(() => {
     if (lastAnalysisKind === "building-entry" && buildingEntryAnalysis?.summary) {
       return {
@@ -2573,7 +2569,7 @@ export default function App() {
 	)).length;
   const contextLabel = planningMode === "network"
     ? `Network · ${selectedCellCount} ${selectedCellCount === 1 ? "cell" : "cells"}`
-    : `Single · Cell ${selectedTowerLabel}`;
+    : selectedTowerLabel === null ? "Single · No Cell selected" : `Single · Cell ${selectedTowerLabel}`;
   const hasInterferenceData = (interferenceAnalysis.geojson?.features ?? []).length > 0;
   const currentBuildingEntryAnalysis = buildingEntryIsCurrent ? buildingEntryAnalysis : null;
   const hasResults = Boolean(simulation?.stats || networkOptimization?.stats || interferenceAnalysis.stats || siteRecommendations || measurementAnalysis || currentBuildingEntryAnalysis);
@@ -5793,11 +5789,13 @@ function CoverageGapPanel({ stats }) {
   const gapCount = stats?.gap_buildings ?? null;
   const candidateCount = stats?.candidate_buildings ?? null;
   const gapPct = stats?.gap_pct ?? null;
-  const worstRx = stats?.worst_rx_dbm ?? null;
   const unmetDemand = stats?.total_gap_demand ?? null;
+  const noGaps = gapCount === 0;
+  // Worst Rx is the weakest gap building; with no gaps the backend reports 0 as a placeholder.
+  const worstRx = noGaps ? null : stats?.worst_rx_dbm ?? null;
 
   return (
-    <section className="gap-panel" aria-label="Coverage gap summary">
+    <section className={`gap-panel${noGaps ? " empty" : ""}`} aria-label="Coverage gap summary">
       <div className="panel-title">
         <AlertTriangle size={16} />
         <span>Coverage Gaps</span>

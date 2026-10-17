@@ -67,3 +67,14 @@ export function selectNearestTowers(towers, polygon, limit) {
   });
   return Number.isFinite(limit) ? sorted.slice(0, Math.max(0, limit)) : sorted;
 }
+
+/** User-facing feedback for a finished selection area; states the nearest-to-centre rule when the area exceeds the limit. */
+export function describeAreaSelection(insideCount, selectedCount, limit) {
+  if (insideCount < 2) {
+    return `${insideCount} Cell${insideCount === 1 ? "" : "s"} found. Draw an area with at least 2 Cells.`;
+  }
+  if (insideCount > limit) {
+    return `${insideCount} Cells in the area; selected the ${limit} nearest its centre (network limit ${limit}). Click Cells on the map in Select cells mode to change the selection.`;
+  }
+  return `${selectedCount} Cells selected from the drawn area.`;
+}

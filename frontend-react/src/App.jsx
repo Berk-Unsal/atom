@@ -92,7 +92,7 @@ import {
   interferenceStrongestInterfererLabel,
   resolveInterferenceSampleFreshness,
 } from "./utils/interferenceInspector.js";
-import { effectiveReceiverSensitivityDbm, resolveRFProfile, rfProfileOverrideFromProperties, validateRFProfile } from "./utils/rfProfile.js";
+import { effectiveReceiverSensitivityDbm, invalidProfileSources, resolveRFProfile, rfProfileOverrideFromProperties } from "./utils/rfProfile.js";
 import { datasetReference, isDatasetCompatible } from "./utils/projectStore.js";
 import { compactRecommendationResponse } from "./utils/recommendations.js";
 import {
@@ -325,6 +325,9 @@ export default function App() {
   const [buildingEntrySourceKey, setBuildingEntrySourceKey] = useState(null);
   const [appMeta, setAppMeta] = useState(null);
 	const [datasetRevision, setDatasetRevision] = useState(0);
+  // Startup loads rerun only on an explicit Retry; failures never retry automatically.
+  const [startupLoadAttempt, setStartupLoadAttempt] = useState(0);
+  const [startupLoadFailed, setStartupLoadFailed] = useState(false);
 	const [hydratedDatasetRevision, setHydratedDatasetRevision] = useState(0);
 	const [workspaceRestored, setWorkspaceRestored] = useState(false);
 	const [installedDatasets, setInstalledDatasets] = useState({ active_id: "", datasets: [], warnings: [] });
@@ -510,7 +513,7 @@ export default function App() {
       .then((meta) => { if (isMounted) setAppMeta(meta); })
       .catch(() => { if (isMounted) setAppMeta(null); });
     return () => { isMounted = false; };
-	}, [datasetRevision]);
+	}, [datasetRevision, startupLoadAttempt]);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -518,7 +521,7 @@ export default function App() {
 			.then((catalog) => { if (isMounted) setInstalledDatasets(catalog); })
 			.catch((requestError) => { if (isMounted) setDatasetMessage(requestError.message); });
 		return () => { isMounted = false; };
-	}, [datasetRevision]);
+	}, [datasetRevision, startupLoadAttempt]);
 
   useEffect(() => {
     let isMounted = true;
@@ -549,17 +552,19 @@ export default function App() {
 				setSelectedTower((current) => loadedTowers.find((tower) => tower.id === current?.id) ?? loadedTowers[0] ?? null);
 				setHydratedDatasetRevision(datasetRevision);
 				setIsSwitchingDataset(false);
+				setStartupLoadFailed(false);
       })
       .catch((requestError) => {
         if (isMounted) {
           setError(requestError.message);
 					setIsSwitchingDataset(false);
+					setStartupLoadFailed(true);
         }
       });
     return () => {
       isMounted = false;
     };
-	}, [datasetRevision]);
+	}, [datasetRevision, startupLoadAttempt]);
 
   useEffect(() => {
     let isMounted = true;
@@ -577,7 +582,7 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-	}, [datasetRevision]);
+	}, [datasetRevision, startupLoadAttempt]);
 
   useEffect(() => {
     if (towers.length === 0) {
@@ -2582,9 +2587,8 @@ export default function App() {
   }, [buildingEntryAnalysis, displayedNetworkOptimization, gapStats, interferenceAnalysis.stats, lastAnalysisKind, networkResultKind, simulation?.stats, siteRecommendations, stats.avgPower]);
   const selectedCellCount = selectedNetworkSelectionIDs.length;
 	const activeProfileTowers = planningMode === "network" ? selectedNetworkTowers : [selectedTower].filter(Boolean);
-	const invalidProfileCount = activeProfileTowers.filter((tower, index) => (
-		Object.keys(validateRFProfile(resolveRFProfile(tower, settings, index))).length > 0
-	)).length;
+	const invalidProfiles = invalidProfileSources(activeProfileTowers, settings);
+	const invalidProfileCount = invalidProfiles.count;
   const contextLabel = planningMode === "network"
     ? `Network · ${selectedCellCount} ${selectedCellCount === 1 ? "cell" : "cells"}`
     : selectedTowerLabel === null ? "Single · No Cell selected" : `Single · Cell ${selectedTowerLabel}`;
@@ -2778,19 +2782,19 @@ export default function App() {
   const runCurrentPlan = () => planningMode === "network" && selectedCellCount < 2
     ? startMapCellSelection()
     : planningMode === "network" ? evaluateNetwork() : runSimulation();
-  const mapPlanPrompt = planDirty
-    ? invalidProfileCount > 0
+  const invalidToolLabels = invalidProfiles.tools.map((tool) => (tool === "setup" ? "Setup" : "Inventory"));
+  const mapPlanPrompt = invalidProfileCount > 0
+    ? {
+      title: "RF profile needs attention",
+      detail: `Fix ${invalidProfileCount} invalid selected Cell profile${invalidProfileCount === 1 ? "" : "s"} in ${invalidToolLabels.join(" and ")}.`,
+      actions: invalidProfiles.tools.map((tool) => ({ tool, label: `Open ${tool === "setup" ? "Setup" : "Inventory"}` })),
+    }
+    : planDirty && currentResultRun
       ? {
-        title: "RF profile needs attention",
-        detail: `Fix ${invalidProfileCount} invalid selected cell profile${invalidProfileCount === 1 ? "" : "s"} in Inventory.`,
+        title: "Result out of date",
+        detail: `${currentResultRun.run_type === "optimization" ? "Optimization" : "Simulation"} ${shortRunLabel(currentResultRun.run_id)} came from its original input. Run again for this plan.`,
       }
-      : currentResultRun
-        ? {
-          title: "Result out of date",
-          detail: `${currentResultRun.run_type === "optimization" ? "Optimization" : "Simulation"} ${shortRunLabel(currentResultRun.run_id)} came from its original input. Run again for this plan.`,
-        }
-        : null
-    : null;
+      : null;
 
   const buildCurrentScenarioSnapshot = useCallback((overrides = {}) => ({
     datasetRef: appMeta?.dataset ? {
@@ -3726,6 +3730,13 @@ export default function App() {
             <div className="map-plan-prompt" role="status">
               <strong>{mapPlanPrompt.title}</strong>
               <span>{mapPlanPrompt.detail}</span>
+              {mapPlanPrompt.actions?.length ? (
+                <span className="map-plan-prompt-actions">
+                  {mapPlanPrompt.actions.map((action) => (
+                    <button key={action.tool} type="button" onClick={() => selectWorkspaceTool(action.tool)}>{action.label}</button>
+                  ))}
+                </span>
+              ) : null}
             </div>
           ) : null}
           <MapLegend
@@ -3762,6 +3773,14 @@ export default function App() {
           drawerMode={drawerMode}
           concealed={Boolean(inspectedEntity && drawerOpen)}
           error={error}
+          errorAction={startupLoadFailed ? {
+            label: "Retry",
+            onAction: () => {
+              setError("");
+              setStartupLoadFailed(false);
+              setStartupLoadAttempt((current) => current + 1);
+            },
+          } : null}
           focusKey={activeTool}
           icon={activeToolDefinition.icon}
           onClose={() => closeDrawer("tool")}

@@ -1,8 +1,10 @@
 import { rfRecoveryMessage } from "./rfRecoveryMessage.js";
+import { apiOrigin, apiUnreachableMessage, invalidResponseMessage, serverFailureMessage, timeoutFailureMessage } from "./apiRecovery.js";
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;
 export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;
+const INVALID_JSON = Symbol("invalid-json");
 const MAX_ERROR_TEXT_BYTES = 4096;
 
 export async function requestJSON(path, {
@@ -13,17 +15,33 @@ export async function requestJSON(path, {
   headers,
   onResponse,
 } = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    cache: "no-store",
-    method,
-    headers: headers || payload !== undefined ? { ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
-    body: payload === undefined ? undefined : JSON.stringify(payload),
-    signal,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      cache: "no-store",
+      method,
+      headers: headers || payload !== undefined ? { ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
+      body: payload === undefined ? undefined : JSON.stringify(payload),
+      signal,
+    });
+  } catch (fetchError) {
+    // Browsers reject fetch with TypeError for network failures; anything else (aborts included) passes through.
+    if (!(fetchError instanceof TypeError)) throw fetchError;
+    const unreachable = new Error(apiUnreachableMessage(apiOrigin(API_BASE_URL)));
+    unreachable.code = "api_unreachable";
+    unreachable.cause = fetchError;
+    throw unreachable;
+  }
   if (response.ok && onResponse) {
     try { onResponse(response.headers); } catch (error) { await response.body?.cancel?.(); throw error; }
   }
   const responsePayload = await readResponsePayload(response);
+  if (responsePayload === INVALID_JSON) {
+    const invalid = new Error(response.ok ? invalidResponseMessage(apiOrigin(API_BASE_URL)) : serverFailureMessage(fallbackMessage, response.status));
+    invalid.code = response.ok ? "invalid_response" : "server_error";
+    invalid.status = response.status;
+    throw invalid;
+  }
   if (!response.ok) {
     const message = typeof responsePayload === "object" && responsePayload?.error
       ? responsePayload.error
@@ -31,7 +49,15 @@ export async function requestJSON(path, {
         ? responsePayload.trim()
         : fallbackMessage;
     const retryAfter = response.headers.get("Retry-After");
-    const error = new Error(rfRecoveryMessage(message, { status: response.status, retryAfter }));
+    // A 504 is the documented RF deadline, not a backend fault, so it gets timeout guidance.
+    const timedOut = response.status === 504;
+    const serverError = response.status >= 500 && !timedOut;
+    const recovered = timedOut
+      ? timeoutFailureMessage(message)
+      : serverError ? serverFailureMessage(message, response.status) : rfRecoveryMessage(message, { status: response.status, retryAfter });
+    const error = new Error(recovered);
+    if (timedOut) error.code = "timeout";
+    if (serverError) error.code = "server_error";
     error.status = response.status;
     error.retryAfter = retryAfter;
     throw error;
@@ -73,12 +99,12 @@ export function isAbortError(error) {
 async function readResponsePayload(response) {
   const contentType = response.headers.get("Content-Type") ?? "";
   if (contentType.toLowerCase().includes("json")) {
+    const text = await readBoundedText(response, MAX_JSON_RESPONSE_BYTES);
+    if (!text.trim()) return null;
     try {
-      const text = await readBoundedText(response, MAX_JSON_RESPONSE_BYTES);
       return JSON.parse(text);
-    } catch (error) {
-      if (error?.code === "response_too_large") throw error;
-      return null;
+    } catch {
+      return INVALID_JSON;
     }
   }
   return readBoundedText(response, MAX_ERROR_TEXT_BYTES, true);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { effectiveReceiverSensitivityDbm, resolveRFProfile, rfProfileOverrideFromProperties, rfProfileToPayload, technologyDefaults, validateRFProfile } from "./rfProfile.js";
+import { effectiveReceiverSensitivityDbm, invalidProfileSources, resolveRFProfile, rfProfileOverrideFromProperties, rfProfileToPayload, technologyDefaults, validateRFProfile } from "./rfProfile.js";
+import { DEFAULT_SIMULATION } from "../generated/policy.js";
 
 const settings = {
   frequencyGHz: 28,
@@ -128,5 +129,26 @@ describe("per-cell RF profiles", () => {
     } }, settings);
     expect(effectiveReceiverSensitivityDbm(derived)).toBeCloseTo(-84, 10);
     expect(effectiveReceiverSensitivityDbm(resolveRFProfile({}, settings))).toBe(-115);
+  });
+});
+
+describe("invalidProfileSources", () => {
+  const settings = { ...DEFAULT_SIMULATION, txPowerDbm: 30 };
+  const cell = (id, rfProfile) => ({ id, cellId: id, coordinates: [32.85, 39.92], ...(rfProfile ? { rfProfile } : {}) });
+
+  it("routes an invalid inherited plan value to Setup", () => {
+    expect(invalidProfileSources([cell("a"), cell("b")], { ...settings, txPowerDbm: 99 })).toEqual({ count: 2, tools: ["setup"] });
+  });
+
+  it("routes an invalid per-Cell override to Inventory", () => {
+    expect(invalidProfileSources([cell("a", { txPowerDbm: 99 }), cell("b")], settings)).toEqual({ count: 1, tools: ["inventory"] });
+  });
+
+  it("names both tools when invalid values come from both", () => {
+    expect(invalidProfileSources([cell("a", { txPowerDbm: 99 }), cell("b")], { ...settings, radiusMeters: 99_999 }).tools).toEqual(["setup", "inventory"]);
+  });
+
+  it("reports nothing for valid profiles", () => {
+    expect(invalidProfileSources([cell("a"), cell("b", { txPowerDbm: 40 })], settings)).toEqual({ count: 0, tools: [] });
   });
 });

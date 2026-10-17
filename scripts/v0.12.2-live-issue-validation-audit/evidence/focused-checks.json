@@ -1,0 +1,83 @@
+[
+  {
+    "name": "docs-tests",
+    "command": [
+      "/tmp/atom-issue-85-docs/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "docs",
+      "-p",
+      "*_test.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 3.77,
+    "tail": "..............\n----------------------------------------------------------------------\nRan 14 tests in 3.424s\n\nOK\n"
+  },
+  {
+    "name": "openapi",
+    "command": [
+      "/tmp/atom-issue-85-docs/bin/python",
+      "docs/validate_openapi.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 3.89,
+    "tail": "strict OpenAPI 3.1 valid: 42 paths\n"
+  },
+  {
+    "name": "docs-validation",
+    "command": [
+      "/tmp/atom-issue-85-docs/bin/python",
+      "docs/validate_docs.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 4.52,
+    "tail": "documentation valid: 58 HTML pages and 42 API paths\n"
+  },
+  {
+    "name": "version",
+    "command": [
+      "python3",
+      "scripts/versioning.py",
+      "check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.05,
+    "tail": "A.T.O.M version metadata is consistent: 0.12.3\n"
+  },
+  {
+    "name": "export-recovery-tests",
+    "command": [
+      "/Users/berkunsal/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/ProjectMenu.fileRecovery.test.jsx",
+      "src/utils/projectFileReliability.test.js",
+      "src/App.workflow.test.jsx"
+    ],
+    "cwd": "frontend-react",
+    "exit_code": 0,
+    "seconds": 12.64,
+    "tail": "\n RUN  v4.1.11 /Users/berkunsal/Desktop/urban-ray-tracer/frontend-react\n\n\n Test Files  3 passed (3)\n      Tests  82 passed (82)\n   Start at  13:09:39\n   Duration  11.97s (transform 1.31s, setup 759ms, import 1.70s, tests 11.06s, environment 4.89s)\n\n"
+  },
+  {
+    "name": "handler-contract-tests",
+    "command": [
+      "go",
+      "test",
+      ".",
+      "-run",
+      "TestOperationalResponseContractFixtures|TestReadiness",
+      "-count=1"
+    ],
+    "cwd": "backend-go",
+    "exit_code": 0,
+    "seconds": 10.47,
+    "tail": "ok  \tankara-5g-raytracer\t0.320s\n"
+  }
+]

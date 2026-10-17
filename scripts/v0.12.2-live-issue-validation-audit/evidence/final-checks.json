@@ -1,0 +1,30 @@
+[
+  {
+    "name": "claims-final",
+    "command": [
+      "/tmp/atom-issue-85-docs/bin/python",
+      "docs/validate_claims.py"
+    ],
+    "exit_code": 0,
+    "output": "current-doc claim regressions passed; historical/reference/design sources excluded explicitly\n"
+  },
+  {
+    "name": "classification-final",
+    "command": [
+      "python3",
+      "docs/classify_docs.py"
+    ],
+    "exit_code": 0,
+    "output": "documentation classifications valid: 564 sources\n"
+  },
+  {
+    "name": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+]

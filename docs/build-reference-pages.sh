@@ -26,6 +26,7 @@ build_page() {
   summary=$5
   api_page=${6:-false}
   changelog_page=${7:-false}
+  terminology_page=${8:-false}
 
   pandoc "$source_file" \
     --from=gfm \
@@ -42,6 +43,7 @@ build_page() {
     --metadata source="$source_file" \
     --metadata api_page="$api_page" \
     --metadata changelog_page="$changelog_page" \
+    --metadata terminology_page="$terminology_page" \
     --output="$output_file"
 }
 
@@ -79,7 +81,7 @@ build_page dataset-pack-studio.md dataset-pack-studio.html "Dataset Pack Studio"
 build_page faq.md faq.html "Frequently Asked Questions" "Help and troubleshooting" \
   "Answers for setup, RF interpretation, performance, data, API access, and common operating problems."
 build_page terminology.md terminology.html "Cell, Sector, Site, and Tower Record" "Planning glossary" \
-  "Definitions that distinguish planning Cells, directional sectors, physical sites, tower dataset records, and candidate feasibility."
+  "Definitions that distinguish planning Cells, directional sectors, physical sites, tower dataset records, and candidate feasibility." false false true
 build_page contributing.md contributing.html "Contributing" "Contributor guide" \
   "Repository structure, development setup, testing expectations, and contribution workflow for A.T.O.M."
 build_page modeling-limits.md modeling-limits.html "Modeling Limits" "Confidence boundary" \

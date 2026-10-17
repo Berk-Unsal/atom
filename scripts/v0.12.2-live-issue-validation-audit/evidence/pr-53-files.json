@@ -1,0 +1,26 @@
+[
+  {
+    "sha": "3ec25876149b8adf2bf3417ed2c009acd484847c",
+    "filename": "frontend-react/package-lock.json",
+    "status": "modified",
+    "additions": 21,
+    "deletions": 25,
+    "changes": 46,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/b95597a344bdbf9dcd0cfaa494ccc9619d64e81e/frontend-react%2Fpackage-lock.json",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/b95597a344bdbf9dcd0cfaa494ccc9619d64e81e/frontend-react%2Fpackage-lock.json",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/frontend-react%2Fpackage-lock.json?ref=b95597a344bdbf9dcd0cfaa494ccc9619d64e81e",
+    "patch": "@@ -11,7 +11,7 @@\n         \"leaflet\": \"^1.9.4\",\n         \"lucide-react\": \"^0.468.0\",\n         \"react\": \"^18.3.1\",\n-        \"react-dom\": \"^18.3.1\",\n+        \"react-dom\": \"^19.3.0\",\n         \"react-leaflet\": \"^4.2.1\"\n       },\n       \"devDependencies\": {\n@@ -1255,17 +1255,6 @@\n         \"node\": \">=18\"\n       }\n     },\n-    \"node_modules/@react-leaflet/core\": {\n-      \"version\": \"2.1.0\",\n-      \"resolved\": \"https://registry.npmjs.org/@react-leaflet/core/-/core-2.1.0.tgz\",\n-      \"integrity\": \"sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==\",\n-      \"license\": \"Hippocratic-2.1\",\n-      \"peerDependencies\": {\n-        \"leaflet\": \"^1.9.0\",\n-        \"react\": \"^18.0.0\",\n-        \"react-dom\": \"^18.0.0\"\n-      }\n-    },\n     \"node_modules/@rolldown/pluginutils\": {\n       \"version\": \"1.0.0-beta.27\",\n       \"resolved\": \"https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz\",\n@@ -3336,16 +3325,15 @@\n       }\n     },\n     \"node_modules/react-dom\": {\n-      \"version\": \"18.3.1\",\n-      \"resolved\": \"https://registry.npmjs.org/react-dom/-/react-dom-18.3.1.tgz\",\n-      \"integrity\": \"sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==\",\n+      \"version\": \"19.3.0\",\n+      \"resolved\": \"https://registry.npmjs.org/react-dom/-/react-dom-19.3.0.tgz\",\n+      \"integrity\": \"sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==\",\n       \"license\": \"MIT\",\n       \"dependencies\": {\n-        \"loose-envify\": \"^1.1.0\",\n-        \"scheduler\": \"^0.23.2\"\n+        \"scheduler\": \"^0.28.0\"\n       },\n       \"peerDependencies\": {\n-        \"react\": \"^18.3.1\"\n+        \"react\": \"^19.3.0\"\n       }\n     },\n     \"node_modules/react-is\": {\n@@ -3370,6 +3358,17 @@\n         \"react-dom\": \"^18.0.0\"\n       }\n     },\n+    \"node_modules/react-leaflet/node_modules/@react-leaflet/core\": {\n+      \"version\": \"2.1.0\",\n+      \"resolved\": \"https://registry.npmjs.org/@react-leaflet/core/-/core-2.1.0.tgz\",\n+      \"integrity\": \"sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==\",\n+      \"license\": \"Hippocratic-2.1\",\n+      \"peerDependencies\": {\n+        \"leaflet\": \"^1.9.0\",\n+        \"react\": \"^18.0.0\",\n+        \"react-dom\": \"^18.0.0\"\n+      }\n+    },\n     \"node_modules/react-refresh\": {\n       \"version\": \"0.17.0\",\n       \"resolved\": \"https://registry.npmjs.org/react-refresh/-/react-refresh-0.17.0.tgz\",\n@@ -3463,13 +3462,10 @@\n       }\n     },\n     \"node_modules/scheduler\": {\n-      \"version\": \"0.23.2\",\n-      \"resolved\": \"https://registry.npmjs.org/scheduler/-/scheduler-0.23.2.tgz\",\n-      \"integrity\": \"sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==\",\n-      \"license\": \"MIT\",\n-      \"dependencies\": {\n-        \"loose-envify\": \"^1.1.0\"\n-      }\n+      \"version\": \"0.28.0\",\n+      \"resolved\": \"https://registry.npmjs.org/scheduler/-/scheduler-0.28.0.tgz\",\n+      \"integrity\": \"sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==\",\n+      \"license\": \"MIT\"\n     },\n     \"node_modules/semver\": {\n       \"version\": \"6.3.1\","
+  },
+  {
+    "sha": "2a05e4fc94084fabf7f5b420eebf4a81842a0cc2",
+    "filename": "frontend-react/package.json",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1,
+    "changes": 2,
+    "blob_url": "https://github.com/Berk-Unsal/atom/blob/b95597a344bdbf9dcd0cfaa494ccc9619d64e81e/frontend-react%2Fpackage.json",
+    "raw_url": "https://github.com/Berk-Unsal/atom/raw/b95597a344bdbf9dcd0cfaa494ccc9619d64e81e/frontend-react%2Fpackage.json",
+    "contents_url": "https://api.github.com/repos/Berk-Unsal/atom/contents/frontend-react%2Fpackage.json?ref=b95597a344bdbf9dcd0cfaa494ccc9619d64e81e",
+    "patch": "@@ -20,7 +20,7 @@\n     \"leaflet\": \"^1.9.4\",\n     \"lucide-react\": \"^0.468.0\",\n     \"react\": \"^18.3.1\",\n-    \"react-dom\": \"^18.3.1\",\n+    \"react-dom\": \"^19.3.0\",\n     \"react-leaflet\": \"^4.2.1\"\n   },\n   \"devDependencies\": {"
+  }
+]

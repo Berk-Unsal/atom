@@ -5647,60 +5647,13 @@ function DataPanel({
 				</TechnicalDetails>
 			</section>
 		</details>
-		<DisclosureSection
-			title="Advanced model details"
-			description="Propagation and radio-quality assumptions for this plan."
-			count={Number(Number.isFinite(Number(settings?.calibrationOffsetDb)) && Number(settings?.calibrationOffsetDb) !== 0)}
-		>
-			<section className="model-assumptions" aria-label="Propagation model assumptions">
-				<div className="panel-title"><RadioTower size={16} /><span>Propagation model</span></div>
-				<KeyValueRows label="Propagation model configuration" items={[
-					["RF model", appMeta?.model_id ?? "urban_short_range"],
-					["Estimator", appMeta?.model_description ?? "FSPL + footprint obstruction"],
-					["Technology", networkTech],
-					["Frequency", `${formatNumber(settings?.frequencyGHz, 1)} GHz`],
-					["Ray scope", `${formatNumber(settings?.rayCount, 0)} rays`],
-					["Calibration", settings?.calibrationOffsetDb ? `${formatNumber(settings.calibrationOffsetDb, 1)} dB` : "None"],
-				]} />
-				<TechnicalDetails summary="Model scope and assumptions">
-					<ul className="assumption-list">
-						<li>{appMeta?.model_id === "urban_short_range" ? "Urban baseline uses 3GPP UMa LOS/NLOS path loss with a shared 2D footprint classifier; legacy wall loss is not added to empirical NLOS." : "Canonical link budget uses absolute TX/gain/system/calibration terms plus FSPL, building loss, and relative horizontal/vertical pattern attenuation."}</li>
-						<li>Receiver sensitivity defaults to Manual at −115 dBm per effective cell. Derived mode uses −174 dBm/Hz + 10 log₁₀(B<sub>noise</sub>) + NF + required SNR + receiver margin; interference remains a separate RSRP/SINR/RSRQ model.</li>
-						<li>Building service is raw received power &gt; −100 dBm. Receiver link margin is raw received power minus the effective receiver threshold; it is not a fade margin.</li>
-						<li>Fast fading, diffraction, sidelobes, MIMO scheduling, and UE measurement effects are outside the current model.</li>
-					</ul>
-				</TechnicalDetails>
-			</section>
-			{interferenceModel ? (
-				<section className="model-assumptions" aria-label="Interference model assumptions">
-					<div className="panel-title"><Activity size={16} /><span>Radio quality model</span></div>
-					<KeyValueRows label="Radio quality model configuration" items={[
-						["Family", interferenceModel.measurement_family ?? UNAVAILABLE_VALUE],
-						["Bandwidth", `${formatNumber(interferenceModel.bandwidth_mhz, 0)} MHz`],
-						["SCS", `${formatNumber(interferenceModel.subcarrier_spacing_khz, 0)} kHz`],
-						["Resource blocks", formatNumber(interferenceModel.resource_blocks, 0)],
-						["Noise figure", `${formatNumber(interferenceModel.noise_figure_db, 1)} dB`],
-						["Cell load", `${formatNumber(interferenceModel.load_factor * 100, 0)}%`],
-						["Reuse", `1 / ${interferenceModel.reuse_factor ?? 1}`],
-						["Grid", `${formatNumber(interferenceModel.effective_sample_spacing_m, 1)} m`],
-					]} />
-					<TechnicalDetails summary="Radio quality assumptions">
-						<ul className="assumption-list">{(interferenceModel.assumptions ?? []).map((assumption) => <li key={assumption}>{assumption}</li>)}</ul>
-					</TechnicalDetails>
-				</section>
-			) : null}
-		</DisclosureSection>
-		<DisclosureSection
-			title="Research / reference"
+		<ToolSection
+			className="data-measurement-validation"
 			description="Field evidence and calibration review. Applying an eligible correction remains an explicit action that updates the canonical plan."
-			research
-			status={dataResearchStatus}
+			title="CSV Measurement Validation"
+			actions={<span className="data-section-status">{dataResearchStatus}</span>}
 		>
-      <section className="model-assumptions measurement-panel" aria-label="Field measurement validation">
-        <div className="panel-title">
-          <Activity size={16} />
-          <span>Measurement Validation</span>
-        </div>
+      <section className="model-assumptions measurement-panel" aria-label="CSV Measurement Validation">
         <p className="data-note">Import up to 5,000 RSRP samples with columns <code>id, longitude, latitude, technology, rsrp_dbm, cell_id</code>. Short <code>lon</code>/<code>lat</code> headers are also accepted.</p>
         <p className="data-note">Measurement Validation accepts one to {MAX_MEASUREMENT_CELLS} selected 4G/5G Cells, independently of the normal network limit.</p>
         {measurementScopeError ? <p className="data-note" role="status">{measurementScopeError}</p> : null}
@@ -5754,6 +5707,49 @@ function DataPanel({
         ) : null}
         {calibrationProfile ? <p className="calibration-active">Active correction: {formatNumber(calibrationProfile.offsetDb, 1)} dB. This is a global bias adjustment, not full calibration.</p> : null}
       </section>
+		</ToolSection>
+		<DisclosureSection
+			title="Advanced model details"
+			description="Propagation and radio-quality assumptions for this plan."
+			count={Number(Number.isFinite(Number(settings?.calibrationOffsetDb)) && Number(settings?.calibrationOffsetDb) !== 0)}
+		>
+			<section className="model-assumptions" aria-label="Propagation model assumptions">
+				<div className="panel-title"><RadioTower size={16} /><span>Propagation model</span></div>
+				<KeyValueRows label="Propagation model configuration" items={[
+					["RF model", appMeta?.model_id ?? "urban_short_range"],
+					["Estimator", appMeta?.model_description ?? "FSPL + footprint obstruction"],
+					["Technology", networkTech],
+					["Frequency", `${formatNumber(settings?.frequencyGHz, 1)} GHz`],
+					["Ray scope", `${formatNumber(settings?.rayCount, 0)} rays`],
+					["Calibration", settings?.calibrationOffsetDb ? `${formatNumber(settings.calibrationOffsetDb, 1)} dB` : "None"],
+				]} />
+				<TechnicalDetails summary="Model scope and assumptions">
+					<ul className="assumption-list">
+						<li>{appMeta?.model_id === "urban_short_range" ? "Urban baseline uses 3GPP UMa LOS/NLOS path loss with a shared 2D footprint classifier; legacy wall loss is not added to empirical NLOS." : "Canonical link budget uses absolute TX/gain/system/calibration terms plus FSPL, building loss, and relative horizontal/vertical pattern attenuation."}</li>
+						<li>Receiver sensitivity defaults to Manual at −115 dBm per effective cell. Derived mode uses −174 dBm/Hz + 10 log₁₀(B<sub>noise</sub>) + NF + required SNR + receiver margin; interference remains a separate RSRP/SINR/RSRQ model.</li>
+						<li>Building service is raw received power &gt; −100 dBm. Receiver link margin is raw received power minus the effective receiver threshold; it is not a fade margin.</li>
+						<li>Fast fading, diffraction, sidelobes, MIMO scheduling, and UE measurement effects are outside the current model.</li>
+					</ul>
+				</TechnicalDetails>
+			</section>
+			{interferenceModel ? (
+				<section className="model-assumptions" aria-label="Interference model assumptions">
+					<div className="panel-title"><Activity size={16} /><span>Radio quality model</span></div>
+					<KeyValueRows label="Radio quality model configuration" items={[
+						["Family", interferenceModel.measurement_family ?? UNAVAILABLE_VALUE],
+						["Bandwidth", `${formatNumber(interferenceModel.bandwidth_mhz, 0)} MHz`],
+						["SCS", `${formatNumber(interferenceModel.subcarrier_spacing_khz, 0)} kHz`],
+						["Resource blocks", formatNumber(interferenceModel.resource_blocks, 0)],
+						["Noise figure", `${formatNumber(interferenceModel.noise_figure_db, 1)} dB`],
+						["Cell load", `${formatNumber(interferenceModel.load_factor * 100, 0)}%`],
+						["Reuse", `1 / ${interferenceModel.reuse_factor ?? 1}`],
+						["Grid", `${formatNumber(interferenceModel.effective_sample_spacing_m, 1)} m`],
+					]} />
+					<TechnicalDetails summary="Radio quality assumptions">
+						<ul className="assumption-list">{(interferenceModel.assumptions ?? []).map((assumption) => <li key={assumption}>{assumption}</li>)}</ul>
+					</TechnicalDetails>
+				</section>
+			) : null}
 		</DisclosureSection>
     </section>
   );

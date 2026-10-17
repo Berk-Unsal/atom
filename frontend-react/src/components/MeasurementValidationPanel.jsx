@@ -80,9 +80,9 @@ export default function MeasurementValidationPanel({ analysis, isAnalyzing, onRu
   const totalMeasurements = useMemo(() => campaigns.reduce((total, campaign) => total + (campaign.measurements?.length ?? 0), 0), [campaigns]);
 
   return (
-    <section className="measurement-validation-panel" aria-label="RF diagnostics and measurement validation">
-      <header className="panel-title"><Activity size={16} /><span>RF Diagnostics</span></header>
-      <p className="measurement-validation-callout"><strong>Evidence ledger only.</strong> This workflow does not alter canonical propagation, coverage, building entry, diffraction, interference, radio quality, or optimization. Residual is measured path loss minus predicted path loss.</p>
+    <section className="measurement-validation-panel" aria-label="Research campaign evidence">
+      <header className="panel-title"><Activity size={16} /><span>Research campaign evidence</span></header>
+      <p className="measurement-validation-callout"><strong>Evidence ledger only.</strong> This research workflow is separate from CSV Measurement Validation in Review → Data. It does not alter canonical propagation, coverage, building entry, diffraction, interference, radio quality, or optimization. Residual is measured path loss minus predicted path loss.</p>
 
       <div className="measurement-validation-import-row">
         <button type="button" className="secondary-action-button" onClick={() => inputRef.current?.click()}><Upload size={14} /> Load campaign JSON</button>

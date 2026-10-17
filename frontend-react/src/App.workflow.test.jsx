@@ -1002,7 +1002,8 @@ describe("App planning workflow", () => {
     expect(screen.getByRole("button", { name: `Network mode, ${count} selected` })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Evaluate Network", exact: true })).toBeEnabled();
     openWorkspaceTool("Data");
-    fireEvent.click(screen.getByRole("button", { name: /^Research \/ reference/ }));
+    expect(screen.getByRole("heading", { name: "CSV Measurement Validation" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Research \/ reference/ })).not.toBeInTheDocument();
     expect(screen.getByText(/accepts one to 6 selected 4G\/5G Cells/)).toBeInTheDocument();
     const csv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";
     fireEvent.change(screen.getByLabelText(/Import measurement CSV/i), { target: { files: [{ size: csv.length, text: () => Promise.resolve(csv) }] } });
@@ -1613,7 +1614,6 @@ describe("App planning workflow", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     openWorkspaceTool("Data");
-    fireEvent.click(screen.getByRole("button", { name: /^Research \/ reference/ }));
     const fileInput = screen.getByLabelText(/Import measurement CSV/i);
     const measurementCsv = "id,longitude,latitude,technology,rsrp_dbm\nm-1,32.85,39.92,5g,-80";
     const measurementFile = {

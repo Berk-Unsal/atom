@@ -1012,8 +1012,10 @@ test("captures Concept 8B.1 workspace chrome evidence", async ({ page }, testInf
   await expect(page.getByRole("heading", { name: "RF Diagnostics" })).toBeVisible();
   await capture("1440-rf-diagnostics", "1440 RF Diagnostics");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
-  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Validation" }).click();
-  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Campaign evidence" }).click();
+  await expect(page.getByRole("region", { name: "Research campaign evidence" })).toBeVisible();
+  // #109: only the Review → Data CSV workflow is called measurement validation.
+  await expect(page.getByRole("region", { name: /measurement validation/i })).toHaveCount(0);
   await capture("1440-rf-diagnostics-validation", "1440 RF Diagnostics Validation");
 
   await selectWorkspaceTool(page, "Setup");
@@ -2125,7 +2127,9 @@ test("Data hierarchy disclosures do not reload the active dataset", async ({ pag
   await page.getByText("Details / Provenance").click();
   await page.getByText("Developer details").click();
   await page.getByRole("button", { name: "Advanced model details" }).click();
-  await page.getByRole("button", { name: "Research / reference" }).click();
+  await expect(page.getByRole("heading", { name: "CSV Measurement Validation" })).toBeVisible();
+  await expect(page.getByRole("region", { name: /measurement validation/i })).toHaveCount(1);
+  await expect(page.getByLabel(/Import measurement CSV/i)).toBeAttached();
   await selectWorkspaceTool(page, "Setup");
   await selectWorkspaceTool(page, "Data");
   await expect(page.getByRole("heading", { name: "Demand surface" })).toBeVisible();
@@ -2791,7 +2795,7 @@ test("loads specialized feature modules only after their workspace action", asyn
   expect(wasRequested(featurePaths.diagnostics)).toBe(false);
   await diagnosticsResearch.click();
   const researchViews = page.locator(".rf-diagnostics-research");
-  await expect(researchViews.getByRole("button", { name: "Validation" })).toHaveAttribute("aria-pressed", "false");
+  await expect(researchViews.getByRole("button", { name: "Campaign evidence" })).toHaveAttribute("aria-pressed", "false");
   await expect(page.getByText("Choose an evidence workflow")).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.diagnostics)).toBe(true);
   expect(wasRequested(featurePaths.validation)).toBe(false);
@@ -2799,8 +2803,8 @@ test("loads specialized feature modules only after their workspace action", asyn
   page.on("request", (request) => {
     if (/\/api\/(analyze-sector|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
   });
-  await researchViews.getByRole("button", { name: "Validation" }).click();
-  const validationPanel = page.getByRole("region", { name: "RF diagnostics and measurement validation" });
+  await researchViews.getByRole("button", { name: "Campaign evidence" }).click();
+  const validationPanel = page.getByRole("region", { name: "Research campaign evidence" });
   await expect(validationPanel).toBeVisible();
   await expect.poll(() => wasRequested(featurePaths.validation)).toBe(true);
   await researchViews.getByRole("button", { name: "Materials" }).click();
@@ -3026,8 +3030,8 @@ test("captures post-change Concept 8B chrome and responsive evidence", async ({ 
   await expect(page.getByRole("button", { name: /^Research \/ reference/ })).toHaveAttribute("aria-expanded", "false");
   await screenshot("1440-rf-diagnostics-collapsed");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
-  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Validation" }).click();
-  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  await page.locator(".rf-diagnostics-research").getByRole("button", { name: "Campaign evidence" }).click();
+  await expect(page.getByRole("region", { name: "Research campaign evidence" })).toBeVisible();
   await screenshot("1440-rf-diagnostics-validation");
 
   await selectWorkspaceTool(page, "Setup");
@@ -3454,8 +3458,8 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
   await capture("1440-rf-diagnostics-canonical");
   await page.getByRole("button", { name: /^Research \/ reference/ }).click();
   const researchViews = page.locator(".rf-diagnostics-research");
-  await researchViews.getByRole("button", { name: "Validation" }).click();
-  await expect(page.getByRole("region", { name: "RF diagnostics and measurement validation" })).toBeVisible();
+  await researchViews.getByRole("button", { name: "Campaign evidence" }).click();
+  await expect(page.getByRole("region", { name: "Research campaign evidence" })).toBeVisible();
   await capture("1440-rf-diagnostics-validation");
   await researchViews.getByRole("button", { name: "Materials" }).click();
   await expect(page.getByRole("region", { name: "Material and facade interaction reference" })).toBeVisible();
@@ -3507,7 +3511,7 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
   await capture("1440-data-developer-details");
   await page.getByRole("button", { name: "Advanced model details" }).click();
   await capture("1440-data-advanced-model-details");
-  await page.getByRole("button", { name: "Research / reference" }).click();
+  await page.getByRole("heading", { name: "CSV Measurement Validation" }).scrollIntoViewIfNeeded();
   await capture("1440-data-research-reference");
   await selectWorkspaceTool(page, "Report");
   await expect(page.getByRole("region", { name: "Planning report export" })).toBeVisible();
@@ -3521,7 +3525,7 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
         const research = page.getByRole("button", { name: /^Research \/ reference/ });
         if (await research.isVisible() && await research.getAttribute("aria-expanded") !== "true") await research.click();
         const switcher = page.locator(".rf-diagnostics-research");
-        if (await switcher.count()) await switcher.getByRole("button", { name: "Validation" }).click();
+        if (await switcher.count()) await switcher.getByRole("button", { name: "Campaign evidence" }).click();
       }
       if (tool === "Results") await page.getByRole("tab", { name: "Optimization" }).click();
       const name = tool.toLowerCase().replaceAll(" ", "-");

@@ -6,7 +6,7 @@ const MaterialReferencePanel = lazy(() => import("../../components/MaterialRefer
 const SpecularReflectionReferencePanel = lazy(() => import("../../components/SpecularReflectionReferencePanel.jsx"));
 
 const views = [
-  { id: "validation", label: "Validation", Component: MeasurementValidationPanel },
+  { id: "validation", label: "Campaign evidence", Component: MeasurementValidationPanel },
   { id: "materials", label: "Materials", Component: MaterialReferencePanel },
   { id: "reflection", label: "Reflection", Component: SpecularReflectionReferencePanel },
 ];
@@ -35,7 +35,7 @@ export default function RFDiagnosticsResearchFeature({
       <p className="rf-research-boundary">These workflows retain separate evidence and do not change canonical network RF.</p>
       <SubviewSwitcher activeId={activeView} items={views} label="Research workflow" onChange={selectView} />
       <div className="rf-research-subviews">
-        {!activeView ? <ToolEmptyState title="Choose an evidence workflow" description="Validation, materials, and reflected paths use separate reference inputs and results." /> : null}
+        {!activeView ? <ToolEmptyState title="Choose an evidence workflow" description="Campaign evidence, materials, and reflected paths use separate reference inputs and results." /> : null}
         {views.map(({ id, Component, label }) => visitedViews.has(id) ? (
           <section className="rf-research-subview" hidden={activeView !== id} key={id} aria-label={`${views.find((view) => view.id === id)?.label} workflow`}>
             <Suspense fallback={<div className="rf-research-loading" role="status">Loading {label.toLowerCase()} workflow…</div>}>

@@ -206,7 +206,7 @@ describe("persistent result and workspace context", () => {
     );
 
     const lineage = document.querySelector(".workspace-lineage-context > summary");
-    expect(lineage).toHaveAttribute("aria-label", "Workspace: Ankara, Capacity Plan, Version 4, Unsaved");
+    expect(lineage).toHaveAttribute("aria-label", "Workspace: Ankara, Capacity Plan, Version 4 · Unsaved changes");
     expect(lineage).toHaveTextContent("Version 4");
     expect(lineage).toHaveTextContent("Unsaved");
     lineage.focus();

@@ -391,3 +391,15 @@ function compareScenarioRevisions(left, right) {
   return String(left?.created_at ?? "").localeCompare(String(right?.created_at ?? ""))
     || String(left?.scenario_revision_id ?? "").localeCompare(String(right?.scenario_revision_id ?? ""));
 }
+
+/**
+ * Default name for a Scenario saved for the first time, derived from the plan mode ("Sector plan 2", "Network plan 1").
+ * The number skips names already in use. Existing Scenarios are never renamed.
+ */
+export function defaultScenarioName({ planningMode = "single", scenarios = [] } = {}) {
+  const base = planningMode === "network" ? "Network plan" : "Sector plan";
+  const used = new Set((scenarios ?? []).map((scenario) => String(scenario?.name ?? "")));
+  let number = (scenarios?.length ?? 0) + 1;
+  while (used.has(`${base} ${number}`)) number += 1;
+  return `${base} ${number}`;
+}

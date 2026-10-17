@@ -32,7 +32,6 @@ export default function ApplySolutionDialog({
   if (!open) return null;
 
   const solutionLabel = solution?.id ?? solution?.optimization_solution_id ?? "Selected solution";
-  const runType = sourceContext?.run_type === "optimization" ? "Optimization" : "Run";
 
   return (
     <dialog
@@ -49,7 +48,7 @@ export default function ApplySolutionDialog({
         <div>
           <dt>Source</dt>
           <dd>{sourceContext?.scenario_name ?? "Scenario"} · {sourceContext?.version_label ?? "Version unavailable"}</dd>
-          <dd>{runType} {sourceContext?.run_label ?? "unavailable"} · {solutionLabel}</dd>
+          <dd>{sourceContext?.run_label ?? "Run unavailable"} · {solutionLabel}</dd>
         </div>
         <div>
           <dt>Destination</dt>

@@ -26,6 +26,7 @@ import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./workspaceTools.js";
 import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
 import { projectFileRecoveryReason } from "../utils/projectFileRecovery.js";
 import { downloadFilename, namingForSource } from "../utils/downloadNames.js";
+import { versionStateLabel } from "../domain/resultContext.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
 import PanelHeader from "./PanelHeader.jsx";
 
@@ -131,30 +132,27 @@ export function CommandBar({
 
 export function WorkspaceLineageContext({ context, persistenceState = "saved" }) {
   if (!context) return null;
-  const draftState = context.unsaved
-    ? "Unsaved"
-    : context.draft_state === "No saved Version"
-      ? "Draft saved locally"
-      : context.draft_state;
-  const compactDraftState = context.unsaved
-    ? "Unsaved"
-    : context.draft_state === "No saved Version"
-    ? "Local draft"
-    : context.draft_state;
-  const versionSummary = context.version_label === "No saved Version" ? "No Version" : context.version_label;
+  // One Version-state wording shared with Results and Scenarios: "No saved Version", "Version N" or "Version N · Unsaved changes".
+  const versionState = context.version_state ?? versionStateLabel({
+    revision: /^Version \d+$/.test(context.version_label ?? "") ? context.version_label.slice("Version ".length) : null,
+    unsavedChanges: Boolean(context.unsaved),
+  });
+  const [versionPart, changePart = ""] = versionState.split(" · ");
   return (
     <details className="workspace-lineage-context">
-      <summary aria-label={`Workspace: ${context.project_name}, ${context.scenario_name}, ${context.version_label}, ${draftState}`}>
+      <summary aria-label={`Workspace: ${context.project_name}, ${context.scenario_name}, ${versionState}`}>
         <span className="workspace-lineage-primary">
           <strong className="workspace-lineage-project" title={context.project_name}>{context.project_name}</strong>
           <span className="workspace-lineage-scenario">{context.scenario_name}</span>
         </span>
         <span className="workspace-lineage-secondary">
-          <span title={context.version_label}>{versionSummary}</span>
-          <b className={context.unsaved ? "unsaved" : "saved"}>
-            <span className="workspace-lineage-draft-full">{draftState}</span>
-            <span className="workspace-lineage-draft-compact">{compactDraftState}</span>
-          </b>
+          <span title={versionState}>{versionPart}</span>
+          {changePart ? (
+            <b className="unsaved">
+              <span className="workspace-lineage-draft-full">· {changePart}</span>
+              <span className="workspace-lineage-draft-compact">Unsaved</span>
+            </b>
+          ) : null}
         </span>
       </summary>
       <div className="workspace-lineage-popover">
@@ -162,8 +160,7 @@ export function WorkspaceLineageContext({ context, persistenceState = "saved" })
         <dl>
           <div><dt>Project</dt><dd>{context.project_name}</dd></div>
           <div><dt>Scenario</dt><dd>{context.scenario_name}</dd></div>
-          <div><dt>Version</dt><dd>{context.version_label}</dd></div>
-          <div><dt>Draft</dt><dd>{draftState}</dd></div>
+          <div><dt>Version</dt><dd>{versionState}</dd></div>
         </dl>
         <p className={`workspace-lineage-persistence ${persistenceState}`}>
           {persistenceState === "saving"

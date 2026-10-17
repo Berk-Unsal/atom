@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2, ChevronLeft, Clock3, FileText, RefreshCw, RotateCcw, Trash2, XCircle } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { buildResultContext, formatRunType, shortID as shortResultID } from "../domain/resultContext.js";
+import { buildResultContext, shortID as shortResultID } from "../domain/resultContext.js";
+import { readableRunLabel } from "../domain/runLabel.js";
 import ApplySolutionDialog from "./ApplySolutionDialog.jsx";
 import GenerateRunReportDialog from "./GenerateRunReportDialog.jsx";
 import ResultContextBadge from "./ResultContextBadge.jsx";
@@ -126,11 +127,11 @@ export default function RunHistoryPanel({
                     key={run.run_id}
                     className="run-history-row"
                     onClick={() => setSelectedRunId(run.run_id)}
-                    aria-label={`Open ${formatRunType(run.run_type)} ${shortResultID(run.run_id)}, ${displayStatus(run)}, ${scenarioName(run, scenarios)} · ${scenarioVersionLabel(run, scenarios)}`}
+                    aria-label={`Open ${readableRunLabel(run)}, ${displayStatus(run)}, ${scenarioName(run, scenarios)} · ${scenarioVersionLabel(run, scenarios)}, Run ID ${shortResultID(run.run_id)}`}
                   >
                     <RunStatusIcon run={run} />
                     <span>
-                      <strong>{formatRunType(run.run_type)} · {shortResultID(run.run_id)}</strong>
+                      <strong>{readableRunLabel(run)}</strong>
                       <small>{scenarioName(run, scenarios)} · {scenarioVersionLabel(run, scenarios)} · {formatTimestamp(run.created_at)}</small>
                     </span>
                     <em className={`run-status ${run.status}`}>{displayStatus(run)}</em>
@@ -186,7 +187,7 @@ function RunDetails({ backRef, currentWorkspace, datasetUnavailable, onBack, onD
       <div className="run-history-detail-header">
         <div>
           <span className={`run-status ${run.status}`}>{displayStatus(run)}</span>
-          <h3>{formatRunType(run.run_type)} run · {shortResultID(run.run_id)}</h3>
+          <h3>{readableRunLabel(run)}</h3>
         </div>
         <button type="button" className="icon-button danger" onClick={() => onDeleteRun?.(run)} aria-label="Delete run" title="Delete run"><Trash2 size={15} /></button>
       </div>
@@ -198,7 +199,7 @@ function RunDetails({ backRef, currentWorkspace, datasetUnavailable, onBack, onD
       ]} />
       <TechnicalDetails summary="Run details / Provenance">
         <KeyValueRows label="Run provenance" items={[
-          ["Run identity", shortID(run.run_id)],
+          ["Run ID", run.run_id],
           ["Scenario", scenarioName(run, scenarios)],
           ["Version", sourceLabel],
           ["Scenario fingerprint", run.scenario_fingerprint ?? "Not returned"],
@@ -242,7 +243,7 @@ function RunDetails({ backRef, currentWorkspace, datasetUnavailable, onBack, onD
 
       {run.status === "succeeded" || run.status === "failed" || run.status === "cancelled" ? (
         <div className="run-history-detail-actions">
-          {run.status === "succeeded" && sourceVersionAvailable ? <button type="button" className="run-history-rerun" onClick={() => onRequestReport?.({ run, context: contextWithWorkspace })}><FileText size={14} /> Generate report from {context.run_label}</button> : null}
+          {run.status === "succeeded" && sourceVersionAvailable ? <button type="button" className="run-history-rerun" onClick={() => onRequestReport?.({ run, context: contextWithWorkspace })}><FileText size={14} /> Generate report from this Run</button> : null}
           {run.status === "succeeded" && !sourceVersionAvailable ? <p className="run-history-unavailable">UNAVAILABLE · The source Scenario Version is not retained, so a historical Report cannot be generated.</p> : null}
           <button type="button" className="run-history-rerun" onClick={() => onRunAgain?.(run)} disabled={datasetUnavailable || !canRerun} title={!canRerun ? "Exact Run inputs are unavailable" : undefined}>
             <RotateCcw size={14} /> Run again from this Run
@@ -268,11 +269,6 @@ function RunStatusIcon({ run }) {
 function displayStatus(run) {
   if (run.error?.code === "run_interrupted") return "Interrupted";
   return run.status.charAt(0).toUpperCase() + run.status.slice(1);
-}
-
-function shortID(value) {
-  const text = String(value ?? "");
-  return text.length > 18 ? `${text.slice(0, 8)}…${text.slice(-6)}` : text || "—";
 }
 
 function formatTimestamp(value) {

@@ -14,8 +14,13 @@ vi.mock("./utils/apiClient.js", () => ({
 }));
 
 vi.mock("./components/MapCanvas.jsx", () => ({
-  default: ({ onSelectMapCell, onSelectTower, towers = [] }) => (
-    <div data-testid="map-canvas">
+  default: ({ fitRequest, onFinishAreaSelection, onSelectMapCell, onSelectTower, towers = [] }) => (
+    <div data-testid="map-canvas" data-fit-request={JSON.stringify(fitRequest ?? null)}>
+      <button
+        type="button"
+        aria-label="Finish mock area around all cells"
+        onClick={() => onFinishAreaSelection?.([[32.84, 39.91], [32.87, 39.91], [32.87, 39.93], [32.84, 39.93]])}
+      />
       {towers.map((tower) => (
         <button
           key={tower.id}
@@ -61,6 +66,10 @@ function openWorkspaceTool(label) {
   }
   if (!toolButton) throw new Error(`Tool chooser did not expose ${label}`);
   fireEvent.click(toolButton);
+}
+
+function currentFitRequest() {
+  return JSON.parse(screen.getByTestId("map-canvas").dataset.fitRequest);
 }
 
 function openInventoryCell(cellID) {
@@ -331,6 +340,79 @@ describe("App planning workflow", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByRole("group", { name: "RF context" })).toHaveTextContent("Single · No Cell selected"));
     expect(screen.getByRole("group", { name: "RF context" })).not.toHaveTextContent(/tower/i);
+  });
+
+  it("brings each completed RF result into view once and leaves view-only toggles alone", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    expect(currentFitRequest()).toBeNull();
+
+    const before = Date.now();
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const sectorFit = currentFitRequest();
+    expect(sectorFit.version).toBe(1);
+    // Automatic fit: carries the action start so a user map move during the run wins.
+    expect(sectorFit.since).toBeGreaterThanOrEqual(before);
+    // Frames the single sector's planning radius, not the city.
+    expect(sectorFit.targets).toEqual([{ lat: 39.92, lon: 32.85, radiusMeters: 400 }]);
+
+    const rfCalls = api.postJSON.mock.calls.length;
+    fireEvent.click(screen.getByRole("button", { name: "Propagation rays layer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Propagation rays layer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Map key" }));
+    expect(currentFitRequest().version).toBe(1);
+    expect(api.postJSON).toHaveBeenCalledTimes(rfCalls);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Network mode,/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    expect(currentFitRequest().version).toBe(1);
+    fireEvent.click(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Evaluate Network" }));
+    await waitFor(() => expect(currentFitRequest().version).toBe(2));
+    expect(currentFitRequest().targets.map(({ lat, lon }) => [lat, lon])).toEqual([[39.92, 32.85], [39.922, 32.854]]);
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(currentFitRequest().version).toBe(3));
+    expect(currentFitRequest().since).toEqual(expect.any(Number));
+
+    // The manual control always fits.
+    fireEvent.click(screen.getByRole("button", { name: "Fit selected cells" }));
+    expect(currentFitRequest()).toEqual(expect.objectContaining({ version: 4, since: null }));
+  });
+
+  it("fits a completed area selection to the selected Cells", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(screen.getByRole("button", { name: "Finish mock area around all cells" }));
+    await screen.findByRole("button", { name: "Network mode, 3 selected" });
+    const areaFit = currentFitRequest();
+    expect(areaFit.since).toBeNull();
+    expect(areaFit.targets).toHaveLength(3);
+    expect(areaFit.targets.every((target) => target.radiusMeters === 400)).toBe(true);
+  });
+
+  it("summarizes a completed interference analysis in its tool and opens it in Results", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    openWorkspaceTool("Interference");
+    expect(screen.queryByRole("status", { name: "Interference result summary" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze Interference" }));
+    const summary = await screen.findByRole("status", { name: "Interference result summary" });
+    expect(summary).toHaveTextContent("Serviceable surface");
+    expect(summary).toHaveTextContent("Average SINR");
+    expect(summary).toHaveTextContent("Affected demand");
+    fireEvent.click(within(summary).getByRole("button", { name: "Open in Results" }));
+    expect(screen.getByRole("dialog", { name: "Results" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Interference" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("keeps Setup focused on planning and opens Scenarios as a separate Plan tool", async () => {

@@ -56,6 +56,7 @@ import { createOptimizationRun, createSimulationRun, transitionRun } from "./dom
 import { buildResultContext, buildWorkspaceLineage, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
 import { canonicalSerialize } from "./domain/serialization.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
+import { fitTargetsForCells } from "./utils/mapFit.js";
 import { DRAFT_SOURCE_STATUS, resolveDraftOptimizationSource, solutionMatchesDraft } from "./utils/optimizationSource.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
@@ -262,8 +263,14 @@ export default function App() {
   const [pathProfileCellId, setPathProfileCellId] = useState(null);
   const [selectedMapCellId, setSelectedMapCellId] = useState(null);
   const [rayScope, setRayScope] = useState(RAY_SCOPE_ALL);
-  const [fitRequestVersion, setFitRequestVersion] = useState(0);
+  const [fitRequest, setFitRequest] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SIMULATION);
+  // Frames Cells plus their planning radius. `since` marks an automatic fit that yields to later user map moves.
+  const requestMapFit = useCallback((cells, since = null) => {
+    const targets = fitTargetsForCells(cells, (cell, index) => resolveRFProfile(cell, settings, index).radiusMeters);
+    if (targets.length === 0) return;
+    setFitRequest((current) => ({ version: (current?.version ?? 0) + 1, since, targets }));
+  }, [settings]);
   const activeNetworkTech = networkTechLabelForFrequency(settings.frequencyGHz);
   const clearSpatialContext = useCallback(() => {
     setInspectedEntity(null);
@@ -966,6 +973,7 @@ export default function App() {
 
     clearCoverageSurface();
     const request = requests.begin("rf");
+    const fitSince = Date.now();
     setActiveRFTask("simulation");
     setError("");
     const simulationRequest = buildSimulationPayload(selectedTower, settings);
@@ -996,6 +1004,7 @@ export default function App() {
       setLastAnalysisKind("rf");
       setActiveResultsView("rf");
       setPlanDirty(false);
+      requestMapFit([selectedTower], fitSince);
       markCoverageSurfaceAvailable();
       await finishDurableRun({
         request: simulationRequest,
@@ -1020,7 +1029,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [beginDurableRun, clearCoverageSurface, finishDurableRun, markCoverageSurfaceAvailable, requests, selectedTower, settings, simulateForSettings]);
+  }, [beginDurableRun, clearCoverageSurface, finishDurableRun, markCoverageSurfaceAvailable, requestMapFit, requests, selectedTower, settings, simulateForSettings]);
 
   const optimizeAzimuth = useCallback(async () => {
     if (!selectedTower) {
@@ -1029,6 +1038,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const fitSince = Date.now();
     const workflow = createRFWorkflow(appMeta, request.signal);
     clearCoverageSurface();
     setActiveRFTask("optimization");
@@ -1091,6 +1101,7 @@ export default function App() {
       setLastAnalysisKind("optimization");
       setActiveResultsView("optimization");
       setPlanDirty(false);
+      requestMapFit([selectedTower], fitSince);
       markCoverageSurfaceAvailable();
       await finishDurableRun({
         request: optimizationRequest,
@@ -1138,6 +1149,7 @@ export default function App() {
     markCoverageSurfaceAvailable,
     optimizationDiagnostics,
     selectedTower,
+    requestMapFit,
     requests,
     settings,
     simulateForSettings,
@@ -1159,6 +1171,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const fitSince = Date.now();
     const workflow = createRFWorkflow(appMeta, request.signal);
     clearCoverageSurface();
     setActiveRFTask("optimization");
@@ -1227,6 +1240,7 @@ export default function App() {
       setLastAnalysisKind("network");
       setActiveResultsView("optimization");
       setPlanDirty(false);
+      requestMapFit(selectedNetworkTowers, fitSince);
       markCoverageSurfaceAvailable();
       await finishDurableRun({
         request: networkRequest,
@@ -1261,7 +1275,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [appMeta, beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [appMeta, beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requestMapFit, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const priorityError = optimizationConfigValidationMessage(optimizationConfig);
@@ -1278,6 +1292,7 @@ export default function App() {
     }
 
     const request = requests.begin("rf");
+    const fitSince = Date.now();
     const workflow = createRFWorkflow(appMeta, request.signal);
     clearCoverageSurface();
     setActiveRFTask("network_evaluation");
@@ -1312,6 +1327,7 @@ export default function App() {
       setLastAnalysisKind("network");
       setActiveResultsView("optimization");
       setPlanDirty(false);
+      requestMapFit(selected, fitSince);
       markCoverageSurfaceAvailable();
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
@@ -1324,7 +1340,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [appMeta, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [appMeta, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requestMapFit, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const explainNetworkCell = useCallback(async (solutionID, cellID) => {
     const response = displayedNetworkOptimization;
@@ -2055,7 +2071,8 @@ export default function App() {
     setIsDrawingSelection(false);
     setSelectionPolygon(finalPolygon);
     setSelectionNotice(describeAreaSelection(inside.length, selected.length, MAX_NETWORK_CELLS));
-  }, [invalidatePlanResults, selectionPolygon, towers]);
+    requestMapFit(selected);
+  }, [invalidatePlanResults, requestMapFit, selectionPolygon, towers]);
 
   const addSelectionPolygonPoint = useCallback((coordinate) => {
     setSelectionPolygon((current) => [...current, coordinate]);
@@ -2222,8 +2239,8 @@ export default function App() {
   }, [towers]);
 
   const fitSelectedCells = useCallback(() => {
-    setFitRequestVersion((current) => current + 1);
-  }, []);
+    requestMapFit(planningMode === "network" && selectedNetworkTowers.length > 0 ? selectedNetworkTowers : [selectedTower].filter(Boolean));
+  }, [planningMode, requestMapFit, selectedNetworkTowers, selectedTower]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia?.("(max-width: 640px)");
@@ -3458,6 +3475,11 @@ export default function App() {
       planningMode={planningMode}
       interferenceApplicable={interferenceApplicable}
       isAnalyzingInterference={isAnalyzingInterference}
+      interferenceStats={interferenceAnalysis?.stats ?? null}
+      onOpenInterferenceResults={() => {
+        setActiveResultsView("interference");
+        selectWorkspaceTool("results");
+      }}
     />
   );
   const researchProfileActive = Number(settings.frequencyGHz) >= 100 || settings.propagationModelID === "research_sub_thz";
@@ -3678,7 +3700,7 @@ export default function App() {
             layerVisibility={layerVisibility}
             selectedMapObject={selectedMapObject}
             onSelectMapObject={selectMapObject}
-            fitRequestVersion={fitRequestVersion}
+            fitRequest={fitRequest}
             interference={interferenceAnalysis.geojson}
             interferenceDemand={interferenceAnalysis.demand_geojson}
             interferenceModel={interferenceAnalysis.model}

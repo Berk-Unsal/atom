@@ -303,7 +303,7 @@ function resolveLegacyScenarioId(domainScenarioId, scenarios, legacyProject) {
 
 function scenarioToLegacySnapshot(scenario, revision, legacyScenario, inventoryRevision, revisions = [], runs = []) {
   const original = legacyScenario ?? {};
-  const plan = scenarioRevisionToLegacyPlan(revision, original.plan ?? {});
+  const plan = scenarioRevisionToLegacyPlan(revision, original.plan ?? {}, inventoryRevision?.cells ?? null);
   if (inventoryRevision) plan.inventory = inventoryRevision.cells.map(inventoryCellToLegacy);
   return {
     ...original,

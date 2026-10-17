@@ -38,6 +38,7 @@ import App from "./App.jsx";
 const TOOL_TARGETS = {
   Setup: ["plan", "Plan", "setup"],
   Inventory: ["plan", "Plan", "inventory"],
+  Scenarios: ["plan", "Plan", "scenarios"],
   Propagation: ["simulate", "Simulate", "propagation"],
   Experiments: ["simulate", "Simulate", "experiments"],
   "Signal surface": ["simulate", "Simulate", "surfaces"],
@@ -934,6 +935,122 @@ describe("App planning workflow", () => {
     await screen.findByText("Historical solution applied to a new Version. Run the plan to compute fresh visualization.");
     expect(api.postJSON).toHaveBeenCalledTimes(afterSearchCount);
     expect(JSON.stringify(payload)).toBe(originalResponse);
+  });
+
+  it("applies a Pareto alternative from a working-draft optimization by saving its starting plan", async () => {
+    useNetworkFixture = true;
+    const view = render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+
+    // Optimize directly in the working draft, without saving a Version first.
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const optimizeRequest = structuredClone(api.postJSON.mock.calls.find(([path]) => path === "/api/optimize-network")[1]);
+    const requestCount = api.postJSON.mock.calls.length;
+
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    const explorer = screen.getByRole("region", { name: "Pareto alternative solutions" });
+    // The recommended solution's azimuths were loaded into the draft when optimization completed.
+    expect(within(explorer).getByRole("note")).toHaveTextContent(/working draft already uses this solution's azimuths/i);
+    fireEvent.click(screen.getByRole("button", { name: /Inspect Pareto solution 2/i }));
+    expect(within(explorer).queryByRole("note")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Apply solution…" }));
+    const dialog = screen.getByRole("dialog", { name: "Apply optimization solution?" });
+    expect(dialog).toHaveTextContent(/started from an unsaved working draft.*starting plan as Network plan 1 · Version 1/i);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Save starting plan & create Version" }));
+    await screen.findByText("Saved this Run's starting plan as Network plan 1 · Version 1 and applied the solution to a new Version. Run the plan to compute fresh visualization.");
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+
+    // The applied Version carries solution B's azimuths into the next explicit run.
+    fireEvent.click(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Evaluate Network" }));
+    await waitFor(() => expect(api.postJSON.mock.calls.some(([path]) => path === "/api/evaluate-network")).toBe(true));
+    const evaluation = api.postJSON.mock.calls.find(([path]) => path === "/api/evaluate-network")[1];
+    expect(evaluation.towers.map((tower) => tower.azimuth)).toEqual([30, 150]);
+    expect(evaluation.towers.map((tower) => tower.id)).toEqual(optimizeRequest.towers.map((tower) => tower.id));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+
+    const expectLineage = async () => {
+      openWorkspaceTool("Scenarios");
+      expect((await screen.findAllByText("Starting plan of Optimization", { exact: false })).length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Applied a public optimization solution as a new Version").length).toBeGreaterThan(0);
+      fireEvent.click(screen.getByRole("button", { name: /^Version 2,/ }));
+      const details = screen.getByRole("region", { name: "Version 2 details" });
+      expect(details).toHaveTextContent("solution-b");
+    };
+    await expectLineage();
+
+    // The saved starting plan and the applied Version survive a fresh mount of the workspace.
+    view.unmount();
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: /Run Sector|Evaluate Network/ })).toBeEnabled());
+    await expectLineage();
+    expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/optimize-network")).toEqual([
+      ["/api/optimize-network", optimizeRequest, "Network optimization request failed", expect.any(AbortSignal)],
+    ]);
+  });
+
+  it("carries an applied solution's azimuths into the plan when the Run has a saved source Version", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+    fireEvent.click(within(menu).getByRole("button", { name: "Save current" }));
+    await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    fireEvent.click(screen.getByRole("button", { name: /Inspect Pareto solution 2/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply solution…" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "Apply optimization solution?" })).getByRole("button", { name: "Create new Version" }));
+    await screen.findByText("Historical solution applied to a new Version. Run the plan to compute fresh visualization.");
+
+    // Regression: numeric cell-ID keys previously lost to the saved record-ID azimuths (90°/90°).
+    fireEvent.click(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Evaluate Network" }));
+    await waitFor(() => expect(api.postJSON.mock.calls.some(([path]) => path === "/api/evaluate-network")).toBe(true));
+    const evaluation = api.postJSON.mock.calls.find(([path]) => path === "/api/evaluate-network")[1];
+    expect(evaluation.towers.map((tower) => tower.azimuth)).toEqual([30, 150]);
+  });
+
+  it("keeps working-draft alternatives applicable after local priority reranking", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const requestCount = api.postJSON.mock.calls.length;
+
+    // Reranking changes the current priorities locally; the Run's own priorities still define its starting plan.
+    fireEvent.click(screen.getByRole("button", { name: /^Advanced analysis/ }));
+    for (const label of ["Demand importance", "Propagation reach importance", "Reduce overlap importance"]) {
+      fireEvent.change(screen.getByRole("slider", { name: label }), { target: { value: "0" } });
+    }
+    fireEvent.change(screen.getByRole("slider", { name: "Residential importance" }), { target: { value: "100" } });
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply solution…" }));
+    const dialog = screen.getByRole("dialog", { name: "Apply optimization solution?" });
+    expect(dialog).not.toHaveTextContent(/plan changed after this optimization/i);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Save starting plan & create branch" }));
+    await screen.findByText("Saved this Run's starting plan as Network plan 1 · Version 1 and applied the solution to a new branched Version. Run the plan to compute fresh visualization.");
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
   it("explores Pareto solutions without changing the recommendation or rerunning RF", async () => {

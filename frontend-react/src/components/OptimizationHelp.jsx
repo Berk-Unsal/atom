@@ -22,7 +22,7 @@ export function ParetoAlternativesHelp() {
         <ul>
           <li><strong>Inspect:</strong> view a retained option’s metrics and azimuths without an RF request. The map remains from the last simulation.</li>
           <li><strong>Rerank:</strong> change Optimization priorities to rescore and reorder retained alternatives locally. No new RF request or search; the recommendation can change without applying it.</li>
-          <li><strong>Apply solution…:</strong> review the source and destination, then explicitly create a new Version or branch with the chosen azimuths. The source stays unchanged; run the new plan separately for fresh RF maps.</li>
+          <li><strong>Apply solution…:</strong> review the source and destination, then explicitly create a new Version or branch with the chosen azimuths. The source stays unchanged; run the new plan separately for fresh RF maps. If the optimization ran on an unsaved working draft, its exact starting plan is saved as a Version first.</li>
           <li><strong>New search:</strong> Optimize Network starts a new backend optimization search and RF computation using the configured inputs. It can discover different alternatives. The returned azimuths update the working plan and map.</li>
         </ul>
       </div>

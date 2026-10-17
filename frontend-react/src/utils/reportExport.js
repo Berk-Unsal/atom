@@ -1,4 +1,5 @@
 import { rxPowerColor } from "./geojson.js";
+import { downloadFilename } from "./downloadNames.js";
 import { formatMetricValue, getComparisonMetrics } from "./comparisonCharts.js";
 import { normalizedNetworkScore } from "./appWorkspace.js";
 import { buildCellMarginalEffectView, buildNetworkOptimizationComparison, isRadioQualityEvaluated } from "./optimizationConfig.js";
@@ -212,7 +213,8 @@ export function buildHistoricalPlanningReport({
 
 export function downloadMarkdownReport(report) {
   const markdown = renderMarkdownReport(report);
-  downloadBlob(`${report.reportId}.md`, markdown, "text/markdown;charset=utf-8");
+  const view = getReportViewModel(report);
+  downloadBlob(downloadFilename({ scenario: view.scenarioName, date: report.generatedAt, kind: "report", extension: "md" }), markdown, "text/markdown;charset=utf-8");
 }
 
 export function openPdfReport(report) {
@@ -455,6 +457,12 @@ function buildReportViewModel(report) {
   };
 }
 
+// Headline metrics for the summary; the constraint row appears only when constraints were configured.
+function executiveSummaryRows(view) {
+  const summaryPerformance = view.performanceRows.filter((item) => ["Optimization score", "Demand served", "Residential", "Propagation reach", "Overlap ratio"].includes(item[0]));
+  return view.constraintStatus.configured ? [...summaryPerformance, row("Constraints", view.constraintStatus.label)] : summaryPerformance;
+}
+
 function renderMarkdownExecutiveSummary(view) {
   const scopeLabel = view.isNetworkReport ? "Network" : "Cell / RF context";
   const networkRows = view.isNetworkReport
@@ -474,7 +482,7 @@ function renderMarkdownExecutiveSummary(view) {
       row("Conducted TX power", formatUnit(view.settings.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
       row("Planning radius", formatUnit(view.settings.radiusMeters ?? view.settings.radius_m, 0, "m")),
     ];
-  const summaryPerformance = view.performanceRows.filter((item) => ["Optimization score", "Demand served", "Residential", "Propagation reach", "Overlap ratio"].includes(item[0]));
+  const summaryRows = executiveSummaryRows(view);
   const resultLabel = view.isOptimizationRecommendation ? "Recommended solution" : view.isNetworkReport ? "Evaluated network configuration" : "RF result";
   const interferenceStatus = view.hasInterference ? "Evaluated" : view.isNetworkReport ? "Not evaluated" : null;
   const statusLine = view.isOptimizationRecommendation
@@ -489,9 +497,9 @@ function renderMarkdownExecutiveSummary(view) {
 ${renderMarkdownTable(["Field", "Value"], networkRows)}
 
 ### ${resultLabel}
-
-${renderMarkdownTable(["Metric", "Achieved"], [...summaryPerformance, row("Constraints", view.constraintStatus.label)])}
-${interferenceStatus ? `
+${summaryRows.length > 0 ? `
+${renderMarkdownTable(["Metric", "Achieved"], summaryRows)}
+` : ""}${interferenceStatus ? `
 Interference analysis: ${interferenceStatus}.` : ""}
 
 ${statusLine}`;
@@ -541,7 +549,7 @@ function renderPrintableExecutiveSummary(view) {
       row("Conducted TX power", formatUnit(view.settings.tx_power_dbm ?? view.settings.txPowerDbm, 1, "dBm")),
       row("Planning radius", formatUnit(view.settings.radiusMeters ?? view.settings.radius_m, 0, "m")),
     ];
-  const summaryPerformance = view.performanceRows.filter((item) => ["Optimization score", "Demand served", "Residential", "Propagation reach", "Overlap ratio"].includes(item[0]));
+  const summaryRows = executiveSummaryRows(view);
   const resultLabel = view.isOptimizationRecommendation ? "Recommended solution" : view.isNetworkReport ? "Evaluated network configuration" : "RF result";
   const interferenceStatus = view.hasInterference ? "Evaluated" : view.isNetworkReport ? "Not evaluated" : null;
   const statusLine = view.isOptimizationRecommendation
@@ -549,7 +557,7 @@ function renderPrintableExecutiveSummary(view) {
     : view.isNetworkReport
       ? "Status: evaluated network configuration."
       : "Status: current single-cell RF result.";
-  return `<section data-report-section="executive-summary"><h2>Executive Summary</h2><div class="report-grid"><div><h3>${escapeHtml(scopeLabel)}</h3>${renderHtmlTable(["Field", "Value"], networkRows)}</div><div><h3>${escapeHtml(resultLabel)}</h3>${renderHtmlTable(["Metric", "Achieved"], [...summaryPerformance, row("Constraints", view.constraintStatus.label)])}${interferenceStatus ? `<p class="report-note">Interference analysis: ${escapeHtml(interferenceStatus)}.</p>` : ""}<p class="report-note">${escapeHtml(statusLine)}</p></div></div></section>`;
+  return `<section data-report-section="executive-summary"><h2>Executive Summary</h2><div class="report-grid"><div><h3>${escapeHtml(scopeLabel)}</h3>${renderHtmlTable(["Field", "Value"], networkRows)}</div><div><h3>${escapeHtml(resultLabel)}</h3>${summaryRows.length > 0 ? renderHtmlTable(["Metric", "Achieved"], summaryRows) : ""}${interferenceStatus ? `<p class="report-note">Interference analysis: ${escapeHtml(interferenceStatus)}.</p>` : ""}<p class="report-note">${escapeHtml(statusLine)}</p></div></div></section>`;
 }
 
 function renderPrintableEvidence(view) {
@@ -661,14 +669,15 @@ function renderPrintableCellExplanations(view) {
 }
 
 function renderMarkdownRFPerformance(view) {
-  if (!view.rfPerformanceRows.length) return "";
+  // Single-cell reports already present these rows as "RF Result".
+  if (!view.isNetworkReport || !view.rfPerformanceRows.length) return "";
   return `## RF Propagation Performance
 
 ${renderMarkdownTable(["Metric", "Value"], view.rfPerformanceRows)}`;
 }
 
 function renderPrintableRFPerformance(view) {
-  if (!view.rfPerformanceRows.length) return "";
+  if (!view.isNetworkReport || !view.rfPerformanceRows.length) return "";
   return `<section data-report-section="rf-performance"><h2>RF Propagation Performance</h2>${renderHtmlTable(["Metric", "Value"], view.rfPerformanceRows)}</section>`;
 }
 
@@ -712,11 +721,10 @@ function renderPrintableBuildingEntry(view) {
 
 function renderMarkdownPlanningMap(report) {
   if (!report.mapSvg) return "";
+  // Inline SVG makes Markdown unreadable and many viewers do not render it; the HTML report keeps the map.
   return `## Planning Map
 
-${report.mapSvg}
-
-The report map is a concise export snapshot. When ray paths exceed the report limit, paths are sampled for readability; the underlying runtime RF result is unchanged.`;
+The planning map is included in the HTML report (Report → PDF / Print) and omitted here to keep this Markdown readable.`;
 }
 
 function renderPrintablePlanningMap(report) {

@@ -40,4 +40,27 @@ describe("report artifact output", () => {
     expect(new TextDecoder().decode(html.bytes)).toContain("data-report-section=\"executive-summary\"");
     expect(new TextDecoder().decode(markdown.bytes)).toBe(new TextDecoder().decode(regenerated.bytes));
   });
+
+  it("names downloads for people while keeping the report ID in metadata", () => {
+    const generatedAt = new Date("2026-10-17T14:54:55.000Z");
+    const report = buildPlanningReport({
+      generatedAt,
+      planningMode: "single",
+      project: { id: "project-1", name: "Ankara Plan", activeScenarioId: "scenario-1", scenarios: [{ id: "scenario-1", name: "Sector plan 1" }] },
+      selectedTower: { id: "cell-1", cellId: "cell-1", coordinates: [32.85, 39.92], azimuth: 90, rfProfile: { frequencyGHz: 2.6 } },
+      settings: { frequencyGHz: 2.6, radiusMeters: 400, txPowerDbm: 30 },
+      simulation: { stats: { avg_rx_dbm: -88 }, geojson: { type: "FeatureCollection", features: [] } },
+      stats: { avgPower: -88, maxRange: 400, minRange: 20, blockedRatio: 2, rayCount: 0 },
+    });
+    const definition = createReportDefinition({ report_id: "f079b4f3-b688-4148-9fc3-5289e4c1523a", project_id: "project-1", scenario_id: "scenario-1", scenario_revision_id: "revision-1", run_ids: [], title: "Report", sections: ["executive_summary"], source_kind: "scenario_revision" });
+    const naming = { project: "Ankara Plan", scenario: "Sector plan 1", version: 1 };
+
+    const markdown = buildReportArtifactOutput({ report, reportDefinition: definition, format: "markdown", naming });
+    const html = buildReportArtifactOutput({ report, reportDefinition: definition, format: "html", naming });
+    expect(markdown.artifact.filename).toBe("ankara-plan-sector-plan-1-v1-20261017-report.md");
+    expect(html.artifact.filename).toBe("ankara-plan-sector-plan-1-v1-20261017-report.html");
+    expect(markdown.artifact.report_id).toBe("f079b4f3-b688-4148-9fc3-5289e4c1523a");
+    // Without naming context the report's own scenario name and date still give a readable name.
+    expect(buildReportArtifactOutput({ report, reportDefinition: definition, format: "markdown" }).artifact.filename).toBe("sector-plan-1-20261017-report.md");
+  });
 });

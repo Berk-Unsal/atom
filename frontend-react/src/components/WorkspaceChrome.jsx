@@ -25,6 +25,7 @@ import {
 import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./workspaceTools.js";
 import { MAX_PROJECT_FILE_BYTES } from "../utils/projectStore.js";
 import { projectFileRecoveryReason } from "../utils/projectFileRecovery.js";
+import { downloadFilename, namingForSource } from "../utils/downloadNames.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
 import PanelHeader from "./PanelHeader.jsx";
 
@@ -250,7 +251,9 @@ export function ProjectMenu({
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = `${slug(activeProject?.name ?? "atom-project")}.atom-project.json`;
+      const activeScenario = activeProject?.scenarios?.find((scenario) => scenario.id === activeProject.activeScenarioId);
+      const naming = namingForSource(activeProject, activeScenario?.domain?.scenario_id ?? activeScenario?.id, activeScenario?.domain?.current_revision_id);
+      anchor.download = downloadFilename({ ...naming, project: naming.project ?? "atom-project", date: new Date(), extension: "atom-project.json" });
       anchor.click();
       URL.revokeObjectURL(url);
       setMessage("Project exported");
@@ -359,10 +362,6 @@ export function ProjectMenu({
       ) : null}
     </div>
   );
-}
-
-function slug(value) {
-  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atom-project";
 }
 
 export function StageToolChoices({

@@ -14,6 +14,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Name report and project downloads `<project>-<scenario>-v<N>-<yyyymmdd>[-report]` instead of report IDs, drop the duplicated single-cell RF section and unconfigured constraint rows, replace inline SVG in Markdown reports with a pointer to the HTML/PDF report (which keeps the map), and show the same Scenario/Version/Run lineage on the Report source card and the stored Report.
 - Close the project menu with Escape and return focus to its trigger without closing the open tool, name the trigger after its project, use one "Save Version" label for the visible text, accessible name and progress, rename the command-bar cell-selection action to "Select 2+ cells", and add an axe accessibility smoke check for the project menu, Setup and Results.
 - Show result units exactly as produced (`dBm`, `m`), present a zero-gap result neutrally with an unavailable Worst Rx, use Cell instead of tower in selection, error and report copy, and state the nearest-to-centre rule when a drawn area holds more Cells than the network limit.
 - Carry an applied optimization solution's azimuths into the plan. Numeric Cell IDs let the previously saved azimuths win, so the next run used the old values; Versions applied before this fix now restore the solution azimuths.

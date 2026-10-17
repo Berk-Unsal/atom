@@ -616,3 +616,56 @@ describe("planning report values", () => {
     expect(markdown).toContain("| Constraints | Not configured |");
   });
 });
+
+describe("readable report output outside A.T.O.M", () => {
+  const singleCellReport = () => buildPlanningReport({
+    activeNetworkTech: "5G mmWave",
+    appMeta: { dataset: { name: "Single-cell Pack", version: "1" } },
+    buildingSummary: null,
+    comparison: null,
+    coreLab: null,
+    coreLabApplicable: false,
+    coreLabEnabled: false,
+    coverageGaps: { geojson: { type: "FeatureCollection", features: [] }, stats: { gap_buildings: 0 } },
+    diagnostics: null,
+    interferenceAnalysis: null,
+    measurementAnalysis: null,
+    networkOptimization: null,
+    planningMode: "single",
+    project: { name: "Single Cell Plan", activeScenarioId: "single", scenarios: [{ id: "single", name: "Single Cell Plan" }] },
+    recommendations: null,
+    selectedNetworkTowers: [],
+    selectedTower: { cellId: "8414746", azimuth: 90, coordinates: [32.85, 39.92], rfProfile: { networkTech: "5g", band: "n257", channelId: "C-17", frequencyGHz: 28, txPowerDbm: 30 } },
+    settings: { frequencyGHz: 28, txPowerDbm: 30, radiusMeters: 400, beamWidthDeg: 120, rayCount: 120 },
+    simulation: { geojson: { type: "FeatureCollection", features: [{ geometry: { type: "LineString", coordinates: [[32.85, 39.92], [32.851, 39.921]] }, properties: { signal_dbm: -84 } }] }, stats: { avg_rx_dbm: -84, min_range_m: 80, max_range_m: 400, blocked_pct: 12 } },
+    stats: { avgPower: -84, minRange: 80, maxRange: 400, blockedRatio: 12, rayCount: 1 },
+  });
+  const headings = (markdown) => markdown.split("\n").filter((line) => line.startsWith("## "));
+
+  it("lists the single-cell RF metrics once and omits an unconfigured constraint row", () => {
+    const markdown = renderMarkdownReport(singleCellReport());
+    expect(headings(markdown).filter((heading) => heading === "## RF Result")).toHaveLength(1);
+    expect(markdown).not.toContain("## RF Propagation Performance");
+    expect(markdown.match(/\| Average received power \|/g)).toHaveLength(1);
+    expect(markdown).not.toMatch(/\| Constraints \|/);
+    expect(new Set(headings(markdown)).size).toBe(headings(markdown).length);
+
+    const html = renderHtmlReport(singleCellReport());
+    expect(html.match(/data-report-section="rf-result"/g)).toHaveLength(1);
+    expect(html).not.toContain('data-report-section="rf-performance"');
+  });
+
+  it("keeps the map out of Markdown but in the HTML report", () => {
+    const report = singleCellReport();
+    const markdown = renderMarkdownReport(report);
+    expect(markdown).not.toMatch(/<svg|<path/);
+    expect(markdown).toContain("The planning map is included in the HTML report (Report → PDF / Print)");
+    expect(renderHtmlReport(report)).toMatch(/<svg[^>]*aria-label="A\.T\.O\.M RF planning map export"/);
+  });
+
+  it("has no duplicated sections in a network report and keeps its combined ray table", () => {
+    const markdown = renderMarkdownReport(makeNetworkReport());
+    expect(new Set(headings(markdown)).size).toBe(headings(markdown).length);
+    expect(markdown).not.toMatch(/<svg|<path/);
+  });
+});

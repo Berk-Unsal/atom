@@ -1,6 +1,7 @@
 import { AlertTriangle, Clock3, Download, FileText, RefreshCw, Trash2 } from "lucide-react";
 import { buildResultContext, shortID } from "../domain/resultContext.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
+import { reportLineageLine, reportRunLabels } from "../utils/reportLineage.js";
 
 export default function ReportArtifactsPanel({
   artifacts = [],
@@ -69,7 +70,7 @@ export default function ReportArtifactsPanel({
                 <span className="report-artifact-icon"><FileText size={15} /></span>
                 <span className="report-artifact-copy">
                   <strong>{titleFor(artifact)}</strong>
-                  <small>{scenarioVersionLabel(artifact, scenarios)} · Runs: {runLabels(artifact, runs)}</small>
+                  <small>{reportLineageLine({ scenarioName: scenarioName(artifact, scenarios), versionLabel: versionLabel(artifact, scenarios), runIds: artifact.run_ids, runs })}</small>
                   <small>{formatTimestamp(artifact.generated_at)} · {availabilityLabel(artifact.availability)}</small>
                 </span>
               </button>
@@ -93,7 +94,7 @@ export default function ReportArtifactsPanel({
           ) : null}
           <p><b>Scenario:</b> {scenarioName(selected, scenarios)}</p>
           <p><b>Version:</b> {versionLabel(selected, scenarios)}</p>
-          <p><b>Runs:</b> {runLabels(selected, runs)}</p>
+          <p><b>Runs:</b> {reportRunLabels(selected?.run_ids, runs)}</p>
           {selected.scenario_revision_id && hasSourceVersion(selected, scenarios)
             ? <button type="button" className="run-history-source-button" onClick={() => onOpenSource?.(selected)}>Open source Version</button>
             : selected.scenario_revision_id
@@ -140,10 +141,6 @@ function scenarioName(artifact, scenarios) {
   ))?.name ?? artifact?.scenario_name ?? "Scenario";
 }
 
-function scenarioVersionLabel(artifact, scenarios) {
-  return `${scenarioName(artifact, scenarios)} · ${versionLabel(artifact, scenarios)}`;
-}
-
 function versionLabel(artifact, scenarios) {
   if (!artifact?.scenario_revision_id) return "No saved Version";
   const scenario = scenarios.find((candidate) => (
@@ -161,16 +158,4 @@ function hasSourceVersion(artifact, scenarios) {
   return Boolean(scenario?.domain?.revisions?.some((revision) => (
     String(revision.scenario_revision_id) === String(artifact.scenario_revision_id)
   )));
-}
-
-function runLabels(artifact, runs) {
-  if (!artifact?.run_ids?.length) return "None";
-  return artifact.run_ids.map((runId) => {
-    const run = runs.find((candidate) => candidate.run_id === runId);
-    return run ? `${formatRunType(run.run_type)} ${shortID(runId)}` : `Run ${shortID(runId)}`;
-  }).join(", ");
-}
-
-function formatRunType(value) {
-  return value === "optimization" ? "Optimization Run" : value === "simulation" ? "Simulation Run" : "Run";
 }

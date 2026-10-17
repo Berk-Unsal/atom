@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-17T12:00:33.400030+00:00",
+  "objective": "A.T.O.M product capability, UX and growth audit; read-only, no implementation, no GitHub mutation",
+  "capture_note": "Captured after browser evidence collection began and before any report file was written. Tracked files are unchanged; the only untracked path is this audit directory.",
+  "baseline": {
+    "status_short": "?? scripts/product-capability-ux-growth-audit/",
+    "branch": "main",
+    "head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+    "tree": "c201db2569adba83b26a22847b23792b73b39de7",
+    "log_1": "d076397 chore: merge documentation fix and audit",
+    "version": "0.12.3",
+    "describe": "v0.12.3-7-gd076397",
+    "tracked_diff_stat": "",
+    "remotes": "origin\thttps://github.com/Berk-Unsal/atom.git (fetch)\norigin\thttps://github.com/Berk-Unsal/atom.git (push)"
+  },
+  "audited_runtime": {
+    "image": "atom:product-audit-d076397",
+    "image_id": "sha256:48c43c230a7afdaf86adf0195311c9c3b8611137dacf5bb846c54b751aff8d04",
+    "built_from": "repository Dockerfile at HEAD",
+    "url": "http://127.0.0.1:18090",
+    "api_meta_application_version": "0.12.3",
+    "api_meta_build_commit": "unknown",
+    "env": "docker-compose.yml atom service defaults (RF 2/1 concurrency, 20/min, 60 s deadline)",
+    "note": "The pre-existing atom-app container (serves 0.12.2) was left untouched."
+  },
+  "github_snapshot": {
+    "latest_release": "v0.12.3 (2026-10-16T06:36:14Z)",
+    "open_issues": [
+      76,
+      78,
+      79,
+      81,
+      82,
+      86,
+      87,
+      88,
+      89,
+      90
+    ],
+    "recent_merged_prs": [
+      96,
+      95,
+      94,
+      93,
+      92,
+      91
+    ],
+    "observation": "#76 remains open although PR #96 (explain network scores and Pareto choices) merged 2026-10-17."
+  },
+  "authoritative_sources_sha256": {
+    "AGENTS.md": "20d6fbdd441f1e0ac28c0398903f8ca407d042351dc6c1bc76a81d3417c76692",
+    "VERSION": "01a507eda916863d2c56c6d24b13985c877640445bb13e272692d67ccf33f057",
+    "README.md": "ac86a37f0df6b7b5f6122fbd9b90702d57d01d2a3b8c9cda5da5d55b632a7e56",
+    "PRODUCT.md": "13e4f0db9ddcbd62b6505155561b5b48ea02caf4f175d9431aa14ab677e4c386",
+    "CHANGELOG.md": "9bfb92693d93d20723d76abce21c2f77e759d35fdb7975c685a88d9f1ebf8f09",
+    "planning/product-compass.md": "d825f6cce8f0cf0a1726e6a0658acd095210bb63bd51e54d27cc1a3b09967e6d",
+    "planning/future_plans.md": "2e03a43646fb01609a1cf6054acbe7c79e58c093876db5acf642c74832385335",
+    "docs/features.md": "21613379e89ac9f8978b231181dc861c53554cde0f697fc7c7bd781d7ad8082c",
+    "docs/getting-started.md": "9b223f6e282abecae01c37843bc96927d051e95d7b459f0e47b2c08eef2353fb",
+    "docs/terminology.md": "51aed69d08dbf8185f9e26e45c455ac565542e14df97477ea6e7e7405df70830",
+    "docs/modeling-limits.md": "21072c0c089f149a3db1f65a36441be75c7abe69d5e848c4621462ea2ff2373d",
+    "docs/project-format.md": "8ce3b1ac6a900bcb9bc86b2548f58fa65441aa9201f2759445b066661ccd48f9",
+    "docs/doc-sources.json": "18e49e6537a5bb49e043950d9914fe8b2a8d4e3ae01c288fbff8a3dad61d6bc5",
+    "frontend-react/src/App.jsx": "7a312767445267ac1b55274b50205b12c1565812575a51c290ad00a9b8badd98",
+    "frontend-react/src/components/WorkspaceChrome.jsx": "0429f942d654a68394f83ae681a03d6263f136dcce5dc3ff6979e6e6ed4fae71",
+    "frontend-react/src/components/workspaceTools.js": "2a9b334de4bcf71d20cb79ff1c4d691c2ddf0103f2f356b87b704bbcf60fcf75",
+    "frontend-react/src/components/ControlPanel.jsx": "0641a9103555182b63552524a236f3124197b4e1c057430ae7012b52759c8c94",
+    "frontend-react/src/components/MapCanvas.jsx": "3602ede5c561617e96bf81784f1e4b2f2c5f4476d81a3e123a89d79d9ffb06d2",
+    "frontend-react/src/components/ScenarioPanel.jsx": "0c1b12b7d3d75729cad644a1be6246d6de13919746c2b5d1f49fdf4789c5472e",
+    "frontend-react/src/components/ApplySolutionDialog.jsx": "f12e0a6592d6aceccfcf531e16b27f27f9ab769d303ea85e7b6245a0926d131b",
+    "frontend-react/src/components/RunHistoryPanel.jsx": "6fa0fc18a2704aed86cf4dde4ba33a63a3bf28769f986d8126e197800c84ace1",
+    "frontend-react/src/components/InventoryPanel.jsx": "c2a994bededc6f7725a9e01b7efcdf1560b7bf0232589d3fb7d4fcccd3bec32b",
+    "frontend-react/src/components/MeasurementValidationPanel.jsx": "b2f2227432ba6a2d161a38f03e558d38fac1f51558d210c08a668ecf13a59283",
+    "frontend-react/src/features/reports/ReportFeature.jsx": "fae5515f030bd132983dca2e7863e6d502cebbe3b00a21b0f9d90338010e8a20",
+    "frontend-react/src/hooks/useReportWorkflow.js": "469fe954094393a0e6dec2830f089b3795043310cf09c3033017e76ebe3be4a2",
+    "frontend-react/src/utils/reportArtifact.js": "50e2e5ef51715080b94584bac5a40f7816e69e7cadd77e9af0cb9c724216d4b3",
+    "frontend-react/src/utils/reportExport.js": "5afe6ee94898179fb0222312c641a0c0c62100aa5cd260f028be43f7a36480c3",
+    "frontend-react/src/utils/rfRecoveryMessage.js": "c8205501736db54da001ee3ae77bdafec8e3936ebbf9b11b95115cc05322f0aa",
+    "frontend-react/src/styles.css": "e12229896752ee07a2aad73487dd7a3c1024c4ad38e6bcca5b1b022f8fcb2a48"
+  },
+  "allowed_writes": [
+    "docs/product-capability-ux-growth-audit.md",
+    "docs/product-capability-ux-growth-audit.json",
+    "docs/doc-sources.json (two catalog entries for the files above only)",
+    "scripts/product-capability-ux-growth-audit/**"
+  ],
+  "forbidden": [
+    "product feature implementation",
+    "screen redesign",
+    "RF code or scoring changes",
+    "API or persistence changes",
+    "VERSION or CHANGELOG changes",
+    "GitHub issue/PR/release mutation"
+  ]
+}

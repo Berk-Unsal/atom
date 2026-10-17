@@ -1,0 +1,700 @@
+{
+  "audit": "A.T.O.M product capability, UX and growth audit",
+  "date": "2026-10-17",
+  "head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+  "version": "0.12.3",
+  "audit_lock_sha256": "c7f03dd0a9eeb935054d82dd6ba7f10402e6b35d0bb87f4f35bcc0eaf9496d9c",
+  "maturity_scale": [
+    "COMPLETE",
+    "FUNCTIONAL BUT ROUGH",
+    "PARTIAL",
+    "HIDDEN / POORLY EXPOSED",
+    "EXPERIMENTAL",
+    "BLOCKED"
+  ],
+  "maturity_counts": {
+    "COMPLETE": 6,
+    "FUNCTIONAL BUT ROUGH": 23,
+    "HIDDEN / POORLY EXPOSED": 5,
+    "PARTIAL": 1,
+    "EXPERIMENTAL": 3
+  },
+  "capabilities": [
+    {
+      "id": "C01",
+      "capability": "Project lifecycle",
+      "ui_entry_point": "Command bar → project menu",
+      "purpose": "Hold independent planning workspaces",
+      "current_workflow": "Open menu → New / Duplicate / Delete / rename / switch",
+      "backend_dependency": "none",
+      "persistence_behavior": "IndexedDB",
+      "result_output": "Active project",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "COMPLETE",
+      "limitations": "Menu has no Escape close",
+      "evidence": [
+        "frontend-react/src/components/WorkspaceChrome.jsx:206-330",
+        "traces/workflow-walk.json:project-menu-aria"
+      ]
+    },
+    {
+      "id": "C02",
+      "capability": "Working-draft autosave and restore",
+      "ui_entry_point": "Automatic",
+      "purpose": "Never lose inputs",
+      "current_workflow": "Edit anything; reload restores draft inputs",
+      "backend_dependency": "GET /api/meta, /api/towers on load",
+      "persistence_behavior": "IndexedDB draft",
+      "result_output": "Restored inputs (not results)",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Results are not restored: draft reload shows 'Run needed'; saved Version reload shows 'Ready · UNAVAILABLE · Run unavailable'",
+      "evidence": [
+        "traces/workflow-walk.json:after-reload",
+        "traces/tools-walk.json:reload-after-save",
+        "screenshots/48-reload-after-save.jpg"
+      ]
+    },
+    {
+      "id": "C03",
+      "capability": "Scenario Versions",
+      "ui_entry_point": "Project menu 'Save version'; Plan → Scenarios",
+      "purpose": "Freeze an immutable planning claim",
+      "current_workflow": "Save version (optional change summary) → named Scenario + Version",
+      "backend_dependency": "none",
+      "persistence_behavior": "IndexedDB immutable revisions",
+      "result_output": "Scenario/Version identity in header",
+      "user_value": "HIGH",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Auto-name 'Sector plan 1' persists after switching to Network; header 'Version 1 Unsaved' vs Results 'No saved Version'; accessible name 'Save current' ≠ visible 'Save version'",
+      "evidence": [
+        "screenshots/51-solutions-pareto.jpg",
+        "frontend-react/src/components/WorkspaceChrome.jsx:326-330",
+        "frontend-react/src/components/ScenarioPanel.jsx:172-183"
+      ]
+    },
+    {
+      "id": "C04",
+      "capability": "Scenario branch, duplicate and delete-undo",
+      "ui_entry_point": "Plan → Scenarios",
+      "purpose": "Explore alternatives without losing history",
+      "current_workflow": "Select Version → branch; delete → Undo",
+      "backend_dependency": "none",
+      "persistence_behavior": "IndexedDB",
+      "result_output": "New Scenario/branch",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Lives in Plan stage, far from Review where alternatives are judged",
+      "evidence": [
+        "frontend-react/src/components/ScenarioPanel.jsx:125-132"
+      ]
+    },
+    {
+      "id": "C05",
+      "capability": "Scenario/Version input diff",
+      "ui_entry_point": "Plan → Scenarios → collapsed 'Compare Scenarios and Versions'",
+      "purpose": "See exactly which inputs changed",
+      "current_workflow": "Expand disclosure → pick A/B Scenario and Version",
+      "backend_dependency": "none",
+      "persistence_behavior": "Reads stored revisions",
+      "result_output": "Field-level diff",
+      "user_value": "MEDIUM",
+      "discoverability": "hidden",
+      "maturity": "HIDDEN / POORLY EXPOSED",
+      "limitations": "Separate from KPI comparison in Results; collapsed by default",
+      "evidence": [
+        "frontend-react/src/components/ScenarioPanel.jsx:259-262",
+        "frontend-react/src/domain/scenarioDiff.js"
+      ]
+    },
+    {
+      "id": "C06",
+      "capability": "Two-scenario KPI comparison and A/B map switch",
+      "ui_entry_point": "Review → Results → Compare (only without a network result)",
+      "purpose": "Compare two saved claims",
+      "current_workflow": "Save two Versions → Results → Compare → choose A/B → Show A / Show B",
+      "backend_dependency": "none (cached layers)",
+      "persistence_behavior": "Scenario summaries",
+      "result_output": "KPI delta table; map switch",
+      "user_value": "HIGH",
+      "discoverability": "effectively undiscoverable in Network mode",
+      "maturity": "HIDDEN / POORLY EXPOSED",
+      "limitations": "Compare tab shows 'Baseline vs Recommended' whenever a network result exists, so scenario comparison is unreachable in the main network workflow",
+      "evidence": [
+        "frontend-react/src/App.jsx:4545-4549",
+        "frontend-react/src/App.jsx:4583-4615",
+        "screenshots/53-compare-tab.jpg"
+      ]
+    },
+    {
+      "id": "C07",
+      "capability": "Portable project import/export (file v3)",
+      "ui_entry_point": "Project menu → Import / Export",
+      "purpose": "Move or back up a project",
+      "current_workflow": "Export downloads JSON; Import validates bounded file",
+      "backend_dependency": "none",
+      "persistence_behavior": "File; excludes Run History and coverage surfaces",
+      "result_output": "<project-slug>.atom-project.json (~609 KB for one saved Version)",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Filename has no date/Version (repeat exports collide); menu note is dense",
+      "evidence": [
+        "frontend-react/src/components/WorkspaceChrome.jsx:233-248",
+        "traces/sample-export-summary.json"
+      ]
+    },
+    {
+      "id": "C08",
+      "capability": "Cell inventory search, filter and scope",
+      "ui_entry_point": "Plan → Inventory",
+      "purpose": "Find cells among ~450 dataset records",
+      "current_workflow": "Search by Cell/record ID; filter by technology; scope Network / Map area",
+      "backend_dependency": "GET /api/towers",
+      "persistence_behavior": "Draft",
+      "result_output": "Cell list",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "COMPLETE",
+      "limitations": "Empty search state until a query is typed",
+      "evidence": [
+        "screenshots/85-inventory-editor.jpg",
+        "traces/tools-walk.json:tool:Inventory"
+      ]
+    },
+    {
+      "id": "C09",
+      "capability": "Cell placement and per-cell RF profile editing",
+      "ui_entry_point": "Inventory → Place new Cell / cell editor; draggable marker",
+      "purpose": "Model a heterogeneous plan",
+      "current_workflow": "Place or select cell → edit position, carrier, power, antenna, receiver fields",
+      "backend_dependency": "none until run",
+      "persistence_behavior": "Draft and Versions",
+      "result_output": "Edited cell profile",
+      "user_value": "HIGH",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Long single-cell editor (1080 px scroll); no bulk edit; no undo for edits",
+      "evidence": [
+        "traces/defaults-walk.json:inventory-editor"
+      ]
+    },
+    {
+      "id": "C10",
+      "capability": "Inventory import (CSV/GeoJSON)",
+      "ui_entry_point": "Inventory → Import",
+      "purpose": "Bring a bounded external cell list",
+      "current_workflow": "Import file → validation → cells added",
+      "backend_dependency": "none",
+      "persistence_behavior": "Draft",
+      "result_output": "Imported cells",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Not exercised in browser in this audit; relies on unit coverage",
+      "evidence": [
+        "frontend-react/src/utils/inventoryImport.js",
+        "frontend-react/src/utils/inventoryImport.test.js"
+      ]
+    },
+    {
+      "id": "C11",
+      "capability": "Plan setup (mode, technology, model, TX power)",
+      "ui_entry_point": "Plan → Setup (opens by default)",
+      "purpose": "Define the plan defaults",
+      "current_workflow": "Choose Single/Network, 4G/5G/6G research, propagation model, TX power",
+      "backend_dependency": "none until run",
+      "persistence_behavior": "Draft",
+      "result_output": "Command-bar RF context",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Invalid value shows no inline error/aria-invalid; map prompt misdirects to Inventory",
+      "evidence": [
+        "screenshots/65-invalid-tx-power.jpg",
+        "traces/states-walk.json:invalid-tx"
+      ]
+    },
+    {
+      "id": "C12",
+      "capability": "Network cell selection (click or drawn area)",
+      "ui_entry_point": "Map toolbar → Select cells / Draw selection area",
+      "purpose": "Choose 2–8 cells",
+      "current_workflow": "Select cells → click markers or draw polygon → Finish",
+      "backend_dependency": "none",
+      "persistence_behavior": "Draft",
+      "result_output": "Ordered selection with markers",
+      "user_value": "HIGH",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Area selection silently keeps 'nearest 8' of 272 and says 'towers'; Map key overlay swallows vertex clicks",
+      "evidence": [
+        "frontend-react/src/App.jsx:2034-2058",
+        "screenshots/11-network-evaluated.jpg"
+      ]
+    },
+    {
+      "id": "C13",
+      "capability": "Single-sector propagation",
+      "ui_entry_point": "Command bar → Run Sector",
+      "purpose": "See rays/coverage of one sector",
+      "current_workflow": "Pre-selected cell → Run Sector",
+      "backend_dependency": "POST /api/analyze-sector",
+      "persistence_behavior": "Run history record; layers not retained",
+      "result_output": "Rays, RF metrics, coverage gaps",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Map does not fit to result; default result is 99.2% blocked (4G: 84.2%) without interpretation",
+      "evidence": [
+        "screenshots/02-single-run-result-1440-light.jpg",
+        "screenshots/04-results-single-1440-light.jpg",
+        "traces/defaults-walk.json"
+      ]
+    },
+    {
+      "id": "C14",
+      "capability": "Single-sector azimuth auto-optimization",
+      "ui_entry_point": "Simulate → Propagation → Auto-Optimize Sector",
+      "purpose": "Find a better azimuth",
+      "current_workflow": "Open Propagation → Auto-Optimize Sector",
+      "backend_dependency": "POST /api/optimize-azimuth + analyze-sector",
+      "persistence_behavior": "Run history",
+      "result_output": "Optimized azimuth, optimizer breakdown",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Action lives in a different stage from the command-bar run",
+      "evidence": [
+        "frontend-react/src/components/ControlPanel.jsx:191-199",
+        "traces/workflow-walk.json:single-optimize"
+      ]
+    },
+    {
+      "id": "C15",
+      "capability": "Network evaluation (2–8 cells)",
+      "ui_entry_point": "Command bar → Evaluate Network",
+      "purpose": "Score a multi-cell plan",
+      "current_workflow": "Select ≥2 cells → Evaluate Network",
+      "backend_dependency": "POST /api/evaluate-network + 8× /api/simulate",
+      "persistence_behavior": "Run history",
+      "result_output": "Score, coverage, demand, overlap",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "COMPLETE",
+      "limitations": "Results not fitted on map",
+      "evidence": [
+        "traces/workflow-walk.json:network-evaluate"
+      ]
+    },
+    {
+      "id": "C16",
+      "capability": "Network azimuth optimization with goals, constraints and Pareto search",
+      "ui_entry_point": "Simulate → Propagation → Optimize Network; goals under Advanced analysis",
+      "purpose": "Coordinate azimuths against explained objectives",
+      "current_workflow": "Propagation → (Advanced: priorities/constraints) → Optimize Network → live progress",
+      "backend_dependency": "POST /api/optimize-network + simulate fan-out",
+      "persistence_behavior": "Run history; recommended azimuths written into draft",
+      "result_output": "Score, impact deltas, 25 non-dominated solutions",
+      "user_value": "HIGH",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Goals hidden in 'Advanced analysis'; action not in command bar; strong progress feedback",
+      "evidence": [
+        "frontend-react/src/App.jsx:3729-3745",
+        "screenshots/49-optimizing-feedback.jpg"
+      ]
+    },
+    {
+      "id": "C17",
+      "capability": "Pareto alternative inspection and apply",
+      "ui_entry_point": "Review → Results → Solutions → Inspect / Apply solution…",
+      "purpose": "Adopt a different trade-off",
+      "current_workflow": "Explore solutions → Inspect → Apply solution… → new Version or branch",
+      "backend_dependency": "none (re-run needed)",
+      "persistence_behavior": "Creates Version/branch",
+      "result_output": "Applied plan (stale until run)",
+      "user_value": "HIGH",
+      "discoverability": "learnable",
+      "maturity": "PARTIAL",
+      "limitations": "Apply is disabled when the optimization ran on an unsaved draft (the default path); no recovery instruction; 25 near-identical cards, no trade-off chart",
+      "evidence": [
+        "frontend-react/src/components/ApplySolutionDialog.jsx:13-60",
+        "screenshots/55-apply-solution-dialog.jpg",
+        "screenshots/52-solutions-bottom.jpg"
+      ]
+    },
+    {
+      "id": "C18",
+      "capability": "Per-cell explanation of optimized change",
+      "ui_entry_point": "Solutions → Explain",
+      "purpose": "Understand why a cell moved",
+      "current_workflow": "Inspect solution → Explain on a cell",
+      "backend_dependency": "POST /api/explain-network-cell",
+      "persistence_behavior": "Not retained",
+      "result_output": "Marginal effect explanation",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Only reachable deep inside Solutions",
+      "evidence": [
+        "screenshots/55-apply-solution-dialog.jpg"
+      ]
+    },
+    {
+      "id": "C19",
+      "capability": "Interference and radio quality (RSRP/SINR/RSRQ)",
+      "ui_entry_point": "Analyze → Interference → Analyze Interference",
+      "purpose": "Estimate co-channel quality",
+      "current_workflow": "Network mode ≥2 cells → bandwidth/load/reuse → Analyze",
+      "backend_dependency": "POST /api/interference",
+      "persistence_behavior": "Not in run history",
+      "result_output": "Map surface (metric selector) + Results → Interference",
+      "user_value": "HIGH",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Tool shows no summary or next step after analysis; command-bar CURRENT chip disappears",
+      "evidence": [
+        "screenshots/19-interference-result.jpg",
+        "traces/workflow-walk.json:interference"
+      ]
+    },
+    {
+      "id": "C20",
+      "capability": "Candidate cell recommendations",
+      "ui_entry_point": "Review → Results → 5th tab 'Candidates'",
+      "purpose": "Find one additional cell from dataset candidates",
+      "current_workflow": "Network mode, 2–5 cells, drawn area → Candidates → Recommend candidate cells → Apply as scenario",
+      "backend_dependency": "POST /api/recommend-sites",
+      "persistence_behavior": "Applies as new Scenario",
+      "result_output": "Up to 5 ranked options with reasons",
+      "user_value": "HIGH",
+      "discoverability": "effectively undiscoverable",
+      "maturity": "HIDDEN / POORLY EXPOSED",
+      "limitations": "Tab is replaced by 'Solutions' after a Pareto optimization; area drawing auto-selects up to 8 while recommendation requires 2–5",
+      "evidence": [
+        "frontend-react/src/App.jsx:4449",
+        "frontend-react/src/App.jsx:4565-4580",
+        "frontend-react/src/App.jsx:2071-2075",
+        "frontend-react/src/App.jsx:4617-4637"
+      ]
+    },
+    {
+      "id": "C21",
+      "capability": "Received-signal surface, contours and GIS export",
+      "ui_entry_point": "Simulate → Signal surface; map 'Signal' toggle",
+      "purpose": "Raster view and GIS interchange",
+      "current_workflow": "Run → Signal toggle (or Generate raster + contours) → GeoTIFF / Contours / CSV",
+      "backend_dependency": "POST /api/coverage-surface",
+      "persistence_behavior": "Not in project export",
+      "result_output": "Raster overlay, isolines, files",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Single-cell only by design (stated)",
+      "evidence": [
+        "traces/tools-walk.json:tool:Signal surface",
+        "frontend-react/e2e/real-backend.spec.js"
+      ]
+    },
+    {
+      "id": "C22",
+      "capability": "Batch experiments (≤64 combinations)",
+      "ui_entry_point": "Simulate → Experiments",
+      "purpose": "Sweep RF parameters",
+      "current_workflow": "Comma-separated values per dimension → Queue matrix → table + Pareto SVG",
+      "backend_dependency": "POST /api/processes/batch-experiment/execution, /api/jobs/:id",
+      "persistence_behavior": "Experiment definition exportable",
+      "result_output": "Run table, Pareto chart",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Free-text comma lists; operates on the active single cell without saying so in Network mode",
+      "evidence": [
+        "frontend-react/src/components/ExperimentPanel.jsx:115-128",
+        "traces/tools-walk.json:tool:Experiments"
+      ]
+    },
+    {
+      "id": "C23",
+      "capability": "2.5D path profile diagnostic",
+      "ui_entry_point": "Propagation → Advanced analysis; RF Diagnostics → Open vertical path profile",
+      "purpose": "Inspect terrain/building/Fresnel along one path",
+      "current_workflow": "Pick receiver point → analyze",
+      "backend_dependency": "POST /api/path-profile",
+      "persistence_behavior": "Not retained",
+      "result_output": "Cross-section and loss ledger",
+      "user_value": "MEDIUM",
+      "discoverability": "hidden",
+      "maturity": "HIDDEN / POORLY EXPOSED",
+      "limitations": "Nested under a disclosure labeled 'Advanced analysis'",
+      "evidence": [
+        "frontend-react/src/App.jsx:3729-3760"
+      ]
+    },
+    {
+      "id": "C24",
+      "capability": "Building entry estimate",
+      "ui_entry_point": "Analyze → Building entry",
+      "purpose": "Facade-entry service estimate (not indoor coverage)",
+      "current_workflow": "Run building-entry estimate",
+      "backend_dependency": "POST /api/building-entry-analysis",
+      "persistence_behavior": "Not retained",
+      "result_output": "Per-building estimates",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Clear boundary copy; not exercised end-to-end here",
+      "evidence": [
+        "traces/tools-walk.json:tool:Building entry"
+      ]
+    },
+    {
+      "id": "C25",
+      "capability": "Research references (sub-THz atmospheric, P.1411, material, specular reflection)",
+      "ui_entry_point": "Propagation and RF Diagnostics → Research / reference",
+      "purpose": "Isolated research evidence",
+      "current_workflow": "Expand Research disclosure → pick endpoint → run reference",
+      "backend_dependency": "POST /api/sub-thz-*",
+      "persistence_behavior": "Not retained",
+      "result_output": "Reference ledgers",
+      "user_value": "LOW",
+      "discoverability": "hidden",
+      "maturity": "EXPERIMENTAL",
+      "limitations": "Correctly isolated; adds disclosure depth",
+      "evidence": [
+        "frontend-react/src/App.jsx:3762-3780"
+      ]
+    },
+    {
+      "id": "C26",
+      "capability": "Campaign-file RF diagnostics",
+      "ui_entry_point": "Analyze → RF Diagnostics → Research / reference",
+      "purpose": "Validate versioned campaign evidence",
+      "current_workflow": "Load campaign file → split strategy → Run RF diagnostics",
+      "backend_dependency": "POST /api/sub-thz-validation",
+      "persistence_behavior": "Not retained",
+      "result_output": "Residual diagnostics",
+      "user_value": "LOW",
+      "discoverability": "hidden",
+      "maturity": "EXPERIMENTAL",
+      "limitations": "Shares 'measurement validation' wording with the CSV workflow in Data",
+      "evidence": [
+        "frontend-react/src/components/MeasurementValidationPanel.jsx:83-120"
+      ]
+    },
+    {
+      "id": "C27",
+      "capability": "Measurement validation (CSV) and global bias calibration",
+      "ui_entry_point": "Review → Data → Research / reference → Measurement Validation",
+      "purpose": "Compare predictions with measured RSRP; optionally apply a correction",
+      "current_workflow": "Import CSV (≤5,000) → Evaluate residuals → explicit apply",
+      "backend_dependency": "POST /api/measurements/evaluate",
+      "persistence_behavior": "Calibration profile stored with project",
+      "result_output": "Residual map, MAE/RMSE/bias, holdout evidence",
+      "user_value": "HIGH",
+      "discoverability": "effectively undiscoverable",
+      "maturity": "HIDDEN / POORLY EXPOSED",
+      "limitations": "A documented first-class feature that changes canonical RF is filed under a 'Research' disclosure in Data",
+      "evidence": [
+        "frontend-react/src/App.jsx:5554-5575",
+        "docs/features.md (Measurement Validation section)"
+      ]
+    },
+    {
+      "id": "C28",
+      "capability": "Dataset confidence and pack switching",
+      "ui_entry_point": "Review → Data",
+      "purpose": "Know data provenance and quality",
+      "current_workflow": "Open Data → Demand surface counts → Dataset details → Activate pack",
+      "backend_dependency": "GET /api/datasets, POST /api/datasets/switch",
+      "persistence_behavior": "Dataset ref in project",
+      "result_output": "QA status, counts, provenance",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Only one pack installed; 'Pack QA status good' lowercase",
+      "evidence": [
+        "screenshots/40-data.jpg"
+      ]
+    },
+    {
+      "id": "C29",
+      "capability": "Run history",
+      "ui_entry_point": "Review → Run history",
+      "purpose": "Durable record of runs",
+      "current_workflow": "Filter by scope/type/status → open run → rerun or Generate report",
+      "backend_dependency": "none",
+      "persistence_behavior": "IndexedDB records; rays/overlays not retained",
+      "result_output": "Run list",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Runs labeled by hash only; no headline metric or difference",
+      "evidence": [
+        "traces/workflow-walk.json:history-aria"
+      ]
+    },
+    {
+      "id": "C30",
+      "capability": "Planning reports (PDF/Print, Markdown, stored Reports)",
+      "ui_entry_point": "Review → Report; Run history → Generate report",
+      "purpose": "Share evidence with someone not using A.T.O.M",
+      "current_workflow": "Report → PDF / Print or Markdown (also stores a Report) → download/regenerate",
+      "backend_dependency": "none",
+      "persistence_behavior": "Report artifacts in IndexedDB",
+      "result_output": "Markdown/HTML with tables and SVG map",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "UUID filenames; duplicated 'RF Result' sections; ~600 lines inline SVG; contradictory lineage ('Version 1 · Runs: None')",
+      "evidence": [
+        "traces/sample-report.md",
+        "frontend-react/src/utils/reportArtifact.js:20-33",
+        "screenshots/47-report-after-markdown.jpg"
+      ]
+    },
+    {
+      "id": "C31",
+      "capability": "Contextual Inspector",
+      "ui_entry_point": "Click map objects (rays, gaps, samples, residuals, buildings)",
+      "purpose": "Explain one spatial result",
+      "current_workflow": "Click object → Inspector drawer",
+      "backend_dependency": "GET /api/spatial-evidence/buildings/:id (buildings)",
+      "persistence_behavior": "Not retained",
+      "result_output": "Per-object detail",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Result layers are canvas; keyboard users cannot reach them",
+      "evidence": [
+        "traces/states-walk.json:marker-keyboard"
+      ]
+    },
+    {
+      "id": "C32",
+      "capability": "Map layers, basemap and appearance",
+      "ui_entry_point": "Map → Layers menu",
+      "purpose": "Control map context",
+      "current_workflow": "Layers → Appearance (Light/Dark/System), Basemap, Viewport buildings",
+      "backend_dependency": "Tile providers; GET /api/collections/buildings/items",
+      "persistence_behavior": "Preference",
+      "result_output": "Map styling",
+      "user_value": "MEDIUM",
+      "discoverability": "learnable",
+      "maturity": "COMPLETE",
+      "limitations": "Appearance is inside 'Layers'",
+      "evidence": [
+        "screenshots/82-layers-menu.jpg"
+      ]
+    },
+    {
+      "id": "C33",
+      "capability": "Map key and result-source chip",
+      "ui_entry_point": "Map bottom-right",
+      "purpose": "Decode map symbology",
+      "current_workflow": "Always visible, collapsible",
+      "backend_dependency": "none",
+      "persistence_behavior": "Preference",
+      "result_output": "Legend",
+      "user_value": "MEDIUM",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Clips SINR section at 1440×900; truncates 'Working dr…'; intercepts drawing clicks",
+      "evidence": [
+        "screenshots/19-interference-result.jpg"
+      ]
+    },
+    {
+      "id": "C34",
+      "capability": "Result lineage (CURRENT / STALE / UNAVAILABLE)",
+      "ui_entry_point": "Command bar chip, Results context card, legend",
+      "purpose": "Prevent stale results being read as current",
+      "current_workflow": "Automatic",
+      "backend_dependency": "none",
+      "persistence_behavior": "Run/Version fingerprints",
+      "result_output": "Freshness labels and rerun prompts",
+      "user_value": "HIGH",
+      "discoverability": "obvious",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Mode switch marks results 'out of date'; hash-heavy copy; reload yields 'Ready · UNAVAILABLE'",
+      "evidence": [
+        "screenshots/09-drawing-polygon.jpg",
+        "screenshots/48-reload-after-save.jpg"
+      ]
+    },
+    {
+      "id": "C35",
+      "capability": "5G Core Lab overlay",
+      "ui_entry_point": "Analyze → 5G Core",
+      "purpose": "Optional local core-network lab overlay",
+      "current_workflow": "Enable overlay → connect sidecar",
+      "backend_dependency": "/api/core/* via adapter",
+      "persistence_behavior": "Not retained",
+      "result_output": "Topology overlay",
+      "user_value": "LOW",
+      "discoverability": "learnable",
+      "maturity": "EXPERIMENTAL",
+      "limitations": "Requires separate sidecar; not exercised",
+      "evidence": [
+        "traces/tools-walk.json:tool:5G Core"
+      ]
+    },
+    {
+      "id": "C36",
+      "capability": "Headless/API workflows (OpenAPI, batch process, CLI runner)",
+      "ui_entry_point": "No UI (docs)",
+      "purpose": "Automation and reproducibility",
+      "current_workflow": "HTTP API / go run ./cmd/run-experiment",
+      "backend_dependency": "Full API",
+      "persistence_behavior": "n/a",
+      "result_output": "JSON/GeoJSON",
+      "user_value": "MEDIUM",
+      "discoverability": "documentation only",
+      "maturity": "COMPLETE",
+      "limitations": "Developer audience",
+      "evidence": [
+        "docs/openapi.yaml",
+        "docs/api.md"
+      ]
+    },
+    {
+      "id": "C37",
+      "capability": "Dataset Pack Studio (CLI)",
+      "ui_entry_point": "No UI (docs)",
+      "purpose": "Build validated region packs",
+      "current_workflow": "Python CLI preview/build",
+      "backend_dependency": "Offline",
+      "persistence_behavior": "Pack manifest",
+      "result_output": "Validated pack",
+      "user_value": "LOW",
+      "discoverability": "documentation only",
+      "maturity": "COMPLETE",
+      "limitations": "Not in-app by design",
+      "evidence": [
+        "docs/dataset-pack-studio.md"
+      ]
+    },
+    {
+      "id": "C38",
+      "capability": "Building features query/export",
+      "ui_entry_point": "Layers → Viewport buildings; API collections",
+      "purpose": "Inspect building geometry/material in view",
+      "current_workflow": "Toggle overlay at zoom ≥12",
+      "backend_dependency": "GET /api/collections/buildings/items",
+      "persistence_behavior": "Not retained",
+      "result_output": "Tinted overlay; CSV/WKT via API",
+      "user_value": "LOW",
+      "discoverability": "learnable",
+      "maturity": "FUNCTIONAL BUT ROUGH",
+      "limitations": "Export only via API",
+      "evidence": [
+        "frontend-react/src/components/WorkspaceChrome.jsx:693"
+      ]
+    }
+  ]
+}

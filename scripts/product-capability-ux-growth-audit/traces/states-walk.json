@@ -1,0 +1,306 @@
+{
+  "base": "http://127.0.0.1:18090",
+  "log": [
+    {
+      "step": "backend-unavailable",
+      "primaryDisabled": true,
+      "alerts": [
+        "Action needed",
+        "Failed to fetch"
+      ]
+    },
+    {
+      "step": "towers-500",
+      "alerts": [
+        "Action needed",
+        "dataset load failed"
+      ]
+    },
+    {
+      "step": "62-rf-429",
+      "status": "Action needed",
+      "primary": "Run Sector",
+      "alerts": [
+        "RF request budget reached. Try again in about 17 seconds."
+      ],
+      "drawerError": [
+        "RF request budget reached. Try again in about 17 seconds."
+      ]
+    },
+    {
+      "step": "63-rf-500",
+      "status": "Action needed",
+      "primary": "Run Sector",
+      "alerts": [
+        "internal error"
+      ],
+      "drawerError": [
+        "internal error"
+      ]
+    },
+    {
+      "step": "64-rf-slow",
+      "status": "Simulating",
+      "primary": "Running...",
+      "alerts": [],
+      "drawerError": []
+    },
+    {
+      "step": "invalid-tx",
+      "value": "99",
+      "primary": "Resolve setup issues",
+      "primaryDisabled": true,
+      "invalid": null,
+      "text": "Setup\n\nMode, technology, power, and cell selection\n\nPlanning\n\nConfigure the current plan; run it from the command bar.\n\nPlanning mode\nSingle\none sector\nNetwork\n0 selected\nNetwork technology\n4G LTE\n2.6 GHz\n5G mmWave\n28 GHz\n6G research\n140 GHz\nPropagation model\nUrban short-range (UMa)\nLegacy FSPL + walls\nResearch sub-THz\n\nUrban is the default at 2.6/28 GHz; 140 GHz is research-only.\n\nConducted TX power\ndBm\nValid range: 0–60 dBm\nAdvanced model details\n\nModel applicability and link-budget assumptions for the selected profile."
+    },
+    {
+      "step": "matrix-1440x900-light",
+      "docW": 1440,
+      "winW": 1440,
+      "tabs": {
+        "scrollW": 403,
+        "clientW": 335
+      }
+    },
+    {
+      "step": "matrix-1440x900-dark",
+      "docW": 1440,
+      "winW": 1440,
+      "tabs": {
+        "scrollW": 403,
+        "clientW": 335
+      }
+    },
+    {
+      "step": "matrix-1280x800-light",
+      "docW": 1280,
+      "winW": 1280,
+      "tabs": {
+        "scrollW": 403,
+        "clientW": 321
+      }
+    },
+    {
+      "step": "matrix-1280x800-dark",
+      "docW": 1280,
+      "winW": 1280,
+      "tabs": {
+        "scrollW": 403,
+        "clientW": 321
+      }
+    },
+    {
+      "step": "matrix-1024x768-light",
+      "docW": 1024,
+      "winW": 1024,
+      "tabs": {
+        "scrollW": 403,
+        "clientW": 295
+      }
+    },
+    {
+      "step": "matrix-1024x768-dark",
+      "docW": 1024,
+      "winW": 1024,
+      "tabs": {
+        "scrollW": 403,
+        "clientW": 295
+      }
+    },
+    {
+      "step": "tab-stops",
+      "stops": [
+        {
+          "tag": "button",
+          "name": "Simulate workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Analyze workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Review workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Inspect",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Select cells",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Fit selected cells",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Map view options",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Map layers",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "div",
+          "name": "+\n−\n Leaflet | © Stadia Maps © OpenMapTi",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "div",
+          "name": "",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "Zoom in",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "Zoom out",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "Leaflet",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "Stadia Maps",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "OpenMapTiles",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "OpenStreetMap",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Map key",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "body",
+          "name": "Skip to planning map\nA.T.O.M\nTelecom pla",
+          "outline": "none 3px",
+          "boxShadow": false
+        },
+        {
+          "tag": "a",
+          "name": "Skip to planning map",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Open project menu",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "summary",
+          "name": "Workspace: Ankara Plan, Working draft, No saved Version, Unsaved",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "summary",
+          "name": "More RF context",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Run Sector",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Plan workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Simulate workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Analyze workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Review workspace",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Inspect",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Select cells",
+          "outline": "solid 2px",
+          "boxShadow": false
+        },
+        {
+          "tag": "button",
+          "name": "Fit selected cells",
+          "outline": "solid 2px",
+          "boxShadow": false
+        }
+      ]
+    },
+    {
+      "step": "project-menu-escape",
+      "stillOpen": 1,
+      "triggerLabel": "true"
+    },
+    {
+      "step": "marker-keyboard",
+      "focusableMarkers": 1,
+      "canvasPresent": 1
+    }
+  ]
+}

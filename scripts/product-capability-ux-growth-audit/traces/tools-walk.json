@@ -1,0 +1,204 @@
+{
+  "base": "http://127.0.0.1:18090",
+  "log": [
+    {
+      "step": "tool:Inventory",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Inventory\":\n  - heading \"Inventory\" [level=2]\n  - paragraph: Local cells, map placement, imports, and per-cell RF profiles\n  - button \"Close tool drawer\"\n  - region \"Cell inventory\":\n    - heading \"Cell Inventory\" [level=2]\n    - button \"Place new Cell\"\n    - button \"Import\"\n    - group \"Inventory scope\":\n      - button \"Network 0\"\n      - button \"Map area —\"\n      - button \"Search / Filter\" [pressed]\n    - region \"Search / Filter\":\n      - heading \"Search / Filter\" [level=3]\n      - paragraph: Search the loaded inventory by Cell ID or record ID; technology uses the resolved Cell profile.\n      - textbox \"Search by Cell ID or record ID\":\n        - /placeholder: Enter a Cell ID\n      - text: Technology\n      - combobox \"Filter by technology\":\n        - option \"All technologies\" [selected]\n        - option \"4G LTE\"\n        - option \"5G mmWave\"\n        - option \"6G research profile (140 GHz)\"\n      - heading \"Search the inventory\" [level=4]\n      - paragraph: Enter a Cell ID or choose a filter."
+    },
+    {
+      "step": "tool:Scenarios",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Scenarios\":\n  - heading \"Scenarios\" [level=2]\n  - paragraph: Saved planning hypotheses, Versions, lineage, and branches\n  - button \"Close tool drawer\"\n  - region \"Scenarios\":\n    - heading \"Active Scenario\" [level=3]\n    - paragraph: RF compute reads the working draft; saved Versions keep their original inputs.\n    - status: Working draft · No saved Version\n    - strong: Working draft\n    - term: Latest saved Version\n    - definition: None\n    - term: Plan\n    - definition: Current plan\n    - term: RF profile\n    - definition: Default\n    - heading \"Save Version\" [level=3]\n    - paragraph: This working draft differs from the saved Scenario input.\n    - textbox \"Version change summary\":\n      - /placeholder: Change summary (optional)\n    - button \"Save Version\":\n      - img\n      - text: Save Version\n    - heading \"Scenarios\" [level=3]\n    - paragraph: 0 saved Scenarios\n    - status:\n      - strong: No saved Scenarios yet\n      - paragraph: Save a Version to create the first named planning Scenario.\n    - group: Scenario details / Provenance"
+    },
+    {
+      "step": "tool:Experiments",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Experiments\":\n  - heading \"Experiments\" [level=2]\n  - paragraph: Queued parameter sweeps, fingerprints, and Pareto comparison\n  - button \"Close tool drawer\"\n  - region \"Experiments\":\n    - img\n    - heading \"Scenario matrix\" [level=3]\n    - paragraph: Compare the active plan across selected RF parameter values.\n    - status: Idle\n    - text: Experiment name\n    - textbox \"Experiment name\": Planning matrix\n    - paragraph: Add one or more comma-separated sweep values. Units are shown by each field. Leave a dimension blank to inherit its active plan value.\n    - text: Frequency GHz\n    - textbox \"Frequency GHz\":\n      - /placeholder: Leave blank\n    - text: Power dBm\n    - textbox \"Power dBm\":\n      - /placeholder: Leave blank\n    - text: Beam width °\n    - textbox \"Beam width °\":\n      - /placeholder: Leave blank\n    - text: Azimuth °\n    - textbox \"Azimuth °\":\n      - /placeholder: Leave blank\n    - text: Calibration dB\n    - textbox \"Calibration dB\":\n      - /placeholder: Leave blank\n    - button \"Queue matrix\":\n      - img\n      - text: Queue matrix\n    - status:\n      - strong: No experiment queued\n      - paragraph: Add at least one sweep dimension to compare plans."
+    },
+    {
+      "step": "tool:Signal surface",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Signal surface\":\n  - heading \"Signal surface\" [level=2]\n  - paragraph: Received signal surface, contours, and GIS exports\n  - button \"Close tool drawer\"\n  - region \"Received signal surface\":\n    - img\n    - text: Received signal surface\n    - paragraph: Generate a compact regular raster and unsmoothed isolines of raw single-cell received power. It is not aggregate network coverage; valid cells can be below receiver sensitivity, while NoData means radius or beam geometry exclusion.\n    - text: Raster cell size\n    - combobox \"Raster cell size\":\n      - option \"10 m\"\n      - option \"25 m\" [selected]\n      - option \"50 m\"\n      - option \"100 m\"\n      - option \"250 m\"\n    - text: Contour thresholds\n    - button \"-120 dBm\"\n    - button \"-110 dBm\" [pressed]\n    - button \"-100 dBm\" [pressed]\n    - button \"-90 dBm\" [pressed]\n    - button \"-80 dBm\" [pressed]\n    - button \"-70 dBm\"\n    - text: Layer opacity\n    - strong: 62%\n    - slider \"Layer opacity62%\": \"0.6\"\n    - text: Display floor (visual only)\n    - combobox \"Display floor (visual only)\":\n      - option \"-120 dBm\"\n      - option \"-110 dBm\" [selected]\n      - option \"-100 dBm\"\n      - option \"-90 dBm\"\n      - option \"-80 dBm\"\n      - option \"-70 dBm\"\n    - button \"Generate raster + contours\":\n      - img\n      - text: Generate raster + contours\n    - button \"GeoTIFF\" [disabled]:\n      - img\n      - text: GeoTIFF\n    - button \"Contours\" [disabled]:\n      - img\n      - text: Contours\n    - button \"CSV\" [disabled]:\n      - img\n      - text: CSV"
+    },
+    {
+      "step": "tool:Interference",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Signal surface\":\n  - heading \"Signal surface\" [level=2]\n  - paragraph: Received signal surface, contours, and GIS exports\n  - button \"Close tool drawer\"\n  - region \"Received signal surface\":\n    - img\n    - text: Received signal surface\n    - paragraph: Generate a compact regular raster and unsmoothed isolines of raw single-cell received power. It is not aggregate network coverage; valid cells can be below receiver sensitivity, while NoData means radius or beam geometry exclusion.\n    - text: Raster cell size\n    - combobox \"Raster cell size\":\n      - option \"10 m\"\n      - option \"25 m\" [selected]\n      - option \"50 m\"\n      - option \"100 m\"\n      - option \"250 m\"\n    - text: Contour thresholds\n    - button \"-120 dBm\"\n    - button \"-110 dBm\" [pressed]\n    - button \"-100 dBm\" [pressed]\n    - button \"-90 dBm\" [pressed]\n    - button \"-80 dBm\" [pressed]\n    - button \"-70 dBm\"\n    - text: Layer opacity\n    - strong: 62%\n    - slider \"Layer opacity62%\": \"0.6\"\n    - text: Display floor (visual only)\n    - combobox \"Display floor (visual only)\":\n      - option \"-120 dBm\"\n      - option \"-110 dBm\" [selected]\n      - option \"-100 dBm\"\n      - option \"-90 dBm\"\n      - option \"-80 dBm\"\n      - option \"-70 dBm\"\n    - button \"Generate raster + contours\":\n      - img\n      - text: Generate raster + contours\n    - button \"GeoTIFF\" [disabled]:\n      - img\n      - text: GeoTIFF\n    - button \"Contours\" [disabled]:\n      - img\n      - text: Contours\n    - button \"CSV\" [disabled]:\n      - img\n      - text: CSV"
+    },
+    {
+      "step": "tool:RF Diagnostics",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"RF Diagnostics\":\n  - heading \"RF Diagnostics\" [level=2]\n  - paragraph: Measurement, material, and facade reference diagnostics\n  - button \"Close tool drawer\"\n  - region \"Canonical diagnostic actions\":\n    - paragraph: Start with a canonical RF result, then inspect a vertical path or building-entry estimate. The evidence tools below remain isolated from network RF.\n    - button \"Open current RF result\" [disabled]\n    - button \"Open vertical path profile\"\n  - heading \"Research / reference\" [level=3]:\n    - button \"Research / reference\": Research / reference Available for this profile\n  - paragraph: Campaign validation and declared material/facade references. Results retain their own evidence context and do not imply canonical status."
+    },
+    {
+      "step": "tool:Building entry",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Building entry\":\n  - heading \"Building entry\" [level=2]\n  - paragraph: Estimated service just inside representative building facades\n  - button \"Close tool drawer\"\n  - region \"Building entry analysis\":\n    - heading \"Facade entry estimate\" [level=3]:\n      - img\n      - text: Facade entry estimate\n    - paragraph: Estimate signal just inside representative facades. This is facade entry evidence, not indoor or whole-building coverage.\n    - button \"Run building-entry estimate\":\n      - img\n      - text: Run building-entry estimate\n    - status:\n      - strong: No estimate yet\n      - paragraph: Run the estimate to evaluate all relevant buildings in one batched request."
+    },
+    {
+      "step": "tool:5G Core",
+      "metrics": {
+        "scrollHeight": 771,
+        "clientHeight": 771
+      },
+      "api": [],
+      "aria": "- dialog \"5G Core\":\n  - heading \"5G Core\" [level=2]\n  - paragraph: Xn, N2, N3, sessions, and lab scenarios\n  - button \"Close tool drawer\"\n  - region \"5G Core Lab\":\n    - heading \"Core Lab overlay\" [level=3]\n    - paragraph: Optional local 5G Core integration for the active 5G plan.\n    - status: Disabled\n    - strong: Enable Core Lab overlay\n    - text: Connect the local sidecar when needed\n    - checkbox \"Enable Core Lab overlay\"\n    - text: Enable the overlay when you are ready to connect the local Core Lab sidecar.\n    - group: Developer details"
+    },
+    {
+      "step": "tool:Results",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - tablist \"Result views\":\n      - tab \"RF\" [selected]\n      - tab \"Optimization\"\n      - tab \"Interference\"\n      - tab \"Compare\"\n      - tab \"Candidates\"\n    - status:\n      - strong: No current RF result\n      - paragraph: Run the current sector to generate RF results.\n      - button \"Run Sector\""
+    },
+    {
+      "step": "tool:Run history",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Run history\":\n  - heading \"Run history\" [level=2]\n  - paragraph: Durable local simulation and optimization records\n  - button \"Close tool drawer\"\n  - region \"Durable local run history\":\n    - heading \"Run history\" [level=3]\n    - paragraph: Saved execution records stay in this browser. Full rays, samples, and map overlays are not retained.\n    - button \"Refresh run history\":\n      - img\n    - status:\n      - strong: No saved Runs yet\n      - paragraph: Run a simulation or optimization to create one."
+    },
+    {
+      "step": "tool:Data",
+      "metrics": {
+        "scrollHeight": 754,
+        "clientHeight": 754
+      },
+      "api": [],
+      "aria": "- dialog \"Data\":\n  - heading \"Data\" [level=2]\n  - paragraph: Dataset confidence and model assumptions\n  - button \"Close tool drawer\"\n  - region \"Dataset confidence\":\n    - heading \"Demand surface\" [level=3]\n    - paragraph: Planning counts from the active local pack.\n    - text: Pack QA status\n    - strong: good\n    - term: Buildings\n    - definition: 161,784\n    - term: POI demand\n    - definition: 5,957\n    - term: Residential\n    - definition: 75,446\n    - term: Dataset\n    - definition: Ankara Open Planning Dataset\n    - term: Version\n    - definition: \"2026.07\"\n    - paragraph: Geometry and hashes validated; RF inventory and demand attributes remain planning-grade. Demand is heuristic context, not measured subscriber demand.\n    - group: Dataset details Ankara Open Planning Dataset\n    - heading \"Advanced model details\" [level=3]:\n      - button \"Advanced model details\"\n    - paragraph: Propagation and radio-quality assumptions for this plan.\n    - heading \"Research / reference\" [level=3]:\n      - button \"Research / reference\": Research / reference Available for local evidence\n    - paragraph: Field evidence and calibration review. Applying an eligible correction remains an explicit action that updates the canonical plan."
+    },
+    {
+      "step": "tool:Report",
+      "metrics": {
+        "scrollHeight": 771,
+        "clientHeight": 771
+      },
+      "api": [],
+      "aria": "- dialog \"Report\":\n  - heading \"Report\" [level=2]\n  - paragraph: Export the current planning state\n  - button \"Close tool drawer\"\n  - region \"Planning report export\":\n    - img\n    - text: Report\n    - paragraph: Export the selected tower, beam direction, RF KPIs, demand hits, gap summary, and a portable map preview for stakeholder review.\n    - strong: Report source\n    - paragraph: Current unsaved plan This Report will not be tied to a saved Version.\n    - button \"PDF / Print\":\n      - img\n      - text: PDF / Print\n    - button \"Markdown\":\n      - img\n      - text: Markdown\n    - region \"Reports\":\n      - img\n      - text: Reports\n      - paragraph: Reports keep their source Scenario, Version, and Runs. Downloading stored bytes does not rerun RF compute.\n      - text: 0 Reports\n      - paragraph: No Reports yet. Generate a Report to keep its Scenario and Run source."
+    },
+    {
+      "step": "analyze-chooser",
+      "aria": "- dialog \"Analyze tools\":\n  - group \"Analyze tools\":\n    - button \"Interference\" [disabled]: Interference Requires Network mode Unavailable Interference requires Network planning mode\n    - button \"RF Diagnostics\"\n    - button \"Building entry\"\n    - button \"5G Core\""
+    },
+    {
+      "step": "marker-count",
+      "markers": 1,
+      "interactive": 1
+    },
+    {
+      "step": "ray-paths",
+      "count": 0
+    },
+    {
+      "step": "save-button",
+      "visibleText": "Save version",
+      "accessibleName": "Save current"
+    },
+    {
+      "step": "after-save-menu",
+      "aria": "- dialog \"Project and scenarios\":\n  - text: Project\n  - combobox \"Project\":\n    - option \"Ankara Plan\" [selected]\n  - textbox \"Project name\": Ankara Plan\n  - button \"Save project name\":\n    - img\n  - button \"New\":\n    - img\n    - text: New\n  - button \"Duplicate\":\n    - img\n    - text: Duplicate\n  - button \"Delete\" [disabled]:\n    - img\n    - text: Delete\n  - button \"Import\":\n    - img\n    - text: Import\n  - button \"Export\":\n    - img\n    - text: Export\n  - paragraph: Drafts autosave in this browser. Save version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.\n  - strong: Scenarios / Versions\n  - button \"Save current\":\n    - img\n    - text: Save version\n  - button \"Sector plan 1 Version 1 · 10/17/2026, 2:54:52 PM\"\n  - button \"Delete Sector plan 1\":\n    - img\n  - status: Version saved"
+    },
+    {
+      "step": "menu-open-after-escape",
+      "open": 1
+    },
+    {
+      "step": "identity-after-save",
+      "identity": "A.T.O.M\nTelecom planning\nAnkara Plan\nSector plan 1\nVersion 1\nSaved Version",
+      "status": "Ready\nCURRENT\nRun 28dc662e…bdf091"
+    },
+    {
+      "step": "project-export",
+      "filename": "ankara-plan.atom-project.json"
+    },
+    {
+      "step": "report-md",
+      "filename": "f079b4f3-b688-4148-9fc3-5289e4c1523a.md"
+    },
+    {
+      "step": "report-after",
+      "aria": "- dialog \"Report\":\n  - heading \"Report\" [level=2]\n  - paragraph: Export the current planning state\n  - button \"Close tool drawer\"\n  - region \"Planning report export\":\n    - img\n    - text: Report\n    - paragraph: Export the selected tower, beam direction, RF KPIs, demand hits, gap summary, and a portable map preview for stakeholder review.\n    - strong: Report source\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Simulation\n      - strong: Sector plan 1 · No saved Version\n      - text: Simulation Run 28dc662e…bdf091 · 10/17/2026, 2:54:50 PM\n      - group: Details / Provenance\n    - button \"PDF / Print\":\n      - img\n      - text: PDF / Print\n    - button \"Markdown\":\n      - img\n      - text: Markdown\n    - region \"Reports\":\n      - img\n      - text: Reports\n      - paragraph: Reports keep their source Scenario, Version, and Runs. Downloading stored bytes does not rerun RF compute.\n      - text: 1 Report\n      - list \"Reports\":\n        - listitem:\n          - 'button \"A.T.O.M Single-cell RF Planning Report Sector plan 1 · Version 1 · Runs: None 10/17/2026, 2:54:55 PM · Available\" [pressed]':\n            - img\n            - strong: A.T.O.M Single-cell RF Planning Report\n            - text: \"Sector plan 1 · Version 1 · Runs: None 10/17/2026, 2:54:55 PM · Available\"\n          - button \"Download A.T.O.M Single-cell RF Planning Report\":\n            - img\n          - button \"Regenerate A.T.O.M Single-cell RF Planning Report\":\n            - img\n          - button \"Delete A.T.O.M Single-cell RF Planning Report\":\n            - img\n          - button \"Open source Version\"\n      - region \"Report source\":\n        - strong: Report source\n        - region \"HISTORICAL context\":\n          - text: HISTORICAL\n          - strong: Historical result · Report\n          - strong: Sector plan 1 · Version 1\n          - text: Report No Run\n          - group: Details / Provenance\n        - paragraph: \"Scenario: Sector plan 1\"\n        - paragraph: \"Version: Version 1\"\n        - paragraph: \"Runs: None\"\n        - button \"Open source Version\"\n        - group: Details / Provenance"
+    },
+    {
+      "step": "reload-after-save",
+      "identity": "A.T.O.M\nTelecom planning\nAnkara Plan\nSector plan 1\nVersion 1\nSaved Version",
+      "status": "Ready\nUNAVAILABLE\nRun unavailable",
+      "api": [
+        "GET /api/meta",
+        "GET /api/datasets",
+        "GET /api/towers",
+        "GET /api/buildings/summary"
+      ]
+    },
+    {
+      "step": "optimizing-feedback",
+      "aria": "- dialog \"Propagation\":\n  - heading \"Propagation\" [level=2]\n  - paragraph: Ray geometry, coverage radius, and optimization\n  - button \"Close tool drawer\"\n  - heading \"Planning\" [level=3]:\n    - button \"Planning\" [expanded]\n  - paragraph: Configure the current plan; run it from the command bar.\n  - region \"Propagation controls\":\n    - img\n    - text: Ray count\n    - strong: \"120\"\n    - slider \"Ray count\": \"120\"\n    - img\n    - text: Radius\n    - strong: 400 m\n    - slider \"Radius (m)\": \"400\"\n    - img\n    - text: Azimuth\n    - strong: 90°\n    - slider \"Azimuth (°)\": \"90\"\n    - img\n    - text: Beam width\n    - strong: 120°\n    - slider \"Beam width (°)\": \"120\"\n    - button \"Optimizing network…\" [disabled]\n    - status: Optimizing network\n    - strong: Optimizing network\n    - text: 8 cells · 2 passes · 578 proposals 1.3 s elapsed\n  - heading \"Advanced analysis\" [level=3]:\n    - button \"Advanced analysis\": Advanced analysis No additional configuration\n  - paragraph: Additional analysis and model configuration. P.526/path-profile diffraction is diagnostic evidence and does not add loss to canonical UMa.\n  - heading \"Research / reference\" [level=3]:\n    - button \"Research / reference\": Research / reference Available for this profile\n  - paragraph: Isolated experimental and candidate tools; applicability varies by reference and none automatically changes canonical network RF."
+    },
+    {
+      "step": "optimize-done",
+      "ms": 6148
+    },
+    {
+      "step": "solutions",
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Optimization\n      - strong: Sector plan 1 · No saved Version\n      - text: Optimization Run 78d1e20a…21e6e4 · 10/17/2026, 2:55:01 PM\n      - button \"View Run 78d1e20a…21e6e4\"\n      - group: Details / Provenance\n    - tablist \"Result views\":\n      - tab \"RF\"\n      - tab \"Optimization\"\n      - tab \"Interference\"\n      - tab \"Compare\"\n      - tab \"Solutions\" [selected]\n    - region \"Pareto alternative solutions\":\n      - img\n      - text: Alternative solutions\n      - paragraph: 25 feasible · non-dominated solutions\n      - text: Ranked by current priorities\n      - paragraph: Non-dominated solutions represent different valid trade-offs. The highest score for the current priorities is recommended.\n      - group: How to compare and use alternatives\n      - paragraph:\n        - strong: Recommended\n        - text: Highest-ranked feasible solution under current priorities.\n      - paragraph:\n        - strong: Selected\n        - text: Solution currently being inspected.\n      - paragraph:\n        - strong: Pareto\n        - text: Non-dominated alternatives.\n      - region \"Inspected solution\":\n        - text: \"Solution #1\"\n        - heading \"Inspected solution\" [level=3]\n        - text: Selected Recommended Optimization score\n        - strong: 47.9 / 100\n        - group: About this score\n        - text: Objective performance Demand\n        - strong: 28.3%\n        - text: 1,215.0 / 4,300.0 Residential\n        - strong: 42.2%\n        - text: 378 / 895 Propagation reach\n        - strong: 32.4%\n        - text: 31,099.7 / 96,000.0 Overlap\n        - strong: 11.4%\n        - text: 76 / 665 Constraints\n        - strong: Not configured\n        - text: Cell configuration\n        - strong: Cell 10339345\n        - text: 90° baseline → 260° selected\n        - button \"Explain Cell 10339345 marginal effect\": Explain\n        - strong: Cell 10339596\n        - text: 90° baseline → 120° selected\n        - button \"Explain Cell 10339596 marginal effect\": Explain\n        - strong: Cell 10339597\n        - text: 90° baseline → 40° selected\n        - button \"Explain Cell 10339597 marginal effect\": Explain\n        - strong: Cell 5900566\n        - text: 90° baseline → 90° selected Unchanged from baseline\n        - strong: Cell 24228888\n        - text: 90° baseline → 90° selected Unchanged from baseline\n        - strong: Cell 16442647\n        - text: 90° baseline → 270° selected\n        - button \"Explain Cell 16442647 marginal effect\": Explain\n        - strong: Cell 313100\n        - text: 90° baseline → 300° selected\n        - button \"Explain Cell 313100 marginal effect\": Explain\n        - strong: Cell 749580\n        - text: 90° baseline → 150° selected\n        - button \"Explain Cell 749580 marginal effect\": Explain\n        - strong: Apply this solution\n        - button \"Apply solution…\"\n        - text: Review the source Run and destination before continuing.\n        - paragraph: Inspection does not change the recommendation. RF map rays remain from the last simulation and are not re-simulated for this solution.\n      - article:\n        - button \"Inspect Pareto solution 1, recommended\" [pressed]:\n          - strong: \"#1\"\n          - text: Recommended Selected 47.9 / 100 Demand\n          - strong: 28.3%\n          - text: Residential\n          - strong: 42.2%\n          - text: Propagation reach\n          - strong: 32.4%\n          - text: Overlap\n          - strong: 11.4%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 2\":\n          - strong: \"#2\"\n          - text: 47.9 / 100 Demand\n          - strong: 28.3%\n          - text: Residential\n          - strong: 42.2%\n          - text: Propagation reach\n          - strong: 32.4%\n          - text: Overlap\n          - strong: 11.5%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 3\":\n          - strong: \"#3\"\n          - text: 47.9 / 100 Demand\n          - strong: 28.7%\n          - text: Residential\n          - strong: 42.0%\n          - text: Propagation reach\n          - strong: 32.2%\n          - text: Overlap\n          - strong: 11.5%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 4\":\n          - strong: \"#4\"\n          - text: 47.8 / 100 Demand\n          - strong: 28.3%\n          - text: Residential\n          - strong: 42.6%\n          - text: Propagation reach\n          - strong: 32.3%\n          - text: Overlap\n          - strong: 11.8%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 5\":\n          - strong: \"#5\"\n          - text: 47.8 / 100 Demand\n          - strong: 28.5%\n          - text: Residential\n          - strong: 42.0%\n          - text: Propagation reach\n          - strong: 32.2%\n          - text: Overlap\n          - strong: 11.5%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 6\":\n          - strong: \"#6\"\n          - text: 47.8 / 100 Demand\n          - strong: 29.3%\n          - text: Residential\n          - strong: 41.1%\n          - text: Propagation reach\n          - strong: 32.2%\n          - text: Overlap\n          - strong: 11.5%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 7\":\n          - strong: \"#7\"\n          - text: 47.8 / 100 Demand\n          - strong: 26.2%\n          - text: Residential\n          - strong: 42.2%\n          - text: Propagation reach\n          - strong: 34.3%\n          - text: Overlap\n          - strong: 11.6%\n          - text: Inspect solution\n      - article:\n        - button \"Inspect Pareto solution 8\":\n          - strong: \"#8\"\n          - text: 47.8 / 100 Demand\n          - strong: 27.2%\n          - text: Res"
+    },
+    {
+      "step": "compare",
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Optimization\n      - strong: Sector plan 1 · No saved Version\n      - text: Optimization Run 78d1e20a…21e6e4 · 10/17/2026, 2:55:01 PM\n      - button \"View Run 78d1e20a…21e6e4\"\n      - group: Details / Provenance\n    - tablist \"Result views\":\n      - tab \"RF\"\n      - tab \"Optimization\"\n      - tab \"Interference\"\n      - tab \"Compare\" [selected]\n      - tab \"Solutions\"\n    - region \"Baseline versus optimized comparison\":\n      - img\n      - text: Baseline vs Recommended\n      - paragraph: Baseline is the selected network entering this optimization run. Recommended is the current feasible Pareto recommendation. Domain denominators and propagation maximum are shared.\n      - article:\n        - strong: Demand served\n        - text: Improved Baseline\n        - strong: 505.0 / 4,300.0\n        - text: Optimized\n        - strong: 1,215.0 / 4,300.0\n        - text: Change\n        - strong: +710.0 (+140.6%)\n      - article:\n        - strong: Residential\n        - text: Improved Baseline\n        - strong: 54 / 895\n        - text: Optimized\n        - strong: 378 / 895\n        - text: Change\n        - strong: \"+324\"\n      - article:\n        - strong: Propagation reach\n        - text: Improved Baseline\n        - strong: 29.1%\n        - text: Optimized\n        - strong: 32.4%\n        - text: Change\n        - strong: +3.3 pp\n      - article:\n        - strong: Overlap ratio\n        - text: Improved Baseline\n        - strong: 24.3%\n        - text: Optimized\n        - strong: 11.4%\n        - text: Change\n        - strong: \"-12.9 pp\"\n      - article:\n        - strong: Overlap buildings\n        - text: Unchanged Baseline\n        - strong: \"76\"\n        - text: Optimized\n        - strong: \"76\"\n        - text: Change\n        - strong: \"0\"\n      - article:\n        - strong: Covered units\n        - text: Informational Baseline\n        - strong: \"313\"\n        - text: Optimized\n        - strong: \"665\"\n        - text: Change\n        - strong: \"+352\"\n      - article:\n        - strong: Optimization score\n        - text: Improved Baseline\n        - strong: \"30.6\"\n        - text: Optimized\n        - strong: \"47.9\"\n        - text: Change\n        - strong: +17.2 points\n      - article:\n        - strong: Constraints\n        - text: Informational Baseline\n        - strong: Not configured\n        - text: Optimized\n        - strong: Not configured\n        - text: Change\n        - strong: Not configured\n      - paragraph: Both scores use the active effective weights; unavailable objectives remain excluded."
+    },
+    {
+      "step": "results-interference-empty",
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Optimization\n      - strong: Sector plan 1 · No saved Version\n      - text: Optimization Run 78d1e20a…21e6e4 · 10/17/2026, 2:55:01 PM\n      - button \"View Run 78d1e20a…21e6e4\"\n      - group: Details / Provenance\n    - tablist \"Result views\":\n      - tab \"RF\"\n      - tab \"Optimization\"\n      - tab \"Interference\" [selected]\n      - tab \"Compare\"\n      - tab \"Solutions\"\n    - status:\n      - strong: No interference result\n      - paragraph: Select two or more 4G or 5G cells, then analyze interference to compare SINR, RSRP, and RSRQ.\n      - button \"Open Interference\""
+    },
+    {
+      "step": "tab-Candidates",
+      "exists": 0
+    },
+    {
+      "step": "tab-Solutions",
+      "exists": 1
+    },
+    {
+      "step": "apply-button",
+      "count": 1,
+      "label": "Apply solution…"
+    },
+    {
+      "step": "apply-dialog",
+      "aria": "- dialog \"Apply optimization solution?\":\n  - heading \"Apply optimization solution?\" [level=3]\n  - term: Source\n  - definition: Sector plan 1 · No saved Version\n  - definition: Optimization Run 78d1e20a…21e6e4 · 260.0,120.0,40.0,90.0,90.0,270.0,300.0,150.0\n  - term: Destination\n  - definition: Sector plan 1 · new Version\n  - definition: Sector plan 1 optimized · new branch\n  - paragraph: This solution is not bound to a retained source Version, so it cannot be applied safely.\n  - paragraph: The source Run and Version stay unchanged. The new plan needs a fresh RF run.\n  - button \"Cancel\"\n  - button \"Create new Version\" [disabled]\n  - button \"Create branch\" [disabled]"
+    }
+  ]
+}

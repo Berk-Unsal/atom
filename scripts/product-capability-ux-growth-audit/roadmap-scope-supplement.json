@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-17T12:37:29.595164+00:00",
+  "supplements": "audit-lock.json (unchanged, SHA-256 c7f03dd0a9eeb935054d82dd6ba7f10402e6b35d0bb87f4f35bcc0eaf9496d9c)",
+  "task": "Roadmap materialization from candidate-issues.json; no implementation",
+  "baseline_head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+  "additional_allowed_writes": [
+    "docs/product-roadmap-post-audit.md",
+    "docs/doc-sources.json (one catalog entry for the file above)",
+    "scripts/product-capability-ux-growth-audit/roadmap-*.json|py, create_roadmap_issues.py, build_roadmap_materialization.py, issue-bodies/**"
+  ],
+  "authorized_github_mutations": [
+    "close #76 only if every acceptance criterion passes",
+    "append a bounded item to #86",
+    "create curated roadmap issues"
+  ],
+  "forbidden": [
+    "production code changes",
+    "PR merges",
+    "release or date commitments",
+    "milestones or assignments",
+    "edits to #87-#90"
+  ]
+}

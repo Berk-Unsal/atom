@@ -1,0 +1,7 @@
+{
+  "validate_docs": {"command": "python docs/validate_docs.py (Homebrew Python 3.15 venv with docs/requirements.txt)", "result": "documentation valid: 58 HTML pages and 42 API paths", "exit": 0},
+  "classify_docs": {"command": "python docs/classify_docs.py", "result": "documentation classifications valid: 566 sources", "exit": 0},
+  "validate_claims": {"command": "python3 docs/validate_claims.py", "result": "current-doc claim regressions passed; historical/reference/design sources excluded explicitly", "exit": 0},
+  "json_artifacts": {"result": "all five JSON artifacts parse"},
+  "lock_integrity": {"command": "shasum -a 256 audit-lock.json", "expected": "c7f03dd0a9eeb935054d82dd6ba7f10402e6b35d0bb87f4f35bcc0eaf9496d9c"}
+}

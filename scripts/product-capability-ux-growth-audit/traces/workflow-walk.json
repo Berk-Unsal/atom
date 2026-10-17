@@ -1,0 +1,307 @@
+{
+  "base": "http://127.0.0.1:18090",
+  "log": [
+    {
+      "step": "single-run",
+      "at": "2026-10-17T11:38:57.956Z",
+      "ms": 167,
+      "api": [
+        "POST /api/analyze-sector"
+      ],
+      "status": "Ready"
+    },
+    {
+      "step": "after-single-run-aria",
+      "at": "2026-10-17T11:38:58.864Z",
+      "aria": "- main:\n  - link \"Skip to planning map\":\n    - /url: \"#planning-map\"\n  - group \"Workspace\":\n    - strong: A.T.O.M\n    - text: Telecom planning\n    - button \"Open project menu\":\n      - img\n      - text: Ankara Plan\n      - img\n    - group: Working draft No Version Unsaved\n  - group \"RF context\":\n    - strong: Single · Cell 26380\n    - text: · 5G mmWave · 28.0 GHz\n    - group:\n      - img\n      - text: RF details\n  - group \"Status\":\n    - status: Ready\n    - button \"Open Current result details for Working draft · No saved Version · Run fe84a361…33d40a · 10/17/2026, 2:38:57 PM\": CURRENT Run fe84a361…33d40a\n  - group \"Primary action\":\n    - button \"Run Sector\":\n      - img\n      - text: Run Sector\n  - navigation \"Workspace stages\":\n    - button \"Plan workspace\":\n      - img\n      - text: Plan\n      - tooltip \"Plan\"\n    - button \"Simulate workspace\":\n      - img\n      - text: Simulate\n      - tooltip \"Simulate\"\n    - button \"Analyze workspace\":\n      - img\n      - text: Analyze\n      - tooltip \"Analyze\"\n    - button \"Review workspace\":\n      - img\n      - text: Review\n      - tooltip \"Review\"\n  - region \"Ankara propagation map\":\n    - group \"Map controls\":\n      - group \"Map interaction mode\":\n        - button \"Inspect\" [pressed]\n        - button \"Select cells\"\n      - button \"Fit selected cells\"\n      - group \"Result visualization\":\n        - button \"Signal layer\": Signal\n        - button \"Propagation rays layer\" [pressed]: Rays\n      - button \"Map view options\": View\n      - button \"Map layers\":\n        - text: Layers\n        - img\n    - button\n    - button \"Zoom in\"\n    - button \"Zoom out\"\n    - link \"Leaflet\":\n      - /url: https://leafletjs.com\n    - text: ©\n    - link \"Stadia Maps\":\n      - /url: https://stadiamaps.com/attribution/\n    - text: ©\n    - link \"OpenMapTiles\":\n      - /url: https://openmaptiles.org/\n    - text: ©\n    - link \"OpenStreetMap\":\n      - /url: https://www.openstreetmap.org/copyright\n    - region \"Map key\":\n      - button \"Map key\" [expanded]:\n        - strong: Map key\n        - img\n      - region \"Cell markers\":\n        - strong: Cells\n        - text: Active cell Available cell Inspected cell Map Focus\n      - region \"Result source\":\n        - strong: Result source\n        - status \"CURRENT · Working draft · No saved Version · Run fe84a361…33d40a · 10/17/2026, 2:38:57 PM\": CURRENT Working draft · No saved Version · Run fe84a361…33d40a\n      - region \"Received power\":\n        - strong: Received power\n        - text: Strong ≥ −85 dBm Usable −115 dBm to −85 dBm Below sensitivity < −115 dBm\n  - dialog \"Setup\":\n    - heading \"Setup\" [level=2]\n    - paragraph: Mode, technology, power, and cell selection\n    - button \"Close tool drawer\"\n    - heading \"Planning\" [level=3]:\n      - button \"Planning\" [expanded]\n    - paragraph: Configure the current plan; run it from the command bar.\n    - region \"Plan setup controls\":\n      - text: Planning mode\n      - button \"Single sector mode\" [pressed]: Single one sector\n      - button \"Network mode, 0 selected\": Network 0 selected\n      - text: Network technology\n      - button \"4G LTE, 2.6 GHz\": 4G LTE 2.6 GHz\n      - button \"5G mmWave, 28 GHz\" [pressed]: 5G mmWave 28 GHz\n      - button \"6G research profile (140 GHz), 140 GHz\": 6G research 140 GHz\n      - text: Propagation model\n      - combobox \"Propagation model\":\n        - option \"Urban short-range (UMa)\" [selected]\n        - option \"Legacy FSPL + walls\"\n        - option \"Research sub-THz\"\n      - paragraph: Urban is the default at 2.6/28 GHz; 140 GHz is research-only.\n      - img\n      - text: Conducted TX power\n      - spinbutton \"Conducted TX power (dBm)\": \"30\"\n      - text: \"dBm Valid range: 0–60 dBm\"\n    - heading \"Advanced model details\" [level=3]:\n      - button \"Advanced model details\"\n    - paragraph: Model applicability and link-budget assumptions for the selected profile."
+    },
+    {
+      "step": "results-single-aria",
+      "at": "2026-10-17T11:39:00.203Z",
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Simulation\n      - strong: Working draft · No saved Version\n      - text: Simulation Run fe84a361…33d40a · 10/17/2026, 2:38:57 PM\n      - button \"View Run fe84a361…33d40a\"\n      - group: Details / Provenance\n    - tablist \"Result views\":\n      - tab \"RF\" [selected]\n      - tab \"Optimization\"\n      - tab \"Interference\"\n      - tab \"Compare\"\n      - tab \"Candidates\"\n    - text: Blocked\n    - strong: 99.2%\n    - text: Average Rx\n    - strong: \"-185.5 dBm\"\n    - text: Max range\n    - strong: 400.0 m\n    - text: Min range\n    - strong: 8.5 m\n    - region \"Coverage gap summary\":\n      - img\n      - text: Coverage Gaps Underserved buildings\n      - strong: \"0\"\n      - text: Gap ratio\n      - strong: 0.0%\n      - text: Candidates\n      - strong: \"122\"\n      - text: Returned\n      - strong: \"0\"\n      - text: Unmet demand\n      - strong: \"0\"\n      - text: Worst Rx\n      - strong: 0.0 dBm"
+    },
+    {
+      "step": "single-optimize",
+      "at": "2026-10-17T11:39:02.856Z",
+      "ms": 1823,
+      "api": [
+        "POST /api/optimize-azimuth",
+        "POST /api/analyze-sector"
+      ],
+      "status": "Ready"
+    },
+    {
+      "step": "network-mode-switch",
+      "at": "2026-10-17T11:39:03.585Z",
+      "status": "Result out of date",
+      "primary": "Select cells"
+    },
+    {
+      "step": "polygon-selection",
+      "at": "2026-10-17T11:39:04.864Z",
+      "setupLabel": "Network mode, 8 selected",
+      "notice": "272 towers found, nearest 8 selected.",
+      "mapBox": {
+        "x": 88,
+        "y": 60,
+        "width": 1352,
+        "height": 840
+      }
+    },
+    {
+      "step": "primary-before-eval",
+      "at": "2026-10-17T11:39:04.927Z",
+      "label": "Evaluate Network",
+      "disabled": false
+    },
+    {
+      "step": "network-evaluate",
+      "at": "2026-10-17T11:39:05.745Z",
+      "ms": 820,
+      "api": [
+        "POST /api/evaluate-network",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate"
+      ]
+    },
+    {
+      "step": "propagation-network-aria",
+      "at": "2026-10-17T11:39:07.681Z",
+      "aria": "- dialog \"Propagation\":\n  - heading \"Propagation\" [level=2]\n  - paragraph: Ray geometry, coverage radius, and optimization\n  - button \"Close tool drawer\"\n  - heading \"Planning\" [level=3]:\n    - button \"Planning\" [expanded]\n  - paragraph: Configure the current plan; run it from the command bar.\n  - region \"Propagation controls\":\n    - img\n    - text: Ray count\n    - strong: \"120\"\n    - slider \"Ray count\": \"120\"\n    - img\n    - text: Radius\n    - strong: 400 m\n    - slider \"Radius (m)\": \"400\"\n    - img\n    - text: Azimuth\n    - strong: 190°\n    - slider \"Azimuth (°)\": \"190\"\n    - img\n    - text: Beam width\n    - strong: 120°\n    - slider \"Beam width (°)\": \"120\"\n    - button \"Optimize Network\"\n  - heading \"Advanced analysis\" [level=3]:\n    - button \"Advanced analysis\": Advanced analysis No additional configuration\n  - paragraph: Additional analysis and model configuration. P.526/path-profile diffraction is diagnostic evidence and does not add loss to canonical UMa.\n  - heading \"Research / reference\" [level=3]:\n    - button \"Research / reference\": Research / reference Available for this profile\n  - paragraph: Isolated experimental and candidate tools; applicability varies by reference and none automatically changes canonical network RF."
+    },
+    {
+      "step": "network-optimize",
+      "at": "2026-10-17T11:39:12.824Z",
+      "ms": 5139,
+      "api": [
+        "POST /api/optimize-network",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate",
+        "POST /api/simulate"
+      ],
+      "status": "Ready"
+    },
+    {
+      "step": "results-optimization-aria",
+      "at": "2026-10-17T11:39:14.150Z",
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Optimization\n      - strong: Working draft · No saved Version\n      - text: Optimization Run f1a1e6d2…73ba08 · 10/17/2026, 2:39:07 PM\n      - button \"View Run f1a1e6d2…73ba08\"\n      - group: Details / Provenance\n    - tablist \"Result views\":\n      - tab \"RF\"\n      - tab \"Optimization\" [selected]\n      - tab \"Interference\"\n      - tab \"Compare\"\n      - tab \"Solutions\"\n    - region \"Network optimization summary\":\n      - img\n      - text: Network optimization Optimization score\n      - strong: 64.4 / 100\n      - group: About this score\n      - text: Recommended solution\n      - region \"Optimization impact\":\n        - strong: Optimization impact\n        - button \"View comparison\"\n        - text: Demand served\n        - strong: \"+490\"\n        - text: Residential\n        - strong: \"+111\"\n        - text: Propagation reach\n        - strong: +2.2 pp\n        - text: Overlap\n        - strong: \"-51.3 pp\"\n      - text: Served demand weight\n      - strong: 680.0 / 775.0\n      - text: Residential buildings\n      - strong: 235 / 268\n      - text: Propagation reach\n      - strong: 26,423.6 / 96,000.0\n      - text: Overlap ratio\n      - strong: 45.5%\n      - strong: 25 feasible non-dominated solutions\n      - text: Current priorities determine the recommendation order.\n      - button \"Explore solutions\"\n      - group: More metrics\n      - group: Configuration changes\n      - group: Model scope"
+    },
+    {
+      "step": "results-scroll",
+      "at": "2026-10-17T11:39:14.950Z",
+      "scrollHeight": 968,
+      "clientHeight": 754
+    },
+    {
+      "step": "interference-tool-state",
+      "at": "2026-10-17T11:39:44.977Z",
+      "ariaDisabled": null,
+      "reason": ""
+    },
+    {
+      "step": "interference",
+      "at": "2026-10-17T11:39:47.286Z",
+      "ms": 1755,
+      "api": [
+        "POST /api/interference"
+      ]
+    },
+    {
+      "step": "interference-aria",
+      "at": "2026-10-17T11:39:47.374Z",
+      "aria": "- dialog \"Interference\":\n  - heading \"Interference\" [level=2]\n  - paragraph: Co-channel load and radio-quality assumptions\n  - button \"Close tool drawer\"\n  - region \"Interference controls\":\n    - paragraph: Propagation results describe received power and coverage. Radio-quality analysis separately estimates load-adjusted RSRP, SINR, and RSRQ across the selected cells.\n    - text: Bandwidth\n    - combobox \"Bandwidth\":\n      - option \"50 MHz\"\n      - option \"100 MHz\" [selected]\n      - option \"200 MHz\"\n      - option \"400 MHz\"\n    - img\n    - text: Cell load\n    - strong: 70%\n    - slider \"Cell load (%)\": \"70\"\n    - text: Frequency reuse\n    - button \"Reuse 1 co-channel\" [pressed]\n    - button \"Reuse 3 3 channels\"\n    - group: Advanced assumptions · No additional configuration\n    - button \"Analyze Interference\":\n      - img\n      - text: Analyze Interference"
+    },
+    {
+      "step": "history-aria",
+      "at": "2026-10-17T11:39:48.399Z",
+      "aria": "- dialog \"Run history\":\n  - heading \"Run history\" [level=2]\n  - paragraph: Durable local simulation and optimization records\n  - button \"Close tool drawer\"\n  - region \"Durable local run history\":\n    - heading \"Run history\" [level=3]\n    - paragraph: Saved execution records stay in this browser. Full rays, samples, and map overlays are not retained.\n    - button \"Refresh run history\":\n      - img\n    - text: 3 of 3 Runs\n    - button \"Clear unreferenced records\"\n    - text: Scope\n    - combobox \"Run history scope\":\n      - option \"All project runs\" [selected]\n      - option \"Current scenario\" [disabled]\n    - text: Type\n    - combobox \"Run history type\":\n      - option \"All types\" [selected]\n      - option \"Simulation\"\n      - option \"Optimization\"\n    - text: Status\n    - combobox \"Run history status\":\n      - option \"All statuses\" [selected]\n      - option \"Succeeded\"\n      - option \"Failed\"\n      - option \"Cancelled\"\n      - option \"Running\"\n    - list \"Saved runs\":\n      - button \"Open Optimization f1a1e6d2…73ba08, Succeeded, Working draft · No saved Version\":\n        - strong: Optimization · f1a1e6d2…73ba08\n        - text: Working draft · No saved Version · 10/17/2026, 2:39:07 PM\n        - emphasis: Succeeded\n      - button \"Open Optimization d2a57d12…1eae55, Succeeded, Working draft · No saved Version\":\n        - strong: Optimization · d2a57d12…1eae55\n        - text: Working draft · No saved Version · 10/17/2026, 2:39:01 PM\n        - emphasis: Succeeded\n      - button \"Open Simulation fe84a361…33d40a, Succeeded, Working draft · No saved Version\":\n        - strong: Simulation · fe84a361…33d40a\n        - text: Working draft · No saved Version · 10/17/2026, 2:38:57 PM\n        - emphasis: Succeeded"
+    },
+    {
+      "step": "project-menu-aria",
+      "at": "2026-10-17T11:39:48.831Z",
+      "aria": "- dialog \"Project and scenarios\":\n  - text: Project\n  - combobox \"Project\":\n    - option \"Ankara Plan\" [selected]\n  - textbox \"Project name\": Ankara Plan\n  - button \"Save project name\":\n    - img\n  - button \"New\":\n    - img\n    - text: New\n  - button \"Duplicate\":\n    - img\n    - text: Duplicate\n  - button \"Delete\" [disabled]:\n    - img\n    - text: Delete\n  - button \"Import\":\n    - img\n    - text: Import\n  - button \"Export\":\n    - img\n    - text: Export\n  - paragraph: Drafts autosave in this browser. Save version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.\n  - strong: Scenarios / Versions\n  - button \"Save current\":\n    - img\n    - text: Save version\n  - paragraph: Save the current plan to create a comparison baseline."
+    },
+    {
+      "step": "report-aria",
+      "at": "2026-10-17T11:40:19.848Z",
+      "aria": "- dialog \"Report\":\n  - heading \"Report\" [level=2]\n  - paragraph: Export the current planning state\n  - button \"Close tool drawer\"\n  - region \"Planning report export\":\n    - img\n    - text: Report\n    - paragraph: Export the selected tower, beam direction, RF KPIs, demand hits, gap summary, and a portable map preview for stakeholder review.\n    - strong: Report source\n    - paragraph: Current unsaved plan This Report will not be tied to a saved Version.\n    - button \"PDF / Print\":\n      - img\n      - text: PDF / Print\n    - button \"Markdown\":\n      - img\n      - text: Markdown\n    - region \"Reports\":\n      - img\n      - text: Reports\n      - paragraph: Reports keep their source Scenario, Version, and Runs. Downloading stored bytes does not rerun RF compute.\n      - text: 0 Reports\n      - paragraph: No Reports yet. Generate a Report to keep its Scenario and Run source."
+    },
+    {
+      "step": "after-reload",
+      "at": "2026-10-17T11:40:22.418Z",
+      "ms": 2560,
+      "identity": "A.T.O.M\nTelecom planning\nAnkara Plan\nWorking draft\nNo Version\nUnsaved",
+      "status": "Run needed",
+      "rf": "Network · 8 cells\n5G mmWave\n28.0 GHz\nRF details",
+      "api": [
+        "GET /api/meta",
+        "GET /api/datasets",
+        "GET /api/towers",
+        "GET /api/buildings/summary"
+      ]
+    }
+  ],
+  "api": [
+    {
+      "t": 1792237136550,
+      "m": "GET",
+      "p": "/api/meta"
+    },
+    {
+      "t": 1792237136550,
+      "m": "GET",
+      "p": "/api/datasets"
+    },
+    {
+      "t": 1792237136550,
+      "m": "GET",
+      "p": "/api/towers"
+    },
+    {
+      "t": 1792237136550,
+      "m": "GET",
+      "p": "/api/buildings/summary"
+    },
+    {
+      "t": 1792237137883,
+      "m": "POST",
+      "p": "/api/analyze-sector"
+    },
+    {
+      "t": 1792237141080,
+      "m": "POST",
+      "p": "/api/optimize-azimuth"
+    },
+    {
+      "t": 1792237141524,
+      "m": "POST",
+      "p": "/api/analyze-sector"
+    },
+    {
+      "t": 1792237144956,
+      "m": "POST",
+      "p": "/api/evaluate-network"
+    },
+    {
+      "t": 1792237145386,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145417,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145439,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145460,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145486,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145534,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145545,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237145557,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237147768,
+      "m": "POST",
+      "p": "/api/optimize-network"
+    },
+    {
+      "t": 1792237151293,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151323,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151345,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151363,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151381,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151402,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151413,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237151434,
+      "m": "POST",
+      "p": "/api/simulate"
+    },
+    {
+      "t": 1792237185578,
+      "m": "POST",
+      "p": "/api/interference"
+    },
+    {
+      "t": 1792237219877,
+      "m": "GET",
+      "p": "/api/meta"
+    },
+    {
+      "t": 1792237219877,
+      "m": "GET",
+      "p": "/api/datasets"
+    },
+    {
+      "t": 1792237219877,
+      "m": "GET",
+      "p": "/api/towers"
+    },
+    {
+      "t": 1792237219877,
+      "m": "GET",
+      "p": "/api/buildings/summary"
+    }
+  ]
+}

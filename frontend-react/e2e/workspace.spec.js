@@ -4730,10 +4730,10 @@ test("map chrome stays out of map work and never overprints at desktop sizes", a
   }
 });
 
-// Linux-rendered baselines match CI's ubuntu-latest Chromium. Regenerate them in the matching container:
-// docker run --rm -v "$PWD/..:/work" -v /work/frontend-react/node_modules -w /work/frontend-react \
-//   mcr.microsoft.com/playwright:v1.61.1-noble bash -lc "npm ci && npx playwright test e2e/workspace.spec.js -g 'visual baselines' --project=desktop-1440 --update-snapshots"
-// ATOM_VISUAL_DEBUG=1 runs it on other platforms against local, uncommitted baselines.
+// Baselines are rendered by CI's browser job setup (ubuntu-latest, `npx playwright install --with-deps chromium`);
+// other Linux images render text differently. Regenerate them on that runner with
+// `npx playwright test e2e/workspace.spec.js -g "visual baselines" --project=desktop-1440 --update-snapshots=all`
+// and commit the uploaded snapshot directory. ATOM_VISUAL_DEBUG=1 runs it elsewhere against local, uncommitted baselines.
 test("visual baselines for first run, Results and Solutions", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-1440", "Visual baselines set their own desktop sizes");
   test.skip(platform !== "linux" && !env.ATOM_VISUAL_DEBUG, "Screenshot baselines are Linux-rendered to match CI");
@@ -4752,6 +4752,10 @@ test("visual baselines for first run, Results and Solutions", async ({ page }, t
   };
   const capture = async (name) => {
     await settledMapView(page);
+    // Panel scroll position after a tab change depends on timing; capture every scroller from its top.
+    await page.evaluate(() => {
+      for (const element of document.querySelectorAll("*")) if (element.scrollTop) element.scrollTop = 0;
+    });
     await expect(page).toHaveScreenshot(name, {
       animations: "disabled",
       caret: "hide",

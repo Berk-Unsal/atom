@@ -1158,7 +1158,6 @@ a:focus-visible {
   font-size: var(--text-control);
   font-weight: var(--weight-title);
   text-align: right;
-  text-transform: capitalize;
 }
 
 .dataset-panel,
@@ -1184,6 +1183,28 @@ a:focus-visible {
 
 .gap-panel .panel-title svg {
   color: var(--ui-danger, var(--rose));
+}
+
+/* No underserved buildings is a neutral outcome, not an alert. */
+.gap-panel.empty {
+  border-color: var(--line);
+}
+
+.gap-panel.empty .panel-title svg {
+  color: var(--muted);
+}
+
+.gap-panel.empty .gap-summary div {
+  border-color: var(--line);
+  background: var(--surface-raised, #fbfdfc);
+}
+
+.gap-panel.empty .gap-summary span {
+  color: var(--muted);
+}
+
+.gap-panel.empty .gap-summary strong {
+  color: var(--ink);
 }
 
 .report-card {

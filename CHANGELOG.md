@@ -12,6 +12,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Show result units exactly as produced (`dBm`, `m`), present a zero-gap result neutrally with an unavailable Worst Rx, use Cell instead of tower in selection, error and report copy, and state the nearest-to-centre rule when a drawn area holds more Cells than the network limit.
 - Carry an applied optimization solution's azimuths into the plan. Numeric Cell IDs let the previously saved azimuths win, so the next run used the old values; Versions applied before this fix now restore the solution azimuths.
 - Keep the Terminology tab visible across documentation pages and highlight it when selected.
 - Explain recovery after portable-project size and complexity limits, preserve current result context on rejected imports, and link to the unchanged format limits.

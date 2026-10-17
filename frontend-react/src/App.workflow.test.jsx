@@ -1101,6 +1101,53 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("compares two saved Versions from Results while a network result is present, without RF requests", async () => {
+    useNetworkFixture = true;
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    const saveVersion = async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+      const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+      fireEvent.click(within(menu).getByRole("button", { name: "Save Version" }));
+      await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+      fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+    };
+    await saveVersion();
+    openWorkspaceTool("Setup");
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }), { target: { value: "33" } });
+    await saveVersion();
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Compare" }));
+    const compare = screen.getByRole("region", { name: "Compare two states" });
+    const stateA = within(compare).getByRole("combobox", { name: "Compare state A" });
+    const stateB = within(compare).getByRole("combobox", { name: "Compare state B" });
+    expect(stateA).toHaveDisplayValue("Optimization baseline");
+    expect(stateB).toHaveDisplayValue("Recommended solution");
+    expect(within(compare).getByRole("region", { name: "Baseline versus optimized comparison" })).toBeInTheDocument();
+
+    const requestCount = api.postJSON.mock.calls.length;
+    fireEvent.change(stateA, { target: { value: within(stateA).getByRole("option", { name: "Network plan 1 · Version 1" }).value } });
+    fireEvent.change(stateB, { target: { value: within(stateB).getByRole("option", { name: "Network plan 1 · Version 2" }).value } });
+    const inputs = within(compare).getByRole("region", { name: "Input differences" });
+    expect(inputs).toHaveTextContent(/input difference/);
+    expect(inputs).toHaveTextContent("RF and propagation");
+    expect(within(compare).queryByRole("region", { name: "Baseline versus optimized comparison" })).not.toBeInTheDocument();
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+
+    openWorkspaceTool("Scenarios");
+    fireEvent.click(screen.getByText("Compare Scenarios and Versions"));
+    fireEvent.click(screen.getByRole("button", { name: "Compare KPIs and inputs in Results → Compare" }));
+    expect(await screen.findByRole("region", { name: "Compare two states" })).toBeInTheDocument();
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+  });
+
   it("explains score and Pareto actions while reranking, applying and searching explicitly", async () => {
     useNetworkFixture = true;
     const payload = structuredClone(networkOptimizationPayload);

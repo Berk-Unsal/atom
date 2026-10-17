@@ -168,8 +168,13 @@ remain readable. Scenario Undo restores the same saved identity durably
 across reload.</li>
 <li>Input changes mark saved results stale instead of presenting them as
 current.</li>
-<li>Compare exactly two scenarios using KPI deltas and an A/B map
-switch.</li>
+<li>Compare any two states in Results → Compare: the current result, the
+optimization baseline and recommended solution, the inspected Pareto
+alternative, or any saved Version. One view shows KPI deltas from
+retained summaries, the input differences and an A/B map switch; states
+with a different dataset or model version show an incompatibility notice
+instead of deltas. Baseline vs Recommended stays the default after an
+optimization, and choosing sources never starts RF work.</li>
 <li>Promote either comparison side to the active plan without modifying
 the source snapshot.</li>
 </ul>

@@ -17,7 +17,7 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 - Rename, duplicate, delete, import, and export complete projects as versioned `.atom-project.json` files.
 - Result-bearing six-Cell projects use [lossless project file v3](project-format.md) with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload.
 - Input changes mark saved results stale instead of presenting them as current.
-- Compare exactly two scenarios using KPI deltas and an A/B map switch.
+- Compare any two states in Results → Compare: the current result, the optimization baseline and recommended solution, the inspected Pareto alternative, or any saved Version. One view shows KPI deltas from retained summaries, the input differences and an A/B map switch; states with a different dataset or model version show an incompatibility notice instead of deltas. Baseline vs Recommended stays the default after an optimization, and choosing sources never starts RF work.
 - Promote either comparison side to the active plan without modifying the source snapshot.
 
 Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage.

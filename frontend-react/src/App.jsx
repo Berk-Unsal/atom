@@ -56,7 +56,9 @@ import {
 import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
 import { buildResultContext, buildWorkspaceLineage, nextPlanChange, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
 import { readableRunLabel } from "./domain/runLabel.js";
-import { defaultScenarioName } from "./domain/scenario.js";
+import { defaultScenarioName, scenarioRevisionFromLegacySnapshot } from "./domain/scenario.js";
+import { buildComparisonSources } from "./utils/comparisonSources.js";
+import ResultCompareView from "./components/ResultCompareView.jsx";
 import { canonicalSerialize } from "./domain/serialization.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { fitTargetsForCells } from "./utils/mapFit.js";
@@ -3039,6 +3041,31 @@ export default function App() {
     setDrawerOpen(true);
   }, [activeProject, clearSpatialContext, dismissStageChooser, openSavedScenario, workspaceLineage.scenario_id]);
 
+  const compareViewOpen = drawerMode === "tool" && activeTool === "results" && activeResultsView === "compare";
+  const comparisonSources = useMemo(() => {
+    if (!compareViewOpen) return [];
+    const snapshot = hasResults ? buildCurrentScenarioSnapshot() : null;
+    return buildComparisonSources({
+      currentSummary: snapshot?.summary ?? null,
+      currentRevision: snapshot ? scenarioRevisionFromLegacySnapshot(snapshot, { scenarioRevisionId: "current-plan", scenarioId: workspaceLineage.scenario_id ?? "working-draft" }) : null,
+      currentIdentity: { datasetRef: activeProject?.datasetRef ?? appMeta?.dataset ?? null, modelVersion: appMeta?.model_version ?? null },
+      optimization: displayedNetworkOptimization,
+      hasOptimizationComparison: lastAnalysisKind === "network" && Boolean(displayedNetworkOptimization?.baseline),
+      recommendedSolution: recommendedParetoSolution,
+      selectedSolution: selectedParetoSolution,
+      scenarios: activeProject?.scenarios ?? [],
+      runs: runHistory.runs,
+    });
+  }, [activeProject?.datasetRef, activeProject?.scenarios, appMeta?.dataset, appMeta?.model_version, buildCurrentScenarioSnapshot, compareViewOpen, displayedNetworkOptimization, hasResults, lastAnalysisKind, recommendedParetoSolution, runHistory.runs, selectedParetoSolution, workspaceLineage.scenario_id]);
+  const showComparisonSource = useCallback((source) => {
+    if (source?.kind === "recommended") return selectParetoSolution(recommendedSolutionId);
+    if (source?.kind === "alternative") return selectParetoSolution(selectedSolutionId);
+    if (source?.kind !== "version") return undefined;
+    const scenario = (activeProject?.scenarios ?? []).find((candidate) => String(candidate.domain?.scenario_id ?? candidate.id) === String(source.scenarioId));
+    if (scenario && String(scenario.domain?.current_revision_id ?? "") === String(source.revisionId)) return openSavedScenario(scenario);
+    return openScenarioRevision(source.scenarioId, source.revisionId);
+  }, [activeProject?.scenarios, openSavedScenario, openScenarioRevision, recommendedSolutionId, selectParetoSolution, selectedSolutionId]);
+
   const handleBranchScenario = useCallback(async ({ name, revisionId, scenarioId }) => {
     clearSpatialContext();
     try {
@@ -3834,6 +3861,7 @@ export default function App() {
               staleResultRunLabel={resultContext?.freshness === "stale" ? resultContext.run_label : ""}
               onBranchScenario={handleBranchScenario}
               onContinueFromVersion={handleContinueFromVersion}
+              onOpenResultsCompare={() => { setActiveResultsView("compare"); selectWorkspaceTool("results"); }}
               onDeleteScenario={deleteScenarioWithUndo}
               onDuplicateScenario={handleDuplicateScenario}
               onFocusRevision={setFocusedRevisionId}
@@ -4046,7 +4074,6 @@ export default function App() {
               currentWorkspace={workspaceLineage}
               comparison={activeComparison}
               diagnostics={optimizationDiagnostics}
-              isNetworkResult={lastAnalysisKind === "network"}
               isParetoOptimizationResult={isParetoOptimizationResult}
 	              networkOptimization={displayedNetworkOptimization}
 	              networkResultKind={networkResultKind}
@@ -4066,14 +4093,14 @@ export default function App() {
               onApplySolution={applyCurrentOptimizationSolution}
               onApplyRecommendation={applyRecommendation}
               unsupportedInterferenceReason={Number(settings.frequencyGHz) >= 100 ? "Radio-quality output is not defined for the 6G research profile." : ""}
-              onOpenScenario={openSavedScenario}
               onRecommendSites={recommendSites}
               onRerunCurrent={rerunCurrentResult}
               onOpenRun={openRunHistory}
               onSelectParetoSolution={selectParetoSolution}
               recommendations={siteRecommendations}
               recommending={isRecommendingSites}
-              savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
+              comparisonSources={comparisonSources}
+              onShowComparisonSource={showComparisonSource}
               recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > MAX_RECOMMENDATION_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
               simulationResult={simulation}
               stats={stats}
@@ -4551,14 +4578,12 @@ function ResultsPanel({
   gapStats,
   hasRFResults,
   interferenceAnalysis,
-  isNetworkResult,
   isParetoOptimizationResult,
   networkOptimization,
   networkResultKind,
   onExplainCell,
   onApplySolution,
   onApplyRecommendation,
-  onOpenScenario,
   onRecommendSites,
   onSelectParetoSolution,
   onViewChange,
@@ -4573,7 +4598,8 @@ function ResultsPanel({
   onRerunCurrent,
   onOpenRun,
   unsupportedInterferenceReason = "",
-  savedScenarios,
+  comparisonSources = [],
+  onShowComparisonSource,
   selectedSolutionId,
   simulationResult = null,
   stats,
@@ -4690,9 +4716,11 @@ function ResultsPanel({
       ) : null}
 
       {activeView === "compare" ? (
-        isNetworkResult
-          ? <NetworkOptimizationComparisonPanel comparison={comparison} />
-          : <ScenarioComparisonPanel onOpenScenario={onOpenScenario} scenarios={savedScenarios} />
+        <ResultCompareView
+          sources={comparisonSources}
+          onShowSource={onShowComparisonSource}
+          baselinePairView={<NetworkOptimizationComparisonPanel comparison={comparison} />}
+        />
       ) : null}
 
       {activeView === "recommendations" ? (
@@ -4726,44 +4754,6 @@ function ResultsPanel({
   );
 }
 
-function ScenarioComparisonPanel({ onOpenScenario, scenarios }) {
-  const [firstID, setFirstID] = useState("");
-  const [secondID, setSecondID] = useState("");
-  if (scenarios.length < 2) {
-    return <AnalysisEmptyState icon={BarChart3} title="Two scenarios needed" description="Save two planning states from the project menu to compare reproducible KPI deltas." />;
-  }
-  const first = scenarios.find((scenario) => scenario.id === firstID) ?? scenarios[scenarios.length - 2];
-  const second = scenarios.find((scenario) => scenario.id === secondID) ?? scenarios[scenarios.length - 1];
-  const metrics = [
-    ["Average Rx", "avgRxDBm", "dBm"],
-    ["Gap area", "gapPct", "%"],
-    ["Optimization score", "networkScore", "/ 100"],
-    ["Overlap", "overlapBuildings", "buildings"],
-    ["Average SINR", "avgSINRDB", "dB"],
-    ["Serviceable", "serviceablePct", "%"],
-    ["Affected demand", "affectedDemand", ""],
-  ];
-  return (
-    <section className="scenario-comparison" aria-label="Saved scenario comparison">
-      <div className="scenario-selectors">
-        <label><span>Scenario A</span><select value={first.id} onChange={(event) => setFirstID(event.target.value)}>{scenarios.map((scenario) => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}</select></label>
-        <label><span>Scenario B</span><select value={second.id} onChange={(event) => setSecondID(event.target.value)}>{scenarios.map((scenario) => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}</select></label>
-      </div>
-      <div className="scenario-delta-table">
-        {metrics.map(([label, key, unit]) => {
-          const before = Number(first.summary?.[key]);
-          const after = Number(second.summary?.[key]);
-          if (!Number.isFinite(before) && !Number.isFinite(after)) return null;
-          const delta = Number.isFinite(before) && Number.isFinite(after) ? after - before : null;
-          return <div key={key}><span>{label}</span><strong>{formatScenarioMetric(before, unit)}</strong><strong>{formatScenarioMetric(after, unit)}</strong><em>{delta === null ? UNAVAILABLE_VALUE : `${delta >= 0 ? "+" : ""}${formatNumber(delta, 1)} ${unit}`}</em></div>;
-        })}
-      </div>
-      <div className="scenario-map-switch"><button type="button" onClick={() => onOpenScenario(first)}>Show A</button><button type="button" onClick={() => onOpenScenario(second)}>Show B</button></div>
-      <p className="data-note">Map switching restores cached layers when available. Compact older scenarios retain exact requests and require a rerun.</p>
-    </section>
-  );
-}
-
 function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
   const recommendations = response?.recommendations ?? [];
   return (
@@ -4783,10 +4773,6 @@ function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
       {response?.notes?.map((note) => <p className="data-note" key={note}>{note}</p>)}
     </section>
   );
-}
-
-function formatScenarioMetric(value, unit) {
-  return Number.isFinite(value) ? `${formatNumber(value, 1)}${unit ? ` ${unit}` : ""}` : UNAVAILABLE_VALUE;
 }
 
 function OptimizationImpact({ comparison, onViewComparison }) {

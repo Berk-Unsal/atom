@@ -77,16 +77,39 @@ async function inspectMapFocus(page) {
   await page.getByRole("button", { name: "Inspect focused cell" }).click();
 }
 
+// Clicks a map coordinate using the live view: completed results move the map, so positions are never assumed.
 async function clickMapPoint(page, longitude, latitude) {
-  const map = page.locator(".leaflet-container");
-  const mapBox = await map.boundingBox();
+  await page.locator(".leaflet-container").click({ position: await mapPointPosition(page, longitude, latitude) });
+}
+
+async function mapPointPosition(page, longitude, latitude) {
+  const view = await settledMapView(page);
+  const mapBox = await page.locator(".leaflet-container").boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(longitude, latitude, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await map.click({ position: {
-    x: mapBox.width / 2 + target.x - center.x,
-    y: mapBox.height / 2 + target.y - center.y,
-  } });
+  const target = projectMapPoint(longitude, latitude, view.zoom);
+  return {
+    x: mapBox.width / 2 + target.x - view.centerX,
+    y: mapBox.height / 2 + target.y - view.centerY,
+  };
+}
+
+// Leaflet's zoom proxy is translated to the projected map centre and scaled by 2^(zoom - 1).
+async function readMapView(page) {
+  return page.locator(".leaflet-proxy").evaluate((proxy) => {
+    const matrix = new DOMMatrix(getComputedStyle(proxy).transform);
+    return { centerX: matrix.m41, centerY: matrix.m42, zoom: Math.log2(matrix.a) + 1 };
+  });
+}
+
+async function settledMapView(page) {
+  let previous = await readMapView(page);
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    await page.waitForTimeout(150);
+    const current = await readMapView(page);
+    if (current.centerX === previous.centerX && current.centerY === previous.centerY && current.zoom === previous.zoom) return current;
+    previous = current;
+  }
+  return previous;
 }
 
 const optimizationObjectiveStatus = {
@@ -1010,12 +1033,7 @@ test("captures Concept 8B.1 workspace chrome evidence", async ({ page }, testInf
   const map = page.locator(".leaflet-container");
   const mapBox = await map.boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await map.click({ position: {
-    x: mapBox.width / 2 + target.x - center.x,
-    y: mapBox.height / 2 + target.y - center.y,
-  } });
+  await clickMapPoint(page, 32.854, 39.922);
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
   await selectWorkspaceTool(page, "Propagation");
   await page.getByRole("button", { name: "Optimize Network" }).click();
@@ -1098,12 +1116,7 @@ test("inspects cells and opens Inventory without changing the plan", async ({ pa
   const map = page.locator(".leaflet-container");
   const mapBox = await map.boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await map.click({ position: {
-    x: mapBox.width / 2 + target.x - center.x,
-    y: mapBox.height / 2 + target.y - center.y,
-  } });
+  await clickMapPoint(page, 32.854, 39.922);
 
   await expect(inspector).toBeVisible();
   await expect(inspector.getByRole("heading", { name: "Cell cell-2" })).not.toBeFocused();
@@ -1360,12 +1373,7 @@ test("map clicks change the plan only after Select cells is armed", async ({ pag
   const map = page.locator(".leaflet-container");
   const mapBox = await map.boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  const cellTwoClick = {
-    x: mapBox.width / 2 + target.x - center.x,
-    y: mapBox.height / 2 + target.y - center.y,
-  };
+  const cellTwoClick = await mapPointPosition(page, 32.854, 39.922);
   await map.click({ position: cellTwoClick });
   await expect(inspector).toBeVisible();
   await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · Cell cell-1");
@@ -1951,14 +1959,7 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
   const map = page.locator(".leaflet-container");
   const mapBox = await map.boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await map.click({
-    position: {
-      x: mapBox.width / 2 + target.x - center.x,
-      y: mapBox.height / 2 + target.y - center.y,
-    },
-  });
+  await clickMapPoint(page, 32.854, 39.922);
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await projectMenuButton.click();
@@ -2365,12 +2366,7 @@ test("smokes sibling navigation across all four stages", async ({ page }, testIn
   const map = page.locator(".leaflet-container");
   const mapBox = await map.boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await map.click({ position: {
-    x: mapBox.width / 2 + target.x - center.x,
-    y: mapBox.height / 2 + target.y - center.y,
-  } });
+  await clickMapPoint(page, 32.854, 39.922);
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await selectWorkspaceTool(page, "Propagation");
@@ -2538,16 +2534,7 @@ test("explores retained Pareto alternatives with keyboard score help and no hidd
   const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
   if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
   await selectMapInteraction(page, "Select cells");
-  const mapBox = await page.locator(".leaflet-container").boundingBox();
-  expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await page.locator(".leaflet-container").click({
-    position: {
-      x: mapBox.width / 2 + target.x - center.x,
-      y: mapBox.height / 2 + target.y - center.y,
-    },
-  });
+  await clickMapPoint(page, 32.854, 39.922);
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
@@ -2615,16 +2602,7 @@ test("lazily explains a selected cell and reuses it after priority-only changes"
   const closeToolDrawer = page.getByRole("button", { name: "Close tool drawer" });
   if (await closeToolDrawer.isVisible()) await closeToolDrawer.click();
   await selectMapInteraction(page, "Select cells");
-  const mapBox = await page.locator(".leaflet-container").boundingBox();
-  expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await page.locator(".leaflet-container").click({
-    position: {
-      x: mapBox.width / 2 + target.x - center.x,
-      y: mapBox.height / 2 + target.y - center.y,
-    },
-  });
+  await clickMapPoint(page, 32.854, 39.922);
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await page.getByRole("button", { name: "Simulate workspace" }).click();
@@ -3058,12 +3036,7 @@ test("captures post-change Concept 8B chrome and responsive evidence", async ({ 
   const map = page.locator(".leaflet-container");
   const mapBox = await map.boundingBox();
   expect(mapBox).not.toBeNull();
-  const target = projectMapPoint(32.854, 39.922, 12);
-  const center = projectMapPoint(32.8541, 39.9208, 12);
-  await map.click({ position: {
-    x: mapBox.width / 2 + target.x - center.x,
-    y: mapBox.height / 2 + target.y - center.y,
-  } });
+  await clickMapPoint(page, 32.854, 39.922);
   await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
 
   await selectWorkspaceTool(page, "Interference");
@@ -4583,4 +4556,44 @@ test("accessibility smoke: project menu, Setup and Results have no critical axe 
   await selectWorkspaceTool(page, "Results");
   await expect(page.getByRole("dialog", { name: "Results" })).toBeVisible();
   expect(await criticalViolations("dialog.tool-drawer")).toEqual([]);
+});
+
+test("brings a completed sector result into view unless the user moved the map during the run", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The result-fit check runs once at desktop size");
+  // Leaflet scales its zoom proxy by 2^(zoom - 1); reading it avoids depending on canvas-drawn markers.
+  const mapZoom = () => page.locator(".leaflet-proxy").evaluate((proxy) => {
+    const match = getComputedStyle(proxy).transform.match(/matrix\(([^,]+)/);
+    return match ? Math.round((Math.log2(Number(match[1])) + 1) * 10) / 10 : null;
+  });
+  const settledZoom = async () => {
+    let previous = await mapZoom();
+    for (;;) {
+      await page.waitForTimeout(300);
+      const current = await mapZoom();
+      if (current === previous) return current;
+      previous = current;
+    }
+  };
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  const before = await settledZoom();
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+  // A 400 m planning radius needs a much closer view than the city-wide start.
+  await expect.poll(mapZoom).toBeGreaterThanOrEqual(before + 2);
+  const fitted = await settledZoom();
+
+  // A slowed second run: zooming out while it runs keeps the user's view instead of refitting.
+  await page.route("**/api/analyze-sector", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await route.fallback();
+  });
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await page.getByRole("button", { name: "Zoom out" }).click();
+  const userZoom = await settledZoom();
+  expect(userZoom).toBeLessThan(fitted);
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible({ timeout: 10_000 });
+  await page.waitForTimeout(800);
+  expect(await settledZoom()).toBe(userZoom);
 });

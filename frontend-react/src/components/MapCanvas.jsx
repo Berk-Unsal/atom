@@ -1,7 +1,8 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
-import { circleMarker, divIcon, latLngBounds } from "leaflet";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { circleMarker, divIcon } from "leaflet";
 import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { getJSON } from "../utils/apiClient.js";
+import { boundsForFitTargets, shouldApplyFit } from "../utils/mapFit.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
 import { cellMarkerPresentation } from "./cellMarkerPresentation.js";
 import { filterRayFeatures, rayPresentation, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
@@ -43,7 +44,7 @@ export default function MapCanvas({
   layerVisibility,
   selectedMapObject,
   onSelectMapObject,
-  fitRequestVersion,
+  fitRequest,
   inventoryEditingCellId = null,
   interference,
   interferenceDemand,
@@ -80,12 +81,7 @@ export default function MapCanvas({
       <PathEndpointSelectionLayer active={isSelectingPathEndpoint} onSelect={onSelectPathEndpoint} />
       <MapViewportRequestLayer request={mapViewportRequest} />
       <ViewportBoundsLayer onBoundsChange={onViewportBoundsChange} />
-      <FitSelectionLayer
-        fitRequestVersion={fitRequestVersion}
-        selectedNetworkTowerIds={selectedNetworkTowerIds}
-        selectedTower={selectedTower}
-        towers={towers}
-      />
+      <FitSelectionLayer fitRequest={fitRequest} />
 
       {layerVisibility?.surfaces === false ? null : (
         <CoverageSurfaceLayer
@@ -555,30 +551,46 @@ function MeasurementLayer({ measurements, onSelectMapObject, selectedMapObject }
   });
 }
 
-function FitSelectionLayer({ fitRequestVersion, selectedNetworkTowerIds, selectedTower, towers }) {
+const USER_PAN_KEYS = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "+", "-", "="]);
+
+function FitSelectionLayer({ fitRequest }) {
   const map = useMap();
+  const handledVersionRef = useRef(0);
+  const lastUserMoveRef = useRef(0);
+
+  // Only user gestures count as moving the map; programmatic fits and setView calls do not.
+  useEffect(() => {
+    const container = map.getContainer();
+    const markUserMove = () => { lastUserMoveRef.current = Date.now(); };
+    const markKeyboardMove = (event) => { if (USER_PAN_KEYS.has(event.key)) markUserMove(); };
+    const markZoomControl = (event) => { if (event.target?.closest?.(".leaflet-control-zoom")) markUserMove(); };
+    const markPinch = (event) => { if (event.touches?.length > 1) markUserMove(); };
+    map.on("dragstart", markUserMove);
+    container.addEventListener("wheel", markUserMove, { passive: true });
+    container.addEventListener("dblclick", markUserMove);
+    container.addEventListener("keydown", markKeyboardMove);
+    // Leaflet controls stop click propagation, so listen in the capture phase.
+    container.addEventListener("click", markZoomControl, true);
+    container.addEventListener("touchstart", markPinch, { passive: true });
+    return () => {
+      map.off("dragstart", markUserMove);
+      container.removeEventListener("wheel", markUserMove);
+      container.removeEventListener("dblclick", markUserMove);
+      container.removeEventListener("keydown", markKeyboardMove);
+      container.removeEventListener("click", markZoomControl, true);
+      container.removeEventListener("touchstart", markPinch);
+    };
+  }, [map]);
 
   useEffect(() => {
-    if (!fitRequestVersion) {
+    if (!shouldApplyFit(fitRequest, handledVersionRef.current, lastUserMoveRef.current)) {
+      if (fitRequest?.version) handledVersionRef.current = fitRequest.version;
       return;
     }
-    const selected = towers.filter((tower) => selectedNetworkTowerIds.includes(tower.id));
-    const targets = selected.length > 0 ? selected : selectedTower ? [selectedTower] : [];
-    const points = targets
-      .map((tower) => {
-        const [lon, lat] = tower.coordinates ?? [];
-        return Number.isFinite(lon) && Number.isFinite(lat) ? [lat, lon] : null;
-      })
-      .filter(Boolean);
-    if (points.length === 0) {
-      return;
-    }
-    if (points.length === 1) {
-      map.setView(points[0], Math.max(map.getZoom(), 14), { animate: true });
-      return;
-    }
-    map.fitBounds(latLngBounds(points), { maxZoom: 15, padding: [42, 42] });
-  }, [fitRequestVersion, map, selectedNetworkTowerIds, selectedTower, towers]);
+    handledVersionRef.current = fitRequest.version;
+    const bounds = boundsForFitTargets(fitRequest.targets);
+    if (bounds) map.fitBounds(bounds, { maxZoom: 17, padding: [42, 42] });
+  }, [fitRequest, map]);
 
   return null;
 }

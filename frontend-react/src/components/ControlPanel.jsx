@@ -1,5 +1,6 @@
 import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
+import { formatCompactNumber, formatMetric } from "../utils/appWorkspace.js";
 import { MAX_NETWORK_CELLS } from "../utils/networkSelection.js";
 import { defaultPropagationModelForFrequency } from "../utils/rfProfile.js";
 import OptimizationOperationFeedback from "./OptimizationOperationFeedback.jsx";
@@ -18,6 +19,8 @@ export default function ControlPanel({
   networkOptimizationOperation = null,
   isAnalyzingInterference,
   interferenceApplicable,
+  interferenceStats = null,
+  onOpenInterferenceResults,
   optimizationConfigValid = true,
   networkSelectionCount,
   isSelectingCellsOnMap = false,
@@ -335,6 +338,17 @@ export default function ControlPanel({
                 <Activity size={16} className={isAnalyzingInterference ? "spin" : ""} />
                 <span>{isAnalyzingInterference ? "Analyzing..." : "Analyze Interference"}</span>
               </button>
+              {interferenceStats && !isAnalyzingInterference ? (
+                <section className="interference-summary" role="status" aria-label="Interference result summary">
+                  <strong>Interference analyzed</strong>
+                  <dl>
+                    <div><dt>Serviceable surface</dt><dd>{formatMetric(interferenceStats.serviceable_pct, "%")}</dd></div>
+                    <div><dt>Average SINR</dt><dd>{formatMetric(interferenceStats.avg_sinr_db, "dB")}</dd></div>
+                    <div><dt>Affected demand</dt><dd>{formatCompactNumber(interferenceStats.affected_demand)}</dd></div>
+                  </dl>
+                  <button type="button" className="selection-map-action" onClick={onOpenInterferenceResults}>Open in Results</button>
+                </section>
+              ) : null}
               {networkSelectionCount < 2 ? (
                 <>
                   <p className="selection-note">Requires at least two selected cells.</p>

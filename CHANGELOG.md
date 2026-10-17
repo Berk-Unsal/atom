@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Explain normalized network scores, Pareto trade-offs, local reranking and explicit apply/search actions with accessible Results help.
 - Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers.
 
 ### Fixed

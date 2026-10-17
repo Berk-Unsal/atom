@@ -8228,6 +8228,11 @@ div.project-menu-message {
 .optimization-meanings summary { min-height: 30px; color: var(--muted); font-size: var(--text-meta); }
 .optimization-meanings ul { display: grid; gap: var(--space-1); padding-left: var(--space-4); margin: var(--space-1) 0 0; color: var(--muted); font-size: var(--text-meta); line-height: 1.4; }
 
+.optimization-help summary { min-height: 30px; padding: var(--space-1) 0; color: var(--slate); font-size: var(--text-meta); }
+.optimization-help-content { display: grid; gap: var(--space-2); color: var(--slate); font-size: var(--text-body); line-height: 1.5; }
+.optimization-help-content p, .optimization-help-content ul { margin: 0; }
+.optimization-help-content ul { display: grid; gap: var(--space-2); padding-left: var(--space-4); }
+
 .dataset-panel { gap: var(--space-2); padding: 0; border: 0; border-radius: 0; background: transparent; }
 .dataset-primary { gap: var(--space-2); }
 .dataset-primary .quality-meter { min-height: 30px; margin: 0; padding: var(--space-1) var(--space-2); }

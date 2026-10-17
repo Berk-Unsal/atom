@@ -28,6 +28,7 @@ import { KeyValueRows, TechnicalDetails, ToolSection } from "./components/ToolPr
 import { DARK_BASEMAP_ID, DEFAULT_BASEMAP_ID } from "./components/basemaps.js";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
+import { OptimizationScoreHelp, ParetoAlternativesHelp } from "./components/OptimizationHelp.jsx";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
 import SurfacePanel from "./components/SurfacePanel.jsx";
 import {
@@ -4828,6 +4829,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
       <p className="data-note">
         Non-dominated solutions represent different valid trade-offs. The highest score for the current priorities is recommended.
       </p>
+      <ParetoAlternativesHelp />
       <div className="pareto-role-legend" aria-label="Optimization solution roles">
         <p><strong>Recommended</strong><span>Highest-ranked feasible solution under current priorities.</span></p>
         <p><strong>Selected</strong><span>Solution currently being inspected.</span></p>
@@ -4928,6 +4930,7 @@ function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constrain
         <span>Optimization score</span>
         <strong>{formatParetoScore(solution)} / 100</strong>
       </div>
+      <OptimizationScoreHelp />
       <div className="pareto-detail-section">
         <span className="pareto-detail-section-title">Objective performance</span>
         <div className="pareto-objective-detail-grid">
@@ -5187,6 +5190,7 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
         <span>{isSingleEvaluation ? "Evaluation score" : "Optimization score"}</span>
         <strong>{score}</strong>
       </div>
+      <OptimizationScoreHelp />
       <div className="optimization-result-summary">
         <span className={!constraintsConfigured ? "constraint-state not-configured" : outcome.constraints_satisfied === false ? "constraint-state failed" : "constraint-state passed"}>
           {stateLabel}

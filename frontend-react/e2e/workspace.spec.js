@@ -6,7 +6,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import { Buffer } from "node:buffer";
-import { cwd, env } from "node:process";
+import { cwd, env, platform } from "node:process";
 
 const towers = {
   type: "FeatureCollection",
@@ -3577,8 +3577,19 @@ test("Concept 8H keeps the primary action through every stage and runs the empty
   }
   expect(requests).toHaveLength(0);
   const tabs = page.getByRole("tablist", { name: "Result views" });
-  const positions = await tabs.getByRole("tab").evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().y));
-  expect(new Set(positions).size).toBe(1);
+  // #105: tabs wrap instead of scrolling, so every tab stays fully visible in at most two rows.
+  const tabLayout = await tabs.evaluate((list) => {
+    const bounds = list.getBoundingClientRect();
+    const boxes = [...list.querySelectorAll('[role="tab"]')].map((tab) => tab.getBoundingClientRect());
+    return {
+      rows: new Set(boxes.map((box) => Math.round(box.y))).size,
+      clipped: boxes.filter((box) => box.left < bounds.left - 0.5 || box.right > bounds.right + 0.5).length,
+      overflow: list.scrollWidth - list.clientWidth,
+    };
+  });
+  expect(tabLayout.rows).toBeLessThanOrEqual(2);
+  expect(tabLayout.clipped).toBe(0);
+  expect(tabLayout.overflow).toBeLessThanOrEqual(0);
   const viewportWidth = page.viewportSize().width;
   if (viewportWidth > 640 && viewportWidth <= 900) {
     const spatial = await page.locator(".focused-map-toolbar .spatial-tools").boundingBox();
@@ -4654,4 +4665,132 @@ test("connection and server failures explain the cause and recover on request", 
   await page.route("**/api/analyze-sector", (route) => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "internal error" }) }));
   await page.getByRole("button", { name: "Run Sector" }).click();
   await expect(page.getByRole("alert").first()).toContainText("The planning API returned a server error (500): internal error. Try again; if it keeps failing, check the backend logs.");
+});
+
+test("map chrome stays out of map work and never overprints at desktop sizes", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The chrome layout check sets its own desktop sizes");
+  const overlaps = (a, b) => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+
+  // The Map key lets drawing clicks through to the map while an area is being drawn.
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  await selectMapInteraction(page, "Select cells");
+  await page.getByRole("button", { name: "Draw selection area" }).click();
+  const legend = page.getByRole("region", { name: "Map key" });
+  await expect(legend).toHaveClass(/passive/);
+  const legendHitsMap = await legend.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+    return Boolean(hit?.closest(".leaflet-container"));
+  });
+  expect(legendHitsMap).toBe(true);
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(legend).not.toHaveClass(/passive/);
+
+  for (const [width, height] of [[1280, 800], [1024, 768]]) {
+    for (const colorScheme of ["light", "dark"]) {
+      await page.setViewportSize({ width, height });
+      await page.emulateMedia({ colorScheme });
+      await page.goto("/");
+      await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+      await page.getByRole("button", { name: "Run Sector" }).click();
+      await expect(page.locator(".run-state")).toHaveText("Ready");
+
+      const groups = await page.locator(".command-bar .command-group").evaluateAll((elements) => elements
+        .filter((element) => element.getBoundingClientRect().width > 0)
+        .map((element) => { const box = element.getBoundingClientRect(); return { label: element.getAttribute("aria-label"), left: box.left, right: box.right, top: box.top, bottom: box.bottom }; }));
+      for (let first = 0; first < groups.length; first += 1) {
+        for (let second = first + 1; second < groups.length; second += 1) {
+          expect(overlaps(groups[first], groups[second]), `${groups[first].label} overlaps ${groups[second].label} at ${width}×${height} ${colorScheme}`).toBe(false);
+        }
+      }
+      const [primary, details] = await Promise.all([
+        page.locator(".rf-context-primary").evaluate((element) => element.getBoundingClientRect().toJSON()),
+        page.locator(".rf-context-details > summary").evaluate((element) => element.getBoundingClientRect().toJSON()),
+      ]);
+      expect(primary.right, `RF context overprints RF details at ${width}×${height} ${colorScheme}`).toBeLessThanOrEqual(details.left + 1);
+
+      await selectWorkspaceTool(page, "Results");
+      const tabs = await page.getByRole("tablist", { name: "Result views" }).evaluate((list) => {
+        const box = list.getBoundingClientRect();
+        return {
+          scrolls: list.scrollWidth > list.clientWidth + 1,
+          clipped: [...list.querySelectorAll('[role="tab"]')].filter((tab) => {
+            const tabBox = tab.getBoundingClientRect();
+            return tabBox.left < box.left - 1 || tabBox.right > box.right + 1;
+          }).map((tab) => tab.textContent),
+        };
+      });
+      expect(tabs, `Results tabs at ${width}×${height}`).toEqual({ scrolls: false, clipped: [] });
+
+      const legendScroll = await legend.evaluate((element) => ({ overflowY: getComputedStyle(element).overflowY, scrollHeight: element.scrollHeight, clientHeight: element.clientHeight }));
+      expect(["auto", "scroll"]).toContain(legendScroll.overflowY);
+    }
+  }
+});
+
+// Linux-rendered baselines match CI's ubuntu-latest Chromium. Regenerate them in the matching container:
+// docker run --rm -v "$PWD/..:/work" -v /work/frontend-react/node_modules -w /work/frontend-react \
+//   mcr.microsoft.com/playwright:v1.61.1-noble bash -lc "npm ci && npx playwright test e2e/workspace.spec.js -g 'visual baselines' --project=desktop-1440 --update-snapshots"
+// ATOM_VISUAL_DEBUG=1 runs it on other platforms against local, uncommitted baselines.
+test("visual baselines for first run, Results and Solutions", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "Visual baselines set their own desktop sizes");
+  test.skip(platform !== "linux" && !env.ATOM_VISUAL_DEBUG, "Screenshot baselines are Linux-rendered to match CI");
+  test.setTimeout(180_000);
+  const resetWorkspace = async () => {
+    if (!page.url().startsWith("http")) return;
+    await page.evaluate(async () => {
+      const databases = await indexedDB.databases();
+      await Promise.all(databases.map((database) => new Promise((resolve) => {
+        const request = indexedDB.deleteDatabase(database.name);
+        request.onsuccess = request.onerror = request.onblocked = () => resolve();
+      })));
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+  };
+  const capture = async (name) => {
+    await settledMapView(page);
+    await expect(page).toHaveScreenshot(name, {
+      animations: "disabled",
+      caret: "hide",
+      maxDiffPixelRatio: 0.02,
+      // Run identifiers and timestamps change on every run.
+      mask: [page.locator(".command-status"), page.getByRole("region", { name: "CURRENT context" })],
+    });
+  };
+  for (const [width, height] of [[1440, 900], [1280, 800], [1024, 768]]) {
+    for (const colorScheme of ["light", "dark"]) {
+      await page.setViewportSize({ width, height });
+      await page.emulateMedia({ colorScheme });
+      // Each capture starts from a fresh workspace so restored plans and map views cannot leak between them.
+      await resetWorkspace();
+      await page.goto("/");
+      await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+      await capture(`first-run-${width}-${colorScheme}.png`);
+
+      await page.getByRole("button", { name: "Run Sector" }).click();
+      await expect(page.locator(".run-state")).toHaveText("Ready");
+      await selectWorkspaceTool(page, "Results");
+      await capture(`results-${width}-${colorScheme}.png`);
+
+      // Select the second Cell with the map zoomed in so the fixture Cells are clearly separated.
+      await resetWorkspace();
+      await page.goto("/");
+      await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+      await page.getByRole("button", { name: "Network mode, 0 selected" }).click();
+      await page.getByRole("button", { name: "Close tool drawer" }).click();
+      await selectMapInteraction(page, "Select cells");
+      for (let step = 0; step < 3; step += 1) await page.getByRole("button", { name: "Zoom in" }).click();
+      await clickMapPoint(page, 32.854, 39.922);
+      await expect(page.getByText(/Network · 2 cells/)).toBeVisible();
+      await selectWorkspaceTool(page, "Propagation");
+      await page.getByRole("button", { name: "Optimize Network" }).click();
+      await expect(page.getByRole("button", { name: "Optimize Network" })).toBeEnabled();
+      await selectWorkspaceTool(page, "Results");
+      await page.getByRole("tab", { name: "Solutions" }).click();
+      await capture(`solutions-${width}-${colorScheme}.png`);
+    }
+  }
 });

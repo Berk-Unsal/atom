@@ -1057,14 +1057,14 @@ export function MapToolbar({
   );
 }
 
-export function MapLegend({ collapsed, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, receiverSensitivityDBm = -115, resultContext = null, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
+export function MapLegend({ collapsed, passive = false, hasGaps, hasInterferenceData, hasRays, hasSignalSurface, metric, onToggle, planningMode, receiverSensitivityDBm = -115, resultContext = null, surface, surfaceCellId, surfaceDisplayThresholdDBm = -110 }) {
   const legends = {
     sinr: ["< 0", "0–13", "13–20", "≥ 20 dB"],
     rsrp: ["< -100", "-100–-90", "-90–-80", "≥ -80 dBm"],
     rsrq: ["< -20", "-20–-15", "-15–-10", "≥ -10 dB"],
   };
   return (
-    <aside className={`focused-map-legend ${collapsed ? "collapsed" : ""}`} role="region" aria-label="Map key">
+    <aside className={`focused-map-legend ${collapsed ? "collapsed" : ""}${passive ? " passive" : ""}`} role="region" aria-label="Map key">
       <button type="button" onClick={onToggle} aria-expanded={!collapsed} aria-controls="map-legend-content">
         <strong>Map key</strong>
         {collapsed ? <ChevronUp size={14} /> : <ChevronDown size={14} />}

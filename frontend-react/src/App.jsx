@@ -3741,6 +3741,7 @@ export default function App() {
           ) : null}
           <MapLegend
             collapsed={legendCollapsed}
+            passive={specialMapToolArmed}
             hasGaps={layerVisibility.gaps && Boolean(coverageGaps.geojson?.features?.length)}
             hasInterferenceData={layerVisibility.interference && hasInterferenceData}
             hasRays={layerVisibility.rays && visibleRayFeatures.length > 0}

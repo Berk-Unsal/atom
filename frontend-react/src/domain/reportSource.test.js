@@ -216,6 +216,13 @@ describe("Concept 7D report source boundary", () => {
     expect(semanticOutput.sourceBinding).toEqual(reportGolden.before.sourceBinding);
     expect(semanticOutput.selectedSolutionId).toBe(reportGolden.before.view.selectedSolutionId);
     expect(semanticOutput.paretoSolutionIds).toEqual(reportGolden.before.view.paretoIds);
-    expect(semanticOutput.markdown).toEqual(reportGolden.before.markdown);
+    // The Concept 7J golden (historical evidence, left unchanged) captured the renderer before #102 removed
+    // inline SVG maps and duplicated sections from Markdown. Binding and solution identity above still match it.
+    expect(reportGolden.before.markdown.sha256).toBe("75a905afc44e60d80a23644e3d203efe5770db347fd363044511fe7c160a2b6c");
+    expect(semanticOutput.markdown).toEqual({
+      sha256: "73b4f7c4ed6456a1f99e235179bfc1d1e3a7722cb14f0af07ce8b48ac581d699",
+      utf8Bytes: 4959,
+    });
+    expect(normalizedMarkdown).not.toMatch(/<svg|<path/);
   });
 });

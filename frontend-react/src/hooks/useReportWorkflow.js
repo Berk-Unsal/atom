@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { createReportDefinition } from "../domain/report.js";
+import { namingForSource } from "../utils/downloadNames.js";
 
 const loadReportExportModule = () => importDeferredModule(() => import("../utils/reportExport.js"));
 const loadReportArtifactModule = () => importDeferredModule(() => import("../utils/reportArtifact.js"));
@@ -40,20 +41,35 @@ export default function useReportWorkflow({
     return compatible.filter((run) => run.run_type === type).slice(0, 1);
   }, [activeScenario?.domain?.current_revision_id, planDirty, planningMode, runHistoryRuns]);
 
+  // One lineage for the current Report: the definition stores it and the Report source card shows it.
+  const currentReportSource = useMemo(() => {
+    const revisionID = planDirty ? null : activeScenario?.domain?.current_revision_id ?? null;
+    const revision = revisionID
+      ? activeScenario?.domain?.revisions?.find((candidate) => String(candidate.scenario_revision_id) === String(revisionID))
+      : null;
+    return {
+      project_id: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+      scenario_id: activeScenario?.domain?.scenario_id ?? activeScenario?.id ?? null,
+      scenario_name: activeScenario?.name ?? activeProject?.name ?? null,
+      scenario_revision_id: revisionID,
+      version_label: revisionID ? `Version ${revision?.revision ?? activeScenario?.domain?.revision ?? "unavailable"}` : null,
+      run_ids: revisionID ? currentReportRuns.map((run) => run.run_id) : [],
+      runs: revisionID ? currentReportRuns : [],
+    };
+  }, [activeProject?.domain?.project_id, activeProject?.id, activeProject?.name, activeScenario, currentReportRuns, planDirty]);
+
   const createPlanningReport = useCallback(async () => {
     const { buildPlanningReport } = await loadReportExportModule();
     return buildPlanningReport(currentReportInputs ?? {});
   }, [currentReportInputs]);
 
   const createCurrentReportDefinition = useCallback((report) => {
-    const projectID = activeProject?.domain?.project_id ?? activeProject?.id ?? null;
-    const scenarioID = activeScenario?.domain?.scenario_id ?? activeScenario?.id ?? null;
-    const revisionID = planDirty ? null : activeScenario?.domain?.current_revision_id ?? null;
+    const { project_id: projectID, scenario_id: scenarioID, scenario_revision_id: revisionID, run_ids: runIDs } = currentReportSource;
     return createReportDefinition({
       project_id: projectID,
       scenario_id: scenarioID,
       scenario_revision_id: revisionID,
-      run_ids: planDirty ? [] : currentReportRuns.map((run) => run.run_id),
+      run_ids: runIDs,
       title: report?.view?.title ?? (planningMode === "network" ? "Network planning report" : "Single-cell RF planning report"),
       sections: ["executive_summary", "evidence", "result", "configuration", "methodology"],
       presentation_options: { formats: ["markdown", "html"] },
@@ -63,15 +79,16 @@ export default function useReportWorkflow({
         project_id: projectID,
         scenario_id: scenarioID,
         scenario_revision_id: revisionID,
-        run_ids: planDirty ? [] : currentReportRuns.map((run) => run.run_id),
+        run_ids: runIDs,
         source_kind: revisionID ? "scenario_revision" : "live_compatibility",
       },
     });
-  }, [activeProject, activeScenario, currentReportRuns, planDirty, planningMode]);
+  }, [currentReportSource, planningMode]);
 
   const persistReportArtifact = useCallback(async ({ report, definition, format, download = true } = {}) => {
     const { buildReportArtifactOutput } = await loadReportArtifactModule();
-    const output = buildReportArtifactOutput({ report, reportDefinition: definition, format });
+    const naming = namingForSource(activeProject, definition?.scenario_id, definition?.scenario_revision_id);
+    const output = buildReportArtifactOutput({ report, reportDefinition: definition, format, naming });
     const saved = await saveArtifact(output.artifact, output.bytes);
     if (!saved) {
       setReportWarning("Report generated, but its artifact was not retained locally. The current output is still available for download.");
@@ -96,7 +113,7 @@ export default function useReportWorkflow({
       openStoredHtmlReport(saved, output.bytes);
     }
     return saved;
-  }, [onArtifactSelected, saveArtifact]);
+  }, [activeProject, onArtifactSelected, saveArtifact]);
 
   const exportCurrentMarkdown = useCallback(async () => {
     try {
@@ -242,7 +259,7 @@ export default function useReportWorkflow({
   }, [deleteArtifact, onArtifactSelected, selectedArtifactId]);
 
   return {
-    state: { reportDefinitions, reportWarning },
+    state: { currentReportSource, reportDefinitions, reportWarning },
     actions: {
       createPlanningReport,
       deleteArtifact: deleteArtifactWithConfirmation,

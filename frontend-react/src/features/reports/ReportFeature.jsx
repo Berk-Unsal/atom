@@ -1,6 +1,6 @@
 import { AlertTriangle, Download, FileText } from "lucide-react";
 import ReportArtifactsPanel from "../../components/ReportArtifactsPanel.jsx";
-import ResultContextBadge from "../../components/ResultContextBadge.jsx";
+import { reportLineageLine } from "../../utils/reportLineage.js";
 
 export default function ReportFeature(props) {
   return <ReportExportPanel {...props} />;
@@ -21,7 +21,7 @@ function ReportExportPanel({
   onExportPdf,
   reportWarning,
   currentWorkspace,
-  currentResultContext,
+  currentReportSource = null,
   runs,
   scenarios,
   selectedArtifactId,
@@ -40,12 +40,15 @@ function ReportExportPanel({
       </p>
       <div className="report-source-summary" aria-label="Report source">
         <strong>Report source</strong>
-        {currentWorkspace?.unsaved || !currentWorkspace?.scenario_revision_id ? (
+        {/* The same lineage the generated Report stores and lists under Reports. */}
+        <p className="report-source-lineage">{reportLineageLine({
+          scenarioName: currentReportSource?.scenario_name,
+          versionLabel: currentReportSource?.version_label,
+          runIds: currentReportSource?.run_ids,
+          runs: currentReportSource?.runs ?? runs,
+        })}</p>
+        {currentReportSource?.scenario_revision_id ? null : (
           <p className="report-live-source"><b>Current unsaved plan</b><span>This Report will not be tied to a saved Version.</span></p>
-        ) : currentResultContext?.freshness === "current" ? (
-          <ResultContextBadge context={currentResultContext} />
-        ) : (
-          <p>{currentWorkspace.scenario_name} · {currentWorkspace.version_label}. A Report records its source Run when one is available.</p>
         )}
       </div>
       {reportWarning ? (

@@ -3427,7 +3427,7 @@ export default function App() {
     onHistoricalReportCreated: focusHistoricalReport,
   });
   const {
-    state: { reportDefinitions, reportWarning },
+    state: { currentReportSource, reportDefinitions, reportWarning },
     actions: {
       deleteArtifact: deleteReportArtifact,
       downloadArtifact: downloadStoredReportArtifact,
@@ -4119,7 +4119,7 @@ export default function App() {
                 onExportPdf: exportPdfReport,
                 reportWarning,
                 currentWorkspace: workspaceLineage,
-                currentResultContext: resultContext,
+                currentReportSource,
                 runs: runHistory.runs,
                 scenarios: activeProject?.scenarios ?? [],
                 selectedArtifactId,

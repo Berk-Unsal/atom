@@ -4597,3 +4597,33 @@ test("brings a completed sector result into view unless the user moved the map d
   await page.waitForTimeout(800);
   expect(await settledZoom()).toBe(userZoom);
 });
+
+test("report and project downloads are named for people and share one lineage line", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The shareable-download check runs once at desktop size");
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.locator(".run-state")).toHaveText("Ready");
+
+  const trigger = page.getByRole("button", { name: /^Project menu/ });
+  await trigger.click();
+  const menu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await menu.getByRole("button", { name: "Save Version" }).click();
+  await expect(menu.getByRole("status")).toHaveText("Version saved");
+  const projectDownload = page.waitForEvent("download");
+  await menu.getByRole("button", { name: "Export" }).click();
+  expect((await projectDownload).suggestedFilename()).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}\.atom-project\.json$/);
+  await trigger.click();
+
+  await selectWorkspaceTool(page, "Report");
+  const sourceLine = await page.locator(".report-source-lineage").innerText();
+  expect(sourceLine).toMatch(/^Sector plan 1 · Version 1 · Runs: /);
+  const reportDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Markdown", exact: true }).click();
+  const report = await reportDownload;
+  expect(report.suggestedFilename()).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-report\.md$/);
+  const markdown = await readFile(await report.path(), "utf8");
+  expect(markdown).not.toMatch(/<svg|<path/);
+  expect(markdown.match(/^## RF Result$/gm)).toHaveLength(1);
+  await expect(page.getByRole("list", { name: "Reports" }).getByRole("listitem").first()).toContainText(sourceLine);
+});

@@ -24,6 +24,7 @@ export default function ScenarioPanel({
   onFocusRevision,
   onOpenReport,
   onOpenReports,
+  onOpenResultsCompare,
   onOpenRun,
   onOpenScenario,
   onRenameScenario,
@@ -261,8 +262,9 @@ export default function ScenarioPanel({
         previousRevision={previousRevisionFor(selectedRevision, scenarioRecords, scenarios)}
       /> : null}
 
-      {scenarios.length > 1 ? <details className="scenario-secondary-details">
+      {scenarios.length > 1 || scenarioRecords.length > 1 ? <details className="scenario-secondary-details">
         <summary>Compare Scenarios and Versions</summary>
+        {onOpenResultsCompare ? <button type="button" className="scenario-text-button" onClick={onOpenResultsCompare}>Compare KPIs and inputs in Results → Compare</button> : null}
         <ScenarioCompare
           compareA={compareScenarioAID}
           compareB={compareScenarioBID}

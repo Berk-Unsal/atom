@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "audit": "A.T.O.M product capability, UX and growth audit",
+  "date": "2026-10-17",
+  "head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+  "version": "0.12.3",
+  "audit_lock_sha256": "c7f03dd0a9eeb935054d82dd6ba7f10402e6b35d0bb87f4f35bcc0eaf9496d9c",
+  "audit_only": true,
+  "github_mutations": [],
+  "runtime": {
+    "image": "atom:product-audit-d076397",
+    "url": "http://127.0.0.1:18090",
+    "api_meta_application_version": "0.12.3"
+  },
+  "verdict": "C. PRODUCT WORKFLOW GAPS",
+  "verdict_rationale": "Capabilities are broad and scientifically disciplined, and the run/optimize engines feel fast and well-instrumented, but the core loop breaks at transitions: results land off-screen, Pareto alternatives cannot be adopted after the default path, results do not survive reload, comparison is unreachable with network results, and shared artifacts are poorly named.",
+  "capability_count": 38,
+  "maturity_counts": {
+    "COMPLETE": 6,
+    "FUNCTIONAL BUT ROUGH": 23,
+    "HIDDEN / POORLY EXPOSED": 5,
+    "PARTIAL": 1,
+    "EXPERIMENTAL": 3
+  },
+  "friction_count": 34,
+  "high_severity_friction": [
+    "F01",
+    "F02",
+    "F04",
+    "F05",
+    "F06",
+    "F08"
+  ],
+  "top10": [
+    "O01+O02",
+    "O03",
+    "O04",
+    "O05",
+    "O07",
+    "O08",
+    "O06",
+    "O09",
+    "O10",
+    "O11"
+  ],
+  "new_feature_shortlist": [
+    "O16",
+    "O17",
+    "O18",
+    "O19"
+  ],
+  "quick_wins": [
+    "QW1",
+    "QW2",
+    "QW3",
+    "QW4",
+    "QW5",
+    "QW6",
+    "QW7",
+    "QW8",
+    "QW9",
+    "QW10"
+  ],
+  "roadmap": {
+    "NOW": [
+      "O01",
+      "O02",
+      "O03",
+      "O07",
+      "O08",
+      "O09",
+      "O10",
+      "O13",
+      "O15"
+    ],
+    "NEXT": [
+      "O04",
+      "O05",
+      "O06",
+      "O11",
+      "O12",
+      "O14",
+      "O17"
+    ],
+    "LATER": [
+      "O16",
+      "O18",
+      "O19",
+      "O20",
+      "O21"
+    ],
+    "RESEARCH": [
+      "O22",
+      "O23"
+    ],
+    "REJECTED": [
+      "O24",
+      "O25",
+      "O26",
+      "O27",
+      "O28"
+    ]
+  },
+  "candidate_issue_count": 17,
+  "measured_timings_ms": {
+    "initial_dom_ready": 100,
+    "initial_network_idle": 1071,
+    "run_sector": "167–281",
+    "auto_optimize_sector": 1830,
+    "evaluate_network_8_cells": 820,
+    "optimize_network_8_cells": "5139–6148",
+    "interference": 1755,
+    "reload_to_ready": 2560
+  },
+  "artifacts": {
+    "report": "docs/product-capability-ux-growth-audit.md",
+    "capability_inventory": "scripts/product-capability-ux-growth-audit/capability-inventory.json",
+    "friction_map": "scripts/product-capability-ux-growth-audit/friction-map.json",
+    "product_opportunities": "scripts/product-capability-ux-growth-audit/product-opportunities.json",
+    "candidate_issues": "scripts/product-capability-ux-growth-audit/candidate-issues.json",
+    "audit_lock": "scripts/product-capability-ux-growth-audit/audit-lock.json",
+    "browser_traces": "scripts/product-capability-ux-growth-audit/traces/",
+    "screenshots": "scripts/product-capability-ux-growth-audit/screenshots/"
+  },
+  "limitations": [
+    "Chromium (Playwright 1.61.1) only; no Firefox/Safari, no physical screen reader session, no real users",
+    "Localhost timings on an Apple-silicon laptop; not representative of hosted deployments",
+    "Inventory import, project import, Building entry, Experiments execution, research references, measurement CSV upload and 5G Core sidecar were inspected in source/panels but not executed end-to-end",
+    "Phone/tablet layouts not re-audited (Concept 7F/8B scope)",
+    "Audit lock captured after browser evidence collection began, before any report was written; tracked files unchanged"
+  ]
+}

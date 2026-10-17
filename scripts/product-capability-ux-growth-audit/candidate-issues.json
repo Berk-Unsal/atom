@@ -1,0 +1,507 @@
+{
+  "audit": "A.T.O.M product capability, UX and growth audit",
+  "date": "2026-10-17",
+  "head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+  "version": "0.12.3",
+  "audit_lock_sha256": "c7f03dd0a9eeb935054d82dd6ba7f10402e6b35d0bb87f4f35bcc0eaf9496d9c",
+  "status": "PROPOSED ONLY — not filed; no GitHub state was changed",
+  "fold_into_existing": [
+    {
+      "finding": "F28 docs/features.md says 'Ten workflow tools' (actual 14)",
+      "existing_issue": "#86 Reconcile maintained roadmap status and unsupported API release promises",
+      "action": "Add as a checklist item when #86 is worked; no new issue"
+    },
+    {
+      "finding": "#76 still open after PR #96 merged",
+      "existing_issue": "#76",
+      "action": "Maintainer should verify acceptance criteria and close; not changed by this audit"
+    }
+  ],
+  "issues": [
+    {
+      "id": "CI-01",
+      "proposed_title": "Fit the map to new results and area selections",
+      "classification": "UX REPAIR",
+      "priority": "P1",
+      "area": "frontend / map",
+      "problem": "Runs and area selections complete outside the visible map; users see only a status chip.",
+      "scope": "Request a fit when a new current result or area selection is produced, unless the user moved the map after starting the action.",
+      "acceptance_criteria": [
+        "Run Sector, Evaluate Network, Optimize Network and Finish (area) fit to selected cells plus planning radius",
+        "No fit when the user panned/zoomed during the request",
+        "Fit selected cells button unchanged",
+        "Workflow test asserts a fit request per completed run and none for view-only toggles"
+      ],
+      "non_goals": [
+        "Changing zoom limits or basemap",
+        "Animated camera work"
+      ],
+      "evidence": [
+        "frontend-react/src/App.jsx:2226-2228",
+        "screenshots/02-single-run-result-1440-light.jpg",
+        "screenshots/11-network-evaluated.jpg"
+      ],
+      "effort": "S",
+      "contributor_suitability": "good first issue with guidance",
+      "dependencies": [],
+      "opportunity": "O01",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-02",
+      "proposed_title": "Explain the RF result headline and stop contradictory styling",
+      "classification": "UX REPAIR",
+      "priority": "P1",
+      "area": "frontend / results",
+      "problem": "Default result shows Blocked 99.2% next to a red Coverage Gaps card reporting 0 gaps; units render as 'DBm'/'M'.",
+      "scope": "Add one deterministic interpretation line distinguishing blocked rays from demand gaps; neutral styling when zero gaps; '—' for unavailable Worst Rx; remove capitalize transform from metric values.",
+      "acceptance_criteria": [
+        "Units render exactly as produced ('dBm', 'm')",
+        "Zero-gap card uses neutral styling",
+        "Worst Rx shows '—' when no gaps are returned",
+        "Interpretation copy reviewed against docs/modeling-limits.md; no new thresholds",
+        "Unit test for the interpretation helper"
+      ],
+      "non_goals": [
+        "Changing RF metrics or thresholds",
+        "Adding quality grades"
+      ],
+      "evidence": [
+        "frontend-react/src/styles.css:1161",
+        "screenshots/04-results-single-1440-light.jpg",
+        "traces/defaults-walk.json"
+      ],
+      "effort": "S",
+      "contributor_suitability": "good first issue (units/styling); interpretation copy needs maintainer review",
+      "dependencies": [],
+      "opportunity": "O02",
+      "github_cross_check": "genuinely new; #76 (closed by PR #96) covered score/Pareto wording only"
+    },
+    {
+      "id": "CI-03",
+      "proposed_title": "Let users adopt Pareto alternatives produced from the working draft",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "priority": "P1",
+      "area": "frontend / persistence",
+      "problem": "Optimization in an unsaved draft produces runs without a source Version; Apply solution… is disabled with no recovery path.",
+      "scope": "Offer 'Save source as Version and apply' when the run's retained input fingerprint matches the draft or run snapshot; otherwise show the exact recovery step. Tell users the recommended solution is already in the draft.",
+      "acceptance_criteria": [
+        "Apply from an unsaved-draft optimization creates a source Version from the run's retained input, then a new Version/branch with the chosen solution",
+        "Refused with a specific message if fingerprints do not match",
+        "Source run remains immutable",
+        "Persistence round-trip test (save → reload → lineage intact)"
+      ],
+      "non_goals": [
+        "Changing optimizer output",
+        "Auto-saving Versions on every run"
+      ],
+      "evidence": [
+        "frontend-react/src/components/ApplySolutionDialog.jsx:13-60",
+        "frontend-react/src/App.jsx:1217",
+        "frontend-react/src/App.jsx:3138-3150",
+        "screenshots/55-apply-solution-dialog.jpg"
+      ],
+      "effort": "M",
+      "contributor_suitability": "maintainer",
+      "dependencies": [
+        "Run input fingerprint (exists)"
+      ],
+      "opportunity": "O03",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-04",
+      "proposed_title": "Restore result context when reopening a draft or Version",
+      "classification": "TECHNICAL DEBT",
+      "priority": "P1",
+      "area": "frontend / persistence",
+      "problem": "Reload shows 'Run needed' (draft) or 'Ready · UNAVAILABLE · Run unavailable' (Version) although runs exist in history.",
+      "scope": "Design and implement exact-fingerprint rebinding of the latest compatible run summary on restore, presented as HISTORICAL with an explicit 'Restore map layers' action; bind pre-save runs to a Version when inputs match at save time.",
+      "acceptance_criteria": [
+        "After reload the Results context shows the last compatible run summary with correct freshness",
+        "Command bar never shows 'Ready' and 'UNAVAILABLE' together",
+        "Restoring layers is an explicit, counted RF action",
+        "No rebinding when fingerprints differ (test)"
+      ],
+      "non_goals": [
+        "Persisting full ray GeoJSON by default",
+        "Changing project file format"
+      ],
+      "evidence": [
+        "traces/workflow-walk.json:after-reload",
+        "traces/tools-walk.json:reload-after-save",
+        "screenshots/48-reload-after-save.jpg",
+        "docs/concept-7c-run-history.md"
+      ],
+      "effort": "M",
+      "contributor_suitability": "maintainer",
+      "dependencies": [
+        "Concept 7C retention policy"
+      ],
+      "opportunity": "O04",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-05",
+      "proposed_title": "Make plan comparison reachable for every result type",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "priority": "P2",
+      "area": "frontend / results",
+      "problem": "Results → Compare shows Baseline vs Recommended for network results, hiding saved-scenario comparison; input diff lives in a collapsed Scenarios disclosure.",
+      "scope": "Give Compare a source picker (current, baseline, saved Versions, Pareto alternative) combining KPI deltas, input diff and A/B map switch.",
+      "acceptance_criteria": [
+        "A network user can compare two saved Versions from Results",
+        "Baseline vs Recommended remains available",
+        "Input diff reachable from the same view",
+        "Workflow test for both modes"
+      ],
+      "non_goals": [
+        "Spatial delta layer (see CI-15 follow-up)",
+        "New metrics"
+      ],
+      "evidence": [
+        "frontend-react/src/App.jsx:4545-4549",
+        "frontend-react/src/components/ScenarioPanel.jsx:259-262"
+      ],
+      "effort": "M",
+      "contributor_suitability": "maintainer",
+      "dependencies": [],
+      "opportunity": "O05",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-06",
+      "proposed_title": "Expose candidate cell recommendation as a primary network action",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "priority": "P2",
+      "area": "frontend / workflow",
+      "problem": "Recommendation is reachable only via a Results tab that disappears after optimization; prerequisites conflict with area selection.",
+      "scope": "Add an explicit action with inline prerequisites and a dedicated results view independent of Pareto Solutions; allow keeping the drawn area while selecting ≤5 cells.",
+      "acceptance_criteria": [
+        "Action visible in Network mode with prerequisite status",
+        "Recommendations reachable after an optimization",
+        "Area can be reused without forcing 8-cell selection",
+        "Workflow test: optimize → recommend → apply as scenario"
+      ],
+      "non_goals": [
+        "Changing candidate scoring or adding interference to it"
+      ],
+      "evidence": [
+        "frontend-react/src/App.jsx:4449",
+        "frontend-react/src/App.jsx:4565-4580",
+        "frontend-react/src/App.jsx:2071-2075"
+      ],
+      "effort": "M",
+      "contributor_suitability": "maintainer",
+      "dependencies": [],
+      "opportunity": "O06",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-07",
+      "proposed_title": "Name report and project downloads meaningfully",
+      "classification": "POLISH",
+      "priority": "P2",
+      "area": "frontend / reporting",
+      "problem": "Reports download as '<uuid>.md'; project exports are always '<slug>.atom-project.json'.",
+      "scope": "Use '<project>-<scenario>-v<N>-<yyyymmdd>[-<kind>].<ext>' with safe slugs; keep report_id in metadata.",
+      "acceptance_criteria": [
+        "Report and project filenames include project, scenario/Version (when present) and date",
+        "Filenames are filesystem-safe and deterministic for a given artifact",
+        "E2E asserts suggestedFilename pattern"
+      ],
+      "non_goals": [
+        "Changing artifact IDs or storage"
+      ],
+      "evidence": [
+        "frontend-react/src/utils/reportArtifact.js:20-33",
+        "frontend-react/src/components/WorkspaceChrome.jsx:240",
+        "frontend-react/e2e/workspace.spec.js:1863"
+      ],
+      "effort": "XS",
+      "contributor_suitability": "good first issue",
+      "dependencies": [],
+      "opportunity": "O07",
+      "github_cross_check": "partially complements #81 (docs)"
+    },
+    {
+      "id": "CI-08",
+      "proposed_title": "Remove duplicate sections and inline SVG bloat from Markdown reports",
+      "classification": "UX REPAIR",
+      "priority": "P2",
+      "area": "frontend / reporting",
+      "problem": "Markdown reports repeat 'RF Result' as 'RF Propagation Performance', include an empty-ish executive 'RF result' table for single-cell plans, and embed ~600 lines of SVG.",
+      "scope": "Deduplicate sections; omit irrelevant constraint rows; move the map to a separate attachment/HTML-only view; make the lineage line consistent with the Report source card.",
+      "acceptance_criteria": [
+        "No duplicated tables in single-cell or network reports (snapshot test)",
+        "Markdown under a documented size for the sample plan",
+        "Lineage line matches stored Report metadata"
+      ],
+      "non_goals": [
+        "Changing report claims or limitations text"
+      ],
+      "evidence": [
+        "traces/sample-report.md",
+        "traces/tools-walk.json:report-after"
+      ],
+      "effort": "S",
+      "contributor_suitability": "contributor with guidance",
+      "dependencies": [
+        "CI-07"
+      ],
+      "opportunity": "O07",
+      "github_cross_check": "partially complements #81 (docs)"
+    },
+    {
+      "id": "CI-09",
+      "proposed_title": "Separate view changes from input changes in stale-result messaging",
+      "classification": "UX REPAIR",
+      "priority": "P2",
+      "area": "frontend / state",
+      "problem": "Switching planning mode marks results 'out of date' with hash-first copy; run history and badges use hashes; Version wording differs between header and Results.",
+      "scope": "Classify invalidation reasons; use human run labels (type · cells · score · time) with hash in details; one Version-state vocabulary; scenario auto-names follow mode.",
+      "acceptance_criteria": [
+        "Mode switch without input change shows a neutral 'different plan mode' state",
+        "Run labels lead with type, cell count and headline metric",
+        "Header and Results use identical Version-state wording",
+        "Unit tests for reason classification"
+      ],
+      "non_goals": [
+        "Hiding genuine staleness"
+      ],
+      "evidence": [
+        "frontend-react/src/App.jsx:2765-2777",
+        "screenshots/09-drawing-polygon.jpg",
+        "screenshots/53-compare-tab.jpg"
+      ],
+      "effort": "S",
+      "contributor_suitability": "contributor with guidance",
+      "dependencies": [],
+      "opportunity": "O08",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-10",
+      "proposed_title": "Make connection, server and validation errors actionable",
+      "classification": "UX REPAIR",
+      "priority": "P2",
+      "area": "frontend / errors",
+      "problem": "Backend down shows 'Failed to fetch' and 'Cell No tower'; 500 shows 'internal error'; invalid fields lack inline errors and the prompt points to Inventory.",
+      "scope": "Map known failure classes to cause + recovery with a Retry action; aria-invalid and inline message on invalid fields; prompts reference the tool owning the field.",
+      "acceptance_criteria": [
+        "Backend-unreachable state names the API origin and offers Retry",
+        "Invalid numeric input shows inline message and aria-invalid",
+        "Prompt navigates to the owning tool",
+        "Interception tests for unreachable/500/429"
+      ],
+      "non_goals": [
+        "Automatic retries",
+        "Changing RF request accounting"
+      ],
+      "evidence": [
+        "screenshots/60-backend-unavailable.jpg",
+        "screenshots/63-rf-500.jpg",
+        "screenshots/65-invalid-tx-power.jpg"
+      ],
+      "effort": "S",
+      "contributor_suitability": "contributor with guidance",
+      "dependencies": [],
+      "opportunity": "O09",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-11",
+      "proposed_title": "Resolve map chrome collisions at desktop sizes",
+      "classification": "POLISH",
+      "priority": "P2",
+      "area": "frontend / map",
+      "problem": "Map key swallows area-drawing clicks and clips; '28.0 GHz' overprints 'RF details' at 1280×800; Results tabs overflow at every width; heading focus ring looks like an input.",
+      "scope": "Collapse the Map key during drawing/placing; legend scrolls without clipping; command-bar truncation rules; tab labels fit; subtler programmatic-focus style.",
+      "acceptance_criteria": [
+        "No overlap at 1440×900, 1280×800, 1024×768 in light and dark (screenshot review)",
+        "Area vertices can be placed anywhere on the visible map",
+        "Tablist fits without horizontal scroll at ≥1280"
+      ],
+      "non_goals": [
+        "Visual redesign"
+      ],
+      "evidence": [
+        "screenshots/11-network-evaluated.jpg",
+        "screenshots/19-interference-result.jpg",
+        "screenshots/71-results-1280x800-light.jpg",
+        "traces/states-walk.json"
+      ],
+      "effort": "S",
+      "contributor_suitability": "contributor",
+      "dependencies": [],
+      "opportunity": "O13",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-12",
+      "proposed_title": "Fix project-menu keyboard behavior and control naming",
+      "classification": "UX REPAIR",
+      "priority": "P3",
+      "area": "frontend / accessibility",
+      "problem": "Escape does not close the project menu; trigger label ignores expanded state; 'Save version' has accessible name 'Save current'; two controls named 'Select cells'.",
+      "scope": "Add Escape handling with focus return; label-in-name alignment; distinct names.",
+      "acceptance_criteria": [
+        "Escape closes the menu and returns focus to the trigger",
+        "Visible and accessible names match for Save version",
+        "Unique accessible names for primary action and map mode",
+        "Interaction test"
+      ],
+      "non_goals": [
+        "Menu redesign"
+      ],
+      "evidence": [
+        "frontend-react/src/components/WorkspaceChrome.jsx:206-213",
+        "frontend-react/src/components/WorkspaceChrome.jsx:326",
+        "traces/states-walk.json:project-menu-escape"
+      ],
+      "effort": "XS",
+      "contributor_suitability": "good first issue",
+      "dependencies": [],
+      "opportunity": "O15",
+      "github_cross_check": "genuinely new"
+    },
+    {
+      "id": "CI-13",
+      "proposed_title": "Promote Measurement Validation out of Data → Research",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "priority": "P2",
+      "area": "frontend / IA",
+      "problem": "CSV measurement validation with explicit calibration is hidden in a Research disclosure, while a different campaign tool in RF Diagnostics uses similar wording.",
+      "scope": "Give CSV Measurement Validation a first-class location and name; label the campaign tool as research evidence.",
+      "acceptance_criteria": [
+        "Measurement Validation reachable in ≤2 clicks from the rail",
+        "Campaign tool renamed to avoid 'measurement validation' collision",
+        "Explicit apply and boundary copy unchanged"
+      ],
+      "non_goals": [
+        "Changing calibration math or eligibility"
+      ],
+      "evidence": [
+        "frontend-react/src/App.jsx:5554-5575",
+        "frontend-react/src/components/MeasurementValidationPanel.jsx:83"
+      ],
+      "effort": "S",
+      "contributor_suitability": "contributor with guidance",
+      "dependencies": [],
+      "opportunity": "O11",
+      "github_cross_check": "genuinely new; science issues #87–#90 unaffected"
+    },
+    {
+      "id": "CI-14",
+      "proposed_title": "Offer the bundled sample project from the first-run state",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "priority": "P2",
+      "area": "frontend / onboarding",
+      "problem": "The first screen does not say what A.T.O.M produces; the sample project needs README knowledge.",
+      "scope": "Dismissible first-run card with one-sentence purpose, 'Run the pre-selected sector', 'Open sample network project' (bundled example) and glossary link.",
+      "acceptance_criteria": [
+        "Shown only when no saved project exists; dismissal persists",
+        "Sample opens as a new project and does not overwrite work",
+        "Reaching a network result from first load takes ≤3 actions",
+        "Workflow test"
+      ],
+      "non_goals": [
+        "Multi-step tour or wizard"
+      ],
+      "evidence": [
+        "screenshots/01-first-run-1440-light.jpg",
+        "README.md:180",
+        "examples/ankara-sample.atom-project.json"
+      ],
+      "effort": "S",
+      "contributor_suitability": "contributor",
+      "dependencies": [],
+      "opportunity": "O10",
+      "github_cross_check": "partially complements #78 (docs walkthrough)"
+    },
+    {
+      "id": "CI-15",
+      "proposed_title": "Add a trade-off chart to network Pareto solutions",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "priority": "P3",
+      "area": "frontend / results",
+      "problem": "Network optimization lists 25 near-identical cards; Experiments already has a Pareto chart.",
+      "scope": "Two-objective scatter with recommended/selected markers reusing existing chart helpers; list collapses to top N.",
+      "acceptance_criteria": [
+        "Chart is keyboard/screen-reader described",
+        "Selecting a point inspects that solution",
+        "No new objectives or scoring"
+      ],
+      "non_goals": [
+        "Changing Pareto computation"
+      ],
+      "evidence": [
+        "screenshots/52-solutions-bottom.jpg",
+        "frontend-react/src/components/ExperimentPanel.jsx:115-121"
+      ],
+      "effort": "M",
+      "contributor_suitability": "contributor",
+      "dependencies": [
+        "#76 closed by PR #96 (explanations)"
+      ],
+      "opportunity": "O12",
+      "github_cross_check": "partially (explanation shipped in PR #96; visualization new)"
+    },
+    {
+      "id": "CI-16",
+      "proposed_title": "Use Cell terminology in user-facing selection and error copy",
+      "classification": "POLISH",
+      "priority": "P3",
+      "area": "frontend / copy",
+      "problem": "'towers' appears in selection notices, errors and the Report intro despite the Cell/site/tower glossary.",
+      "scope": "Replace user-facing 'tower' with 'Cell' where a planning Cell is meant; explain 'nearest 8' selection and list chosen Cells.",
+      "acceptance_criteria": [
+        "No user-facing 'tower' where a Cell is meant (grep test on copy constants)",
+        "Area-selection notice states the selection rule"
+      ],
+      "non_goals": [
+        "Renaming API fields or code identifiers"
+      ],
+      "evidence": [
+        "frontend-react/src/App.jsx:2057",
+        "frontend-react/src/App.jsx:961",
+        "frontend-react/src/features/reports/ReportFeature.jsx:37"
+      ],
+      "effort": "XS",
+      "contributor_suitability": "good first issue",
+      "dependencies": [],
+      "opportunity": "O09",
+      "github_cross_check": "residual of closed #80"
+    },
+    {
+      "id": "CI-17",
+      "proposed_title": "Add UX regression coverage for the core planning loop",
+      "classification": "TECHNICAL DEBT",
+      "priority": "P2",
+      "area": "testing",
+      "problem": "No visual snapshots or automated accessibility checks; no tests for apply-without-Version, backend-unavailable copy or Compare reachability.",
+      "scope": "Add Playwright light/dark screenshot baselines at 1440/1280/1024 for first run, Results and Solutions; axe smoke on main drawers; no-hidden-request assertions for view-only toggles; persistence round trip for result continuity.",
+      "acceptance_criteria": [
+        "Baselines committed and stable in CI",
+        "axe smoke reports no critical violations on covered drawers",
+        "Tests fail on F01/F04/F06 regressions"
+      ],
+      "non_goals": [
+        "Full WCAG certification"
+      ],
+      "evidence": [
+        "frontend-react/e2e",
+        "traces/states-walk.json"
+      ],
+      "effort": "M",
+      "contributor_suitability": "contributor",
+      "dependencies": [
+        "CI-01",
+        "CI-03",
+        "CI-05"
+      ],
+      "opportunity": "O13",
+      "github_cross_check": "genuinely new"
+    }
+  ]
+}

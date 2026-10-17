@@ -1,0 +1,58 @@
+{
+  "light": {
+    "domReady": 100,
+    "idle": 1071,
+    "requests": [
+      {
+        "t": 1792236855793,
+        "method": "GET",
+        "url": "/api/meta"
+      },
+      {
+        "t": 1792236855793,
+        "method": "GET",
+        "url": "/api/datasets"
+      },
+      {
+        "t": 1792236855793,
+        "method": "GET",
+        "url": "/api/towers"
+      },
+      {
+        "t": 1792236855793,
+        "method": "GET",
+        "url": "/api/buildings/summary"
+      }
+    ],
+    "consoleMsgs": [],
+    "aria": "- main:\n  - link \"Skip to planning map\":\n    - /url: \"#planning-map\"\n  - group \"Workspace\":\n    - strong: A.T.O.M\n    - text: Telecom planning\n    - button \"Open project menu\":\n      - img\n      - text: Ankara Plan\n      - img\n    - group: Working draft No Version Unsaved\n  - group \"RF context\":\n    - strong: Single · Cell 26380\n    - text: · 5G mmWave · 28.0 GHz\n    - group:\n      - img\n      - text: RF details\n  - group \"Status\":\n    - status: Run needed\n  - group \"Primary action\":\n    - button \"Run Sector\":\n      - img\n      - text: Run Sector\n  - navigation \"Workspace stages\":\n    - button \"Plan workspace\":\n      - img\n      - text: Plan\n      - tooltip \"Plan\"\n    - button \"Simulate workspace\":\n      - img\n      - text: Simulate\n      - tooltip \"Simulate\"\n    - button \"Analyze workspace\":\n      - img\n      - text: Analyze\n      - tooltip \"Analyze\"\n    - button \"Review workspace\":\n      - img\n      - text: Review\n      - tooltip \"Review\"\n  - region \"Ankara propagation map\":\n    - group \"Map controls\":\n      - group \"Map interaction mode\":\n        - button \"Inspect\" [pressed]\n        - button \"Select cells\"\n      - button \"Fit selected cells\"\n      - group \"Result visualization\":\n        - button \"Signal layer\" [disabled]: Signal\n        - button \"Propagation rays layer\" [disabled]: Rays\n      - button \"Map view options\": View\n      - button \"Map layers\":\n        - text: Layers\n        - img\n    - button\n    - button \"Zoom in\"\n    - button \"Zoom out\"\n    - link \"Leaflet\":\n      - /url: https://leafletjs.com\n    - text: ©\n    - link \"Stadia Maps\":\n      - /url: https://stadiamaps.com/attribution/\n    - text: ©\n    - link \"OpenMapTiles\":\n      - /url: https://openmaptiles.org/\n    - text: ©\n    - link \"OpenStreetMap\":\n      - /url: https://www.openstreetmap.org/copyright\n    - region \"Map key\":\n      - button \"Map key\" [expanded]:\n        - strong: Map key\n        - img\n      - region \"Cell markers\":\n        - strong: Cells\n        - text: Active cell Available cell Inspected cell Map Focus\n  - dialog \"Setup\":\n    - heading \"Setup\" [level=2]\n    - paragraph: Mode, technology, power, and cell selection\n    - button \"Close tool drawer\"\n    - heading \"Planning\" [level=3]:\n      - button \"Planning\" [expanded]\n    - paragraph: Configure the current plan; run it from the command bar.\n    - region \"Plan setup controls\":\n      - text: Planning mode\n      - button \"Single sector mode\" [pressed]: Single one sector\n      - button \"Network mode, 0 selected\": Network 0 selected\n      - text: Network technology\n      - button \"4G LTE, 2.6 GHz\": 4G LTE 2.6 GHz\n      - button \"5G mmWave, 28 GHz\" [pressed]: 5G mmWave 28 GHz\n      - button \"6G research profile (140 GHz), 140 GHz\": 6G research 140 GHz\n      - text: Propagation model\n      - combobox \"Propagation model\":\n        - option \"Urban short-range (UMa)\" [selected]\n        - option \"Legacy FSPL + walls\"\n        - option \"Research sub-THz\"\n      - paragraph: Urban is the default at 2.6/28 GHz; 140 GHz is research-only.\n      - img\n      - text: Conducted TX power\n      - spinbutton \"Conducted TX power (dBm)\": \"30\"\n      - text: \"dBm Valid range: 0–60 dBm\"\n    - heading \"Advanced model details\" [level=3]:\n      - button \"Advanced model details\"\n    - paragraph: Model applicability and link-budget assumptions for the selected profile."
+  },
+  "dark": {
+    "domReady": 51,
+    "idle": 926,
+    "requests": [
+      {
+        "t": 1792236858431,
+        "method": "GET",
+        "url": "/api/meta"
+      },
+      {
+        "t": 1792236858431,
+        "method": "GET",
+        "url": "/api/datasets"
+      },
+      {
+        "t": 1792236858431,
+        "method": "GET",
+        "url": "/api/towers"
+      },
+      {
+        "t": 1792236858431,
+        "method": "GET",
+        "url": "/api/buildings/summary"
+      }
+    ],
+    "consoleMsgs": [],
+    "aria": "- main:\n  - link \"Skip to planning map\":\n    - /url: \"#planning-map\"\n  - group \"Workspace\":\n    - strong: A.T.O.M\n    - text: Telecom planning\n    - button \"Open project menu\":\n      - img\n      - text: Ankara Plan\n      - img\n    - group: Working draft No Version Unsaved\n  - group \"RF context\":\n    - strong: Single · Cell 26380\n    - text: · 5G mmWave · 28.0 GHz\n    - group:\n      - img\n      - text: RF details\n  - group \"Status\":\n    - status: Run needed\n  - group \"Primary action\":\n    - button \"Run Sector\":\n      - img\n      - text: Run Sector\n  - navigation \"Workspace stages\":\n    - button \"Plan workspace\":\n      - img\n      - text: Plan\n      - tooltip \"Plan\"\n    - button \"Simulate workspace\":\n      - img\n      - text: Simulate\n      - tooltip \"Simulate\"\n    - button \"Analyze workspace\":\n      - img\n      - text: Analyze\n      - tooltip \"Analyze\"\n    - button \"Review workspace\":\n      - img\n      - text: Review\n      - tooltip \"Review\"\n  - region \"Ankara propagation map\":\n    - group \"Map controls\":\n      - group \"Map interaction mode\":\n        - button \"Inspect\" [pressed]\n        - button \"Select cells\"\n      - button \"Fit selected cells\"\n      - group \"Result visualization\":\n        - button \"Signal layer\" [disabled]: Signal\n        - button \"Propagation rays layer\" [disabled]: Rays\n      - button \"Map view options\": View\n      - button \"Map layers\":\n        - text: Layers\n        - img\n    - button\n    - button \"Zoom in\"\n    - button \"Zoom out\"\n    - link \"Leaflet\":\n      - /url: https://leafletjs.com\n    - text: ©\n    - link \"Stadia Maps\":\n      - /url: https://stadiamaps.com/attribution/\n    - text: ©\n    - link \"OpenMapTiles\":\n      - /url: https://openmaptiles.org/\n    - text: ©\n    - link \"OpenStreetMap\":\n      - /url: https://www.openstreetmap.org/copyright\n    - region \"Map key\":\n      - button \"Map key\" [expanded]:\n        - strong: Map key\n        - img\n      - region \"Cell markers\":\n        - strong: Cells\n        - text: Active cell Available cell Inspected cell Map Focus\n  - dialog \"Setup\":\n    - heading \"Setup\" [level=2]\n    - paragraph: Mode, technology, power, and cell selection\n    - button \"Close tool drawer\"\n    - heading \"Planning\" [level=3]:\n      - button \"Planning\" [expanded]\n    - paragraph: Configure the current plan; run it from the command bar.\n    - region \"Plan setup controls\":\n      - text: Planning mode\n      - button \"Single sector mode\" [pressed]: Single one sector\n      - button \"Network mode, 0 selected\": Network 0 selected\n      - text: Network technology\n      - button \"4G LTE, 2.6 GHz\": 4G LTE 2.6 GHz\n      - button \"5G mmWave, 28 GHz\" [pressed]: 5G mmWave 28 GHz\n      - button \"6G research profile (140 GHz), 140 GHz\": 6G research 140 GHz\n      - text: Propagation model\n      - combobox \"Propagation model\":\n        - option \"Urban short-range (UMa)\" [selected]\n        - option \"Legacy FSPL + walls\"\n        - option \"Research sub-THz\"\n      - paragraph: Urban is the default at 2.6/28 GHz; 140 GHz is research-only.\n      - img\n      - text: Conducted TX power\n      - spinbutton \"Conducted TX power (dBm)\": \"30\"\n      - text: \"dBm Valid range: 0–60 dBm\"\n    - heading \"Advanced model details\" [level=3]:\n      - button \"Advanced model details\"\n    - paragraph: Model applicability and link-budget assumptions for the selected profile."
+  }
+}

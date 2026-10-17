@@ -1,0 +1,979 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-17T12:36:52.850821+00:00",
+  "task": "Materialize the product capability, UX and growth audit into a GitHub roadmap; no implementation",
+  "baseline": {
+    "head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+    "origin_main": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+    "version": "0.12.3",
+    "describe": "v0.12.3-7-gd076397",
+    "release": "v0.12.3 (2026-10-16)",
+    "merged_since_audit": []
+  },
+  "verdict": "A. ROADMAP MATERIALIZED CLEANLY",
+  "issue_76_verification": {
+    "result": "ALL CRITERIA PASS",
+    "closed": true,
+    "close_reason": "completed",
+    "comment": "https://github.com/Berk-Unsal/atom/issues/76#issuecomment-6233868777",
+    "evidence": [
+      "frontend-react/src/components/OptimizationHelp.jsx — score is preference-weighted utility; not coverage/accuracy/probability/confidence",
+      "OptimizationHelp.jsx — illustrative A/B trade-off; inspect/rerank/apply/new-search list",
+      "frontend-react/src/App.workflow.test.jsx:841-905 — help content, no hidden RF requests on inspect/rerank, payload unchanged",
+      "frontend-react/e2e/workspace.spec.js:2526 — keyboard score help across four viewports"
+    ]
+  },
+  "existing_issue_updates": [
+    {
+      "issue": 76,
+      "action": "commented and closed as completed after verification"
+    },
+    {
+      "issue": 86,
+      "action": "appended bounded item: docs/features.md tool inventory (ten → fourteen tools); labels/state unchanged"
+    }
+  ],
+  "existing_issues_preserved": [
+    78,
+    79,
+    81,
+    82,
+    87,
+    88,
+    89,
+    90
+  ],
+  "related_existing_issues": {
+    "#78": "dependency of the first-run sample issue",
+    "#81": "documentation complement to shareable downloads",
+    "#80 (closed)": "glossary context for Cell wording",
+    "#87-#90": "research context for measurement validation; unchanged",
+    "PR #63": "also edits apiClient.js; coordinate with the error-recovery issue"
+  },
+  "candidates": [
+    {
+      "candidate_id": "CI-01",
+      "disposition": "VALID",
+      "resulting_issue_number": 97,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Map never fits to results; merged with the Interference completion handoff (same 'where is my result' fix).",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-02",
+      "disposition": "VALID — SPLIT",
+      "resulting_issue_number": [
+        98,
+        99
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Interpretation copy needs maintainer review; presentation defects split into a good-first bundle so they are not blocked.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-03",
+      "disposition": "VALID",
+      "resulting_issue_number": 101,
+      "roadmap_group": "NOW",
+      "priority": "P1",
+      "rationale": "Apply disabled after default draft optimization; the workflow test itself saves a Version first.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-04",
+      "disposition": "VALID",
+      "resulting_issue_number": 106,
+      "roadmap_group": "NEXT",
+      "priority": "P1",
+      "rationale": "Reload shows 'Run needed' / 'Ready · UNAVAILABLE'; needs a binding design (foundation).",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": [
+        "#101"
+      ]
+    },
+    {
+      "candidate_id": "CI-05",
+      "disposition": "VALID",
+      "resulting_issue_number": 107,
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "rationale": "Compare branches by result type; scenario comparison unreachable with network results.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-06",
+      "disposition": "VALID",
+      "resulting_issue_number": 108,
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "rationale": "Tab replaced by Solutions after optimization; prerequisites conflict with area selection.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": [
+        "#105"
+      ]
+    },
+    {
+      "candidate_id": "CI-07",
+      "disposition": "SHOULD MERGE WITH ANOTHER CANDIDATE",
+      "resulting_issue_number": 102,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Same artifact surface and validation path as report content fixes.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-08",
+      "disposition": "VALID",
+      "resulting_issue_number": 102,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Duplicated sections, inline SVG and lineage contradiction confirmed in report source.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-09",
+      "disposition": "VALID",
+      "resulting_issue_number": 103,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Mode switch invalidates results; hash-first labels; Version wording drift.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-10",
+      "disposition": "VALID",
+      "resulting_issue_number": 104,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Raw 'Failed to fetch' / 'internal error'; no aria-invalid; misdirected prompt.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-11",
+      "disposition": "VALID",
+      "resulting_issue_number": 105,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Legend swallows drawing clicks; 1280 overlap; tab overflow at all widths.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-12",
+      "disposition": "VALID",
+      "resulting_issue_number": 100,
+      "roadmap_group": "NOW",
+      "priority": "P3",
+      "rationale": "No Escape handler; label-in-name mismatch; duplicate names.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-13",
+      "disposition": "VALID",
+      "resulting_issue_number": 109,
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "rationale": "CSV workflow inside Research disclosure; name collision with campaign tool.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-14",
+      "disposition": "VALID",
+      "resulting_issue_number": 110,
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "rationale": "No orientation; sample only via README; depends on #78 fixture for a network result.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": [
+        "#78"
+      ]
+    },
+    {
+      "candidate_id": "CI-15",
+      "disposition": "VALID",
+      "resulting_issue_number": 111,
+      "roadmap_group": "NEXT",
+      "priority": "P3",
+      "rationale": "25 cards without a chart; promised as a follow-up when closing #76.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-16",
+      "disposition": "SHOULD MERGE WITH ANOTHER CANDIDATE",
+      "resulting_issue_number": 99,
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "rationale": "Copy-only polish sharing surfaces and risk with unit/zero-gap fixes.",
+      "duplicate_of": null,
+      "folded_into": null,
+      "dependencies": []
+    },
+    {
+      "candidate_id": "CI-17",
+      "disposition": "SHOULD MERGE WITH ANOTHER CANDIDATE",
+      "resulting_issue_number": [
+        105,
+        100
+      ],
+      "roadmap_group": "NOW",
+      "priority": null,
+      "rationale": "Workflow tests already belong in each issue's acceptance criteria; visual baselines folded into the map-chrome issue and the accessibility smoke check into the keyboard/naming issue.",
+      "duplicate_of": null,
+      "folded_into": "#105 + #100",
+      "dependencies": []
+    }
+  ],
+  "issues_created": [
+    {
+      "number": 97,
+      "url": "https://github.com/Berk-Unsal/atom/issues/97",
+      "title": "Bring completed results into view after runs, area selection and interference",
+      "key": "fit",
+      "source_candidates": [
+        "CI-01"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F01",
+        "F12",
+        "F32"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "UX REPAIR",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 98,
+      "url": "https://github.com/Berk-Unsal/atom/issues/98",
+      "title": "Explain what the single-sector RF result shows before its metrics",
+      "key": "interpret",
+      "source_candidates": [
+        "CI-02"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F02"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "UX REPAIR",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 99,
+      "url": "https://github.com/Berk-Unsal/atom/issues/99",
+      "title": "Fix result unit casing, zero-gap styling and residual tower wording",
+      "key": "polish-results-copy",
+      "source_candidates": [
+        "CI-02 (presentation part)",
+        "CI-16"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F03",
+        "F34",
+        "F10",
+        "F33"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "GOOD FIRST ISSUE",
+      "kind": "POLISH",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "bug",
+        "good first issue",
+        "help wanted",
+        "priority: P2"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 100,
+      "url": "https://github.com/Berk-Unsal/atom/issues/100",
+      "title": "Make the project menu keyboard-dismissible and align Save version and Select cells names",
+      "key": "a11y",
+      "source_candidates": [
+        "CI-12",
+        "CI-17 (accessibility smoke part)"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F16",
+        "F17",
+        "F31"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P3",
+      "contributor_suitability": "GOOD FIRST ISSUE",
+      "kind": "ACCESSIBILITY",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "bug",
+        "good first issue",
+        "help wanted",
+        "priority: P3"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 101,
+      "url": "https://github.com/Berk-Unsal/atom/issues/101",
+      "title": "Allow Pareto alternatives from a working-draft optimization to be applied",
+      "key": "adopt",
+      "source_candidates": [
+        "CI-03"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F04"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P1",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "WORKFLOW / PERSISTENCE",
+      "capability_safety_class": "B",
+      "labels": [
+        "area: frontend",
+        "area: persistence",
+        "area: product-ux",
+        "priority: P1",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 102,
+      "url": "https://github.com/Berk-Unsal/atom/issues/102",
+      "title": "Make report and project downloads readable and clearly named outside A.T.O.M",
+      "key": "shareable",
+      "source_candidates": [
+        "CI-07",
+        "CI-08"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F13",
+        "F14",
+        "F15"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "UX REPAIR",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 103,
+      "url": "https://github.com/Berk-Unsal/atom/issues/103",
+      "title": "Distinguish plan-mode changes from input changes and use readable run labels",
+      "key": "state-language",
+      "source_candidates": [
+        "CI-09"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F09",
+        "F22",
+        "F23"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "UX REPAIR / STATE",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: persistence",
+        "area: product-ux",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 104,
+      "url": "https://github.com/Berk-Unsal/atom/issues/104",
+      "title": "Show actionable recovery for unreachable backend, server errors and invalid inputs",
+      "key": "errors",
+      "source_candidates": [
+        "CI-10"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F18",
+        "F19"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "UX REPAIR",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 105,
+      "url": "https://github.com/Berk-Unsal/atom/issues/105",
+      "title": "Fix map key, command bar and Results tab collisions at desktop sizes",
+      "key": "map-chrome",
+      "source_candidates": [
+        "CI-11",
+        "CI-17 (visual baseline part)"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F11",
+        "F20",
+        "F21",
+        "F30"
+      ],
+      "roadmap_group": "NOW",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "POLISH",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "bug",
+        "help wanted",
+        "priority: P2"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 106,
+      "url": "https://github.com/Berk-Unsal/atom/issues/106",
+      "title": "Restore result context when reopening a working draft or saved Version",
+      "key": "continuity",
+      "source_candidates": [
+        "CI-04"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F08"
+      ],
+      "roadmap_group": "NEXT",
+      "priority": "P1",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "PERSISTENCE / STATE",
+      "capability_safety_class": "C",
+      "labels": [
+        "area: frontend",
+        "area: persistence",
+        "priority: P1",
+        "type: enhancement"
+      ],
+      "dependencies": [
+        "#101"
+      ],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 107,
+      "url": "https://github.com/Berk-Unsal/atom/issues/107",
+      "title": "Make plan comparison reachable from Results for every result type",
+      "key": "compare",
+      "source_candidates": [
+        "CI-05"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F06"
+      ],
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "WORKFLOW",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 108,
+      "url": "https://github.com/Berk-Unsal/atom/issues/108",
+      "title": "Expose candidate Cell recommendation as an explicit network action",
+      "key": "candidates",
+      "source_candidates": [
+        "CI-06"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F05"
+      ],
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "WORKFLOW",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [
+        "#105"
+      ],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 109,
+      "url": "https://github.com/Berk-Unsal/atom/issues/109",
+      "title": "Give CSV Measurement Validation a first-class place in Review → Data",
+      "key": "measurement",
+      "source_candidates": [
+        "CI-13"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F07"
+      ],
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "WORKFLOW / IA",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "area: validation",
+        "help wanted",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 110,
+      "url": "https://github.com/Berk-Unsal/atom/issues/110",
+      "title": "Offer the bundled sample planning project from the first-run workspace",
+      "key": "first-run",
+      "source_candidates": [
+        "CI-14"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F25"
+      ],
+      "roadmap_group": "NEXT",
+      "priority": "P2",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "WORKFLOW",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [
+        "#78"
+      ],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 111,
+      "url": "https://github.com/Berk-Unsal/atom/issues/111",
+      "title": "Add a trade-off chart to network Pareto solutions",
+      "key": "pareto-chart",
+      "source_candidates": [
+        "CI-15"
+      ],
+      "audit_opportunity": null,
+      "absorbed_findings": [
+        "F24"
+      ],
+      "roadmap_group": "NEXT",
+      "priority": "P3",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "WORKFLOW",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P3",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 112,
+      "url": "https://github.com/Berk-Unsal/atom/issues/112",
+      "title": "Show where two compatible plans differ with a spatial served-state comparison",
+      "key": "decision-compare",
+      "source_candidates": [],
+      "audit_opportunity": "O16",
+      "absorbed_findings": [],
+      "roadmap_group": "LATER",
+      "priority": "P2",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "NEW FEATURE",
+      "capability_safety_class": "B",
+      "labels": [
+        "area: api",
+        "area: backend",
+        "area: frontend",
+        "area: product-ux",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [
+        "#107"
+      ],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 113,
+      "url": "https://github.com/Berk-Unsal/atom/issues/113",
+      "title": "Report network KPIs inside one drawn area of interest",
+      "key": "aoi",
+      "source_candidates": [],
+      "audit_opportunity": "O17",
+      "absorbed_findings": [],
+      "roadmap_group": "LATER",
+      "priority": "P2",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "NEW FEATURE",
+      "capability_safety_class": "B",
+      "labels": [
+        "area: api",
+        "area: backend",
+        "area: frontend",
+        "area: product-ux",
+        "priority: P2",
+        "type: enhancement"
+      ],
+      "dependencies": [
+        "#107"
+      ],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 114,
+      "url": "https://github.com/Berk-Unsal/atom/issues/114",
+      "title": "Place and manage co-located multi-sector Cells as one site group",
+      "key": "site-template",
+      "source_candidates": [],
+      "audit_opportunity": "O18",
+      "absorbed_findings": [],
+      "roadmap_group": "LATER",
+      "priority": "P3",
+      "contributor_suitability": "MAINTAINER-OWNED",
+      "kind": "NEW FEATURE",
+      "capability_safety_class": "B",
+      "labels": [
+        "area: frontend",
+        "area: persistence",
+        "area: product-ux",
+        "priority: P3",
+        "type: enhancement"
+      ],
+      "dependencies": [],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    },
+    {
+      "number": 115,
+      "url": "https://github.com/Berk-Unsal/atom/issues/115",
+      "title": "Export a local review package for the current Version",
+      "key": "review-package",
+      "source_candidates": [],
+      "audit_opportunity": "O19",
+      "absorbed_findings": [],
+      "roadmap_group": "LATER",
+      "priority": "P3",
+      "contributor_suitability": "HELP WANTED",
+      "kind": "NEW FEATURE",
+      "capability_safety_class": "A",
+      "labels": [
+        "area: frontend",
+        "area: product-ux",
+        "help wanted",
+        "priority: P3",
+        "type: enhancement"
+      ],
+      "dependencies": [
+        "#102"
+      ],
+      "verification": {
+        "title": true,
+        "state_open": true,
+        "labels": true,
+        "body": true,
+        "no_assignees": true,
+        "no_milestone": true
+      }
+    }
+  ],
+  "not_created": [
+    {
+      "idea": "Optimize near the network result",
+      "audit_opportunity": "O14",
+      "disposition": "DEFERRED",
+      "rationale": "No candidate; placement should follow the candidate-action issue's decision on where network actions live. Revisit after that lands."
+    },
+    {
+      "idea": "Undo/redo for plan edits",
+      "audit_opportunity": "O20",
+      "disposition": "DEFERRED (technical foundation)",
+      "rationale": "Needs state-ownership work; no observed workflow break beyond Versions."
+    },
+    {
+      "idea": "Network-scope experiments",
+      "audit_opportunity": "O21",
+      "disposition": "DEFERRED (technical foundation)",
+      "rationale": "Requires RF request-budget re-qualification."
+    },
+    {
+      "idea": "Calibrated / confidence-weighted predictions",
+      "audit_opportunity": "O22",
+      "disposition": "COVERED BY EXISTING RESEARCH",
+      "rationale": "Blocked on #87-#90; no new issue."
+    },
+    {
+      "idea": "Tilt/power/site-selection optimization",
+      "audit_opportunity": "O23",
+      "disposition": "RESEARCH / NOT NOW",
+      "rationale": "Changes optimization semantics and request budget; no validation evidence."
+    }
+  ],
+  "rejected": [
+    {
+      "idea": "Onboarding wizard",
+      "rationale": "The command bar already teaches the first action; a dismissible first-run card (#110) addresses orientation."
+    },
+    {
+      "idea": "Command palette",
+      "rationale": "14 tools in 4 stages is navigable; Concepts 7F/8A reached the same conclusion."
+    },
+    {
+      "idea": "3D city view",
+      "rationale": "Decorative relative to the 2.5D model; would imply fidelity the model lacks."
+    },
+    {
+      "idea": "Cloud collaboration",
+      "rationale": "Conflicts with the local-first premise (Product Compass)."
+    },
+    {
+      "idea": "Cost/backhaul/equity scoring",
+      "rationale": "No authoritative data; would manufacture certainty."
+    }
+  ],
+  "labels_created": [],
+  "github_mutations": [
+    "issue #76: comment + close (completed)",
+    "issue #86: body appended (features.md tool inventory item)",
+    "issues #97-#115 created (19)"
+  ]
+}

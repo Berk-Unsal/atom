@@ -1,0 +1,900 @@
+{
+  "audit": "A.T.O.M product capability, UX and growth audit",
+  "date": "2026-10-17",
+  "head": "d0763974e2b5b68c209fda5c680cdfd8b1bdde2a",
+  "version": "0.12.3",
+  "audit_lock_sha256": "c7f03dd0a9eeb935054d82dd6ba7f10402e6b35d0bb87f4f35bcc0eaf9496d9c",
+  "safety_classes": [
+    "A. PRODUCT-SAFE NOW",
+    "B. BOUNDED SEMANTIC CHANGE",
+    "C. TECHNICAL FOUNDATION REQUIRED",
+    "D. SCIENTIFIC EVIDENCE REQUIRED",
+    "E. REJECT"
+  ],
+  "top10": [
+    {
+      "opportunities": "O01+O02",
+      "title": "Make every result land and read",
+      "classification": "UX REPAIR",
+      "user_problem": "Runs finish off-screen and the first result looks like failure with contradictory metrics",
+      "expected_impact": "Every run in every workflow becomes legible; first-run trust",
+      "effort": "S",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Affects 100% of runs and the first impression; no semantics change",
+      "rank": 1
+    },
+    {
+      "opportunities": "O03",
+      "title": "Adopt any optimization solution from the working draft",
+      "classification": "WORKFLOW IMPROVEMENT (B)",
+      "user_problem": "Pareto alternatives cannot be applied after the default optimize path",
+      "expected_impact": "Closes the optimize → decide loop",
+      "effort": "M",
+      "risk": "Low–medium (lineage)",
+      "prerequisite": "Run input fingerprints (exist)",
+      "why_now": "Pareto work just shipped (#96); its value is capped until alternatives are adoptable",
+      "rank": 2
+    },
+    {
+      "opportunities": "O04",
+      "title": "Result continuity on reopen",
+      "classification": "TECHNICAL DEBT (C)",
+      "user_problem": "Reload shows 'Run needed' / 'UNAVAILABLE' for work that exists in history",
+      "expected_impact": "Returning users trust persistence",
+      "effort": "M",
+      "risk": "Medium (binding rules)",
+      "prerequisite": "Retention policy (Concept 7C)",
+      "why_now": "Persistence is a core promise; current state reads as data loss",
+      "rank": 3
+    },
+    {
+      "opportunities": "O05",
+      "title": "One comparison surface",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "user_problem": "Scenario comparison is unreachable with network results; comparisons split",
+      "expected_impact": "Documented capability returns to the main workflow",
+      "effort": "M",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Prerequisite for Decision Compare (O16)",
+      "rank": 4
+    },
+    {
+      "opportunities": "O07",
+      "title": "Shareable reports and exports",
+      "classification": "UX REPAIR",
+      "user_problem": "UUID filenames, duplicated report sections, inline SVG, contradictory lineage",
+      "expected_impact": "Artifacts can be handed to another engineer",
+      "effort": "S",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Pairs with open docs issue #81",
+      "rank": 5
+    },
+    {
+      "opportunities": "O08",
+      "title": "Precise state language",
+      "classification": "UX REPAIR",
+      "user_problem": "Over-triggered staleness, hash labels, Version wording drift",
+      "expected_impact": "Less second-guessing on every action",
+      "effort": "S",
+      "risk": "Low (must not hide true staleness)",
+      "prerequisite": "None",
+      "why_now": "Cheap, broad clarity gain",
+      "rank": 6
+    },
+    {
+      "opportunities": "O06",
+      "title": "Candidate recommendation as a primary action",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "user_problem": "Existing bounded capability effectively undiscoverable",
+      "expected_impact": "Unlocks a whole implemented workflow",
+      "effort": "M",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Highest value per line of new code among hidden features",
+      "rank": 7
+    },
+    {
+      "opportunities": "O09",
+      "title": "Actionable errors and inline validation",
+      "classification": "UX REPAIR",
+      "user_problem": "Raw 'Failed to fetch', misdirected validation prompt",
+      "expected_impact": "Faster recovery, fewer dead ends",
+      "effort": "S",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Local-first setups hit backend errors on first run",
+      "rank": 8
+    },
+    {
+      "opportunities": "O10",
+      "title": "First-run starting point with the bundled sample",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "user_problem": "No orientation; sample needs README",
+      "expected_impact": "Meaningful network result in ~3 actions",
+      "effort": "S",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Complements docs walkthrough #78 inside the product",
+      "rank": 9
+    },
+    {
+      "opportunities": "O11",
+      "title": "Measurement validation placement",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "user_problem": "Canonical calibration feature filed under Research",
+      "expected_impact": "Exposes a documented capability",
+      "effort": "S",
+      "risk": "Low",
+      "prerequisite": "None",
+      "why_now": "Research issues #87–#90 will increase its importance",
+      "rank": 10
+    }
+  ],
+  "new_feature_shortlist": [
+    "O16",
+    "O17",
+    "O18",
+    "O19"
+  ],
+  "quick_wins": [
+    {
+      "id": "QW1",
+      "title": "Fix unit capitalization in metric rows",
+      "friction": "F03",
+      "effort": "XS"
+    },
+    {
+      "id": "QW2",
+      "title": "Neutral zero-gap styling and '—' for unavailable Worst Rx",
+      "friction": "F34",
+      "effort": "XS"
+    },
+    {
+      "id": "QW3",
+      "title": "Meaningful report and project filenames",
+      "friction": "F13",
+      "effort": "XS"
+    },
+    {
+      "id": "QW4",
+      "title": "Save version: consistent label, casing and accessible name",
+      "friction": "F16",
+      "effort": "XS"
+    },
+    {
+      "id": "QW5",
+      "title": "Escape closes the project menu; expanded-aware trigger label",
+      "friction": "F17",
+      "effort": "XS"
+    },
+    {
+      "id": "QW6",
+      "title": "Replace user-facing 'tower' wording in Cell workflows; explain 'nearest 8' (nearest to the area centre) and list the selected cells",
+      "friction": "F10, F33",
+      "effort": "XS–S"
+    },
+    {
+      "id": "QW7",
+      "title": "Collapse the Map key while drawing/placing; let the legend scroll without clipping",
+      "friction": "F11",
+      "effort": "S"
+    },
+    {
+      "id": "QW8",
+      "title": "Fit Results tabs at desktop widths",
+      "friction": "F20",
+      "effort": "S"
+    },
+    {
+      "id": "QW9",
+      "title": "Interference tool: compact summary + 'Open in Results' after analysis",
+      "friction": "F12",
+      "effort": "S"
+    },
+    {
+      "id": "QW10",
+      "title": "Correct docs/features.md tool inventory (fold into #86)",
+      "friction": "F28",
+      "effort": "XS"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "O01",
+      "name": "Results land in view",
+      "problem_solved": "Runs complete off-screen",
+      "user_workflow": "Every run",
+      "proposed_behavior": "Auto-fit to result extent (selection + radius) on a new current result unless the user panned since starting the run; keep Fit button",
+      "why_current_insufficient": "Fit exists only as an icon button",
+      "expected_product_value": "Every run becomes visibly 'something happened'",
+      "implementation_surfaces": [
+        "App.jsx fit trigger",
+        "MapCanvas.jsx"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "UX REPAIR",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F01",
+        "F32"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O02",
+      "name": "First-result interpretation line",
+      "problem_solved": "Users cannot tell if a result is good",
+      "user_workflow": "Single/Network result",
+      "proposed_behavior": "One deterministic sentence above metrics separating 'rays blocked by buildings' from 'demand buildings below threshold', neutral styling for zero gaps, '—' for unavailable worst Rx, correct unit casing",
+      "why_current_insufficient": "Metrics are correct but uninterpreted and visually contradictory",
+      "expected_product_value": "Large first-run trust gain without new science",
+      "implementation_surfaces": [
+        "App.jsx Results RF view",
+        "CoverageGapPanel",
+        "styles.css:1161"
+      ],
+      "semantic_scientific_risk": "Low: must not imply quality thresholds beyond existing ones",
+      "dependencies": [],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "UX REPAIR",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new (#76 covered score/Pareto wording only)",
+      "friction": [
+        "F02",
+        "F03",
+        "F34"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O03",
+      "name": "Adopt any optimization solution from the draft",
+      "problem_solved": "Pareto choice blocked after default path",
+      "user_workflow": "Optimize → choose alternative",
+      "proposed_behavior": "When the source run has no Version, offer 'Save source as Version and apply' that saves the run's retained input as a Version (input fingerprint must match) then applies; otherwise show the exact recovery step. State 'Recommended solution is already in your working draft.'",
+      "why_current_insufficient": "Dialog disables both actions without guidance",
+      "expected_product_value": "Closes the optimize→decide loop",
+      "implementation_surfaces": [
+        "ApplySolutionDialog.jsx",
+        "App.jsx applyCurrentOptimizationSolution",
+        "useProjectWorkspace"
+      ],
+      "semantic_scientific_risk": "Bounded: creates a Version from retained run input; lineage must stay exact",
+      "dependencies": [
+        "Run input fingerprint retained (exists)"
+      ],
+      "rough_effort": "M",
+      "safety_class": "B. BOUNDED SEMANTIC CHANGE",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F04"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O04",
+      "name": "Result continuity on reopen",
+      "problem_solved": "Reload loses visible results",
+      "user_workflow": "Return next day",
+      "proposed_behavior": "On restore, show the last result's summary from Run history as HISTORICAL with 'Restore map layers (1 RF run)' and exact-input check; for saved Versions bind the run to the Version when inputs match at save time",
+      "why_current_insufficient": "Run history keeps summaries, but the workspace shows 'Run needed'/'UNAVAILABLE'",
+      "expected_product_value": "Returning users trust that nothing was lost",
+      "implementation_surfaces": [
+        "useProjectWorkspace",
+        "runHistoryRepository",
+        "resultContext.js"
+      ],
+      "semantic_scientific_risk": "Rebinding must use exact fingerprints only",
+      "dependencies": [
+        "Concept 7C retention policy"
+      ],
+      "rough_effort": "M",
+      "safety_class": "C. TECHNICAL FOUNDATION REQUIRED",
+      "classification": "TECHNICAL DEBT",
+      "recommendation": "NEXT",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F08"
+      ],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O05",
+      "name": "One comparison surface",
+      "problem_solved": "Comparison split and partly unreachable",
+      "user_workflow": "Compare plans",
+      "proposed_behavior": "Results → Compare always offers a source picker: current result, its baseline, any saved Version, any Pareto alternative; KPI deltas + input diff + A/B map",
+      "why_current_insufficient": "Two surfaces with different meanings",
+      "expected_product_value": "Restores a documented capability to the main workflow",
+      "implementation_surfaces": [
+        "App.jsx Compare branches",
+        "ScenarioPanel compare",
+        "scenarioDiff.js"
+      ],
+      "semantic_scientific_risk": "None if only existing summaries are compared",
+      "dependencies": [],
+      "rough_effort": "M",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NEXT",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F06"
+      ],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O06",
+      "name": "Candidate recommendation as a primary network action",
+      "problem_solved": "Capability effectively hidden",
+      "user_workflow": "Network plan with gaps",
+      "proposed_behavior": "Add 'Find an additional cell' next to Evaluate/Optimize with inline prerequisites (2–5 cells, search area) and a dedicated Results view independent of Solutions",
+      "why_current_insufficient": "Tab replaced after optimization; prerequisites conflict",
+      "expected_product_value": "Surfaces an existing bounded capability",
+      "implementation_surfaces": [
+        "App.jsx Results views",
+        "command bar / Propagation actions"
+      ],
+      "semantic_scientific_risk": "None (scoring unchanged)",
+      "dependencies": [],
+      "rough_effort": "M",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NEXT",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F05"
+      ],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O07",
+      "name": "Shareable outputs",
+      "problem_solved": "Artifacts are hard to hand over",
+      "user_workflow": "Report/export",
+      "proposed_behavior": "Filenames '<project>-<scenario>-v<N>-<yyyymmdd>.md|html|atom-project.json'; remove duplicate report section; render map as separate SVG/PNG attachment or HTML-only; consistent lineage line",
+      "why_current_insufficient": "UUID names, duplicated tables, inline SVG",
+      "expected_product_value": "Reports become readable outside A.T.O.M",
+      "implementation_surfaces": [
+        "reportArtifact.js",
+        "reportExport.js",
+        "WorkspaceChrome.jsx"
+      ],
+      "semantic_scientific_risk": "None; keep limitations text",
+      "dependencies": [
+        "#81 docs complements"
+      ],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "UX REPAIR",
+      "recommendation": "NOW",
+      "github_coverage": "partially (#81 documents reading reports)",
+      "friction": [
+        "F13",
+        "F14",
+        "F15"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O08",
+      "name": "Precise state language",
+      "problem_solved": "Stale/Version wording confuses",
+      "user_workflow": "All runs",
+      "proposed_behavior": "Separate 'view changed' (mode switch with no input change) from 'inputs changed'; human run labels ('Optimization · 8 cells · 64.4/100 · 14:39'); one Version-state vocabulary; rename auto-named scenarios by mode",
+      "why_current_insufficient": "Hash-first, over-triggered stale states",
+      "expected_product_value": "Less second-guessing on every action",
+      "implementation_surfaces": [
+        "App.jsx mapPlanPrompt",
+        "ResultContextBadge",
+        "RunHistoryPanel"
+      ],
+      "semantic_scientific_risk": "Must not hide true staleness",
+      "dependencies": [],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "UX REPAIR",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F09",
+        "F22",
+        "F23"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O09",
+      "name": "Actionable errors and inline validation",
+      "problem_solved": "Raw errors and misdirected prompts",
+      "user_workflow": "Setup / backend down",
+      "proposed_behavior": "Map known failures to cause+recovery (backend unreachable → URL, retry button; 500 → retry, report details); aria-invalid + inline message on invalid fields; prompt points to the field's actual tool",
+      "why_current_insufficient": "Raw 'Failed to fetch'/'internal error'",
+      "expected_product_value": "Faster recovery, fewer dead ends",
+      "implementation_surfaces": [
+        "apiClient.js",
+        "App.jsx getJSON callers",
+        "ControlPanel NumberField"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "UX REPAIR",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F18",
+        "F19",
+        "F33"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O10",
+      "name": "First-run starting point",
+      "problem_solved": "No orientation",
+      "user_workflow": "First visit",
+      "proposed_behavior": "When no saved project exists, an inline empty-state card: one sentence on what A.T.O.M does, 'Run the pre-selected sector' and 'Open sample network project' (bundled examples file), link to glossary; dismissible",
+      "why_current_insufficient": "Sample reachable only via README",
+      "expected_product_value": "Meaningful network result in ~3 actions",
+      "implementation_surfaces": [
+        "App.jsx",
+        "examples/ankara-sample.atom-project.json bundling"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [
+        "#78 walkthrough (docs) complements"
+      ],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NOW",
+      "github_coverage": "partially (#78 is documentation)",
+      "friction": [
+        "F25"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O11",
+      "name": "Measurement validation placement",
+      "problem_solved": "Feature filed as research",
+      "user_workflow": "Field validation",
+      "proposed_behavior": "Promote CSV Measurement Validation to its own Analyze tool or a top-level Data section; rename RF Diagnostics campaign tool 'Campaign evidence (research)'",
+      "why_current_insufficient": "Two similarly named surfaces; canonical action hidden",
+      "expected_product_value": "Exposes a documented capability without changing science",
+      "implementation_surfaces": [
+        "workspaceTools.js",
+        "App.jsx Data panel",
+        "RFDiagnosticsResearchFeature"
+      ],
+      "semantic_scientific_risk": "None; keep explicit apply + boundaries",
+      "dependencies": [
+        "#87–#90 remain research"
+      ],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NEXT",
+      "github_coverage": "genuinely new (science issues #87–#90 unaffected)",
+      "friction": [
+        "F07"
+      ],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O12",
+      "name": "Network Pareto trade-off chart",
+      "problem_solved": "25 near-identical cards",
+      "user_workflow": "Choose alternative",
+      "proposed_behavior": "Scatter of two selectable objectives with recommended/selected/inspected markers, reusing the Experiments Pareto renderer; list collapses to top-N + 'show all'",
+      "why_current_insufficient": "List only",
+      "expected_product_value": "Faster, more defensible alternative choice",
+      "implementation_surfaces": [
+        "App.jsx ParetoSolutionsPanel",
+        "comparisonCharts.js"
+      ],
+      "semantic_scientific_risk": "None (existing objectives)",
+      "dependencies": [],
+      "rough_effort": "M",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NEXT",
+      "github_coverage": "partially (#76 closed by PR #96 covers explanation, not visualization)",
+      "friction": [
+        "F24"
+      ],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O13",
+      "name": "Map chrome collisions",
+      "problem_solved": "Overlaps and clipping",
+      "user_workflow": "All map work",
+      "proposed_behavior": "Auto-collapse Map key while drawing/placing; legend scroll fade; command-bar truncation rules at 1280; Results tabs fit (shorter labels or overflow menu); quieter heading focus style",
+      "why_current_insufficient": "Visible collisions at common sizes",
+      "expected_product_value": "Perceived polish",
+      "implementation_surfaces": [
+        "styles.css",
+        "MapLegend",
+        "ResultTabs",
+        "WorkspaceChrome"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "POLISH",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F11",
+        "F20",
+        "F21",
+        "F30"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O14",
+      "name": "Optimization next to the result",
+      "problem_solved": "Optimize is two stages away",
+      "user_workflow": "Evaluate → optimize",
+      "proposed_behavior": "After a current network evaluation, offer 'Optimize azimuths' in the Results Optimization empty state and command-bar overflow; show active priorities summary with an edit link",
+      "why_current_insufficient": "Users must know Simulate → Propagation → Advanced",
+      "expected_product_value": "Shorter core loop",
+      "implementation_surfaces": [
+        "App.jsx",
+        "ControlPanel"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "M",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NEXT",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F26"
+      ],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O15",
+      "name": "Accessibility fixes",
+      "problem_solved": "Keyboard/AT friction",
+      "user_workflow": "All",
+      "proposed_behavior": "Escape closes project menu; aria-expanded-aware trigger label; label-in-name for Save version; unique names for Select cells; inventory signposted as keyboard path to cells",
+      "why_current_insufficient": "Several small violations",
+      "expected_product_value": "Material keyboard usability",
+      "implementation_surfaces": [
+        "WorkspaceChrome.jsx",
+        "App.jsx"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "S",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "UX REPAIR",
+      "recommendation": "NOW",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F16",
+        "F17",
+        "F29",
+        "F31"
+      ],
+      "roadmap": "NOW"
+    },
+    {
+      "id": "O16",
+      "name": "Decision Compare with spatial delta layer",
+      "problem_solved": "Planners cannot see WHERE two plans differ",
+      "user_workflow": "Defend a recommendation",
+      "proposed_behavior": "Pick any two states (see O05); map shows a delta layer: demand buildings newly served / newly lost / overlap changed, with counts; exportable in report",
+      "why_current_insufficient": "Only aggregate KPI deltas exist",
+      "expected_product_value": "Turns comparison into a spatial decision surface (Product Compass 'close the compare-to-decision loop')",
+      "implementation_surfaces": [
+        "backend evaluate-network per-building served state in response or deterministic recompute",
+        "MapCanvas delta layer",
+        "report"
+      ],
+      "semantic_scientific_risk": "Bounded: must use identical dataset/model fingerprints; no new physics",
+      "dependencies": [
+        "O05",
+        "per-building served-state output"
+      ],
+      "rough_effort": "L",
+      "safety_class": "B. BOUNDED SEMANTIC CHANGE",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "LATER",
+      "github_coverage": "genuinely new",
+      "friction": [
+        "F06"
+      ],
+      "roadmap": "LATER"
+    },
+    {
+      "id": "O17",
+      "name": "Area-of-interest KPIs",
+      "problem_solved": "Planners care about a target district, not the whole footprint",
+      "user_workflow": "Evaluate plan for an area",
+      "proposed_behavior": "Reuse the drawn area as an AOI: report served demand weight, residential served, overlap and (if run) SINR serviceable share inside the AOI for the current result and comparisons",
+      "why_current_insufficient": "KPIs are network-wide only; polygon only selects cells/candidates",
+      "expected_product_value": "Answers 'does this plan cover the district?'",
+      "implementation_surfaces": [
+        "backend aggregation filter by polygon (bounded vertices exist)",
+        "Results card",
+        "report"
+      ],
+      "semantic_scientific_risk": "Bounded: aggregation of existing per-building results; no new model",
+      "dependencies": [
+        "Polygon bounds (#16 closed)"
+      ],
+      "rough_effort": "M",
+      "safety_class": "B. BOUNDED SEMANTIC CHANGE",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "NEXT",
+      "github_coverage": "genuinely new",
+      "friction": [],
+      "roadmap": "NEXT"
+    },
+    {
+      "id": "O18",
+      "name": "Multi-sector site template",
+      "problem_solved": "Placing a 3-sector site takes 3 placements + edits",
+      "user_workflow": "Add a new site",
+      "proposed_behavior": "Place a site template: N co-located Cells (default 3 at 0/120/240°) sharing position and editable as a group; still N Cells in requests",
+      "why_current_insufficient": "Manual per-Cell placement; site concept exists only in glossary",
+      "expected_product_value": "Faster, more realistic planning interaction",
+      "implementation_surfaces": [
+        "InventoryPanel",
+        "domain/inventory.js",
+        "project schema (optional group id)"
+      ],
+      "semantic_scientific_risk": "Bounded: grouping only; must not imply physical site feasibility (glossary)",
+      "dependencies": [
+        "Project format minor extension"
+      ],
+      "rough_effort": "M",
+      "safety_class": "B. BOUNDED SEMANTIC CHANGE",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "LATER",
+      "github_coverage": "genuinely new (closed #80 defines terms only)",
+      "friction": [],
+      "roadmap": "LATER"
+    },
+    {
+      "id": "O19",
+      "name": "Review package export",
+      "problem_solved": "Sharing needs several manual downloads",
+      "user_workflow": "Hand a decision to a colleague",
+      "proposed_behavior": "One action exports a zip: HTML report, Markdown, project file, map PNG and a manifest (hashes, dataset/model identity, limitations)",
+      "why_current_insufficient": "Separate downloads, generic names",
+      "expected_product_value": "A self-contained, verifiable review artifact",
+      "implementation_surfaces": [
+        "reportExport.js",
+        "artifactStore",
+        "zip writer (no new dependency or tiny one)"
+      ],
+      "semantic_scientific_risk": "None; manifest repeats existing provenance",
+      "dependencies": [
+        "O07"
+      ],
+      "rough_effort": "M",
+      "safety_class": "A. PRODUCT-SAFE NOW",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "LATER",
+      "github_coverage": "partially (#81 docs)",
+      "friction": [
+        "F13"
+      ],
+      "roadmap": "LATER"
+    },
+    {
+      "id": "O20",
+      "name": "Undo/redo for plan edits",
+      "problem_solved": "Edits to cells/settings are irreversible except via Versions",
+      "user_workflow": "Iterative editing",
+      "proposed_behavior": "Bounded in-session undo stack for inventory and setup edits",
+      "why_current_insufficient": "Only delete-undo exists",
+      "expected_product_value": "Safer exploration",
+      "implementation_surfaces": [
+        "App.jsx state ownership",
+        "useProjectWorkspace"
+      ],
+      "semantic_scientific_risk": "None",
+      "dependencies": [
+        "Concept 7J state ownership"
+      ],
+      "rough_effort": "L",
+      "safety_class": "C. TECHNICAL FOUNDATION REQUIRED",
+      "classification": "TECHNICAL DEBT",
+      "recommendation": "LATER",
+      "github_coverage": "genuinely new",
+      "friction": [],
+      "roadmap": "LATER"
+    },
+    {
+      "id": "O21",
+      "name": "Network-scope experiments",
+      "problem_solved": "Experiments sweep only the active cell",
+      "user_workflow": "Sensitivity of a network plan",
+      "proposed_behavior": "Sweep a shared parameter across selected cells within the job cap",
+      "why_current_insufficient": "Single-cell only, not stated in Network mode",
+      "expected_product_value": "Network sensitivity",
+      "implementation_surfaces": [
+        "batch-experiment API",
+        "ExperimentPanel"
+      ],
+      "semantic_scientific_risk": "Request budget/admission must be re-qualified",
+      "dependencies": [
+        "RF budget policy"
+      ],
+      "rough_effort": "L",
+      "safety_class": "C. TECHNICAL FOUNDATION REQUIRED",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "LATER",
+      "github_coverage": "genuinely new",
+      "friction": [],
+      "roadmap": "LATER"
+    },
+    {
+      "id": "O22",
+      "name": "Calibrated or confidence-weighted predictions",
+      "problem_solved": "Users want accuracy statements",
+      "user_workflow": "Trust",
+      "proposed_behavior": "Per-area confidence from measurements",
+      "why_current_insufficient": "No measured accuracy",
+      "expected_product_value": "High but unsupported",
+      "implementation_surfaces": [
+        "science"
+      ],
+      "semantic_scientific_risk": "Requires #87–#90 evidence",
+      "dependencies": [
+        "#87",
+        "#88",
+        "#89",
+        "#90"
+      ],
+      "rough_effort": "RESEARCH",
+      "safety_class": "D. SCIENTIFIC EVIDENCE REQUIRED",
+      "classification": "SCIENTIFIC / RESEARCH",
+      "recommendation": "RESEARCH",
+      "github_coverage": "covered by #87–#90",
+      "friction": [],
+      "roadmap": "RESEARCH"
+    },
+    {
+      "id": "O23",
+      "name": "Tilt/power/site-selection optimization",
+      "problem_solved": "Optimizer adjusts azimuth only",
+      "user_workflow": "Optimization",
+      "proposed_behavior": "Extend search space",
+      "why_current_insufficient": "Explicitly excluded semantics",
+      "expected_product_value": "High",
+      "implementation_surfaces": [
+        "optimizer"
+      ],
+      "semantic_scientific_risk": "Changes optimization semantics and request budget; needs validation",
+      "dependencies": [
+        "Concept 5 search policy"
+      ],
+      "rough_effort": "RESEARCH",
+      "safety_class": "D. SCIENTIFIC EVIDENCE REQUIRED",
+      "classification": "SCIENTIFIC / RESEARCH",
+      "recommendation": "RESEARCH",
+      "github_coverage": "genuinely new",
+      "friction": [],
+      "roadmap": "RESEARCH"
+    },
+    {
+      "id": "O24",
+      "name": "Guided multi-step wizard",
+      "problem_solved": "Onboarding",
+      "user_workflow": "First run",
+      "proposed_behavior": "Modal tour",
+      "why_current_insufficient": "Product already has a clear primary action",
+      "expected_product_value": "Low; adds chrome",
+      "implementation_surfaces": [],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "M",
+      "safety_class": "E. REJECT",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "REJECT",
+      "github_coverage": "n/a",
+      "friction": [
+        "F25"
+      ],
+      "roadmap": "REJECTED"
+    },
+    {
+      "id": "O25",
+      "name": "Cost/backhaul/equity scoring",
+      "problem_solved": "Business ranking",
+      "user_workflow": "Recommendation",
+      "proposed_behavior": "Score candidates by cost",
+      "why_current_insufficient": "No authoritative data",
+      "expected_product_value": "Would manufacture certainty",
+      "implementation_surfaces": [],
+      "semantic_scientific_risk": "Violates Product Compass",
+      "dependencies": [],
+      "rough_effort": "XL",
+      "safety_class": "E. REJECT",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "REJECT",
+      "github_coverage": "n/a",
+      "friction": [],
+      "roadmap": "REJECTED"
+    },
+    {
+      "id": "O26",
+      "name": "Cloud sharing/collaboration",
+      "problem_solved": "Team review",
+      "user_workflow": "Sharing",
+      "proposed_behavior": "Hosted projects",
+      "why_current_insufficient": "Local-first premise",
+      "expected_product_value": "Out of scope",
+      "implementation_surfaces": [],
+      "semantic_scientific_risk": "Changes product premise",
+      "dependencies": [],
+      "rough_effort": "XL",
+      "safety_class": "E. REJECT",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "REJECT",
+      "github_coverage": "n/a",
+      "friction": [],
+      "roadmap": "REJECTED"
+    },
+    {
+      "id": "O27",
+      "name": "Command palette",
+      "problem_solved": "Navigation speed",
+      "user_workflow": "Power users",
+      "proposed_behavior": "Global palette",
+      "why_current_insufficient": "14 tools in 4 stages is navigable; Concept 7F/8A reached same conclusion",
+      "expected_product_value": "Low",
+      "implementation_surfaces": [],
+      "semantic_scientific_risk": "None",
+      "dependencies": [],
+      "rough_effort": "M",
+      "safety_class": "E. REJECT",
+      "classification": "WORKFLOW IMPROVEMENT",
+      "recommendation": "NOT NOW",
+      "github_coverage": "n/a",
+      "friction": [],
+      "roadmap": "REJECTED"
+    },
+    {
+      "id": "O28",
+      "name": "3D city view",
+      "problem_solved": "Visual appeal",
+      "user_workflow": "Inspection",
+      "proposed_behavior": "3D buildings/rays",
+      "why_current_insufficient": "Decorative relative to 2.5D model",
+      "expected_product_value": "Low planning value",
+      "implementation_surfaces": [],
+      "semantic_scientific_risk": "Implies 3D fidelity the model lacks",
+      "dependencies": [],
+      "rough_effort": "XL",
+      "safety_class": "E. REJECT",
+      "classification": "PRODUCT FEATURE",
+      "recommendation": "REJECT",
+      "github_coverage": "n/a",
+      "friction": [],
+      "roadmap": "REJECTED"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "base": "http://127.0.0.1:18090",
+  "log": [
+    {
+      "step": "default-4G LTE, 2.6 GHz",
+      "Blocked": "84.2%",
+      "Average Rx": "-123.3 DBm",
+      "Max range": "400.0 M",
+      "Min range": "113.1 M"
+    },
+    {
+      "step": "default-5G mmWave, 28 GHz",
+      "Blocked": "99.2%",
+      "Average Rx": "-185.5 DBm",
+      "Max range": "400.0 M",
+      "Min range": "8.5 M"
+    },
+    {
+      "step": "inspector-cell",
+      "aria": "- dialog \"Results\":\n  - heading \"Results\" [level=2]\n  - paragraph: Inspect RF, interference, and optimization outputs\n  - button \"Close tool drawer\"\n  - region \"Simulation results\":\n    - region \"CURRENT context\":\n      - text: CURRENT\n      - strong: Current result · Simulation\n      - strong: Working draft · No saved Version\n      - text: Simulation Run 117d48ba…5e424e · 10/17/2026, 2:58:40 PM\n      - button \"View Run 117d48ba…5e424e\"\n      - group: Details / Provenance\n    - tablist \"Result views\":\n      - tab \"RF\" [selected]\n      - tab \"Optimization\"\n      - tab \"Interference\"\n      - tab \"Compare\"\n      - tab \"Candidates\"\n    - text: Blocked\n    - strong: 99.2%\n    - text: Average Rx\n    - strong: \"-185.5 dBm\"\n    - text: Max range\n    - strong: 400.0 m\n    - text: Min range\n    - strong: 8.5 m\n    - region \"Coverage gap summary\":\n      - img\n      - text: Coverage Gaps Underserved buildings\n      - strong: \"0\"\n      - text: Gap ratio\n      - strong: 0.0%\n      - text: Candidates\n      - strong: \"122\"\n      - text: Returned\n      - strong: \"0\"\n      - text: Unmet demand\n      - strong: \"0\"\n      - text: Worst Rx\n      - strong: 0.0 dBm"
+    },
+    {
+      "step": "layers",
+      "aria": "- group \"Map layer visibility\":\n  - group \"Appearance\":\n    - text: Appearance\n    - radio \"Light\"\n    - text: Light\n    - radio \"Dark\"\n    - text: Dark\n    - radio \"System\" [checked]\n    - text: System\n  - group \"Basemap\":\n    - text: Basemap\n    - radio \"OpenStreetMap\"\n    - text: OpenStreetMap\n    - radio \"Alidade Smooth\" [checked]\n    - text: Alidade Smooth\n  - checkbox \"Viewport buildings\"\n  - text: Viewport buildings"
+    },
+    {
+      "step": "inventory-editor",
+      "metrics": {
+        "scrollHeight": 1080,
+        "clientHeight": 754
+      },
+      "aria": "- dialog \"Inventory\":\n  - heading \"Inventory\" [level=2]\n  - paragraph: Local cells, map placement, imports, and per-cell RF profiles\n  - button \"Close tool drawer\"\n  - region \"Cell inventory\":\n    - heading \"Cell Inventory\" [level=2]\n    - region \"Edit Cell 26380\":\n      - button \"Back to Inventory\"\n      - heading \"Cell 26380\" [level=3]\n      - paragraph: 5G · 28 GHz\n      - text: Dataset\n      - group \"Cell actions\":\n        - button \"Duplicate 26380\"\n        - button \"Clear RF overrides for 26380\"\n        - button \"Delete 26380\"\n      - paragraph: Reset RF overrides clears this Cell’s per-Cell RF profile and keeps its identity and location.\n      - heading \"Planning\" [level=3]:\n        - button \"Planning\" [expanded]\n      - paragraph: Identity, location, carrier profile, and common transmitter/receiver assumptions.\n      - group \"Position\":\n        - text: Position Longitude\n        - spinbutton \"Longitude\": \"32.8279\"\n        - text: Latitude\n        - spinbutton \"Latitude\": \"39.9279\"\n        - paragraph: This Cell’s selected map marker is draggable.\n      - group \"Carrier & common assumptions\":\n        - text: Carrier & common assumptions Technology\n        - combobox \"Technology\":\n          - option \"4G LTE\"\n          - option \"5G mmWave\" [selected]\n          - option \"6G research profile (140 GHz)\"\n        - text: Frequency GHz\n        - spinbutton \"Frequency GHz\": \"28\"\n        - text: Bandwidth MHz\n        - spinbutton \"Bandwidth MHz\": \"100\"\n        - text: Conducted TX power dBm\n        - spinbutton \"Conducted TX power dBm\": \"30\"\n        - text: Radius m\n        - spinbutton \"Radius m\": \"400\"\n        - text: Beam width °\n        - spinbutton \"Beam width °\": \"120\"\n        - text: Antenna height m\n        - spinbutton \"Antenna height m\": \"25\"\n        - text: Orientation °\n        - spinbutton \"Orientation °\": \"0\"\n        - text: Receiver height m\n        - spinbutton \"Receiver height m\": \"1.5\"\n      - group \"Receiver threshold\":\n        - text: Receiver threshold Threshold mode\n        - combobox \"Threshold mode\":\n          - option \"Manual\" [selected]\n          - option \"Derived\"\n        - text: RX sensitivity dBm\n        - spinbutton \"RX sensitivity dBm\": \"-115\"\n      - heading \"Advanced\" [level=3]:\n        - button \"Advanced\"\n      - paragraph: Additional antenna, channel, load, and derived receiver configuration.\n      - paragraph: Profile valid · request-ready"
+    }
+  ]
+}

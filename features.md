@@ -119,8 +119,9 @@ Near-equal co-channel powers can correctly produce SINR near `0 dB`; the Inspect
 
 Recommendations are RF planning options, not claims of rooftop availability, ownership, permitting, cost, or deployment approval. Candidate scoring intentionally excludes interference; analyze it after applying an option.
 
-## Measurement Validation
+## CSV Measurement Validation
 
+- Has its own section in Review → Data, separate from the research campaign evidence workflow in Analyze → RF Diagnostics.
 - Accepts one to six selected 4G/5G Cells, independently of normal network8 and Recommendation5 limits.
 - Imports up to 5,000 CSV records with ID, longitude, latitude, technology, measured RSRP, and optional cell ID.
 - Predicts RSRP at each measurement location using the active selected cells and RF assumptions.

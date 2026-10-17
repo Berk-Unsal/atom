@@ -828,6 +828,112 @@ describe("App planning workflow", () => {
     expect(evaluation).toHaveTextContent("This evaluates one configuration. Run network optimization to inspect Pareto alternatives.");
     expect(within(evaluation).queryByText("No feasible non-dominated set was found under the active constraints.")).not.toBeInTheDocument();
     expect(within(evaluation).queryByRole("button", { name: "Explore solutions" })).not.toBeInTheDocument();
+    const scoreHelp = within(evaluation).getByText("About this score", { selector: "summary" });
+    expect(scoreHelp.closest("details")).not.toHaveAttribute("open");
+    const requestCount = api.postJSON.mock.calls.length;
+    fireEvent.click(scoreHelp);
+    expect(scoreHelp.closest("details")).toHaveAttribute("open");
+    expect(scoreHelp.closest("details")).toHaveTextContent(/normalized, preference-weighted utility/i);
+    expect(scoreHelp.closest("details")).toHaveTextContent(/not a coverage percentage, measured field accuracy, probability, or confidence/i);
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+  });
+
+  it("explains score and Pareto actions while reranking, applying and searching explicitly", async () => {
+    useNetworkFixture = true;
+    const payload = structuredClone(networkOptimizationPayload);
+    payload.stats.network_score = 12345;
+    payload.optimization.objective_score = 54321;
+    payload.pareto_frontier.forEach((solution, index) => { solution.stats.network_score = 10000 + index; });
+    const originalResponse = JSON.stringify(payload);
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, ...args) => path === "/api/optimize-network"
+      ? Promise.resolve(payload)
+      : originalPost(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+    fireEvent.click(within(menu).getByRole("button", { name: "Save current" }));
+    await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const firstRequest = structuredClone(api.postJSON.mock.calls.find(([path]) => path === "/api/optimize-network")[1]);
+    const requestCount = api.postJSON.mock.calls.length;
+
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    const explorer = screen.getByRole("region", { name: "Pareto alternative solutions" });
+    const scoreHelp = within(explorer).getByText("About this score", { selector: "summary" });
+    fireEvent.click(scoreHelp);
+    const scoreDetails = scoreHelp.closest("details");
+    expect(scoreDetails).toHaveTextContent(/common scale.*different units/i);
+    expect(scoreDetails).toHaveTextContent(/higher served demand.*lower overlap/i);
+    expect(scoreDetails).toHaveTextContent(/unavailable objectives are excluded/i);
+    expect(scoreDetails).toHaveTextContent(/varies Cell azimuths.*other configured RF and site inputs stay fixed/i);
+    expect(explorer.querySelector(".pareto-detail-score")).toHaveTextContent("65.5 / 100");
+    const actionsHelp = within(explorer).getByText("How to compare and use alternatives", { selector: "summary" });
+    fireEvent.click(actionsHelp);
+    const actions = actionsHelp.closest("details");
+    expect(within(actions).getByLabelText("Illustrative Pareto trade-off")).toHaveTextContent(/not current results.*A serves more demand.*B serves less demand/i);
+    expect(actions).toHaveTextContent(/neither is better on all objectives/i);
+    expect(actions).toHaveTextContent(/Demand can favor A.*Reduce overlap can favor B/i);
+    expect(within(actions).getAllByRole("listitem")).toHaveLength(4);
+    expect(actions).toHaveTextContent(/Inspect:.*without an RF request/i);
+    expect(actions).toHaveTextContent(/Rerank:.*locally.*no new RF request or search/i);
+    expect(actions).toHaveTextContent(/Apply solution…:.*new Version or branch/i);
+    expect(actions).toHaveTextContent(/New search:.*Optimize Network.*backend optimization search/i);
+    fireEvent.click(screen.getByRole("button", { name: /Inspect Pareto solution 2/i }));
+    expect(explorer.querySelector(".pareto-detail-score")).toHaveTextContent("65.3 / 100");
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: /^Advanced analysis/ }));
+    for (const label of ["Demand importance", "Propagation reach importance", "Reduce overlap importance"]) {
+      fireEvent.change(screen.getByRole("slider", { name: label }), { target: { value: "0" } });
+    }
+    fireEvent.change(screen.getByRole("slider", { name: "Residential importance" }), { target: { value: "100" } });
+    openWorkspaceTool("Results");
+    expect(screen.getByRole("button", { name: /Inspect Pareto solution 1, recommended/i })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("region", { name: "Inspected solution" }).querySelector(".pareto-detail-score")).toHaveTextContent("73.3 / 100");
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+    expect(JSON.stringify(payload)).toBe(originalResponse);
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const searches = api.postJSON.mock.calls.filter(([path]) => path === "/api/optimize-network");
+    expect(searches).toHaveLength(2);
+    expect(searches[1][1]).toEqual({
+      ...firstRequest,
+      // The completed first search loaded A's azimuths. Inspecting/reranking to B
+      // must not silently replace them with B's 30°/150° in the next request.
+      towers: firstRequest.towers.map((tower, index) => ({ ...tower, azimuth: [20, 140][index] })),
+      optimization: {
+        ...firstRequest.optimization,
+        objectives: [
+          { id: "demand", weight: 0 }, { id: "residential", weight: 100 },
+          { id: "coverage", weight: 0 }, { id: "overlap", weight: 0 }, { id: "radio_quality", weight: 0 },
+        ],
+      },
+    });
+    const afterSearchCount = api.postJSON.mock.calls.length;
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply solution…" }));
+    const dialog = screen.getByRole("dialog", { name: "Apply optimization solution?" });
+    expect(dialog).toHaveTextContent(/source Run and Version stay unchanged.*fresh RF run/i);
+    expect(within(dialog).getByRole("button", { name: "Create new Version" })).toBeEnabled();
+    expect(api.postJSON).toHaveBeenCalledTimes(afterSearchCount);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Create new Version" }));
+    await screen.findByText("Historical solution applied to a new Version. Run the plan to compute fresh visualization.");
+    expect(api.postJSON).toHaveBeenCalledTimes(afterSearchCount);
+    expect(JSON.stringify(payload)).toBe(originalResponse);
   });
 
   it("explores Pareto solutions without changing the recommendation or rerunning RF", async () => {

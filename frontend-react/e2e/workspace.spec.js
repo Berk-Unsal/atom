@@ -2523,10 +2523,10 @@ test("runs the isolated specular reflection reference from RF Diagnostics", asyn
   });
 });
 
-test("explores a retained Pareto alternative without another RF request", async ({ page }) => {
+test("explores retained Pareto alternatives with keyboard score help and no hidden RF request", async ({ page }, testInfo) => {
   const rfRequests = [];
   page.on("request", (request) => {
-    if (["/api/optimize-network", "/api/simulate"].some((path) => request.url().includes(path))) {
+    if (request.method() === "POST" && request.url().includes("/api/")) {
       rfRequests.push(request.url());
     }
   });
@@ -2563,6 +2563,42 @@ test("explores a retained Pareto alternative without another RF request", async 
   const requestCount = rfRequests.length;
   await page.getByRole("button", { name: /Inspect Pareto solution 2/i }).click();
   await expect(page.getByText("Compared with recommended")).toBeVisible();
+
+  const actionsSummary = page.getByText("How to compare and use alternatives", { exact: true });
+  const scoreSummary = page.getByText("About this score", { exact: true });
+  const scoreDetails = scoreSummary.locator("..");
+  const actionsDetails = actionsSummary.locator("..");
+  await expect(scoreDetails).not.toHaveAttribute("open");
+  await expect(actionsDetails).not.toHaveAttribute("open");
+  await actionsSummary.focus();
+  await page.keyboard.press("Tab");
+  await expect(scoreSummary).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(scoreDetails).toHaveAttribute("open");
+  await page.keyboard.press("Space");
+  await expect(scoreDetails).not.toHaveAttribute("open");
+  await page.keyboard.press("Enter");
+  await expect(scoreDetails).toContainText("normalized, preference-weighted utility");
+  await actionsSummary.focus();
+  await page.keyboard.press("Enter");
+  await expect(actionsDetails).toHaveAttribute("open");
+  await expect(actionsDetails.getByLabel("Illustrative Pareto trade-off")).toBeVisible();
+
+  for (const appearance of ["light", "dark"]) {
+    await page.emulateMedia({ colorScheme: appearance });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", appearance);
+    for (const help of [scoreDetails, actionsDetails]) {
+      expect(await help.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+    }
+    await scoreSummary.scrollIntoViewIfNeeded();
+    const scoreCapture = testInfo.outputPath(`score-help-${appearance}.png`);
+    await page.screenshot({ path: scoreCapture, animations: "disabled" });
+    await testInfo.attach(`score-help-${appearance}`, { path: scoreCapture, contentType: "image/png" });
+    await actionsSummary.scrollIntoViewIfNeeded();
+    const paretoCapture = testInfo.outputPath(`pareto-help-${appearance}.png`);
+    await page.screenshot({ path: paretoCapture, animations: "disabled" });
+    await testInfo.attach(`pareto-help-${appearance}`, { path: paretoCapture, contentType: "image/png" });
+  }
   expect(rfRequests).toHaveLength(requestCount);
 });
 

@@ -202,14 +202,27 @@ export function ProjectMenu({
   const [confirmProjectDelete, setConfirmProjectDelete] = useState(false);
   const rootRef = useRef(null);
   const fileRef = useRef(null);
+  const triggerRef = useRef(null);
 
   useEffect(() => {
     if (!open) return undefined;
     const close = (event) => {
       if (!rootRef.current?.contains(event.target)) setOpen(false);
     };
+    // The open menu owns Escape (capture phase) so the drawer underneath stays open.
+    const closeOnEscape = (event) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(false);
+      triggerRef.current?.focus();
+    };
     document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
+    window.addEventListener("keydown", closeOnEscape, true);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      window.removeEventListener("keydown", closeOnEscape, true);
+    };
   }, [open]);
 
   const importFile = async (event) => {
@@ -251,7 +264,7 @@ export function ProjectMenu({
   const saveScenario = async () => {
     setFileRecovery(null);
     setSavingScenario(true);
-    setMessage("Saving scenario…");
+    setMessage("Saving Version…");
     try {
       await onSaveScenario();
       setMessage("Version saved");
@@ -265,11 +278,13 @@ export function ProjectMenu({
   return (
     <div className="project-menu-wrap" ref={rootRef}>
       <button
+        ref={triggerRef}
         type="button"
         className="project-menu-trigger"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
-        aria-label="Open project menu"
+        aria-haspopup="dialog"
+        aria-label={`Project menu, ${activeProject?.name ?? "Project"}`}
       >
         <FolderOpen size={15} />
         <span>{activeProject?.name ?? "Project"}</span>
@@ -320,11 +335,11 @@ export function ProjectMenu({
               </div>
             </div>
           ) : null}
-          <p className="project-menu-save-note">Drafts autosave in this browser. Save version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.</p>
+          <p className="project-menu-save-note">Drafts autosave in this browser. Save Version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.</p>
           <div className="scenario-menu-header">
             <strong>Scenarios / Versions</strong>
-            <button type="button" onClick={saveScenario} disabled={savingScenario} aria-label="Save current">
-              <Save size={14} /> {savingScenario ? "Saving…" : "Save version"}
+            <button type="button" onClick={saveScenario} disabled={savingScenario}>
+              <Save size={14} /> {savingScenario ? "Saving Version…" : "Save Version"}
             </button>
           </div>
           {staleResultRunLabel ? <p className="project-menu-save-note">Save Version records the current plan. {staleResultRunLabel} remains tied to the input that produced it.</p> : null}

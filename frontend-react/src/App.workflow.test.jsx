@@ -285,9 +285,9 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
     await screen.findByRole("button", { name: /Open Current result details/i });
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
     const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
-    fireEvent.click(within(menu).getByRole("button", { name: "Save current" }));
+    fireEvent.click(within(menu).getByRole("button", { name: "Save Version" }));
     await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
     const storageBefore = window.localStorage.getItem("atom.planning.workspace.v1");
     const rfCalls = api.postJSON.mock.calls.length;
@@ -606,7 +606,7 @@ describe("App planning workflow", () => {
     await act(async () => Promise.resolve());
 
     expect(api.postJSON).not.toHaveBeenCalled();
-    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeEnabled();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select 2+ cells" })).toBeEnabled();
     expect(screen.getByText("Minimum 2 · Maximum 8")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Analyze workspace" }));
     expect(screen.getByRole("button", { name: "Interference" })).toHaveAttribute("aria-disabled", "true");
@@ -625,7 +625,7 @@ describe("App planning workflow", () => {
 
     expect(screen.getByRole("dialog", { name: "Setup" })).toBeInTheDocument();
     expect(screen.getByText("Selecting cells on map…")).toHaveAttribute("role", "status");
-    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeEnabled();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select 2+ cells" })).toBeEnabled();
     expect(within(setup).queryByRole("button", { name: "Select cells on map" })).not.toBeInTheDocument();
     expect(api.postJSON).not.toHaveBeenCalled();
 
@@ -887,11 +887,11 @@ describe("App planning workflow", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
     await screen.findByRole("button", { name: "Network mode, 2 selected" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
     const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
-    fireEvent.click(within(menu).getByRole("button", { name: "Save current" }));
+    fireEvent.click(within(menu).getByRole("button", { name: "Save Version" }));
     await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
     openWorkspaceTool("Propagation");
     fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
     await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
@@ -1033,11 +1033,11 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
     fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
     await screen.findByRole("button", { name: "Network mode, 2 selected" });
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
     const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
-    fireEvent.click(within(menu).getByRole("button", { name: "Save current" }));
+    fireEvent.click(within(menu).getByRole("button", { name: "Save Version" }));
     await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
 
     openWorkspaceTool("Propagation");
     fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
@@ -1178,9 +1178,14 @@ describe("App planning workflow", () => {
     fireEvent.click(within(screen.getByRole("dialog", { name: "Setup" })).getByRole("button", { name: "Select cells on map" }));
     expect(screen.getByText("Selecting cells on map…")).toBeInTheDocument();
     expect(within(screen.getByRole("group", { name: "Map interaction mode" })).getByRole("button", { name: "Select cells" })).toHaveAttribute("aria-pressed", "true");
+    // Both the map mode and the command-bar primary are visible here; only the map mode is "Select cells".
+    expect(screen.getAllByRole("button", { name: "Select cells" })).toHaveLength(1);
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select 2+ cells" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Draw selection area" }));
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select cells" })).toBeDisabled();
+    expect(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Select 2+ cells" })).toBeDisabled();
+    // The command bar and map mode controls have distinct accessible names.
+    expect(screen.queryAllByRole("button", { name: "Select cells" }).length).toBeLessThanOrEqual(1);
 
     fireEvent.keyDown(window, { key: "Escape" });
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();

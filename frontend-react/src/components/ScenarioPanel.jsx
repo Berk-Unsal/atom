@@ -180,7 +180,7 @@ export default function ScenarioPanel({
           {canSaveVersion
             ? <input value={changeSummary} onChange={(event) => setChangeSummary(event.target.value)} placeholder="Change summary (optional)" aria-label="Version change summary" />
             : <span className="scenario-save-state">No unsaved Scenario input changes.</span>}
-          <button type="button" className="panel-primary-action" onClick={saveVersion} disabled={busy === "save" || !canSaveVersion}><Save size={14} /> {busy === "save" ? "Saving…" : "Save Version"}</button>
+          <button type="button" className="panel-primary-action" onClick={saveVersion} disabled={busy === "save" || !canSaveVersion}><Save size={14} /> {busy === "save" ? "Saving Version…" : "Save Version"}</button>
         </div>
       </ToolSection>
 

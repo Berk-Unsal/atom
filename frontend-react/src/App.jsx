@@ -2748,7 +2748,7 @@ export default function App() {
     ? "Evaluating..."
     : planningMode === "network"
       ? cellsNeeded > 0
-        ? "Select cells"
+        ? "Select 2+ cells"
         : "Evaluate Network"
       : isLoading
         ? "Running..."

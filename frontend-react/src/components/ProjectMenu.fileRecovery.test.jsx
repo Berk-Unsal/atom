@@ -32,7 +32,7 @@ function setup(message) {
   vi.stubGlobal("URL", { createObjectURL: createURL, revokeObjectURL: vi.fn() });
   const download = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
   const { container } = render(<ProjectMenu activeProject={activeProject} compatible projects={[activeProject]} {...callbacks} />);
-  fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
   const file = { size: 12, text: vi.fn(async () => '{"original":true}') };
   const fileInput = container.querySelector('input[type="file"]');
   const importFile = () => fireEvent.change(fileInput, { target: { files: [file] } });

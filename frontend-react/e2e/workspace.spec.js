@@ -1,6 +1,7 @@
 import { createThemeCaptureWriter } from "./themeCaptureHelpers.js";
 import { waitForBasemap, selectBasemap, basemapSnapshot } from "./basemapHelpers.js";
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -1067,18 +1068,18 @@ test("runs a sector and preserves a named scenario", async ({ page }) => {
   await selectWorkspaceTool(page, "Results");
   await expect(page.getByRole("dialog", { name: "Results" })).toContainText("-72.0 dBm");
 
-  const projectMenuBox = await page.getByRole("button", { name: "Open project menu" }).boundingBox();
+  const projectMenuBox = await page.getByRole("button", { name: /^Project menu/ }).boundingBox();
   const lineageBox = await page.locator(".workspace-lineage-context > summary").boundingBox();
   expect(projectMenuBox && lineageBox).toBeTruthy();
   expect(projectMenuBox.x + projectMenuBox.width).toBeLessThanOrEqual(lineageBox.x + 1);
 
-  await page.getByRole("button", { name: "Open project menu" }).click();
-  await page.getByRole("button", { name: "Save current" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
+  await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("button", { name: "Save Version" }).click();
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
   await expect(page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("status")).toHaveText("Version saved");
 
   await page.reload();
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toContainText("Sector plan 1");
 });
 
@@ -1817,10 +1818,10 @@ test("project budget recovery preserves evidence and offers working Report and N
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   await page.getByRole("button", { name: "Run Sector" }).click();
   await expect(page.locator(".run-state")).toHaveText("Ready");
-  const trigger = page.getByRole("button", { name: "Open project menu" });
+  const trigger = page.getByRole("button", { name: /^Project menu/ });
   await trigger.click();
   const menu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await menu.getByRole("button", { name: "Save current" }).click();
+  await menu.getByRole("button", { name: "Save Version" }).click();
   await expect(menu.getByRole("status")).toHaveText("Version saved");
   const readWorkspace = () => page.evaluate(async () => {
     const request = indexedDB.open("atom-planning-workspace");
@@ -1902,21 +1903,21 @@ test("switching Projects clears the live Run association and scopes Run History"
   await inspectMapFocus(page);
   await expect(page.getByRole("complementary", { name: "Cell inspector" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
   const projectSelect = projectMenu.getByRole("combobox", { name: "Project" });
   const sourceProjectID = await projectSelect.locator("option").first().getAttribute("value");
   await projectMenu.getByRole("button", { name: "New" }).click();
   await expect(page.getByRole("complementary", { name: "Cell inspector" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   await expect(projectSelect.locator("option")).toHaveCount(2);
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
 
   await selectWorkspaceTool(page, "Run history");
   await expect(history.getByText("No saved Runs yet")).toBeVisible();
   await expect(history.getByRole("button", { name: /Simulation/ })).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("combobox", { name: "Project" }).selectOption(sourceProjectID);
   await expect(history.getByRole("button", { name: /Simulation/ })).toBeVisible();
 });
@@ -1927,10 +1928,10 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
 
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
@@ -1962,7 +1963,7 @@ test("completes the Run, optimization, apply, Version, and historical Report jou
 
   await projectMenuButton.click();
   const updatedScenarioMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await updatedScenarioMenu.getByRole("button", { name: "Save current" }).click();
+  await updatedScenarioMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(updatedScenarioMenu.getByRole("status")).toHaveText("Version saved");
   await expect(page.locator(".workspace-lineage-context > summary")).toContainText("Version 2");
   await projectMenuButton.click();
@@ -2054,10 +2055,10 @@ test("generates a historical Report from cold Run History without opening Report
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
   const lineageSummary = page.locator(".workspace-lineage-context > summary");
   await expect(lineageSummary).toHaveAttribute("aria-label", /No saved Version/);
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
@@ -2132,10 +2133,10 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
 
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
@@ -2173,10 +2174,10 @@ test("keeps an unsaved draft when opening a different Scenario is blocked", asyn
 test("clears the inspected Cell when switching to another Scenario", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-1440", "Scenario inspection lifecycle is covered at the desktop layout");
   await page.goto("/");
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
@@ -2211,10 +2212,10 @@ test("keeps a collapsed Advanced cell RF value through Version save and reload",
   await advanced.click();
   await expect(advanced).toHaveAttribute("aria-expanded", "false");
 
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await page.reload();
 
@@ -2231,10 +2232,10 @@ test("opens the exact Run source Version while keeping the current Version activ
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
 
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   let projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
   await selectWorkspaceTool(page, "Scenarios");
@@ -2254,7 +2255,7 @@ test("opens the exact Run source Version while keeping the current Version activ
   await expect(lineageSummary).toContainText("Unsaved");
   await projectMenuButton.click();
   projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
   await expect(lineageSummary).toContainText("Version 2");
@@ -2696,10 +2697,10 @@ test("supports keyboard navigation through Scenarios, RF evidence, Results, and 
   test.skip(testInfo.project.name !== "desktop-1440", "Cross-tool keyboard flow is covered once at desktop size");
   await page.goto("/");
 
-  const projectMenuButton = page.getByRole("button", { name: "Open project menu" });
+  const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
   await projectMenuButton.click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  const saveCurrent = projectMenu.getByRole("button", { name: "Save current" });
+  const saveCurrent = projectMenu.getByRole("button", { name: "Save Version" });
   await saveCurrent.focus();
   await saveCurrent.press("Enter");
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
@@ -2708,8 +2709,8 @@ test("supports keyboard navigation through Scenarios, RF evidence, Results, and 
   await selectWorkspaceTool(page, "Setup");
   await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
   await projectMenuButton.click();
-  await projectMenu.getByRole("button", { name: "Save current" }).focus();
-  await projectMenu.getByRole("button", { name: "Save current" }).press("Enter");
+  await projectMenu.getByRole("button", { name: "Save Version" }).focus();
+  await projectMenu.getByRole("button", { name: "Save Version" }).press("Enter");
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
   await projectMenuButton.click();
 
@@ -3253,11 +3254,11 @@ test("captures Concept 8C map chrome and responsive evidence", async ({ page }, 
   await page.getByRole("button", { name: /^Network mode,/ }).click();
   await page.getByRole("button", { name: "Select cells on map" }).click();
   await expect(page.getByText("Selecting cells on map…")).toBeVisible();
-  await expect(page.locator(".command-primary-action").getByRole("button", { name: "Select cells" })).toHaveCount(0);
+  await expect(page.locator(".command-primary-action").getByRole("button", { name: "Select 2+ cells" })).toHaveCount(0);
   await capture("1440-select-cells", "1440px Network cell selection");
   await page.getByRole("button", { name: "Draw selection area" }).click();
   await expect(page.getByRole("group", { name: "Map controls" }).getByRole("status")).toContainText("Draw area");
-  await expect(page.locator(".command-primary-action").getByRole("button", { name: "Select cells" })).toHaveCount(0);
+  await expect(page.locator(".command-primary-action").getByRole("button", { name: "Select 2+ cells" })).toHaveCount(0);
   await capture("1440-area-draw", "1440px Draw area special mode");
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
 
@@ -3401,21 +3402,21 @@ test("captures Concept 8F hierarchy, density, and responsive evidence", async ({
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Setup" })).toBeVisible();
   await capture("1440-setup");
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   const projectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await projectMenu.getByRole("button", { name: "Save current" }).click();
+  await projectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(projectMenu.getByRole("status")).toHaveText("Version saved");
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   await selectWorkspaceTool(page, "Scenarios");
   await expect(page.getByRole("region", { name: "Scenarios" })).toBeVisible();
   await capture("1440-scenarios-list");
   await selectWorkspaceTool(page, "Setup");
   await page.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }).fill("31");
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   const updatedProjectMenu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await updatedProjectMenu.getByRole("button", { name: "Save current" }).click();
+  await updatedProjectMenu.getByRole("button", { name: "Save Version" }).click();
   await expect(updatedProjectMenu.getByRole("status")).toHaveText("Version saved");
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   await selectWorkspaceTool(page, "Scenarios");
   const versionRow = page.locator(".scenario-version-row").filter({ hasText: "Version 1" });
   await expect(versionRow).toHaveAttribute("aria-pressed", "false");
@@ -3659,12 +3660,12 @@ test("Concept 8H stage menus close consistently and preserve the plan, viewport,
     if (/\/api\/(analyze-sector|evaluate-network|simulate|optimize-network|interference)/.test(request.url())) computeRequests.push(request.url());
   });
   const exportProject = async () => {
-    await page.getByRole("button", { name: "Open project menu" }).click();
+    await page.getByRole("button", { name: /^Project menu/ }).click();
     const pending = page.waitForEvent("download");
     await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("button", { name: "Export", exact: true }).click();
     const download = await pending;
     const content = JSON.parse(await readFile(await download.path(), "utf8"));
-    await page.getByRole("button", { name: "Open project menu" }).click();
+    await page.getByRole("button", { name: /^Project menu/ }).click();
     return content;
   };
   await page.goto("/");
@@ -3743,12 +3744,12 @@ test("basemap switching preserves viewport, selection, inspection, result and ex
   if (await page.getByRole("button", { name: "Close tool drawer" }).isVisible()) await page.getByRole("button", { name: "Close tool drawer" }).click();
   await waitForBasemap(page);
   const exportProject = async () => {
-    await page.getByRole("button", { name: "Open project menu" }).click();
+    await page.getByRole("button", { name: /^Project menu/ }).click();
     const pending = page.waitForEvent("download");
     await page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("button", { name: "Export", exact: true }).click();
     const download = await pending;
     const data = JSON.parse(await readFile(await download.path(), "utf8"));
-    await page.getByRole("button", { name: "Open project menu" }).click();
+    await page.getByRole("button", { name: /^Project menu/ }).click();
     return data;
   };
   await expect.poll(async () => (await exportProject()).project?.draft?.plan?.planningMode).toBe("single");
@@ -4553,4 +4554,33 @@ test("shared dark actions preserve readiness, focus and visible RF budget errors
     await expect(page.getByText(recovery, { exact: true })).toBeVisible();
   }
   expect(requestCount).toBe(1);
+});
+
+test("accessibility smoke: project menu, Setup and Results have no critical axe violations", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The accessibility smoke check runs once at desktop size");
+  const criticalViolations = async (selector) => {
+    const results = await new AxeBuilder({ page }).include(selector).analyze();
+    return results.violations
+      .filter((violation) => violation.impact === "critical")
+      .map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(" ")).join(", ")}`);
+  };
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  expect(await criticalViolations("dialog.tool-drawer")).toEqual([]);
+
+  const trigger = page.getByRole("button", { name: /^Project menu/ });
+  await trigger.click();
+  await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toBeVisible();
+  expect(await criticalViolations(".project-menu")).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Project and scenarios" })).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await expect(page.getByRole("dialog", { name: "Setup" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.getByText("Ready", { selector: ".run-state" })).toBeVisible();
+  await selectWorkspaceTool(page, "Results");
+  await expect(page.getByRole("dialog", { name: "Results" })).toBeVisible();
+  expect(await criticalViolations("dialog.tool-drawer")).toEqual([]);
 });

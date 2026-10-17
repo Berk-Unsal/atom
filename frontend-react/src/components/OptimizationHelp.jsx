@@ -29,3 +29,20 @@ export function ParetoAlternativesHelp() {
     </details>
   );
 }
+
+export function SectorResultHelp() {
+  return (
+    <details className="advanced-settings optimization-help">
+      <summary>About these metrics</summary>
+      <div className="optimization-help-content">
+        <ul>
+          <li><strong>Blocked:</strong> the share of sampled rays whose end point is obstructed by a building in the footprint model (non-line-of-sight, wall loss or an indoor end point). It describes ray paths, not whether demand buildings are served.</li>
+          <li><strong>Average Rx:</strong> the mean received power where the sampled rays end. A ray ends when its power falls to the Cell's receiver sensitivity or at the planning radius, so this average is often near or below sensitivity; it is not the typical power across the sector.</li>
+          <li><strong>Max / Min range:</strong> the longest and shortest distance a sampled ray travelled before it ended.</li>
+          <li><strong>Coverage gaps:</strong> demand buildings inside the sector beam whose estimated received power is not above the building-service threshold (-100 dBm). That threshold is separate from receiver sensitivity, so many blocked rays can coexist with no coverage gaps.</li>
+        </ul>
+        <p>These are deterministic planning estimates from static data, not measurements, accuracy figures or a quality grade.</p>
+      </div>
+    </details>
+  );
+}

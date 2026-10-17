@@ -332,6 +332,46 @@ describe("App planning workflow", () => {
     expect(within(panel).getByText("Worst Rx").parentElement).toHaveTextContent(`Worst Rx${worstRx}`);
   });
 
+  it("explains a single-sector result before its metrics without new RF work", async () => {
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, ...args) => path === "/api/analyze-sector"
+      ? Promise.resolve({
+        simulation: {
+          ...simulationPayload,
+          stats: { blocked_pct: 99.2, avg_rx_dbm: -185.5, min_range_m: 8.5, max_range_m: 400 },
+          receiver_threshold: { sensitivity_dbm: -115 },
+          rf_profile: { radius_m: 400 },
+        },
+        coverage_gaps: {
+          geojson: { type: "FeatureCollection", features: [] },
+          stats: { candidate_buildings: 122, gap_buildings: 0, gap_pct: 0, returned_gaps: 0, worst_rx_dbm: 0, building_service_threshold_dbm: -100 },
+        },
+      })
+      : originalPost(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    openWorkspaceTool("Results");
+
+    const note = screen.getByRole("note", { name: "Result interpretation" });
+    expect(note).toHaveTextContent("99.2% of sampled rays end at a building-obstructed point (rays stop at the -115 dBm receiver sensitivity or the 400 m planning radius).");
+    expect(note).toHaveTextContent("All 122 demand buildings in the sector are above the -100 dBm building-service threshold, so there are no coverage gaps.");
+    // The interpretation comes before the metrics it explains.
+    expect(note.compareDocumentPosition(screen.getByText("Blocked").closest(".metric-row")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    const requestCount = api.postJSON.mock.calls.length;
+    const help = screen.getByText("About these metrics", { selector: "summary" });
+    expect(help.closest("details")).not.toHaveAttribute("open");
+    help.focus();
+    expect(help).toHaveFocus();
+    fireEvent.click(help);
+    expect(help.closest("details")).toHaveAttribute("open");
+    expect(help.closest("details")).toHaveTextContent(/separate from receiver sensitivity/i);
+    expect(help.closest("details")).toHaveTextContent(/not measurements, accuracy figures or a quality grade/i);
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+  });
+
   it("uses Cell terminology when no Cell is selected", async () => {
     const originalGet = api.getJSON.getMockImplementation();
     api.getJSON.mockImplementation((path, ...args) => path === "/api/towers"
@@ -372,6 +412,10 @@ describe("App planning workflow", () => {
     fireEvent.click(within(screen.getByRole("group", { name: "Primary action" })).getByRole("button", { name: "Evaluate Network" }));
     await waitFor(() => expect(currentFitRequest().version).toBe(2));
     expect(currentFitRequest().targets.map(({ lat, lon }) => [lat, lon])).toEqual([[39.92, 32.85], [39.922, 32.854]]);
+    // The sector interpretation describes single-sector rays only; network results do not show it.
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "RF" }));
+    expect(screen.queryByRole("note", { name: "Result interpretation" })).not.toBeInTheDocument();
 
     openWorkspaceTool("Propagation");
     fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));

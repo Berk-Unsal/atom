@@ -28,7 +28,8 @@ import { KeyValueRows, TechnicalDetails, ToolSection } from "./components/ToolPr
 import { DARK_BASEMAP_ID, DEFAULT_BASEMAP_ID } from "./components/basemaps.js";
 import MapCanvas from "./components/MapCanvas.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
-import { OptimizationScoreHelp, ParetoAlternativesHelp } from "./components/OptimizationHelp.jsx";
+import { OptimizationScoreHelp, ParetoAlternativesHelp, SectorResultHelp } from "./components/OptimizationHelp.jsx";
+import { describeSectorResult } from "./utils/rfResultInterpretation.js";
 import PathProfilePanel from "./components/PathProfilePanel.jsx";
 import SurfacePanel from "./components/SurfacePanel.jsx";
 import {
@@ -4043,6 +4044,7 @@ export default function App() {
               recommending={isRecommendingSites}
               savedScenarios={projectWorkspace.activeProject?.scenarios ?? []}
               recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > MAX_RECOMMENDATION_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
+              simulationResult={simulation}
               stats={stats}
             />
           ) : null}
@@ -4542,8 +4544,10 @@ function ResultsPanel({
   unsupportedInterferenceReason = "",
   savedScenarios,
   selectedSolutionId,
+  simulationResult = null,
   stats,
 }) {
+  const sectorInterpretation = planningMode === "single" ? describeSectorResult(simulationResult, gapStats) : null;
   const views = [
     { id: "rf", label: "RF" },
     { id: "optimization", label: "Optimization" },
@@ -4572,6 +4576,12 @@ function ResultsPanel({
       {activeView === "rf" ? (
         hasRFResults ? (
           <>
+            {sectorInterpretation ? (
+              <>
+                <p className="rf-result-interpretation" role="note" aria-label="Result interpretation">{sectorInterpretation}</p>
+                <SectorResultHelp />
+              </>
+            ) : null}
             <div className="metric-list">
               <MetricRow label="Blocked" value={`${stats.blockedRatio}%`} />
               <MetricRow

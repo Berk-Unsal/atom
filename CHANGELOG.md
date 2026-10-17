@@ -8,6 +8,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 - Explain normalized network scores, Pareto trade-offs, local reranking and explicit apply/search actions with accessible Results help.
 - Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers.
+- Explain a single-sector result before its metrics: one line built from the returned fields separates ray blockage from demand coverage gaps and names the receiver-sensitivity, planning-radius and building-service thresholds, with an "About these metrics" disclosure.
 - Bring completed results into view: Run Sector, Auto-Optimize Sector, Evaluate Network, Optimize Network and finished area selections fit the map to the selected Cells and their planning radius, unless you moved the map during the run; the Interference tool now summarizes a completed analysis with an Open in Results action.
 - Apply a Pareto alternative from an optimization run on an unsaved working draft: the Run's exact starting plan is saved as the source Version first (refused if Cells, RF settings or inventory changed), and Solutions marks the solution already loaded in the draft.
 

@@ -678,6 +678,55 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(screen.getByText("Ready")).toBeInTheDocument());
   });
 
+  it("presents a planning-mode switch without input changes neutrally and keeps input changes stale", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    const chip = await screen.findByRole("button", { name: /Open Current result details/i });
+    expect(chip).toHaveTextContent(/Simulation · 1 Cell · avg Rx -88\.0 dBm/);
+    expect(chip).not.toHaveTextContent(/[0-9a-f]{8}…/);
+
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    const neutral = await screen.findByRole("button", { name: /Open Result from another planning mode details/i });
+    expect(neutral).toHaveTextContent("OTHER MODE");
+    expect(screen.queryByText("STALE")).not.toBeInTheDocument();
+    expect(screen.getByText("Run needed", { selector: ".run-state" })).toBeInTheDocument();
+    expect(screen.getByText("Result belongs to Single-sector mode. Switch back to Single-sector or run the current plan.")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }), { target: { value: "31" } });
+    expect(await screen.findByText("STALE")).toBeInTheDocument();
+    expect(screen.queryByText("OTHER MODE")).not.toBeInTheDocument();
+    expect(screen.getByText("Result out of date", { selector: ".run-state" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^Single/ }));
+    expect(screen.getByText("STALE")).toBeInTheDocument();
+  });
+
+  it("words the same Version state identically in the header, Results and Scenarios", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await screen.findByRole("button", { name: /Open Current result details/i });
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+    const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+    fireEvent.click(within(menu).getByRole("button", { name: "Save Version" }));
+    await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+
+    const state = "Version 1 · Unsaved changes";
+    const lineage = document.querySelector(".workspace-lineage-context > summary");
+    expect(lineage).toHaveAttribute("aria-label", "Workspace: Ankara Plan, Sector plan 1, Version 1");
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Conducted TX power (dBm)" }), { target: { value: "31" } });
+    await waitFor(() => expect(lineage).toHaveAttribute("aria-label", `Workspace: Ankara Plan, Sector plan 1, ${state}`));
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await screen.findByRole("button", { name: /Open Current result details/i });
+    expect(lineage).toHaveAttribute("aria-label", `Workspace: Ankara Plan, Sector plan 1, ${state}`);
+    openWorkspaceTool("Results");
+    expect(screen.getByRole("region", { name: "CURRENT context" })).toHaveTextContent(`Sector plan 1 · ${state}`);
+    openWorkspaceTool("Scenarios");
+    expect(screen.getByText(state, { selector: ".scenario-status" })).toBeInTheDocument();
+  });
+
   it("gets simulation and coverage gaps from one sector-analysis request", async () => {
     let finishAnalysis;
     api.postJSON.mockImplementation((path) => {

@@ -6,7 +6,7 @@ describe("ApplySolutionDialog", () => {
   const sourceContext = {
     run_id: "run-18",
     run_type: "optimization",
-    run_label: "Run run-18",
+    run_label: "Optimization · 2 Cells · score 65.5 · 10:00",
     scenario_name: "Base Plan",
     scenario_revision_id: "revision-3",
     version_label: "Version 3",
@@ -15,7 +15,7 @@ describe("ApplySolutionDialog", () => {
   it("names the exact source and both destinations before applying", () => {
     render(<ApplySolutionDialog open sourceContext={sourceContext} solution={{ id: "solution-4" }} destinationBaseName="Capacity Plan" />);
     expect(screen.getByText("Base Plan · Version 3")).toBeInTheDocument();
-    expect(screen.getByText("Optimization Run run-18 · solution-4")).toBeInTheDocument();
+    expect(screen.getByText("Optimization · 2 Cells · score 65.5 · 10:00 · solution-4")).toBeInTheDocument();
     expect(screen.getByText("Capacity Plan · new Version")).toBeInTheDocument();
     expect(screen.getByText("Capacity Plan optimized · new branch")).toBeInTheDocument();
   });

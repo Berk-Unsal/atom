@@ -83,7 +83,7 @@ describe("ReportArtifactsPanel", () => {
     render(<ReportArtifactsPanel artifacts={[liveReport]} selectedArtifactId={liveReport.artifact_id} />);
 
     expect(screen.getByText("HISTORICAL", { selector: ".result-context-state" })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "HISTORICAL context" })).toHaveTextContent("Report No Run");
+    expect(screen.getByRole("region", { name: "HISTORICAL context" })).toHaveTextContent("No Run");
     expect(screen.getByText("Current unsaved plan at generation")).toBeInTheDocument();
     expect(screen.getByText("This Report was not tied to a saved Version.")).toBeInTheDocument();
     const provenance = screen.getAllByText("Details / Provenance")[1].closest("details");

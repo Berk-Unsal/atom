@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -54,7 +54,9 @@ import {
   captureSimulationRun,
 } from "./domain/runCapture.js";
 import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
-import { buildResultContext, buildWorkspaceLineage, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
+import { buildResultContext, buildWorkspaceLineage, nextPlanChange, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
+import { readableRunLabel } from "./domain/runLabel.js";
+import { defaultScenarioName } from "./domain/scenario.js";
 import { canonicalSerialize } from "./domain/serialization.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { fitTargetsForCells } from "./utils/mapFit.js";
@@ -287,7 +289,9 @@ export default function App() {
     if (!propagationToolIsActive) setPropagationResearchSettings(null);
     propagationToolWasActive.current = propagationToolIsActive;
   }, [activeTool, drawerMode, settings]);
-  const [planDirty, setPlanDirty] = useState(false);
+  // null when results match the plan; "mode" after only planning-mode switches; "input" after any other change.
+  const [planChange, dispatchPlanChange] = useReducer(nextPlanChange, null);
+  const planDirty = planChange !== null;
   const [towers, setTowers] = useState([]);
 	const [isPlacingCell, setIsPlacingCell] = useState(false);
   const [isSelectingPathEndpoint, setIsSelectingPathEndpoint] = useState(false);
@@ -659,7 +663,7 @@ export default function App() {
     const datasetStale = Boolean(appMeta && snapshot?.datasetRef && !isDatasetCompatible({ datasetRef: snapshot.datasetRef }, appMeta));
     const modelStale = Boolean(appMeta?.model_version && snapshot?.meta?.model_version && appMeta.model_version !== snapshot.meta.model_version);
     const restoredPlanDirty = Boolean(snapshot?.requiresRerun || datasetStale || modelStale || !calibrationCompatible);
-    setPlanDirty(restoredPlanDirty);
+    dispatchPlanChange(restoredPlanDirty ? "input" : null);
     setCoverageSurfaceStatus(
       !restoredPlanDirty && Boolean(artifacts?.simulation?.stats || artifacts?.networkOptimization?.stats)
         ? COVERAGE_SURFACE_STATUS.AVAILABLE
@@ -675,11 +679,11 @@ export default function App() {
     const activeSnapshot = activeProject?.scenarios?.find((scenario) => scenario.id === activeProject.activeScenarioId) ?? activeProject?.draft;
     const datasetStale = activeProject && !isDatasetCompatible(activeProject, appMeta);
     const modelStale = Boolean(activeSnapshot?.meta?.model_version && activeSnapshot.meta.model_version !== appMeta.model_version);
-    if (datasetStale || modelStale) setPlanDirty(true);
+    if (datasetStale || modelStale) dispatchPlanChange("input");
     if (calibrationProfile && !isCalibrationProfileCompatible(calibrationProfile, settings, appMeta)) {
       setCalibrationProfile(null);
       setSettings((current) => ({ ...current, calibrationOffsetDb: 0 }));
-      setPlanDirty(true);
+      dispatchPlanChange("input");
     }
   }, [activeProject, appMeta, calibrationProfile, settings]);
 
@@ -1009,7 +1013,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("rf");
       setActiveResultsView("rf");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
       requestMapFit([selectedTower], fitSince);
       markCoverageSurfaceAvailable();
       await finishDurableRun({
@@ -1106,7 +1110,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("optimization");
       setActiveResultsView("optimization");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
       requestMapFit([selectedTower], fitSince);
       markCoverageSurfaceAvailable();
       await finishDurableRun({
@@ -1245,7 +1249,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("network");
       setActiveResultsView("optimization");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
       requestMapFit(selectedNetworkTowers, fitSince);
       markCoverageSurfaceAvailable();
       await finishDurableRun({
@@ -1332,7 +1336,7 @@ export default function App() {
       setCoverageGapRevision((current) => current + 1);
       setLastAnalysisKind("network");
       setActiveResultsView("optimization");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
       requestMapFit(selected, fitSince);
       markCoverageSurfaceAvailable();
     } catch (requestError) {
@@ -1551,7 +1555,7 @@ export default function App() {
       setLayerVisibility((current) => ({ ...current, interference: true }));
       setLastAnalysisKind("interference");
       setActiveResultsView("interference");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -1590,7 +1594,7 @@ export default function App() {
       setBuildingEntryAnalysis(payload);
       setBuildingEntrySourceKey(currentBuildingEntrySourceKey);
       setLastAnalysisKind("building-entry");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) {
         setError(requestError.message);
@@ -1746,7 +1750,7 @@ export default function App() {
     clearCoverageSurface();
   }, [clearCoverageSurface]);
 
-  const invalidatePlanResults = useCallback(() => {
+  const invalidatePlanResults = useCallback((change = "input") => {
     requests.cancel("rf");
     requests.cancel("sub-thz-validation");
     requests.cancel("sub-thz-material-reference");
@@ -1765,7 +1769,7 @@ export default function App() {
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
     clearRenderedAnalysis();
-    setPlanDirty(true);
+    dispatchPlanChange(change === "mode" ? "mode" : "input");
   }, [clearRenderedAnalysis, requests, resetNetworkArtifacts]);
 
 	const switchDataset = useCallback(async (datasetID) => {
@@ -1801,7 +1805,7 @@ export default function App() {
 			resetNetworkArtifacts();
 			clearRenderedAnalysis();
 			setCalibrationProfile(null);
-			setPlanDirty(true);
+			dispatchPlanChange("input");
 			setDatasetMessage(`${response.dataset?.name ?? datasetID} is active. Existing project scenarios remain bound to their original dataset.`);
 			setDatasetRevision((current) => current + 1);
 		} catch (requestError) {
@@ -2007,7 +2011,7 @@ export default function App() {
     if (mode === planningMode) {
       return;
     }
-    invalidatePlanResults();
+    invalidatePlanResults("mode");
     setPlanningMode(mode);
     setIsDrawingSelection(false);
     setSelectionPolygon([]);
@@ -2111,7 +2115,7 @@ export default function App() {
       setSiteRecommendations(compactRecommendationResponse(payload));
       setActiveResultsView("recommendations");
       setLastAnalysisKind("recommendation");
-      setPlanDirty(false);
+      dispatchPlanChange(null);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
     } finally {
@@ -2175,7 +2179,7 @@ export default function App() {
       if (!request.isCurrent()) return;
       setMeasurementAnalysis(payload);
       setLayerVisibility((current) => ({ ...current, measurements: true }));
-      setPlanDirty(false);
+      dispatchPlanChange(null);
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
     } finally {
@@ -2616,7 +2620,7 @@ export default function App() {
                 : activeRFTask === "building_entry"
                   ? "Estimating entry"
     : planDirty
-              ? currentResultRun ? "Result out of date" : "Run needed"
+              ? currentResultRun && planChange !== "mode" ? "Result out of date" : "Run needed"
               : hasResults ? "Ready" : "Run needed";
   const workspaceLineage = useMemo(() => buildWorkspaceLineage({
     project: activeProject,
@@ -2657,12 +2661,15 @@ export default function App() {
       activeRevisionId,
       currentInputFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.input_fingerprint ?? null,
       currentScenarioFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.scenario_fingerprint ?? null,
+      currentPlanningMode: planningMode,
       draftChangedSinceRun: planDirty,
+      planChange,
       project: activeProject,
       run: matchingResultRun,
       resultType: resultRunType,
       scenarios: activeProject?.scenarios ?? [],
       unavailableReason: matchingResultRun ? "" : "The restored result has no unambiguous retained Run.",
+      workspace: workspaceLineage,
     })
     : null;
   resultContextRef.current = resultContext;
@@ -2675,13 +2682,16 @@ export default function App() {
       activeRevisionId,
       currentInputFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.input_fingerprint ?? null,
       currentScenarioFingerprint: workspaceLineage.unsaved ? null : currentRevision?.resolved_fingerprints?.scenario_fingerprint ?? null,
+      currentPlanningMode: planningMode,
       draftChangedSinceRun: planDirty,
+      planChange,
       project: activeProject,
       run: sourceRun,
       resultType: sourceRun.run_type,
       scenarios: activeProject?.scenarios ?? [],
+      workspace: workspaceLineage,
     });
-  }, [activeProject, activeRevisionId, currentRevision?.resolved_fingerprints?.input_fingerprint, currentRevision?.resolved_fingerprints?.scenario_fingerprint, inspectedEntity?.sourceRun, planDirty, workspaceLineage.scenario_id, workspaceLineage.unsaved]);
+  }, [activeProject, activeRevisionId, currentRevision?.resolved_fingerprints?.input_fingerprint, currentRevision?.resolved_fingerprints?.scenario_fingerprint, inspectedEntity?.sourceRun, planChange, planDirty, planningMode, workspaceLineage]);
   const rerunCurrentResult = useCallback(() => {
     if (resultContext?.run_type === "optimization") {
       if (planningMode === "network") return optimizeNetwork();
@@ -2790,10 +2800,12 @@ export default function App() {
       actions: invalidProfiles.tools.map((tool) => ({ tool, label: `Open ${tool === "setup" ? "Setup" : "Inventory"}` })),
     }
     : planDirty && currentResultRun
-      ? {
-        title: "Result out of date",
-        detail: `${currentResultRun.run_type === "optimization" ? "Optimization" : "Simulation"} ${shortRunLabel(currentResultRun.run_id)} came from its original input. Run again for this plan.`,
-      }
+      ? resultContext?.freshness === RESULT_FRESHNESS.OTHER_MODE
+        ? { title: "Result from another planning mode", detail: resultContext.mode_message }
+        : {
+          title: "Result out of date",
+          detail: `${readableRunLabel(currentResultRun)} came from its original input. Run again for this plan.`,
+        }
       : null;
 
   const buildCurrentScenarioSnapshot = useCallback((overrides = {}) => ({
@@ -2881,8 +2893,6 @@ export default function App() {
   ]);
 
   const saveCurrentScenario = useCallback((changeSummary = "") => {
-    const count = activeProject?.scenarios?.length ?? 0;
-    const label = lastAnalysisKind === "recommendation" ? "Candidate search" : lastAnalysisKind === "interference" ? "Interference" : planningMode === "network" ? "Network plan" : "Sector plan";
     const snapshot = buildCurrentScenarioSnapshot();
     if (scenarioSource) {
       return saveProjectScenarioVersion({
@@ -2897,8 +2907,8 @@ export default function App() {
         return saved;
       });
     }
-    return saveProjectScenario(`${label} ${count + 1}`, snapshot);
-  }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, restorePlanningSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
+    return saveProjectScenario(defaultScenarioName({ planningMode, scenarios: activeProject?.scenarios }), snapshot);
+  }, [activeProject?.scenarios, buildCurrentScenarioSnapshot, planningMode, restorePlanningSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
 
   const draftOptimizationSource = useMemo(() => {
     const source = resolveDraftOptimizationSource({
@@ -2911,10 +2921,10 @@ export default function App() {
     if (source.status !== DRAFT_SOURCE_STATUS.AVAILABLE) return source;
     return {
       ...source,
-      scenarioName: scenarioSource?.name ?? `Network plan ${(activeProject?.scenarios?.length ?? 0) + 1}`,
+      scenarioName: scenarioSource?.name ?? defaultScenarioName({ planningMode: "network", scenarios: activeProject?.scenarios }),
       versionLabel: scenarioSource ? `Version ${Number(scenarioSource.domain?.revision ?? 0) + 1}` : "Version 1",
     };
-  }, [activeProject?.scenarios?.length, currentResultRun, networkAzimuths, planningMode, scenarioSource, selectedNetworkTowers, settings]);
+  }, [activeProject?.scenarios, currentResultRun, networkAzimuths, planningMode, scenarioSource, selectedNetworkTowers, settings]);
 
   const draftSolutionIds = useMemo(() => new Set(
     rankedParetoSolutions
@@ -3037,7 +3047,7 @@ export default function App() {
       const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId);
       setFocusedRevisionId(saved.revision?.scenario_revision_id ?? null);
       if (nextScenario) restorePlanningSnapshot(nextScenario);
-      setPlanDirty(true);
+      dispatchPlanChange("input");
       setError("");
       return saved;
     } catch (branchError) {
@@ -3054,7 +3064,7 @@ export default function App() {
       const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId);
       setFocusedRevisionId(saved.revision?.scenario_revision_id ?? null);
       if (nextScenario) restorePlanningSnapshot(nextScenario);
-      setPlanDirty(true);
+      dispatchPlanChange("input");
       setError("");
       return saved;
     } catch (duplicateError) {
@@ -3070,7 +3080,7 @@ export default function App() {
       const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
       if (nextProject?.draft) restorePlanningSnapshot(nextProject.draft);
       setFocusedRevisionId(revisionId);
-      setPlanDirty(true);
+      dispatchPlanChange("input");
       setError("");
       return saved;
     } catch (continueError) {
@@ -3212,7 +3222,7 @@ export default function App() {
         setFocusedRevisionId(saved.revision?.scenario_revision_id ?? null);
         restorePlanningSnapshot({ ...nextScenario, requiresRerun: true, artifacts: null });
       }
-      setPlanDirty(true);
+      dispatchPlanChange("input");
       const destination = mode === "branch" ? "a new branched Version" : "a new Version";
       setError(source
         ? `Saved this Run's starting plan as ${source.scenarioName} · ${source.versionLabel} and applied the solution to ${destination}. Run the plan to compute fresh visualization.`
@@ -3817,6 +3827,7 @@ export default function App() {
           {drawerMode === "tool" && activeTool === "scenarios" ? (
             <ScenarioPanel
               activeProject={activeProject}
+              versionState={workspaceLineage.version_state}
               activeScenario={activeScenario}
               draftSourceScenario={draftSourceScenario}
               focusedRevisionId={focusedRevisionId}
@@ -4585,9 +4596,9 @@ function ResultsPanel({
         <ResultContextBadge
           context={resultContext}
           currentWorkspace={currentWorkspace}
-          primaryLabel={resultContext.freshness === "stale" ? "Run again" : resultContext.freshness === "unavailable" ? "Run current plan" : ""}
+          primaryLabel={resultContext.freshness === "stale" ? "Run again" : ["unavailable", RESULT_FRESHNESS.OTHER_MODE].includes(resultContext.freshness) ? "Run current plan" : ""}
           onPrimaryAction={onRerunCurrent}
-          secondaryLabel={resultContext.run_id ? `View ${resultContext.run_label}` : ""}
+          secondaryLabel={resultContext.run_id ? "View Run" : ""}
           onSecondaryAction={resultContext.run ? () => onOpenRun?.(resultContext.run) : undefined}
         />
       ) : null}

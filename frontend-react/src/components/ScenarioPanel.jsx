@@ -9,6 +9,7 @@ import {
 import { useMemo, useState } from "react";
 import { buildScenarioRevisionDiff } from "../domain/scenarioDiff.js";
 import { getScenarioRevisionRecords } from "../domain/scenario.js";
+import { versionStateLabel } from "../domain/resultContext.js";
 import { KeyValueRows, TechnicalDetails, ToolEmptyState, ToolSection } from "./ToolPrimitives.jsx";
 
 export default function ScenarioPanel({
@@ -33,6 +34,7 @@ export default function ScenarioPanel({
   reportDefinitions = [],
   runs = [],
   scenarios = [],
+  versionState = null,
 }) {
   const sourceScenario = activeScenario ?? draftSourceScenario;
   const [selectedRevisionId, setSelectedRevisionId] = useState(focusedRevisionId);
@@ -63,9 +65,13 @@ export default function ScenarioPanel({
   const rfProfileID = sourceScenario?.plan?.settings?.propagationModelID
     ?? sourceScenario?.plan?.settings?.propagation_model
     ?? sourceScenario?.plan?.planningMode;
-  const statusLabel = hasWorkingDraft
-    ? sourceScenario ? "Working draft · Unsaved changes" : "Working draft · No saved Version"
-    : `Saved · Version ${latestRevision?.revision ?? 1}`;
+  // The workspace's Version state, worded exactly as in the header and Results.
+  const draftSourceRevision = scenarioRecords.find((revision) => (
+    String(revision.scenario_revision_id) === String(activeProject?.draft?.sourceRevisionId ?? activeProject?.draft?.source_revision_id)
+  )) ?? latestRevision;
+  const statusLabel = versionState ?? (hasWorkingDraft
+    ? versionStateLabel({ revision: sourceScenario ? draftSourceRevision?.revision ?? null : null, unsavedChanges: true })
+    : versionStateLabel({ revision: latestRevision?.revision ?? 1 }));
 
   const compareScenarioAID = compareA || scenarioListID(scenarios[0]);
   const compareScenarioBID = compareB || scenarioListID(scenarios[1]) || compareScenarioAID;

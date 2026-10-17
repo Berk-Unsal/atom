@@ -3070,7 +3070,7 @@ test("captures post-change Concept 8B chrome and responsive evidence", async ({ 
   await expect(page.locator(".workspace-lineage-context > summary")).toBeVisible();
   await expect(page.locator(".workspace-lineage-context > summary")).toHaveAttribute(
     "aria-label",
-    /Workspace: .*?, .*?, .*?, .*/,
+    /Workspace: .*?, .*?, .*/,
   );
   await screenshot("390-results-stale");
   const mobileStale = await measureLayout("390 stale result");

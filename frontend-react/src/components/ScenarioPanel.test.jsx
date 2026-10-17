@@ -91,7 +91,7 @@ describe("ScenarioPanel", () => {
     props.draftSourceScenario = scenario;
     render(<ScenarioPanel {...props} planDirty />);
 
-    expect(screen.getByText("Working draft · Unsaved changes")).toHaveAttribute("role", "status");
+    expect(screen.getByRole("status")).toHaveTextContent(/^Version \d+ · Unsaved changes$/);
     fireEvent.change(screen.getByRole("textbox", { name: "Version change summary" }), { target: { value: "Try a safer azimuth" } });
     fireEvent.click(screen.getByRole("button", { name: "Save Version" }));
     expect(props.onSaveVersion).toHaveBeenCalledWith("Try a safer azimuth");

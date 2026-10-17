@@ -6,6 +6,7 @@ const STATE_LABELS = Object.freeze({
   historical: "Historical result",
   unavailable: "Result unavailable",
   unsupported: "Unsupported",
+  other_mode: "Result from another planning mode",
 });
 
 export default function ResultContextBadge({
@@ -24,10 +25,8 @@ export default function ResultContextBadge({
   const stateLabel = resultStateLabel(context.freshness);
   const humanStateLabel = STATE_LABELS[context.freshness] ?? stateLabel;
   const typeLabel = formatRunType(context.run_type);
-  const sourceLine = `${context.scenario_name} · ${context.version_label}`;
-  const runLine = context.run_id
-    ? `${context.run_label} · ${formatTimestamp(context.run_created_at)}`
-    : context.run_label ?? "Run unavailable";
+  const sourceLine = `${context.scenario_name} · ${context.version_state ?? context.version_label}`;
+  const runLine = context.run_label ?? "Run unavailable";
 
   if (compact) {
     const compactRunLine = context.run_id ? context.run_label : context.run_label ?? "Run unavailable";
@@ -64,11 +63,12 @@ export default function ResultContextBadge({
         <span className={`result-context-state state-${context.freshness}`}>{stateLabel}</span>
         <strong className="result-context-heading">{humanStateLabel} · {typeLabel}</strong>
         <strong>{sourceLine}</strong>
-        <span className="result-context-run">{typeLabel} {runLine}</span>
+        <span className="result-context-run">{runLine}</span>
       </div>
       {context.freshness === "stale" ? (
-        <p className="result-context-message">This result came from {context.version_label} · {context.run_label}. The current plan has changed.</p>
+        <p className="result-context-message">This result came from {context.version_state ?? context.version_label} · {context.run_label}. The current plan has changed.</p>
       ) : null}
+      {context.freshness === "other_mode" && context.mode_message ? <p className="result-context-message">{context.mode_message}</p> : null}
       {context.freshness === "unavailable" && context.unavailable_reason ? <p className="result-context-message">{context.unavailable_reason}</p> : null}
       {context.freshness === "unsupported" && context.unsupported_reason ? <p className="result-context-message">{context.unsupported_reason}</p> : null}
       {context.historical && currentWorkspace && isDifferentWorkspace(context, currentWorkspace) ? (
@@ -90,6 +90,7 @@ export default function ResultContextBadge({
             <div><dt>Scenario</dt><dd>{context.scenario_name} · {shortID(context.scenario_id)}</dd></div>
             <div><dt>Version identity</dt><dd>{shortID(context.scenario_revision_id)}</dd></div>
             <div><dt>Run ID</dt><dd>{context.run_id ?? "Unavailable"}</dd></div>
+            <div><dt>Run time</dt><dd>{formatTimestamp(context.run_created_at)}</dd></div>
             <div><dt>Scenario fingerprint</dt><dd>{context.scenario_fingerprint ?? "Not recorded"}</dd></div>
             <div><dt>Input fingerprint</dt><dd>{context.input_fingerprint ?? "Not recorded"}</dd></div>
             <div><dt>Dataset</dt><dd>{datasetLabel(context.dataset_ref)}</dd></div>

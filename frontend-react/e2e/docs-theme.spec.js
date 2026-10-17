@@ -53,6 +53,33 @@ async function preview(page, dark) {
   await expect(visible).toHaveAttribute("src", dark ? "./assets/v0.12.0/network-workspace.png" : "./assets/focused-workspace.jpg");
 }
 
+test("docs keep every primary tab and highlight the current page after navigation", async ({ page }, testInfo) => {
+  const tabs = ["Overview", "Terminology", "Architecture", "API", "Changelog", "GitHub", "Download & Use"];
+  for (const value of ["light", "dark"]) {
+    await page.goto("/docs/index.html");
+    await setTheme(page, value);
+    for (const name of ["Architecture", "Terminology", "API", "Changelog", "Download & Use", "Terminology", "Overview"]) {
+      const toggle = page.getByRole("button", { name: "Toggle documentation navigation" });
+      if (await toggle.isVisible()) await toggle.click();
+      const nav = page.getByRole("navigation", { name: "Primary documentation" });
+      await expect(nav.getByRole("link")).toHaveText(tabs);
+      const link = nav.getByRole("link", { name, exact: true });
+      const destination = new URL(await link.getAttribute("href"), page.url()).href;
+      await Promise.all([page.waitForURL(destination), link.click()]);
+      if (await toggle.isVisible()) await toggle.click();
+      await expect(nav.getByRole("link")).toHaveText(tabs);
+      await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
+      const current = nav.getByRole("link", { name, exact: true });
+      await expect(current).toHaveAttribute("aria-current", "page");
+      await expect(current).toBeInViewport();
+      if (name === "Architecture" || name === "Terminology") {
+        await page.screenshot({ path: testInfo.outputPath(`${name.toLowerCase()}-nav-${value}.png`) });
+      }
+      if (await toggle.isVisible()) await toggle.click();
+    }
+  }
+});
+
 test("docs toggle appearance and follow shared System with matching previews", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/docs/index.html");

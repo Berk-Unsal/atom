@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { Activity, Compass, Gauge, MapPin, Sparkles, SlidersHorizontal, Zap } from "lucide-react";
 import { NETWORK_TECH_OPTIONS } from "../utils/networkTech.js";
 import { formatCompactNumber, formatMetric } from "../utils/appWorkspace.js";
@@ -384,6 +385,9 @@ function ToolReadinessState({ actionLabel, description, onAction, title }) {
 }
 
 function NumberField({ icon, label, suffix, min, max, step, value, onChange, showRange = false }) {
+  const errorID = useId();
+  const number = Number(value);
+  const outOfRange = !Number.isFinite(number) || (min !== undefined && number < min) || (max !== undefined && number > max);
   return (
     <label className="input-row">
       <span className="input-label">{icon}{label}</span>
@@ -395,11 +399,15 @@ function NumberField({ icon, label, suffix, min, max, step, value, onChange, sho
           step={step}
           value={value}
           aria-label={suffix ? `${label} (${suffix})` : label}
+          aria-invalid={outOfRange ? "true" : undefined}
+          aria-describedby={outOfRange ? errorID : undefined}
           onChange={(event) => onChange(Number(event.target.value))}
         />
         <small>{suffix}</small>
       </span>
-      {showRange ? <span className="field-support">Valid range: {min}–{max} {suffix}</span> : null}
+      {outOfRange ? (
+        <span id={errorID} className="field-error" role="alert">Enter a value from {min} to {max}{suffix ? ` ${suffix}` : ""}.</span>
+      ) : showRange ? <span className="field-support">Valid range: {min}–{max} {suffix}</span> : null}
     </label>
   );
 }

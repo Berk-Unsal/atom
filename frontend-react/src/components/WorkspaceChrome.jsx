@@ -561,6 +561,7 @@ export function ToolDrawer({
   chooser = null,
   drawerMode,
   error,
+  errorAction = null,
   footer,
   focusKey,
   icon: Icon,
@@ -617,7 +618,12 @@ export function ToolDrawer({
         ) : null}
         </PanelHeader>
       <div className="tool-drawer-body">
-        {error ? <div className="drawer-error" role="alert">{error}</div> : null}
+        {error ? (
+          <div className="drawer-error" role="alert">
+            <span>{error}</span>
+            {errorAction ? <button type="button" className="drawer-error-action" onClick={errorAction.onAction}>{errorAction.label}</button> : null}
+          </div>
+        ) : null}
         {children}
       </div>
       {footer ? <footer className="tool-drawer-footer">{footer}</footer> : null}

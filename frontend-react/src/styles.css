@@ -10192,3 +10192,49 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
   font-size: var(--text-body);
   line-height: 1.45;
 }
+
+.drawer-error {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.drawer-error-action {
+  justify-self: start;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-control);
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.field-error {
+  display: block;
+  color: var(--text-danger, #881337);
+  font-size: var(--text-meta);
+  font-weight: var(--weight-title);
+}
+
+.number-wrap input[aria-invalid="true"] {
+  border-color: var(--ui-danger, var(--rose));
+}
+
+.map-plan-prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.map-plan-prompt-actions button {
+  min-height: 30px;
+  padding: 0 var(--space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-control);
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: var(--weight-title);
+  cursor: pointer;
+}

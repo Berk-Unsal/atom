@@ -372,6 +372,62 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("offers Retry when the Cell inventory cannot load and reloads only on request", async () => {
+    const originalGet = api.getJSON.getMockImplementation();
+    let unreachable = true;
+    api.getJSON.mockImplementation((path, ...args) => path === "/api/towers" && unreachable
+      ? Promise.reject(Object.assign(new Error("A.T.O.M could not reach the planning API at http://localhost:3000. The backend may not be running or may be unreachable from this browser; start it (for example with docker compose up atom) and choose Retry."), { code: "api_unreachable" }))
+      : originalGet(path, ...args));
+    const towerLoads = () => api.getJSON.mock.calls.filter(([path]) => path === "/api/towers").length;
+    render(<App />);
+    const setup = screen.getByRole("dialog", { name: "Setup" });
+    const alert = await within(setup).findByRole("alert");
+    expect(alert).toHaveTextContent("could not reach the planning API at http://localhost:3000");
+    expect(screen.getByRole("group", { name: "RF context" })).not.toHaveTextContent(/tower/i);
+    expect(towerLoads()).toBe(1);
+
+    unreachable = false;
+    fireEvent.click(within(alert).getByRole("button", { name: "Retry" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    expect(towerLoads()).toBe(2);
+    expect(within(setup).queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("marks an out-of-range Setup value inline and routes the prompt to Setup", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    const power = screen.getByRole("spinbutton", { name: /Conducted TX power/ });
+    expect(power).not.toHaveAttribute("aria-invalid");
+
+    fireEvent.change(power, { target: { value: "99" } });
+    expect(power).toHaveAttribute("aria-invalid", "true");
+    expect(power).toHaveAccessibleDescription("Enter a value from 0 to 60 dBm.");
+    const prompt = screen.getByText("RF profile needs attention").closest(".map-plan-prompt");
+    expect(prompt).toHaveTextContent("Fix 1 invalid selected Cell profile in Setup.");
+    expect(within(prompt).getByRole("button", { name: "Open Setup" })).toBeInTheDocument();
+    expect(within(prompt).queryByRole("button", { name: "Open Inventory" })).not.toBeInTheDocument();
+
+    fireEvent.change(power, { target: { value: "30" } });
+    expect(power).not.toHaveAttribute("aria-invalid");
+    expect(screen.queryByText("Enter a value from 0 to 60 dBm.")).not.toBeInTheDocument();
+    expect(screen.queryByText("RF profile needs attention")).not.toBeInTheDocument();
+  });
+
+  it("routes an invalid per-Cell override to Inventory and opens it", async () => {
+    const originalGet = api.getJSON.getMockImplementation();
+    api.getJSON.mockImplementation((path, ...args) => path === "/api/towers"
+      ? Promise.resolve({
+        type: "FeatureCollection",
+        features: [{ ...point("tower-1", "101", 32.85, 39.92), properties: { cell_id: "101", radio_type: "NR", tx_power_dbm: 99 } }],
+      })
+      : originalGet(path, ...args));
+    render(<App />);
+    const prompt = (await screen.findByText("RF profile needs attention")).closest(".map-plan-prompt");
+    expect(prompt).toHaveTextContent("Fix 1 invalid selected Cell profile in Inventory.");
+    fireEvent.click(within(prompt).getByRole("button", { name: "Open Inventory" }));
+    expect(screen.getByRole("dialog", { name: "Inventory" })).toBeInTheDocument();
+  });
+
   it("uses Cell terminology when no Cell is selected", async () => {
     const originalGet = api.getJSON.getMockImplementation();
     api.getJSON.mockImplementation((path, ...args) => path === "/api/towers"

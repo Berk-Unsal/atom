@@ -19,9 +19,48 @@ describe("API client", () => {
       text: "gateway unavailable",
     })));
     await expect(postJSON("/api/interference", {}, "fallback")).rejects.toMatchObject({
-      message: "gateway unavailable",
+      message: "The planning API returned a server error (502): gateway unavailable. Try again; if it keeps failing, check the backend logs.",
       status: 502,
+      code: "server_error",
     });
+  });
+
+  it("explains an unreachable API with its origin instead of the raw fetch error", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+    const failure = await getJSON("/api/towers", "Cell inventory could not be loaded").catch((error) => error);
+    expect(failure.code).toBe("api_unreachable");
+    expect(failure.message).toContain(`could not reach the planning API at ${window.location.origin}`);
+    expect(failure.message).toContain("Retry");
+    expect(failure.message).not.toContain("Failed to fetch");
+    expect(failure.cause).toBeInstanceOf(TypeError);
+  });
+
+  it("gives the RF deadline (504) timeout guidance instead of a server-fault message", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse({ ok: false, status: 504, json: { error: "RF analysis exceeded its request deadline" } })));
+    await expect(postJSON("/api/optimize-network", {}, "fallback")).rejects.toMatchObject({
+      message: "RF analysis exceeded its request deadline. Try again; if it keeps timing out, reduce the plan (fewer Cells or rays).",
+      status: 504,
+      code: "timeout",
+    });
+  });
+
+  it("passes non-network fetch errors through unchanged", async () => {
+    const failure = new Error("map failed");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(failure));
+    await expect(getJSON("/api/towers", "failed")).rejects.toBe(failure);
+  });
+
+  it("still rejects aborted requests with the abort error", async () => {
+    const abort = Object.assign(new Error("aborted"), { name: "AbortError" });
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(abort));
+    await expect(getJSON("/api/towers", "failed")).rejects.toBe(abort);
+  });
+
+  it("reports unreadable JSON from a successful response and accepts an empty body", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse({ ok: true, rawText: "<html>not the API</html>" })));
+    await expect(getJSON("/api/meta", "failed")).rejects.toMatchObject({ code: "invalid_response", message: expect.stringContaining("could not read (invalid JSON)") });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse({ ok: true, rawText: "" })));
+    await expect(getJSON("/api/meta", "failed")).resolves.toBeNull();
   });
 
   it("passes abort signals to fetch", async () => {
@@ -83,7 +122,7 @@ describe("API client", () => {
   });
 });
 
-function mockResponse({ ok, status = ok ? 200 : 500, contentType = "application/json", contentLength, json, text = "" }) {
+function mockResponse({ ok, status = ok ? 200 : 500, contentType = "application/json", contentLength, json, text = "", rawText }) {
   return {
     ok,
     status,
@@ -93,6 +132,6 @@ function mockResponse({ ok, status = ok ? 200 : 500, contentType = "application/
       return null;
     } },
     json: vi.fn().mockResolvedValue(json),
-    text: vi.fn().mockResolvedValue(contentType.includes("json") ? JSON.stringify(json) : text),
+    text: vi.fn().mockResolvedValue(rawText ?? (contentType.includes("json") ? JSON.stringify(json) : text)),
   };
 }

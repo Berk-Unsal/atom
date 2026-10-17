@@ -305,3 +305,21 @@ function cleanText(value, fallback) {
 function normalizeDegrees(value) {
   return ((Number(value) % 360) + 360) % 360;
 }
+
+/**
+ * Where invalid selected-Cell values live: a field overridden on the Cell is fixed in Inventory, while a
+ * field inherited from the plan defaults is fixed in Setup.
+ */
+export function invalidProfileSources(towers = [], settings = {}) {
+  const tools = new Set();
+  let count = 0;
+  towers.forEach((tower, index) => {
+    const errors = validateRFProfile(resolveRFProfile(tower, settings, index));
+    const fields = Object.keys(errors);
+    if (fields.length === 0) return;
+    count += 1;
+    const overrides = tower?.rfProfile ?? {};
+    for (const field of fields) tools.add(overrides[field] !== undefined ? "inventory" : "setup");
+  });
+  return { count, tools: ["setup", "inventory"].filter((tool) => tools.has(tool)) };
+}

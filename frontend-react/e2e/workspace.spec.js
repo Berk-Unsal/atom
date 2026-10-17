@@ -732,7 +732,10 @@ for (const outcome of ["deadline", "budget", "cancellation", "fast"]) {
     }
     if (["deadline", "budget"].includes(outcome)) {
       const errorSurface = page.locator(".drawer-error");
-      await expect(errorSurface).toHaveText(error);
+      // A 504 deadline keeps the server detail and adds timeout recovery guidance.
+      await expect(errorSurface).toHaveText(outcome === "deadline"
+        ? `${error}. Try again; if it keeps timing out, reduce the plan (fewer Cells or rays).`
+        : error);
       await errorSurface.scrollIntoViewIfNeeded();
       const name = `${testInfo.project.name}-error-${outcome}.png`;
       const directory = resolve(cwd(), "../docs/assets/optimization-operation-feedback");
@@ -4626,4 +4629,29 @@ test("report and project downloads are named for people and share one lineage li
   expect(markdown).not.toMatch(/<svg|<path/);
   expect(markdown.match(/^## RF Result$/gm)).toHaveLength(1);
   await expect(page.getByRole("list", { name: "Reports" }).getByRole("listitem").first()).toContainText(sourceLine);
+});
+
+test("connection and server failures explain the cause and recover on request", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-1440", "The failure-recovery check runs once at desktop size");
+  // Registered after beforeEach, so this handler runs first for the Cell inventory.
+  let towersReachable = false;
+  await page.route("**/api/towers", async (route) => {
+    if (!towersReachable) return route.abort("connectionrefused");
+    return route.fallback();
+  });
+  await page.goto("/");
+  const setup = page.getByRole("dialog", { name: "Setup" });
+  const alert = setup.getByRole("alert");
+  await expect(alert).toContainText(`could not reach the planning API at ${new URL(page.url()).origin}`);
+  await expect(alert).not.toContainText("Failed to fetch");
+  await expect(page.getByRole("group", { name: "RF context" })).toContainText("Single · No Cell selected");
+
+  towersReachable = true;
+  await alert.getByRole("button", { name: "Retry" }).click();
+  await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();
+  await expect(setup.getByRole("alert")).toHaveCount(0);
+
+  await page.route("**/api/analyze-sector", (route) => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "internal error" }) }));
+  await page.getByRole("button", { name: "Run Sector" }).click();
+  await expect(page.getByRole("alert").first()).toContainText("The planning API returned a server error (500): internal error. Try again; if it keeps failing, check the backend logs.");
 });

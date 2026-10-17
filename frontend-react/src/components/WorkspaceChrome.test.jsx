@@ -242,8 +242,57 @@ describe("persistent result and workspace context", () => {
         staleResultRunLabel="Run 21"
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
     expect(screen.getByText("Save Version records the current plan. Run 21 remains tied to the input that produced it.")).toBeInTheDocument();
+  });
+
+  it("closes the project menu on Escape, returns focus to its trigger and keeps Escape from reaching the workspace", async () => {
+    const onSaveScenario = vi.fn(() => Promise.resolve());
+    const workspaceEscape = vi.fn();
+    window.addEventListener("keydown", workspaceEscape);
+    try {
+      render(
+        <ProjectMenu
+          activeProject={{ id: "project-1", name: "Ankara", scenarios: [] }}
+          compatible
+          exportContent={() => "{}"}
+          onAddProject={vi.fn()}
+          onDeleteProject={vi.fn()}
+          onDeleteScenario={vi.fn()}
+          onDuplicateProject={vi.fn()}
+          onImportProject={vi.fn()}
+          onOpenScenario={vi.fn()}
+          onRenameProject={vi.fn()}
+          onSaveScenario={onSaveScenario}
+          onSelectProject={vi.fn()}
+          projects={[]}
+        />,
+      );
+      const trigger = screen.getByRole("button", { name: "Project menu, Ankara" });
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+      fireEvent.click(trigger);
+      expect(trigger).toHaveAttribute("aria-expanded", "true");
+      const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+
+      // Visible text and accessible name agree (WCAG 2.5.3 label in name).
+      const save = within(menu).getByRole("button", { name: "Save Version" });
+      expect(save).toHaveTextContent("Save Version");
+      fireEvent.click(save);
+      await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+
+      within(menu).getByRole("textbox", { name: "Project name" }).focus();
+      fireEvent.keyDown(document.activeElement, { key: "Escape" });
+      expect(screen.queryByRole("dialog", { name: "Project and scenarios" })).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+      expect(workspaceEscape).not.toHaveBeenCalled();
+
+      // Once closed, Escape is no longer intercepted.
+      fireEvent.keyDown(trigger, { key: "Escape" });
+      expect(workspaceEscape).toHaveBeenCalledOnce();
+    } finally {
+      window.removeEventListener("keydown", workspaceEscape);
+    }
   });
 
   it("reports a project import only after its save finishes", async () => {
@@ -266,7 +315,7 @@ describe("persistent result and workspace context", () => {
         projects={[]}
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Open project menu" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
     const fileInput = container.querySelector('input[type="file"]');
     Object.defineProperty(fileInput, "files", {
       configurable: true,

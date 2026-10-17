@@ -129,11 +129,11 @@ test("six-Cell retained results Save Version, Export, Import and reload", async 
   await page.getByRole("button", { name: "Analyze Interference", exact: true }).click();
   await expect(page.getByRole("button", { name: "Analyze Interference", exact: true })).toBeEnabled();
   await save(page);
-  await page.getByRole("button", { name: "Open project menu" }).click();
+  await page.getByRole("button", { name: /^Project menu/ }).click();
   const menu = page.getByRole("dialog", { name: "Project and scenarios" });
   // The project menu permits an explicit saved snapshot even without an RF
   // input edit; the Scenario panel correctly disables an unchanged draft.
-  await menu.getByRole("button", { name: "Save current", exact: true }).click();
+  await menu.getByRole("button", { name: "Save Version", exact: true }).click();
   await expect(menu.getByRole("status")).toHaveText("Version saved");
   await expect.poll(async () => (await storedProject(page))?.scenarios[0]?.domain.revisions.length, { timeout: 15_000, intervals: [500, 1000] }).toBe(2);
   const before = await storedProject(page);

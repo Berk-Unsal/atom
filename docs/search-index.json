@@ -1145,13 +1145,13 @@
       "page": "Changelog",
       "title": "Added",
       "url": "./changelog.html#added",
-      "text": "Explain normalized network scores, Pareto trade-offs, local reranking and explicit apply/search actions with accessible Results help. Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers."
+      "text": "Explain normalized network scores, Pareto trade-offs, local reranking and explicit apply/search actions with accessible Results help. Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers. Apply a Pareto alternative from an optimization run on an unsaved working draft: the Run's exact starting plan is saved as the source Version first (refused if Cells, RF settings or inventory changed), and Solutions marks the solution already loaded in the draft."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Keep the Terminology tab visible across documentation pages and highlight it when selected. Explain recovery after portable-project size and complexity limits, preserve current result context on rejected imports, and link to the unchanged format limits."
+      "text": "Carry an applied optimization solution's azimuths into the plan. Numeric Cell IDs let the previously saved azimuths win, so the next run used the old values; Versions applied before this fix now restore the solution azimuths. Keep the Terminology tab visible across documentation pages and highlight it when selected. Explain recovery after portable-project size and complexity limits, preserve current result context on rejected imports, and link to the unchanged format limits."
     },
     {
       "page": "Changelog",

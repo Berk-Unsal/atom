@@ -345,6 +345,11 @@ export class LocalRepository {
       revisionId ?? run?.scenario_revision_id ?? scenario.current_revision_id,
     ));
     if (!revision) throw new RepositoryError("run_input_stale", "The source ScenarioRevision for this run is no longer available");
+    const sourceProject = domain.projects.find((candidate) => String(candidate.project_id) === String(scenario.project_id));
+    // Solutions name Cells by request ID; the source Cells let the new Version key azimuths by record ID.
+    const cells = domain.inventory_revisions.find((candidate) => candidate.inventory_revision_id === revision.inventory_revision_id)?.cells
+      ?? (sourceProject ? resolveLegacyScenarioSnapshot(domain, sourceProject, scenario)?.plan?.inventory : null)
+      ?? [];
     let result;
     try {
       if (mode === "branch") {
@@ -361,6 +366,7 @@ export class LocalRepository {
           run,
           solution,
           changeSummary: "Applied a public optimization solution to a branch",
+          cells,
         });
         result = {
           ...applied,
@@ -377,6 +383,7 @@ export class LocalRepository {
           run,
           solution,
           changeSummary: "Applied a public optimization solution as a new Version",
+          cells,
         });
       }
     } catch (error) {

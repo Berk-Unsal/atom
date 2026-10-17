@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 export default function ApplySolutionDialog({
   destinationBaseName = "Scenario",
+  draftSource = null,
   onApply,
   onClose,
   open = false,
@@ -10,7 +11,11 @@ export default function ApplySolutionDialog({
 }) {
   const dialogRef = useRef(null);
   const cancelRef = useRef(null);
-  const canApply = Boolean(sourceContext?.run_id && sourceContext?.scenario_revision_id && solution);
+  const boundToVersion = Boolean(sourceContext?.run_id && sourceContext?.scenario_revision_id && solution);
+  // A working-draft Run can still be applied once its exact starting plan is saved as the source Version.
+  const savesStartingPlan = !boundToVersion && Boolean(solution) && draftSource?.status === "available";
+  const canApply = boundToVersion || savesStartingPlan;
+  const baseName = savesStartingPlan ? draftSource.scenarioName ?? destinationBaseName : destinationBaseName;
 
   useEffect(() => {
     if (!open) return undefined;
@@ -48,16 +53,28 @@ export default function ApplySolutionDialog({
         </div>
         <div>
           <dt>Destination</dt>
-          <dd>{destinationBaseName} · new Version</dd>
-          <dd>{destinationBaseName} optimized · new branch</dd>
+          {savesStartingPlan ? <dd>{baseName} · {draftSource.versionLabel ?? "new Version"} (this Run's starting plan)</dd> : null}
+          <dd>{baseName} · new Version</dd>
+          <dd>{baseName} optimized · new branch</dd>
         </div>
       </dl>
-      {!canApply ? <p className="apply-solution-unavailable">This solution is not bound to a retained source Version, so it cannot be applied safely.</p> : null}
+      {savesStartingPlan ? (
+        <p className="apply-solution-source-save">
+          This Run started from an unsaved working draft. Applying first saves that exact starting plan as {baseName} · {draftSource.versionLabel ?? "a new Version"}, without results, so the solution keeps its lineage. No new optimization runs.
+        </p>
+      ) : null}
+      {!canApply ? (
+        <p className="apply-solution-unavailable">
+          {draftSource?.status === "unavailable" && draftSource.reason
+            ? draftSource.reason
+            : "This solution is not bound to a retained source Version, so it cannot be applied safely."}
+        </p>
+      ) : null}
       <p className="apply-solution-note">The source Run and Version stay unchanged. The new plan needs a fresh RF run.</p>
       <div className="apply-solution-actions">
         <button ref={cancelRef} type="button" onClick={onClose}>Cancel</button>
-        <button type="button" onClick={() => onApply?.("version")} disabled={!canApply}>Create new Version</button>
-        <button type="button" className="primary" onClick={() => onApply?.("branch")} disabled={!canApply}>Create branch</button>
+        <button type="button" onClick={() => onApply?.("version")} disabled={!canApply}>{savesStartingPlan ? "Save starting plan & create Version" : "Create new Version"}</button>
+        <button type="button" className="primary" onClick={() => onApply?.("branch")} disabled={!canApply}>{savesStartingPlan ? "Save starting plan & create branch" : "Create branch"}</button>
       </div>
     </dialog>
   );

@@ -54,7 +54,9 @@ import {
 } from "./domain/runCapture.js";
 import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
 import { buildResultContext, buildWorkspaceLineage, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
+import { canonicalSerialize } from "./domain/serialization.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
+import { DRAFT_SOURCE_STATUS, resolveDraftOptimizationSource, solutionMatchesDraft } from "./utils/optimizationSource.js";
 import { getJSON, isAbortError, postBlob, postJSON } from "./utils/apiClient.js";
 import { is5GCoreFrequency, networkTechLabelForFrequency } from "./utils/networkTech.js";
 import { createRFWorkflow } from "./utils/rfWorkflow.js";
@@ -2799,7 +2801,12 @@ export default function App() {
       ...overrides.plan,
     },
     request: planningMode === "network"
-      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig)
+      ? buildNetworkOptimizationPayload(
+        selectedNetworkTowers,
+        settings,
+        overrides.plan?.networkAzimuths ?? networkAzimuths,
+        overrides.plan?.optimizationConfig ?? optimizationConfig,
+      )
       : selectedTower ? buildSimulationPayload(selectedTower, settings) : null,
     summary: {
       kind: lastAnalysisKind,
@@ -2825,7 +2832,7 @@ export default function App() {
       buildingEntryAnalysis: currentBuildingEntryAnalysis,
       buildingEntrySourceKey: currentBuildingEntryAnalysis ? buildingEntrySourceKey : null,
     }),
-    requiresRerun: Boolean(planDirty),
+    requiresRerun: overrides.requiresRerun ?? Boolean(planDirty),
   }), [
     activeResultsView,
 	    appMeta,
@@ -2874,6 +2881,65 @@ export default function App() {
     }
     return saveProjectScenario(`${label} ${count + 1}`, snapshot);
   }, [activeProject?.scenarios?.length, buildCurrentScenarioSnapshot, lastAnalysisKind, planningMode, restorePlanningSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
+
+  const draftOptimizationSource = useMemo(() => {
+    const source = resolveDraftOptimizationSource({
+      run: currentResultRun,
+      planningMode,
+      selectedTowers: selectedNetworkTowers,
+      settings,
+      networkAzimuths,
+    });
+    if (source.status !== DRAFT_SOURCE_STATUS.AVAILABLE) return source;
+    return {
+      ...source,
+      scenarioName: scenarioSource?.name ?? `Network plan ${(activeProject?.scenarios?.length ?? 0) + 1}`,
+      versionLabel: scenarioSource ? `Version ${Number(scenarioSource.domain?.revision ?? 0) + 1}` : "Version 1",
+    };
+  }, [activeProject?.scenarios?.length, currentResultRun, networkAzimuths, planningMode, scenarioSource, selectedNetworkTowers, settings]);
+
+  const draftSolutionIds = useMemo(() => new Set(
+    rankedParetoSolutions
+      .filter((solution) => solutionMatchesDraft(solution, selectedNetworkTowers, settings, networkAzimuths))
+      .map((solution) => String(solution.id)),
+  ), [networkAzimuths, rankedParetoSolutions, selectedNetworkTowers, settings]);
+
+  // Saves the exact plan a working-draft optimization started from, so its solutions have a source Version.
+  const saveDraftOptimizationSource = useCallback(async (run, source) => {
+    const snapshot = buildCurrentScenarioSnapshot({
+      plan: { networkAzimuths: source.networkAzimuths, optimizationConfig: source.optimizationConfig },
+      // The starting plan has no current results; never attach the optimized layers or KPIs to it.
+      summary: {
+        kind: null,
+        resultsView: null,
+        avgRxDBm: null,
+        gapPct: null,
+        networkScore: null,
+        overlapBuildings: null,
+        avgSINRDB: null,
+        serviceablePct: null,
+        affectedDemand: null,
+      },
+      artifacts: null,
+      requiresRerun: true,
+    });
+    if (canonicalSerialize(snapshot.request) !== canonicalSerialize(source.request)) {
+      throw new Error("The rebuilt starting plan does not match the Run input exactly.");
+    }
+    const changeSummary = `Starting plan of Optimization ${shortRunLabel(run.run_id)}`;
+    if (scenarioSource) {
+      const scenarioId = scenarioSource.domain?.scenario_id ?? scenarioSource.id;
+      const saved = await saveProjectScenarioVersion({ changeSummary, scenarioId, snapshot });
+      return { scenarioId, revisionId: saved.revision?.scenario_revision_id ?? null, scenarioName: scenarioSource.name, versionLabel: source.versionLabel };
+    }
+    const scenario = await saveProjectScenario(source.scenarioName, snapshot, { changeSummary });
+    return {
+      scenarioId: scenario?.domain?.scenario_id ?? scenario?.id ?? null,
+      revisionId: scenario?.domain?.current_revision_id ?? null,
+      scenarioName: scenario?.name ?? source.scenarioName,
+      versionLabel: source.versionLabel,
+    };
+  }, [buildCurrentScenarioSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
 
   const deleteScenarioWithUndo = useCallback((scenarioID) => {
     const scenarios = activeProject?.scenarios ?? [];
@@ -3099,22 +3165,26 @@ export default function App() {
     return projectID;
   }, [activeProject, clearCurrentResultRun, projectWorkspace, reportArtifacts, runHistory]);
 
-  const applyHistoricalSolution = useCallback(async (run, solution, mode = "version") => {
+  // `source` names a just-saved starting-plan Version for a working-draft Run; the Run itself stays immutable.
+  const applyHistoricalSolution = useCallback(async (run, solution, mode = "version", source = null) => {
     if (!runDatasetMatches(run, appMeta)) {
       setError("The historical run dataset is unavailable; the solution cannot be applied safely.");
       return;
     }
-    if (!run?.scenario_id || !run?.scenario_revision_id) {
+    const scenarioId = source?.scenarioId ?? run?.scenario_id;
+    const revisionId = source?.revisionId ?? run?.scenario_revision_id;
+    if (!scenarioId || !revisionId) {
       setError("This Run is not bound to a saved Scenario Version; the solution cannot be applied safely.");
       return;
     }
+    const sourceName = source?.scenarioName ?? scenarioSourceForRun(run, activeProject?.scenarios)?.name ?? "Scenario";
     try {
       const saved = await projectWorkspace.applyHistoricalOptimization({
-        branchName: mode === "branch" ? `${scenarioSourceForRun(run, activeProject?.scenarios)?.name ?? "Scenario"} optimized` : "",
+        branchName: mode === "branch" ? `${sourceName} optimized` : "",
         mode,
-        revisionId: run.scenario_revision_id,
+        revisionId,
         run,
-        scenarioId: run.scenario_id,
+        scenarioId,
         solution,
       });
       const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
@@ -3125,26 +3195,37 @@ export default function App() {
         restorePlanningSnapshot({ ...nextScenario, requiresRerun: true, artifacts: null });
       }
       setPlanDirty(true);
-      setError(mode === "branch"
-        ? "Historical solution applied to a new branched Version. Run the plan to compute fresh visualization."
-        : "Historical solution applied to a new Version. Run the plan to compute fresh visualization.");
+      const destination = mode === "branch" ? "a new branched Version" : "a new Version";
+      setError(source
+        ? `Saved this Run's starting plan as ${source.scenarioName} · ${source.versionLabel} and applied the solution to ${destination}. Run the plan to compute fresh visualization.`
+        : `Historical solution applied to ${destination}. Run the plan to compute fresh visualization.`);
     } catch (applyError) {
-      setError(applyError.message);
+      setError(source
+        ? `This Run's starting plan was saved as ${source.scenarioName} · ${source.versionLabel}, but the solution could not be applied: ${applyError.message}`
+        : applyError.message);
     }
   }, [activeProject?.scenarios, appMeta, invalidatePlanResults, projectWorkspace, restorePlanningSnapshot]);
 
-  const applyCurrentOptimizationSolution = useCallback((solution, mode = "version") => {
+  const applyCurrentOptimizationSolution = useCallback(async (solution, mode = "version") => {
     const run = currentResultRun;
-    if (!run?.scenario_id || !run?.scenario_revision_id) {
-      setError("Save a Scenario Version before applying an optimization solution to lineage.");
-      return;
-    }
-    if (run.run_type !== "optimization" || run.status !== "succeeded") {
+    if (run?.run_type !== "optimization" || run.status !== "succeeded") {
       setError("This solution is not bound to the current successful Optimization Run.");
       return;
     }
-    return applyHistoricalSolution(run, solution, mode);
-  }, [applyHistoricalSolution, currentResultRun]);
+    if (run.scenario_id && run.scenario_revision_id) return applyHistoricalSolution(run, solution, mode);
+    if (draftOptimizationSource.status !== DRAFT_SOURCE_STATUS.AVAILABLE) {
+      setError(draftOptimizationSource.reason ?? "Save a Scenario Version before applying an optimization solution to lineage.");
+      return;
+    }
+    let source;
+    try {
+      source = await saveDraftOptimizationSource(run, draftOptimizationSource);
+    } catch (saveError) {
+      setError(`This Run's starting plan could not be saved, so the solution was not applied: ${saveError.message}`);
+      return;
+    }
+    return applyHistoricalSolution(run, solution, mode, source);
+  }, [applyHistoricalSolution, currentResultRun, draftOptimizationSource, saveDraftOptimizationSource]);
 
   const runAgainFromHistory = useCallback(async (run) => {
     dismissStageChooser();
@@ -3929,6 +4010,8 @@ export default function App() {
               gapStats={gapStats}
               hasRFResults={Boolean(simulation?.stats)}
               constraintsConfigured={Object.keys(optimizationConfig.constraints ?? {}).length > 0}
+              draftOptimizationSource={draftOptimizationSource}
+              draftSolutionIds={draftSolutionIds}
               onViewChange={setActiveResultsView}
               onApplySolution={applyCurrentOptimizationSolution}
               onApplyRecommendation={applyRecommendation}
@@ -4412,6 +4495,8 @@ function ResultsPanel({
   comparison,
   constraintsConfigured,
   diagnostics,
+  draftOptimizationSource,
+  draftSolutionIds,
   gapStats,
   hasRFResults,
   interferenceAnalysis,
@@ -4557,6 +4642,8 @@ function ResultsPanel({
             baseline={networkOptimization?.baseline}
             cellExplanation={cellExplanation}
             constraintsConfigured={constraintsConfigured}
+            draftOptimizationSource={draftOptimizationSource}
+            draftSolutionIds={draftSolutionIds}
             onExplainCell={onExplainCell}
             onApplySolution={onApplySolution}
             onSelectSolution={onSelectParetoSolution}
@@ -4794,7 +4881,7 @@ function formatSignedNumber(value, digits = 0) {
   return `${prefix}${formatNumber(numeric, digits)}`;
 }
 
-function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured, onApplySolution, onExplainCell, onSelectSolution, paretoComparison, recommendedSolutionId, resultContext, selectedSolutionId, solutions }) {
+function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured, draftOptimizationSource, draftSolutionIds, onApplySolution, onExplainCell, onSelectSolution, paretoComparison, recommendedSolutionId, resultContext, selectedSolutionId, solutions }) {
   const [applyTarget, setApplyTarget] = useState(null);
   if (!solutions?.length) {
     return (
@@ -4841,6 +4928,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
         comparison={paretoComparison}
         constraintsConfigured={constraintsConfigured}
         isRecommended={String(selectedSolution.id) === String(recommendedSolutionId)}
+        inWorkingDraft={Boolean(draftSolutionIds?.has(String(selectedSolution.id)))}
         onApplySolution={(solution) => setApplyTarget(solution)}
         onExplainCell={onExplainCell}
         rank={selectedIndex + 1}
@@ -4886,6 +4974,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
       </div>
       <ApplySolutionDialog
         open={Boolean(applyTarget)}
+        draftSource={draftOptimizationSource}
         sourceContext={resultContext}
         solution={applyTarget}
         destinationBaseName={resultContext?.scenario_name ?? "Scenario"}
@@ -4896,7 +4985,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
   );
 }
 
-function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constraintsConfigured, isRecommended, onApplySolution, onExplainCell, rank, solution }) {
+function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constraintsConfigured, inWorkingDraft = false, isRecommended, onApplySolution, onExplainCell, rank, solution }) {
   const objectiveRows = [
     { id: "demand", label: "Demand", rawLabel: "served / relevant demand" },
     { id: "residential", label: "Residential", rawLabel: "covered / relevant buildings" },
@@ -4997,6 +5086,11 @@ function ParetoSolutionDetail({ baseline, cellExplanation, comparison, constrain
         <strong>Apply this solution</strong>
         <button type="button" onClick={() => onApplySolution?.(solution)} disabled={!onApplySolution}>Apply solution…</button>
         <small>Review the source Run and destination before continuing.</small>
+        {inWorkingDraft ? (
+          <small className="pareto-in-draft-note" role="note">
+            Your working draft already uses this solution's azimuths. Applying records it as a saved Version.
+          </small>
+        ) : null}
       </div>
       <p className="data-note pareto-map-note">
         Inspection does not change the recommendation. RF map rays remain from the last simulation and are not re-simulated for this solution.

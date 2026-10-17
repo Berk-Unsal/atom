@@ -144,13 +144,36 @@ export function scenarioRevisionFromLegacySnapshot(snapshot, options = {}) {
   return revision;
 }
 
-export function scenarioRevisionToLegacyPlan(revision, originalPlan = {}) {
+// Plan azimuths and saved overrides are keyed by Cell record ID, while optimization solutions name
+// Cells by request ID (the cell ID). Maps a request ID to its record ID, preferring the given order.
+function recordIdByCellId(cells = []) {
+  const recordIds = new Set();
+  const byCellId = new Map();
+  for (const cell of cells) {
+    const recordId = cell?.id ?? cell?.inventory_cell_id;
+    if (recordId === undefined || recordId === null) continue;
+    recordIds.add(String(recordId));
+    const cellId = cell.cellId ?? cell.cell_id;
+    if (cellId !== undefined && cellId !== null && !byCellId.has(String(cellId))) byCellId.set(String(cellId), String(recordId));
+  }
+  return { recordIds, byCellId };
+}
+
+export function scenarioRevisionToLegacyPlan(revision, originalPlan = {}, cells = null) {
   const overrides = revision?.overrides ?? {};
   const networkAzimuths = { ...(originalPlan.networkAzimuths ?? {}) };
-  for (const [cellId, override] of Object.entries(overrides)) {
+  const { recordIds, byCellId } = recordIdByCellId(cells ?? originalPlan.inventory ?? []);
+  // Cell-ID keys only come from applied solutions, so they win over a record-ID key for the same Cell.
+  // Object key order cannot express that: integer-like cell IDs always enumerate first.
+  const aliases = [];
+  for (const [key, override] of Object.entries(overrides)) {
     const azimuth = override?.fields?.azimuth_deg ?? override?.azimuth_deg;
-    if (azimuth !== undefined) networkAzimuths[cellId] = azimuth;
+    if (azimuth === undefined) continue;
+    const recordId = recordIds.has(String(key)) ? null : byCellId.get(String(key));
+    if (recordId) aliases.push([recordId, azimuth]);
+    else networkAzimuths[key] = azimuth;
   }
+  for (const [recordId, azimuth] of aliases) networkAzimuths[recordId] = azimuth;
   const selectedCellIds = revision?.selected_cell_ids ?? [];
   const selectedTowerId = revision?.selected_cell_id ?? originalPlan.selectedTowerId ?? selectedCellIds[0] ?? null;
   return {
@@ -288,19 +311,23 @@ export function duplicateScenario({ sourceScenario, sourceRevision, name, descri
   };
 }
 
-export function applyOptimizationSolution({ scenario, scenarioRevision, run, solution, changeSummary } = {}) {
+export function applyOptimizationSolution({ scenario, scenarioRevision, run, solution, changeSummary, cells = [] } = {}) {
   if (!scenarioRevision) throw new Error("A ScenarioRevision is required to apply an optimization solution");
   if (!solution) throw new Error("An OptimizationSolution is required to apply");
   const nextOverrides = cloneDomainValue(scenarioRevision.overrides ?? {});
+  const { recordIds, byCellId } = recordIdByCellId(cells);
   const configurations = solution.cell_configurations ?? solution.cellConfigurations ?? solution.towers ?? [];
   for (const configuration of configurations) {
     const cellId = configuration.id ?? configuration.cell_id ?? configuration.cellId;
     const azimuth = configuration.optimal_azimuth ?? configuration.azimuth_deg ?? configuration.azimuth;
     if (cellId === undefined || azimuth === undefined) continue;
-    nextOverrides[String(cellId)] = {
-      ...(nextOverrides[String(cellId)] ?? {}),
+    // Key by Cell record ID so the solution replaces the saved azimuth instead of shadowing it.
+    const key = recordIds.has(String(cellId)) ? String(cellId) : byCellId.get(String(cellId)) ?? String(cellId);
+    if (key !== String(cellId)) delete nextOverrides[String(cellId)];
+    nextOverrides[key] = {
+      ...(nextOverrides[key] ?? {}),
       fields: {
-        ...(nextOverrides[String(cellId)]?.fields ?? {}),
+        ...(nextOverrides[key]?.fields ?? {}),
         azimuth_deg: Number(azimuth),
       },
     };

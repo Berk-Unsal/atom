@@ -16,6 +16,7 @@ import {
   resolveInventoryCell,
   resolveScenarioConfiguration,
 } from "./index.js";
+import { scenarioRevisionToLegacyPlan } from "./scenario.js";
 
 describe("Concept 7B domain model", () => {
   it("keeps durable entity ids separate from content and compute identities", () => {
@@ -98,6 +99,43 @@ describe("Concept 7B domain model", () => {
     expect(applied.revision.parent_revision_id).toBe(revision.scenario_revision_id);
     expect(applied.revision.overrides["cell-1"].fields.azimuth_deg).toBe(135);
     expect(revision.overrides["cell-1"].fields.azimuth_deg).toBe(90);
+  });
+
+  it("keys applied solution azimuths by Cell record ID so they replace the saved azimuth", () => {
+    const scenario = createScenarioEntity({ project_id: "project-1", name: "Baseline" });
+    // Saved plans key overrides by record ID; solutions name Cells by numeric request (cell) ID.
+    const revision = createScenarioRevision({
+      scenario_id: scenario.scenario_id,
+      selected_cell_ids: ["tower-1", "tower-2"],
+      overrides: { "tower-1": { fields: { azimuth_deg: 90 } }, "tower-2": { fields: { azimuth_deg: 90 } } },
+    });
+    const cells = [{ id: "tower-1", cellId: "101" }, { inventory_cell_id: "tower-2", cell_id: "102" }];
+    const solution = { id: "pareto-b", towers: [{ id: "101", azimuth_deg: 30 }, { id: "102", azimuth_deg: 150 }] };
+    const applied = applyOptimizationSolution({ scenario, scenarioRevision: revision, run: { run_id: "run-1" }, solution, cells });
+    expect(applied.revision.overrides).toEqual({
+      "tower-1": { fields: { azimuth_deg: 30 } },
+      "tower-2": { fields: { azimuth_deg: 150 } },
+    });
+    expect(scenarioRevisionToLegacyPlan(applied.revision, { inventory: cells }).networkAzimuths).toEqual({ "tower-1": 30, "tower-2": 150 });
+  });
+
+  it("restores Versions applied with cell-ID keys using the solution azimuth", () => {
+    // Versions applied before record-ID keying hold both keys; integer-like keys enumerate first,
+    // so precedence must come from key meaning rather than object order.
+    const revision = createScenarioRevision({
+      scenario_id: "scenario-1",
+      selected_cell_ids: ["tower-1", "tower-2"],
+      overrides: {
+        "tower-1": { fields: { azimuth_deg: 90 } },
+        "tower-2": { fields: { azimuth_deg: 90 } },
+        101: { fields: { azimuth_deg: 30 } },
+        102: { fields: { azimuth_deg: 150 } },
+      },
+    });
+    const inventory = [{ id: "tower-1", cellId: "101" }, { id: "tower-2", cellId: "102" }];
+    expect(scenarioRevisionToLegacyPlan(revision, { inventory }).networkAzimuths).toEqual({ "tower-1": 30, "tower-2": 150 });
+    // Without Cells to resolve against, keys pass through unchanged (prior behavior).
+    expect(scenarioRevisionToLegacyPlan(revision, {}).networkAzimuths).toEqual({ "tower-1": 90, "tower-2": 90, 101: 30, 102: 150 });
   });
 
   it("stores only public optimization solutions in typed run details", () => {

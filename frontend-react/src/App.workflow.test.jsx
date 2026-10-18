@@ -1102,6 +1102,62 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("inspects Pareto solutions from the trade-off chart by pointer and keyboard without RF requests", async () => {
+    useNetworkFixture = true;
+    const payload = structuredClone(networkOptimizationPayload);
+    payload.pareto_frontier = Array.from({ length: 7 }, (_, index) => {
+      const solution = structuredClone(networkOptimizationPayload.pareto_frontier[index % 2]);
+      solution.id = `solution-${index + 1}`;
+      solution.towers = solution.towers.map((tower) => ({ ...tower, azimuth_deg: tower.azimuth_deg + index * 5 }));
+      solution.stats.raw_metrics.residential_covered = 10 + index * 2;
+      solution.stats.raw_metrics.propagation_reach_score = 70 - index * 3;
+      return solution;
+    });
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, ...args) => path === "/api/optimize-network" ? Promise.resolve(payload) : originalPost(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Solutions" }));
+    const requestCount = api.postJSON.mock.calls.length;
+
+    const chart = screen.getByRole("figure", { name: "Trade-off between two objectives" });
+    const plot = within(chart).getByRole("group", { name: /Pareto solutions plotted by/ });
+    expect(within(plot).getAllByRole("button")).toHaveLength(7);
+    expect(within(plot).getAllByRole("button").filter((point) => point.getAttribute("tabindex") === "0")).toHaveLength(1);
+
+    fireEvent.click(within(plot).getByRole("button", { name: /^Solution #3:/ }));
+    expect(screen.getByText("Solution #3", { selector: ".pareto-detail-kicker" })).toBeInTheDocument();
+    expect(within(plot).getByRole("button", { name: /^Solution #3:.*selected/ })).toHaveAttribute("aria-pressed", "true");
+
+    const focused = within(plot).getByRole("button", { name: /^Solution #3:/ });
+    focused.focus();
+    fireEvent.keyDown(focused, { key: "ArrowRight" });
+    const next = document.activeElement;
+    expect(next).not.toBe(focused);
+    expect(next.getAttribute("aria-label")).toMatch(/^Solution #\d:/);
+    const nextRank = next.getAttribute("aria-label").match(/^Solution #(\d)/)[1];
+    fireEvent.keyDown(next, { key: "Enter" });
+    expect(screen.getByText(`Solution #${nextRank}`, { selector: ".pareto-detail-kicker" })).toBeInTheDocument();
+
+    fireEvent.change(within(chart).getByRole("combobox", { name: "Horizontal axis" }), { target: { value: "score" } });
+    expect(within(plot).getAllByRole("button")[0]).toHaveAccessibleName(/Optimization score/);
+    fireEvent.click(within(chart).getByText("Plotted solutions as a table"));
+    expect(within(chart).getAllByRole("row")).toHaveLength(8);
+
+    const list = screen.getByRole("region", { name: "Pareto alternative solutions" }).querySelector(".pareto-solution-list");
+    expect(list.querySelectorAll(".pareto-solution-card").length).toBeLessThanOrEqual(6);
+    fireEvent.click(screen.getByRole("button", { name: "Show all 7 solutions" }));
+    expect(list.querySelectorAll(".pareto-solution-card")).toHaveLength(7);
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+  });
+
   it("finds an additional Cell before and after a network optimization without replacing the selection", async () => {
     useNetworkFixture = true;
     const recommendation = { recommendations: [{ id: "rec-1", cell_id: "103", marginal_network_score: 3.2, reason: "Adds unserved demand inside the area.", optimal_azimuth: 120, stats: { overlap_buildings: 1 } }], notes: [] };

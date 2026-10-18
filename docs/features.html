@@ -536,6 +536,13 @@ metadata.</li>
 <li>Markdown and printable PDF reports include RF assumptions, radio
 quality, communication paths, calibration evidence, recommendations, and
 scenario comparison where available.</li>
+<li><strong>Review package</strong> (Review → Report) downloads one
+local <code>.zip</code> for the current saved Version: the HTML and
+Markdown reports, the project file, the report map (SVG) and
+<code>manifest.json</code> with each file's SHA-256, dataset and model
+identity, Version/Run lineage and the report's limitations. It is built
+in the browser without an RF request; unsaved drafts are refused until a
+Version is saved. Hashes support integrity checks, not signing.</li>
 <li>The downloadable OpenAPI 3.1 specification documents current REST
 routes and error envelopes.</li>
 <li>RF requests support cancellation, latest-response protection, a 1

@@ -858,6 +858,11 @@ function renderPrintableDataMethodology(view) {
   return `<section data-report-section="data-methodology"><h2>Data, Methodology &amp; Limitations</h2>${view.datasetRows.length > 0 ? renderHtmlTable(["Field", "Value"], view.datasetRows) : `<p>Dataset and application metadata: ${REPORT_NOT_AVAILABLE}.</p>`}<h3>Methodology and limitations</h3><ul>${limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></section>`;
 }
 
+/** The report's own limitations, exactly as rendered in its Data, Methodology & Limitations section. */
+export function reportLimitations(report) {
+  return buildLimitations(getReportViewModel(report));
+}
+
 function buildLimitations(view) {
   const limitations = [
     "Results are deterministic planning estimates, not UE, drive-test, or PHY measurements.",

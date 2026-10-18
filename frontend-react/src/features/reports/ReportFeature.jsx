@@ -1,4 +1,4 @@
-import { AlertTriangle, Download, FileText } from "lucide-react";
+import { AlertTriangle, Archive, Download, FileText } from "lucide-react";
 import ReportArtifactsPanel from "../../components/ReportArtifactsPanel.jsx";
 import { reportLineageLine } from "../../utils/reportLineage.js";
 
@@ -19,6 +19,7 @@ function ReportExportPanel({
   onRegenerateArtifact,
   onExportMarkdown,
   onExportPdf,
+  onExportReviewPackage,
   reportWarning,
   currentWorkspace,
   currentReportSource = null,
@@ -67,7 +68,14 @@ function ReportExportPanel({
           <Download size={15} />
           <span>Markdown</span>
         </button>
+        <button type="button" className="report-button" onClick={onExportReviewPackage} disabled={!onExportReviewPackage}>
+          <Archive size={15} />
+          <span>Review package</span>
+        </button>
       </div>
+      <p className="data-note report-package-note">
+        Review package: one local .zip for the saved Version with both reports, the project file, the map and a manifest of file hashes, dataset and model identity and lineage. No RF request is made.
+      </p>
       <ReportArtifactsPanel
         artifacts={artifacts}
         definitions={definitions}

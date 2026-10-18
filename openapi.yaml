@@ -1236,6 +1236,12 @@ components:
             max_unique_evaluations: { type: integer, minimum: 0, maximum: 100000, default: 5000, description: Deterministic multi-start candidate-state RF evaluation budget; zero uses the policy default. Compatibility tower summaries retain their existing final recomputation. }
             max_expanded_states: { type: integer, minimum: 0, maximum: 5000, default: 128, description: Concept 5C archive expansion budget; zero uses the policy default. }
             max_search_rounds: { type: integer, minimum: 0, maximum: 64, default: 16, description: Concept 5C archive-search round budget; zero falls back to the policy default or max_search_passes when supplied. }
+            aoi:
+              type: array
+              minItems: 3
+              maxItems: 256
+              items: { type: array, minItems: 2, maxItems: 2, items: { type: number } }
+              description: Optional area of interest as [longitude, latitude] vertices, validated like search_polygon. It only adds inside-area KPIs (stats.area_of_interest); the evaluated domain, objectives, scores and scenario fingerprint are unchanged.
     BuildingEntryAnalysisRequest:
       allOf:
         - { $ref: "#/components/schemas/CommonRFSettings" }
@@ -1398,6 +1404,20 @@ components:
         objectives: { $ref: "#/components/schemas/NetworkOptimizationUtilities" }
         objective_breakdown: { $ref: "#/components/schemas/NetworkOptimizationBreakdown" }
         objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
+        area_of_interest: { $ref: "#/components/schemas/AreaOfInterestStats" }
+    AreaOfInterestStats:
+      type: object
+      description: Present only when the request supplied aoi. A subset aggregation of the same per-building results as the network-wide stats, over relevant buildings whose footprint centroid lies inside the area.
+      required: [served_demand_weight, relevant_demand_weight, residential_covered, relevant_residential_total, overlap_buildings, covered_units, overlap_ratio, relevant_buildings]
+      properties:
+        served_demand_weight: { type: number, minimum: 0 }
+        relevant_demand_weight: { type: number, minimum: 0 }
+        residential_covered: { type: integer, minimum: 0 }
+        relevant_residential_total: { type: integer, minimum: 0 }
+        overlap_buildings: { type: integer, minimum: 0 }
+        covered_units: { type: integer, minimum: 0 }
+        overlap_ratio: { type: number, minimum: 0, maximum: 1 }
+        relevant_buildings: { type: integer, minimum: 0 }
     NetworkOptimizationCellConfiguration:
       type: object
       required: [id, tower_lon, tower_lat, azimuth_deg, rf_profile, receiver_threshold]

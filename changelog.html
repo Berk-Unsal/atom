@@ -151,6 +151,14 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.12.3...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li>Report network KPIs inside one drawn area of interest: with Report
+KPIs inside the drawn area on, Evaluate and Optimize Network add served
+demand, residential buildings and overlap inside the area beside the
+network-wide values in Results and reports. The API gains an optional
+<code>aoi</code> polygon (validated like <code>search_polygon</code>)
+and <code>stats.area_of_interest</code>, a subset aggregation of the
+same per-building results; objectives, scores and the scenario
+fingerprint are unchanged.</li>
 <li>Show a dismissible first-run card before any project work exists:
 one sentence on what A.T.O.M does, Run the pre-selected sector, Open
 sample network project and a Planning glossary link. The sample opens as

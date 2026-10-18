@@ -1555,6 +1555,20 @@ reorder or recommend a discovered solution but cannot change that
 bounded membership. This remains a bounded heuristic and must not be
 described as a complete or global Pareto frontier. See the Concept 5C
 audit and its JSON evidence artifacts.</p>
+<p><strong>Area of interest (optional).</strong> Both endpoints accept
+<code>aoi</code>, an array of 3–256 <code>[longitude, latitude]</code>
+vertices validated like <code>search_polygon</code>. With it,
+<code>stats.area_of_interest</code> (and each Pareto solution's stats)
+adds <code>served_demand_weight</code>,
+<code>relevant_demand_weight</code>, <code>residential_covered</code>,
+<code>relevant_residential_total</code>, <code>overlap_buildings</code>,
+<code>covered_units</code>, <code>overlap_ratio</code> and
+<code>relevant_buildings</code> for relevant buildings whose footprint
+centroid lies inside the area. These values are a subset aggregation of
+the same per-building results as the network-wide stats. The area never
+changes the evaluated domain, objectives, scores, constraints or
+<code>scenario_fingerprint</code>; without <code>aoi</code> the response
+is unchanged.</p>
 <p><code>POST /api/optimize-network</code> additionally returns
 <code>baseline</code>, an authoritative compact snapshot of the exact
 normalized selected-cell configuration that entered that optimization

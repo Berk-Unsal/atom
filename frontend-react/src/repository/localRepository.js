@@ -112,7 +112,7 @@ export class LocalRepository {
     return this.saveDomain({ ...domain, scenarios });
   }
 
-  async saveScenarioVersion({ projectId, scenarioId, snapshot = {}, changeSummary = "", originatingRunId = null, originatingSolutionId = null, provenance = "user_configured" } = {}) {
+  async saveScenarioVersion({ projectId, scenarioId, snapshot = {}, changeSummary = "", originatingRunId = null, originatingSolutionId = null, sourceRunId = null, provenance = "user_configured" } = {}) {
     const domain = await this.loadDomain();
     const project = domain.projects.find((candidate) => String(candidate.project_id) === String(projectId));
     const sourceScenario = domain.scenarios.find((candidate) => String(candidate.scenario_id) === String(scenarioId)
@@ -137,6 +137,7 @@ export class LocalRepository {
       datasetReference: snapshot.datasetRef ?? legacySource.datasetRef ?? project.dataset_references?.[0],
       originatingRunId,
       originatingSolutionId,
+      sourceRunId,
       changeSummary: changeSummary || "Saved a new Scenario version",
       provenance,
     });
@@ -458,6 +459,7 @@ export class LocalRepository {
       datasetReference: scenario.datasetRef,
       originatingRunId: options.originatingRunId ?? options.originating_run_id,
       originatingSolutionId: options.originatingSolutionId ?? options.originating_solution_id,
+      sourceRunId: options.sourceRunId ?? null,
       changeSummary: options.changeSummary ?? options.change_summary,
       provenance: options.provenance,
     });

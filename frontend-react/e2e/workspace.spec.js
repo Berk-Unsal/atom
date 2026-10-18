@@ -2137,6 +2137,55 @@ test("Data hierarchy disclosures do not reload the active dataset", async ({ pag
   expect(dataRequests).toHaveLength(initialLoadCount);
 });
 
+for (const saveVersion of [true, false]) {
+  test(`restores the last exact Run as HISTORICAL after reload ${saveVersion ? "of a saved Version" : "of a working draft"} and redraws layers only on request`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop-1440", "Persistence round-trip is covered at the desktop layout");
+    const rfRequests = [];
+    page.on("request", (request) => {
+      if (/\/api\/(analyze-sector|simulate|evaluate-network|optimize-network|optimize-azimuth|interference)/.test(request.url())) rfRequests.push(request.url());
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Run Sector" }).click();
+    await expect(page.locator(".run-state")).toHaveText("Ready");
+    if (saveVersion) {
+      const projectMenuButton = page.getByRole("button", { name: /^Project menu/ });
+      await projectMenuButton.click();
+      const menu = page.getByRole("dialog", { name: "Project and scenarios" });
+      await menu.getByRole("button", { name: "Save Version" }).click();
+      await expect(menu.getByRole("status")).toHaveText("Version saved");
+      await projectMenuButton.click();
+    }
+    await expect(page.locator(".workspace-lineage-persistence")).toHaveCount(1);
+    await page.waitForTimeout(800);
+
+    await page.reload();
+    const chip = page.locator(".command-status .result-context-compact");
+    await expect(chip).toContainText("HISTORICAL");
+    await expect(chip).not.toContainText("UNAVAILABLE");
+    // A saved Version retains its recent map layers; a working draft keeps only its inputs.
+    await expect(page.locator(".run-state")).toHaveText(saveVersion ? "Ready" : "Run needed");
+    const requestsAfterReload = rfRequests.length;
+
+    await selectWorkspaceTool(page, "Results");
+    const context = page.getByRole("region", { name: "HISTORICAL context" });
+    await expect(context).toContainText(saveVersion ? "Sector plan 1 · Version 1" : "No saved Version");
+    await expect(context).toContainText(/Simulation · 1 Cell · avg Rx -72\.0 dBm/);
+    await expect(page.getByRole("region", { name: "Restored result summary" })).toContainText("-72.0 dBm");
+    await page.waitForTimeout(300);
+    expect(rfRequests).toHaveLength(requestsAfterReload);
+
+    if (saveVersion) {
+      await expect(context.getByRole("button", { name: "Restore map layers" })).toHaveCount(0);
+      return;
+    }
+    await context.getByRole("button", { name: "Restore map layers" }).click();
+    await expect(page.locator(".run-state")).toHaveText("Ready");
+    await expect(chip).toContainText("CURRENT");
+    expect(rfRequests.slice(requestsAfterReload).filter((url) => url.includes("/api/analyze-sector"))).toHaveLength(1);
+    expect(rfRequests).toHaveLength(requestsAfterReload + 1);
+  });
+}
+
 test("keeps an unsaved draft when opening a different Scenario is blocked", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Run Sector" })).toBeEnabled();

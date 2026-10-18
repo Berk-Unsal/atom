@@ -137,7 +137,12 @@ export function scenarioRevisionFromLegacySnapshot(snapshot, options = {}) {
       selectionPolygon: plan.selectionPolygon ?? null,
       optimizationConfig: optimization,
     }),
-    metadata: { app_meta: stripUIState(snapshot?.meta ?? null) },
+    // source_run_id records the Run executed on exactly this plan (bound at save); originating_run_id stays
+    // reserved for a Version produced from a Run's solution.
+    metadata: {
+      app_meta: stripUIState(snapshot?.meta ?? null),
+      ...(options.sourceRunId ? { source_run_id: String(options.sourceRunId) } : {}),
+    },
     change_summary: options.changeSummary ?? "Imported from ProjectV2 compatibility snapshot",
     provenance: options.provenance ?? "user_configured",
   });

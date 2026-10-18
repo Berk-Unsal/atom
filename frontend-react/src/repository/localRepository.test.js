@@ -193,6 +193,25 @@ describe("LocalRepository", () => {
     expect(version.revision.parent_revision_id).toBe(sourceRevision.scenario_revision_id);
     expect(version.revision.originating_solution_id).toBe("pareto-version");
   });
+
+  it("records a bound source Run in Version metadata without claiming it as the originating Run", async () => {
+    const { repository } = createFixtureRepository();
+    const snapshot = { plan: { settings: { frequencyGHz: 28 }, inventory: [{ id: "cell-1", coordinates: [1, 2] }] }, request: { frequency_ghz: 28 }, summary: {}, artifacts: null };
+    const bound = repository.createScenario("Sector plan 1", snapshot, { sourceRunId: "draft-run-1" });
+    expect(bound.domain.revisions[0].metadata.source_run_id).toBe("draft-run-1");
+    expect(bound.domain.revisions[0].originating_run_id).toBeNull();
+    expect(repository.createScenario("Sector plan 2", snapshot).domain.revisions[0].metadata.source_run_id).toBeUndefined();
+
+    const domain = await repository.loadDomain();
+    const saved = await repository.saveScenarioVersion({
+      projectId: domain.projects[0].project_id,
+      scenarioId: domain.scenarios[0].scenario_id,
+      snapshot,
+      sourceRunId: "draft-run-2",
+    });
+    expect(saved.revision.metadata.source_run_id).toBe("draft-run-2");
+    expect(saved.revision.originating_run_id).toBeNull();
+  });
 });
 
 function createFixtureRepository() {

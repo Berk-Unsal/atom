@@ -110,6 +110,7 @@ The Gin service provides:
 | POST | `/api/optimize-azimuth` | Single-sector demand-aware azimuth sweep |
 | POST | `/api/evaluate-network` | Score supplied selected-cell azimuths |
 | POST | `/api/optimize-network` | Optimize selected-cell azimuths with objectives, constraints, and Pareto evidence |
+| POST | `/api/compare-network` | Classify where two network plans differ in served and overlap state (one RF request) |
 | POST | `/api/explain-network-cell` | Lazily compare one inspected Pareto cell with its baseline-reverted counterfactual |
 | POST | `/api/interference` | RSRP, SINR, RSRQ, RSSI, and demand-quality analysis |
 | POST | `/api/recommend-sites` | Rank known candidate records inside a search polygon |

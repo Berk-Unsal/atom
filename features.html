@@ -176,6 +176,13 @@ layers</strong>, one explicit RF run, because drafts keep inputs only.
 When no Run matches, Results says why. Saving a Version right after a
 run records that Run as the Version's source when the plan is
 unchanged.</li>
+<li><strong>Where the plans differ:</strong> for two network plans on
+the current dataset and model (saved Versions, the current plan, or an
+optimization's baseline and solutions), Results → Compare can show on
+the map which demand buildings become newly served or lost and where
+overlap changes, with counts that reconcile with the aggregate KPI
+deltas. It runs only when you choose Show where they differ (one RF
+request), and reports include the counts and a static map.</li>
 <li>Compare any two states in Results → Compare: the current result, the
 optimization baseline and recommended solution, the inspected Pareto
 alternative, or any saved Version. One view shows KPI deltas from

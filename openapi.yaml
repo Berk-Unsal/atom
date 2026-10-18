@@ -399,6 +399,25 @@ paths:
         "409": { description: "Consumed slot or stale context; no RF" }
         "410": { description: "Missing retired expired or restarted workflow; no RF" }
         "503": { description: "Safe workflow state unavailable; no grant" }
+  /api/compare-network:
+    post:
+      summary: Compare where two network plans differ in served and overlap state
+      description: Evaluates plans a and b on the active dataset and model (so both share dataset and model identity) and classifies demand buildings newly served or newly lost and buildings whose overlap changed. Counts are complete and reconcile with each plan's unique_demand_buildings and overlap_buildings; the building list is bounded. Costs one protected RF request; it adds no physics and no SINR deltas.
+      security: [{ bearerAuth: [] }, { apiKeyAuth: [] }, {}]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/NetworkComparisonRequest" } } } }
+      responses:
+        "200":
+          headers:
+            RateLimit-Limit: { $ref: "#/components/headers/RateLimit-Limit" }
+            RateLimit-Remaining: { $ref: "#/components/headers/RateLimit-Remaining" }
+            RateLimit-Reset: { $ref: "#/components/headers/RateLimit-Reset" }
+          description: Served-state delta classes, counts and the bounded building list
+          content: { application/json: { schema: { $ref: "#/components/schemas/NetworkComparisonResponse" } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "422": { $ref: "#/components/responses/TooComplex" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/Busy" }
+        "504": { $ref: "#/components/responses/TimedOut" }
   /api/building-entry-analysis:
     post:
       summary: Estimate deterministic service immediately inside representative building facades
@@ -1405,6 +1424,50 @@ components:
         objective_breakdown: { $ref: "#/components/schemas/NetworkOptimizationBreakdown" }
         objective_status: { type: object, additionalProperties: { $ref: "#/components/schemas/OptimizationObjectiveStatus" } }
         area_of_interest: { $ref: "#/components/schemas/AreaOfInterestStats" }
+    NetworkComparisonRequest:
+      type: object
+      required: [a, b]
+      additionalProperties: false
+      properties:
+        a: { $ref: "#/components/schemas/NetworkRequest" }
+        b: { $ref: "#/components/schemas/NetworkRequest" }
+    NetworkComparisonResponse:
+      type: object
+      required: [counts, aggregates, buildings, buildings_truncated, scenario_fingerprint_a, scenario_fingerprint_b, service_threshold_dbm, classification]
+      properties:
+        counts:
+          type: object
+          required: [newly_served, newly_lost, overlap_gained, overlap_removed]
+          properties:
+            newly_served: { type: integer, minimum: 0 }
+            newly_lost: { type: integer, minimum: 0 }
+            overlap_gained: { type: integer, minimum: 0 }
+            overlap_removed: { type: integer, minimum: 0 }
+        aggregates:
+          type: object
+          required: [unique_demand_buildings_a, unique_demand_buildings_b, overlap_buildings_a, overlap_buildings_b]
+          properties:
+            unique_demand_buildings_a: { type: integer, minimum: 0 }
+            unique_demand_buildings_b: { type: integer, minimum: 0 }
+            overlap_buildings_a: { type: integer, minimum: 0 }
+            overlap_buildings_b: { type: integer, minimum: 0 }
+        buildings:
+          type: array
+          maxItems: 5000
+          description: Changed buildings sorted by id; truncated deterministically when buildings_truncated is true. Counts are never truncated.
+          items:
+            type: object
+            required: [id, lon, lat, class]
+            properties:
+              id: { type: string }
+              lon: { type: number, minimum: -180, maximum: 180 }
+              lat: { type: number, minimum: -90, maximum: 90 }
+              class: { type: string, enum: [newly_served, newly_lost, overlap_gained, overlap_removed] }
+        buildings_truncated: { type: boolean }
+        scenario_fingerprint_a: { type: string }
+        scenario_fingerprint_b: { type: string }
+        service_threshold_dbm: { type: number }
+        classification: { type: string }
     AreaOfInterestStats:
       type: object
       description: Present only when the request supplied aoi. A subset aggregation of the same per-building results as the network-wide stats, over relevant buildings whose footprint centroid lies inside the area.

@@ -1,10 +1,11 @@
 import { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Copy, Crosshair, RadioTower, RotateCcw, Search, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, Copy, Crosshair, RadioTower, RotateCcw, Search, Trash2, Unlink, Upload, X } from "lucide-react";
 import { NETWORK_TECHNOLOGIES, RF_PROFILE_OPTIONS } from "../generated/policy.js";
 import { MAX_INVENTORY_FILE_BYTES, parseInventoryFile } from "../utils/inventoryImport.js";
 import { applyInventoryBatchPatch, captureViewportSnapshot, INVENTORY_PAGE_SIZE, resolveNetworkWorkingSet, resolveViewportSnapshot, SAFE_INVENTORY_BATCH_FIELDS, searchInventory, sliceInventoryPage, viewportBoundsEqual, createInventorySession } from "../utils/inventoryWorkingSet.js";
 import { resolveRFProfile, technologyDefaults, validateRFProfile } from "../utils/rfProfile.js";
 import DisclosureSection from "./DisclosureSection.jsx";
+import { DEFAULT_SITE_SECTOR_AZIMUTHS, parseSectorAzimuths, siteGroupMembers } from "../utils/siteGroups.js";
 
 const NUMBER_FIELDS = [
   ["frequencyGHz", "Frequency", "GHz", "0.1"],
@@ -43,6 +44,7 @@ export default function InventoryPanel({
   inventorySession,
   isPlacingCell,
   onApplyBulkEdit,
+  onApplyProfileToSite,
   onBackToInventory,
   onCancelPlacement,
   onDeleteCell,
@@ -54,13 +56,18 @@ export default function InventoryPanel({
   onResetProfile,
   onSelectCellsOnMap,
   onStartPlacement,
+  onStartSitePlacement,
+  onUngroupSite,
   onUpdateProfile,
+  placingSite = false,
   planningMode,
   selectedNetworkCellIds = [],
   settings,
   towers,
 }) {
   const [message, setMessage] = useState("");
+  const [sectorText, setSectorText] = useState(DEFAULT_SITE_SECTOR_AZIMUTHS.join(", "));
+  const sectorParse = parseSectorAzimuths(sectorText);
   const fileRef = useRef(null);
   const listRef = useRef(null);
   const detailHeadingRef = useRef(null);
@@ -363,6 +370,14 @@ export default function InventoryPanel({
               </div>
             </header>
             <p className="inventory-reset-scope">Reset RF overrides clears this Cell’s per-Cell RF profile and keeps its identity and location.</p>
+            {selectedCell.siteGroupId ? (
+              <SiteGroupSection
+                cell={selectedCell}
+                members={siteGroupMembers(towers, selectedCell.siteGroupId)}
+                onApplyProfile={onApplyProfileToSite}
+                onUngroup={onUngroupSite}
+              />
+            ) : null}
             <DisclosureSection title="Planning" description="Identity, location, carrier profile, and common transmitter/receiver assumptions." defaultOpen>
               <fieldset>
                 <legend>Position</legend>
@@ -479,13 +494,27 @@ export default function InventoryPanel({
       ) : (
         <>
           <div className="inventory-actions">
-            <button type="button" className={isPlacingCell ? "active" : ""} onClick={isPlacingCell ? onCancelPlacement : onStartPlacement}>
+            <button type="button" className={isPlacingCell && !placingSite ? "active" : ""} onClick={isPlacingCell ? onCancelPlacement : onStartPlacement}>
               {isPlacingCell ? <X size={14} aria-hidden="true" /> : <Crosshair size={14} aria-hidden="true" />}{isPlacingCell ? "Cancel placement" : "Place new Cell"}
             </button>
+            {onStartSitePlacement && !isPlacingCell ? (
+              <button type="button" onClick={() => onStartSitePlacement(sectorParse.azimuths)} disabled={!sectorParse.azimuths}>
+                <RadioTower size={14} aria-hidden="true" />Place site
+              </button>
+            ) : null}
             <button type="button" onClick={() => fileRef.current?.click()}><Upload size={14} aria-hidden="true" />Import</button>
             <input ref={fileRef} hidden type="file" accept=".csv,.json,.geojson,text/csv,application/geo+json,application/json" onChange={(event) => { importFile(event.target.files?.[0]); event.target.value = ""; }} />
           </div>
-          {isPlacingCell ? <p className="inventory-placement" role="status">Click the map to place the new Cell.</p> : null}
+          {onStartSitePlacement && !isPlacingCell ? (
+            <div className="inventory-site-sectors">
+              <label>
+                <span>Site sector azimuths (°)</span>
+                <input value={sectorText} onChange={(event) => setSectorText(event.target.value)} aria-invalid={sectorParse.error ? "true" : undefined} aria-describedby="site-sector-help" />
+              </label>
+              <small id="site-sector-help">{sectorParse.error || `Place site adds ${sectorParse.azimuths.length} co-located Cells, one per azimuth, that move together. Each stays an ordinary Cell in every request.`}</small>
+            </div>
+          ) : null}
+          {isPlacingCell ? <p className="inventory-placement" role="status">{placingSite ? "Click the map to place the site's co-located Cells." : "Click the map to place the new Cell."}</p> : null}
           {message ? <p className="inventory-message" role="status">{message}</p> : null}
 
           <div className="inventory-scope-switch" role="group" aria-label="Inventory scope">
@@ -714,4 +743,22 @@ function scopeLabel(scope) {
 function pluralize(count, noun) {
   if (count === 1) return noun;
   return noun === "match" ? "matches" : `${noun}s`;
+}
+
+function SiteGroupSection({ cell, members, onApplyProfile, onUngroup }) {
+  const others = members.filter((member) => member.id !== cell.id);
+  return (
+    <section className="inventory-site-group" aria-label="Site group">
+      <strong>Site group · {members.length} co-located Cells</strong>
+      <p>
+        {members.map((member) => `${member.cellId ?? member.id}${Number.isFinite(Number(member.sectorAzimuthDeg)) ? ` (${member.sectorAzimuthDeg}°)` : ""}`).join(", ")}.
+        {" "}Moving any of these Cells moves the whole site. Editing this Cell changes only this Cell unless you apply it to the site.
+      </p>
+      <p className="data-note">A site group only keeps co-located Cells together for editing. It makes no claim about a physical site’s feasibility, ownership, permitting or cost.</p>
+      <div className="inventory-site-group-actions">
+        <button type="button" onClick={() => onApplyProfile?.(cell.id)} disabled={!others.length}>Apply this RF profile to the other {others.length} Cell{others.length === 1 ? "" : "s"}</button>
+        <button type="button" onClick={() => onUngroup?.(cell.siteGroupId)}><Unlink size={14} aria-hidden="true" />Ungroup site</button>
+      </div>
+    </section>
+  );
 }

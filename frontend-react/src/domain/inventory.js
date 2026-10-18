@@ -30,6 +30,10 @@ export function createInventory(input = {}) {
 
 export function createInventoryCell(input = {}) {
   const coordinates = input.coordinates ?? [input.longitude, input.latitude];
+  // Optional site grouping: present only for Cells placed as a site, so ungrouped Cells serialize unchanged.
+  const siteGroupId = input.site_group_id ?? input.siteGroupId ?? null;
+  const sectorAzimuth = Number(input.sector_azimuth_deg ?? input.sectorAzimuthDeg);
+  const hasSectorAzimuth = (input.sector_azimuth_deg ?? input.sectorAzimuthDeg) !== undefined && (input.sector_azimuth_deg ?? input.sectorAzimuthDeg) !== null && Number.isFinite(sectorAzimuth);
   return {
     inventory_cell_id: input.inventory_cell_id ?? input.inventoryCellId ?? input.id ?? createEntityId(),
     source_key: input.source_key ?? input.sourceKey ?? input.id ?? null,
@@ -43,6 +47,8 @@ export function createInventoryCell(input = {}) {
     editable: input.editable !== false,
     provenance: cloneDomainValue(input.provenance ?? normalizeProvenance(input.inventory_source === "import" ? "imported" : "default")),
     metadata: cloneDomainValue(input.metadata ?? {}),
+    ...(siteGroupId ? { site_group_id: String(siteGroupId) } : {}),
+    ...(hasSectorAzimuth ? { sector_azimuth_deg: sectorAzimuth } : {}),
   };
 }
 
@@ -57,6 +63,8 @@ export function inventoryCellToLegacy(cell) {
     inventorySource: cell.inventory_source,
     editable: cell.editable,
     ...(cell.source_key ? { sourceKey: cell.source_key } : {}),
+    ...(cell.site_group_id ? { siteGroupId: cell.site_group_id } : {}),
+    ...(Number.isFinite(Number(cell.sector_azimuth_deg)) && cell.sector_azimuth_deg !== null && cell.sector_azimuth_deg !== undefined ? { sectorAzimuthDeg: Number(cell.sector_azimuth_deg) } : {}),
   };
 }
 

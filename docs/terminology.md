@@ -14,6 +14,8 @@ A **sector** is a directional planning view of radio coverage associated with a 
 
 A **physical site** is a real place or structure where telecommunications equipment is installed. **Co-location** means multiple planned Cells are assigned to the same planned location. Matching or nearby coordinates can help represent co-location in a plan, but the dataset does not verify that equipment shares a real site, building, rooftop, or support structure.
 
+A **site group** in A.T.O.M is a planning convenience: **Place site** adds several co-located Cells (by default three sectors at 0°, 120° and 240°) that move together. Each member remains an ordinary Cell in every analysis. A site group does not establish a physical site, shared antenna, feasibility, ownership, permitting or cost.
+
 ## Tower Record and Candidate
 
 A **tower record** is an input feature from the active tower dataset. It supplies a location and dataset identifier for planning; it is not an operator inventory. The current tower locations are derived from OpenCellID-oriented source processing, as described under [Data Confidence](modeling-limits.html#data-confidence).

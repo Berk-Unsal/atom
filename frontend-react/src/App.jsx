@@ -62,6 +62,7 @@ import ResultCompareView from "./components/ResultCompareView.jsx";
 import CandidateCellAction from "./components/CandidateCellAction.jsx";
 import FirstRunCard from "./components/FirstRunCard.jsx";
 import { AreaOfInterestControl, AreaOfInterestKpis } from "./components/AreaOfInterestPanels.jsx";
+import { applyProfileToSite, createSiteCells, moveCellOrSite, ungroupSite } from "./utils/siteGroups.js";
 import { isFirstRunWorkspace, readFirstRunDismissed, SAMPLE_PROJECT_TEXT, sampleNetworkSelection, writeFirstRunDismissed } from "./utils/sampleProject.js";
 import { candidatePrerequisites } from "./utils/candidatePrerequisites.js";
 import { paretoObjectiveValue, readOptimizationRawMetric } from "./utils/paretoChart.js";
@@ -312,6 +313,8 @@ export default function App() {
   const planDirty = planChange !== null;
   const [towers, setTowers] = useState([]);
 	const [isPlacingCell, setIsPlacingCell] = useState(false);
+	// Sector azimuths while placing a site; null while placing a single Cell.
+	const [pendingSiteAzimuths, setPendingSiteAzimuths] = useState(null);
   const [isSelectingPathEndpoint, setIsSelectingPathEndpoint] = useState(false);
   const [pathProfileEndpoint, setPathProfileEndpoint] = useState(null);
   const [pathProfile, setPathProfile] = useState(null);
@@ -1944,8 +1947,35 @@ export default function App() {
 	const moveInventoryCell = useCallback((towerID, coordinates) => {
 		if (!Array.isArray(coordinates) || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) return;
 		if (coordinates[0] < -180 || coordinates[0] > 180 || coordinates[1] < -90 || coordinates[1] > 90) return;
-		updateInventoryTower(towerID, (tower) => ({ ...tower, coordinates, editable: true, inventorySource: tower.inventorySource === "dataset" ? "project override" : tower.inventorySource }));
-	}, [updateInventoryTower]);
+		const target = towers.find((tower) => tower.id === towerID);
+		if (!target?.siteGroupId) {
+			updateInventoryTower(towerID, (tower) => ({ ...tower, coordinates, editable: true, inventorySource: tower.inventorySource === "dataset" ? "project override" : tower.inventorySource }));
+			return;
+		}
+		// Co-located site members move together.
+		invalidatePlanResults();
+		const moved = moveCellOrSite(towers, towerID, coordinates);
+		setTowers(moved);
+		setSelectedTower((current) => (current ? moved.find((tower) => tower.id === current.id) ?? current : current));
+	}, [invalidatePlanResults, towers, updateInventoryTower]);
+
+	const applyProfileToSiteGroup = useCallback((towerID) => {
+		const source = towers.find((tower) => tower.id === towerID);
+		if (!source?.siteGroupId) return;
+		invalidatePlanResults();
+		const updated = applyProfileToSite(towers, towerID);
+		setTowers(updated);
+		setSelectedTower((current) => (current ? updated.find((tower) => tower.id === current.id) ?? current : current));
+		setSelectionNotice(`Applied ${source.cellId ?? source.id}'s RF profile to the other Cells in its site; sector azimuths are unchanged.`);
+	}, [invalidatePlanResults, towers]);
+
+	const ungroupSiteGroup = useCallback((siteGroupId) => {
+		if (!siteGroupId) return;
+		const updated = ungroupSite(towers, siteGroupId);
+		setTowers(updated);
+		setSelectedTower((current) => (current ? updated.find((tower) => tower.id === current.id) ?? current : current));
+		setSelectionNotice("Ungrouped the site. Its Cells keep their positions and azimuths and now move independently.");
+	}, [towers]);
 
   const startPathEndpointSelection = useCallback(() => {
     if (!pathProfileTower) {
@@ -1971,6 +2001,17 @@ export default function App() {
   }, [requests]);
 
 	const placeInventoryCell = useCallback((coordinates) => {
+		if (pendingSiteAzimuths) {
+			const cells = createSiteCells({ coordinates, azimuths: pendingSiteAzimuths, towers, settings });
+			invalidatePlanResults();
+			setTowers((current) => [...current, ...cells]);
+			setSelectedTower(cells[0]);
+			setInventoryTargetCellId(cells[0].id);
+			setIsPlacingCell(false);
+			setPendingSiteAzimuths(null);
+			setSelectionNotice(`Placed a site with ${cells.length} Cells (${cells.map((cell) => `${cell.id} at ${cell.sectorAzimuthDeg}°`).join(", ")}). Moving one moves the whole site.`);
+			return;
+		}
 		const used = new Set(towers.map((tower) => tower.id));
 		let counter = towers.length + 1;
 		let id = `manual-${counter}`;
@@ -1994,7 +2035,7 @@ export default function App() {
 		setInventoryTargetCellId(tower.id);
 		setIsPlacingCell(false);
 		setSelectionNotice(`Placed ${id}. Drag its selected marker to refine the position.`);
-	}, [invalidatePlanResults, settings, towers]);
+	}, [invalidatePlanResults, pendingSiteAzimuths, settings, towers]);
 
 	const duplicateInventoryTower = useCallback((tower) => {
 		const duplicate = duplicateInventoryCell(tower, towers.map((candidate) => candidate.id));
@@ -2533,6 +2574,7 @@ export default function App() {
       }
       if (isPlacingCell) {
         setIsPlacingCell(false);
+        setPendingSiteAzimuths(null);
         setSelectionNotice("");
         return;
       }
@@ -3845,7 +3887,7 @@ export default function App() {
             layerMenuOpen={layerMenuOpen}
             layerVisibility={layerVisibility}
             onCancelAreaSelection={cancelAreaSelection}
-            onCancelPlacement={() => { setIsPlacingCell(false); setSelectionNotice(""); }}
+            onCancelPlacement={() => { setIsPlacingCell(false); setPendingSiteAzimuths(null); setSelectionNotice(""); }}
             onCancelPathEndpoint={() => { setIsSelectingPathEndpoint(false); setSelectionNotice(""); }}
             onClearNetworkSelection={clearNetworkSelection}
             onDrawArea={startAreaSelection}
@@ -4180,7 +4222,17 @@ export default function App() {
 					isPlacingCell={isPlacingCell}
 					onApplyBulkEdit={applyInventoryBulkEdit}
 					onBackToInventory={() => setInventoryTargetCellId(null)}
-					onCancelPlacement={() => { setIsPlacingCell(false); setSelectionNotice(""); }}
+					onCancelPlacement={() => { setIsPlacingCell(false); setPendingSiteAzimuths(null); setSelectionNotice(""); }}
+					onApplyProfileToSite={applyProfileToSiteGroup}
+					onUngroupSite={ungroupSiteGroup}
+					onStartSitePlacement={(azimuths) => {
+						setIsDrawingSelection(false);
+						setIsSelectingPathEndpoint(false);
+						setPendingSiteAzimuths(azimuths);
+						setIsPlacingCell(true);
+						setSelectionNotice("");
+					}}
+					placingSite={Boolean(pendingSiteAzimuths)}
 					onDeleteCell={deleteInventoryTower}
 					onDuplicateCell={duplicateInventoryTower}
 					onImportCells={importInventoryCells}
@@ -4192,6 +4244,7 @@ export default function App() {
 					onStartPlacement={() => {
 						setIsDrawingSelection(false);
 						setIsSelectingPathEndpoint(false);
+						setPendingSiteAzimuths(null);
 						setIsPlacingCell(true);
 						setSelectionNotice("");
 					}}

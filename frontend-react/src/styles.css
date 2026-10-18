@@ -10341,3 +10341,11 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 .area-of-interest-kpis table { width: 100%; border-collapse: collapse; font-size: var(--text-meta); }
 .area-of-interest-kpis th, .area-of-interest-kpis td { padding: var(--space-1); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .area-of-interest-kpis thead th { color: var(--muted); font-weight: var(--weight-label); }
+
+/* #114: site groups. */
+.inventory-site-sectors { display: grid; gap: 2px; margin: var(--space-2) 0; font-size: var(--text-meta); }
+.inventory-site-sectors label { display: grid; gap: 2px; }
+.inventory-site-sectors small { color: var(--muted); }
+.inventory-site-group { display: grid; gap: var(--space-1); margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-small); }
+.inventory-site-group p { margin: 0; }
+.inventory-site-group-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }

@@ -960,43 +960,11 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 		return stats, nil
 	}
 
-	servedCounts := make(map[string]int)
-	bestRxByBuilding := make(map[string]float64)
-	for index, tower := range req.Towers {
-		if err := ctx.Err(); err != nil {
-			return NetworkOptimizationStats{}, err
-		}
-		azimuth := tower.AzimuthDeg
-		if index < len(azimuths) {
-			azimuth = azimuths[index]
-		}
-		simReq := networkTowerToStaticRequest(req, tower, azimuth)
-		contribution, err := networkCellRFContribution(ctx, simReq, buildings, prepared.cellContributions)
-		if err != nil {
-			return NetworkOptimizationStats{}, err
-		}
-		stats.CoverageScore += contribution.Reach
-		coverageMap := contribution.BuildingCoverage
-		coverageIndex := 0
-		for buildingID, rx := range coverageMap {
-			if coverageIndex%64 == 0 {
-				if err := ctx.Err(); err != nil {
-					return NetworkOptimizationStats{}, err
-				}
-			}
-			coverageIndex++
-			if rx <= BuildingServiceThresholdDBm {
-				continue
-			}
-			if _, relevant := prepared.RelevantBuildings[buildingID]; !relevant {
-				continue
-			}
-			servedCounts[buildingID]++
-			if existing, ok := bestRxByBuilding[buildingID]; !ok || rx > existing {
-				bestRxByBuilding[buildingID] = rx
-			}
-		}
+	servedCounts, bestRxByBuilding, coverageScore, err := networkServedBuildings(ctx, req, azimuths, buildings, prepared)
+	if err != nil {
+		return NetworkOptimizationStats{}, err
 	}
+	stats.CoverageScore = coverageScore
 
 	aggregationDone := timeOptimizationPhase(ctx, "domain_aggregation")
 	defer aggregationDone()
@@ -1095,6 +1063,50 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 		stats.RawMetrics.RadioQualityServingCellSamples = radioMetrics.RadioQualityServingCellSamples
 	}
 	return stats, nil
+}
+
+// networkServedBuildings runs the per-cell RF contributions once and returns, for every relevant building above the
+// building service threshold, how many Cells serve it and its best received power. Network stats and network
+// comparisons both derive from this single computation, so their counts reconcile exactly.
+func networkServedBuildings(ctx context.Context, req NetworkOptimizationRequest, azimuths []float64, buildings *BuildingIndex, prepared *PreparedNetworkOptimizationContext) (map[string]int, map[string]float64, float64, error) {
+	servedCounts := make(map[string]int)
+	bestRxByBuilding := make(map[string]float64)
+	coverageScore := 0.0
+	for index, tower := range req.Towers {
+		if err := ctx.Err(); err != nil {
+			return nil, nil, 0, err
+		}
+		azimuth := tower.AzimuthDeg
+		if index < len(azimuths) {
+			azimuth = azimuths[index]
+		}
+		simReq := networkTowerToStaticRequest(req, tower, azimuth)
+		contribution, err := networkCellRFContribution(ctx, simReq, buildings, prepared.cellContributions)
+		if err != nil {
+			return nil, nil, 0, err
+		}
+		coverageScore += contribution.Reach
+		coverageIndex := 0
+		for buildingID, rx := range contribution.BuildingCoverage {
+			if coverageIndex%64 == 0 {
+				if err := ctx.Err(); err != nil {
+					return nil, nil, 0, err
+				}
+			}
+			coverageIndex++
+			if rx <= BuildingServiceThresholdDBm {
+				continue
+			}
+			if _, relevant := prepared.RelevantBuildings[buildingID]; !relevant {
+				continue
+			}
+			servedCounts[buildingID]++
+			if existing, ok := bestRxByBuilding[buildingID]; !ok || rx > existing {
+				bestRxByBuilding[buildingID] = rx
+			}
+		}
+	}
+	return servedCounts, bestRxByBuilding, coverageScore, nil
 }
 
 func networkTowerToStaticRequest(req NetworkOptimizationRequest, tower NetworkTowerRequest, azimuth float64) StaticSimulationRequest {

@@ -58,6 +58,7 @@ import { readableRunLabel } from "./domain/runLabel.js";
 import { attributeRunToSourceVersion, findRestorableRun, runIdentityMatches, runMatchesPlan } from "./utils/restoredRunBinding.js";
 import { defaultScenarioName, scenarioRevisionFromLegacySnapshot } from "./domain/scenario.js";
 import { buildComparisonSources, COMPARISON_METRICS, summaryFromRun } from "./utils/comparisonSources.js";
+import { networkRequestForSource, spatialComparisonAvailability } from "./utils/spatialComparison.js";
 import ResultCompareView from "./components/ResultCompareView.jsx";
 import CandidateCellAction from "./components/CandidateCellAction.jsx";
 import FirstRunCard from "./components/FirstRunCard.jsx";
@@ -237,6 +238,8 @@ export default function App() {
   const [areaSelectionPurpose, setAreaSelectionPurpose] = useState("cells");
   // When on, network runs also report KPIs inside the drawn area (reporting only).
   const [areaOfInterestEnabled, setAreaOfInterestEnabled] = useState(false);
+  // The last explicit spatial comparison: { requestKey, labels, result } or an error/loading state.
+  const [spatialComparison, setSpatialComparison] = useState({ requestKey: null, labels: null, result: null, error: "", loading: false });
   const [selectionPolygon, setSelectionPolygon] = useState([]);
   const areaOfInterest = useMemo(
     () => (areaOfInterestEnabled ? normalizeAreaOfInterest(selectionPolygon) : null),
@@ -1809,6 +1812,8 @@ export default function App() {
     setOptimizationDiagnostics(null);
     resetNetworkArtifacts();
     clearRenderedAnalysis();
+    // A spatial comparison that involved the current plan or its optimization no longer describes it.
+    setSpatialComparison((current) => (current.planBound ? { requestKey: null, labels: null, result: null, error: "", loading: false } : current));
     dispatchPlanChange(change === "mode" ? "mode" : "input");
   }, [clearRenderedAnalysis, requests, resetNetworkArtifacts]);
 
@@ -3255,6 +3260,50 @@ export default function App() {
     setFirstRunDismissed(true);
   }, []);
 
+  const spatialRequestContext = useMemo(() => ({
+    currentNetworkRequest: planningMode === "network" && selectedNetworkTowers.length >= 2
+      ? buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig, areaOfInterest)
+      : null,
+    optimizationRequest: currentResultRun?.run_type === "optimization" ? currentResultRun.canonical_input_snapshot?.request ?? null : null,
+    recommendedSolution: recommendedParetoSolution,
+    selectedSolution: selectedParetoSolution,
+  }), [areaOfInterest, currentResultRun, networkAzimuths, optimizationConfig, planningMode, recommendedParetoSolution, selectedNetworkTowers, selectedParetoSolution, settings]);
+  const spatialIdentity = useMemo(() => {
+    const dataset = activeProject?.datasetRef ?? appMeta?.dataset ?? null;
+    return {
+      dataset: dataset?.id ? `${dataset.id}@${dataset.version ?? "unknown"}` : null,
+      model: appMeta?.model_version ?? null,
+    };
+  }, [activeProject?.datasetRef, appMeta?.dataset, appMeta?.model_version]);
+  const spatialComparisonFor = useCallback((first, second) => {
+    const requestsForPair = {
+      a: networkRequestForSource(first, spatialRequestContext),
+      b: networkRequestForSource(second, spatialRequestContext),
+    };
+    const availability = spatialComparisonAvailability(first, second, requestsForPair, spatialIdentity);
+    const requestKey = availability.available ? JSON.stringify(requestsForPair) : null;
+    const current = requestKey && spatialComparison.requestKey === requestKey ? spatialComparison : null;
+    return { ...availability, requests: requestsForPair, requestKey, result: current?.result ?? null, error: current?.error ?? "", loading: Boolean(current?.loading) };
+  }, [spatialComparison, spatialIdentity, spatialRequestContext]);
+  const runSpatialComparison = useCallback(async (first, second) => {
+    const pair = spatialComparisonFor(first, second);
+    if (!pair.available) return;
+    const labels = { a: first.label, b: second.label };
+    const planBound = first.kind !== "version" || second.kind !== "version";
+    const request = requests.begin("spatial-comparison");
+    setSpatialComparison({ requestKey: pair.requestKey, labels, planBound, result: null, error: "", loading: true });
+    try {
+      const result = await postJSON("/api/compare-network", { a: pair.requests.a, b: pair.requests.b }, "Spatial comparison failed", request.signal);
+      if (!request.isCurrent()) return;
+      setSpatialComparison({ requestKey: pair.requestKey, labels, planBound, result, error: "", loading: false });
+    } catch (comparisonError) {
+      if (isAbortError(comparisonError) || !request.isCurrent()) return;
+      setSpatialComparison({ requestKey: pair.requestKey, labels, planBound, result: null, error: comparisonError.message, loading: false });
+    } finally {
+      if (request.isCurrent()) request.finish();
+    }
+  }, [requests, spatialComparisonFor]);
+
   const handleBranchScenario = useCallback(async ({ name, revisionId, scenarioId }) => {
     clearSpatialContext();
     try {
@@ -3601,12 +3650,14 @@ export default function App() {
     planningMode,
     project: activeProject,
     recommendations: siteRecommendations,
+    spatialComparison: spatialComparison.result ? { labels: spatialComparison.labels, result: spatialComparison.result } : null,
     selectedTower,
     selectedNetworkTowers: planningMode === "network" ? selectedNetworkTowers : [],
     settings,
     simulation,
     stats,
   }), [
+    spatialComparison,
     activeNetworkTech,
     activeProject,
     activeComparison,
@@ -3942,6 +3993,7 @@ export default function App() {
             interferenceMetric={interferenceMetric}
             interferenceLayerKey={interferenceRevision}
             measurements={measurementAnalysis?.geojson}
+            comparisonBuildings={compareViewOpen && spatialComparison.result ? spatialComparison.result.buildings : null}
             recommendations={siteRecommendations}
 			isPlacingCell={isPlacingCell}
 			onPlaceCell={placeInventoryCell}
@@ -4332,6 +4384,8 @@ export default function App() {
               recommending={isRecommendingSites}
               comparisonSources={comparisonSources}
               onShowComparisonSource={showComparisonSource}
+              spatialComparisonFor={spatialComparisonFor}
+              onRunSpatialComparison={runSpatialComparison}
               onRestoreMapLayers={restoreMapLayers}
               restoreExplanation={restorableRun.reason}
               restoreLayersNeeded={Boolean(resultContext?.restored && !hasResults)}
@@ -4839,6 +4893,8 @@ function ResultsPanel({
   unsupportedInterferenceReason = "",
   comparisonSources = [],
   onShowComparisonSource,
+  spatialComparisonFor,
+  onRunSpatialComparison,
   onRestoreMapLayers,
   restoreExplanation = "",
   restoreLayersNeeded = false,
@@ -4968,6 +5024,8 @@ function ResultsPanel({
         <ResultCompareView
           sources={comparisonSources}
           onShowSource={onShowComparisonSource}
+          spatialComparisonFor={spatialComparisonFor}
+          onRunSpatialComparison={onRunSpatialComparison}
           baselinePairView={<NetworkOptimizationComparisonPanel comparison={comparison} />}
         />
       ) : null}

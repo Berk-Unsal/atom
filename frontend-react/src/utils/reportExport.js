@@ -1,5 +1,6 @@
 import { rxPowerColor } from "./geojson.js";
 import { areaOfInterestRows } from "./areaOfInterest.js";
+import { spatialComparisonRows, spatialComparisonSvg } from "./spatialComparison.js";
 import { downloadFilename } from "./downloadNames.js";
 import { formatMetricValue, getComparisonMetrics } from "./comparisonCharts.js";
 import { normalizedNetworkScore } from "./appWorkspace.js";
@@ -63,6 +64,7 @@ export function buildPlanningReport({
   selectedNetworkTowers = [],
   settings,
   simulation,
+  spatialComparison = null,
   stats,
   selectedSolutionId = null,
 }) {
@@ -112,6 +114,7 @@ export function buildPlanningReport({
     networkTowers,
     settings: safeSettings,
     simulation,
+    spatialComparison,
     stats,
     selectedSolutionId,
   };
@@ -239,6 +242,7 @@ export function renderMarkdownReport(report) {
     renderMarkdownEvidence(view),
     renderMarkdownRecommendedSolution(view),
     renderMarkdownComparison(view),
+    renderMarkdownSpatialComparison(report),
     renderMarkdownPareto(view),
     renderMarkdownCellExplanations(view),
     renderMarkdownRFPerformance(view),
@@ -267,6 +271,7 @@ export function renderPrintableReport(report) {
     renderPrintableEvidence(view),
     renderPrintableRecommendedSolution(view),
     renderPrintableComparison(view),
+    renderPrintableSpatialComparison(report),
     renderPrintablePareto(view),
     renderPrintableCellExplanations(view),
     renderPrintableRFPerformance(view),
@@ -640,6 +645,32 @@ function renderMarkdownComparison(view) {
   return `## ${title}
 
 ${renderMarkdownTable(["Metric", "Baseline", view.comparison?.type === "optimization" ? "Recommended" : "Optimized", "Change"], view.comparisonRows.map((item) => [item.label, item.baseline, item.optimized, item.change]))}${noChange ? "\n\nNo aggregate KPI change was observed between baseline and the currently recommended configuration." : ""}`;
+}
+
+const SPATIAL_COMPARISON_NOTE = "Both plans were evaluated on the same dataset and model. Newly served/lost counts demand buildings above the building service threshold in one plan only; overlap counts relevant buildings served by more than one Cell. No SINR deltas are included.";
+
+function spatialComparisonHeading(spatial) {
+  return `${spatial.labels?.a ?? "A"} → ${spatial.labels?.b ?? "B"}`;
+}
+
+function renderMarkdownSpatialComparison(report) {
+  const spatial = report.spatialComparison;
+  if (!spatial?.result) return "";
+  const rows = spatialComparisonRows(spatial.result);
+  return `## Where the Plans Differ
+
+${spatialComparisonHeading(spatial)}
+
+${renderMarkdownTable(["Change", "Buildings"], rows)}
+
+${SPATIAL_COMPARISON_NOTE} The map of changed buildings is included in the HTML report.`;
+}
+
+function renderPrintableSpatialComparison(report) {
+  const spatial = report.spatialComparison;
+  if (!spatial?.result) return "";
+  const svg = spatialComparisonSvg(spatial.result);
+  return `<section data-report-section="spatial-comparison"><h2>Where the Plans Differ</h2><p>${escapeHtml(spatialComparisonHeading(spatial))}</p>${renderHtmlTable(["Change", "Buildings"], spatialComparisonRows(spatial.result))}${svg ? `<div class="map-wrap">${svg}</div>` : ""}<p class="report-note">${escapeHtml(SPATIAL_COMPARISON_NOTE)}${spatial.result.buildings_truncated ? " The map shows the first changed buildings by ID; the counts are complete." : ""}</p></section>`;
 }
 
 function renderPrintableComparison(view) {

@@ -55,8 +55,9 @@ import {
 import { createOptimizationRun, createSimulationRun, transitionRun } from "./domain/run.js";
 import { buildResultContext, buildWorkspaceLineage, nextPlanChange, RESULT_FRESHNESS, resultStateLabel } from "./domain/resultContext.js";
 import { readableRunLabel } from "./domain/runLabel.js";
+import { attributeRunToSourceVersion, findRestorableRun, runIdentityMatches, runMatchesPlan } from "./utils/restoredRunBinding.js";
 import { defaultScenarioName, scenarioRevisionFromLegacySnapshot } from "./domain/scenario.js";
-import { buildComparisonSources } from "./utils/comparisonSources.js";
+import { buildComparisonSources, COMPARISON_METRICS, summaryFromRun } from "./utils/comparisonSources.js";
 import ResultCompareView from "./components/ResultCompareView.jsx";
 import CandidateCellAction from "./components/CandidateCellAction.jsx";
 import FirstRunCard from "./components/FirstRunCard.jsx";
@@ -2694,13 +2695,53 @@ export default function App() {
   const currentRevision = scenarioSource?.domain?.revisions?.find((revision) => (
     String(revision.scenario_revision_id) === String(activeRevisionId)
   )) ?? null;
+  const restorePlan = useMemo(() => ({
+    planningMode,
+    selectedTower,
+    selectedNetworkTowers,
+    settings,
+    networkAzimuths,
+    optimizationConfig,
+  }), [networkAzimuths, optimizationConfig, planningMode, selectedNetworkTowers, selectedTower, settings]);
+  const restorableRun = useMemo(() => {
+    if (currentResultRun || !workspaceRestored || !appMeta) return { run: null, reason: "" };
+    return findRestorableRun({
+      runs: runHistory.runs,
+      plan: restorePlan,
+      projectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+      datasetRef: datasetReference(appMeta),
+      modelVersion: appMeta?.model_version ?? null,
+    });
+  }, [activeProject?.domain?.project_id, activeProject?.id, appMeta, currentResultRun, restorePlan, runHistory.runs, workspaceRestored]);
   const resultRunType = lastAnalysisKind === "rf"
     ? "simulation"
     : ["network", "optimization"].includes(lastAnalysisKind)
       ? "optimization"
       : null;
-  const matchingResultRun = currentResultRun?.run_type === resultRunType ? currentResultRun : null;
-  const resultContext = resultRunType && (hasResults || Boolean(matchingResultRun))
+  const scenarioList = activeProject?.scenarios ?? [];
+  // Evaluate Network is never captured as a durable Run, so a live evaluation has no Run lineage to show and must
+  // not borrow an earlier optimization Run.
+  const liveNetworkEvaluation = lastAnalysisKind === "network" && networkResultKind === "evaluation";
+  const matchingResultRun = !liveNetworkEvaluation && currentResultRun?.run_type === resultRunType
+    ? attributeRunToSourceVersion(currentResultRun, scenarioList)
+    : null;
+  const restoredRun = !currentResultRun && restorableRun.run ? attributeRunToSourceVersion(restorableRun.run, scenarioList) : null;
+  const resultContext = !matchingResultRun && restoredRun
+    ? {
+      // An exactly matching retained Run, shown as HISTORICAL until its map layers are restored by an explicit run.
+      ...buildResultContext({
+        activeProjectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
+        activeScenarioId: workspaceLineage.scenario_id,
+        activeRevisionId,
+        historical: true,
+        project: activeProject,
+        run: restoredRun,
+        resultType: restoredRun.run_type,
+        scenarios: scenarioList,
+      }),
+      restored: true,
+    }
+    : resultRunType && !liveNetworkEvaluation && (hasResults || Boolean(matchingResultRun))
     ? buildResultContext({
       activeProjectId: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
       activeScenarioId: workspaceLineage.scenario_id,
@@ -2714,11 +2755,14 @@ export default function App() {
       run: matchingResultRun,
       resultType: resultRunType,
       scenarios: activeProject?.scenarios ?? [],
-      unavailableReason: matchingResultRun ? "" : "The restored result has no unambiguous retained Run.",
+      unavailableReason: matchingResultRun ? "" : restorableRun.reason || "The restored result has no unambiguous retained Run.",
       workspace: workspaceLineage,
     })
     : null;
   resultContextRef.current = resultContext;
+  // The command bar never pairs "Ready" with an UNAVAILABLE result.
+  const commandRunState = runState === "Ready" && resultContext?.freshness === RESULT_FRESHNESS.UNAVAILABLE ? "Run needed" : runState;
+  const restoreMapLayers = planningMode === "network" ? evaluateNetwork : runSimulation;
   const inspectedResultContext = useMemo(() => {
     const sourceRun = inspectedEntity?.sourceRun;
     if (!sourceRun) return null;
@@ -2947,11 +2991,20 @@ export default function App() {
 
   const saveCurrentScenario = useCallback((changeSummary = "") => {
     const snapshot = buildCurrentScenarioSnapshot();
+    // Bind a just-completed draft Run as this Version's source only when it computed exactly this plan.
+    const sourceRunId = currentResultRun
+      && !currentResultRun.scenario_revision_id
+      && !planDirty
+      && runIdentityMatches(currentResultRun, { datasetRef: datasetReference(appMeta), modelVersion: appMeta?.model_version ?? null })
+      && runMatchesPlan(currentResultRun, restorePlan)
+      ? currentResultRun.run_id
+      : null;
     if (scenarioSource) {
       return saveProjectScenarioVersion({
         changeSummary: changeSummary || `Saved Version ${Number(scenarioSource.domain?.revision ?? 0) + 1}`,
         scenarioId: scenarioSource.domain?.scenario_id ?? scenarioSource.id,
         snapshot,
+        sourceRunId,
       }).then((saved) => {
         const nextProject = saved.workspace?.projects?.find((project) => project.id === saved.workspace.activeProjectId);
         const nextScenario = nextProject?.scenarios?.find((scenario) => scenario.id === nextProject.activeScenarioId) ?? saved.scenario;
@@ -2960,8 +3013,8 @@ export default function App() {
         return saved;
       });
     }
-    return saveProjectScenario(defaultScenarioName({ planningMode, scenarios: activeProject?.scenarios }), snapshot);
-  }, [activeProject?.scenarios, buildCurrentScenarioSnapshot, planningMode, restorePlanningSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
+    return saveProjectScenario(defaultScenarioName({ planningMode, scenarios: activeProject?.scenarios }), snapshot, { sourceRunId });
+  }, [activeProject?.scenarios, appMeta, buildCurrentScenarioSnapshot, currentResultRun, planDirty, planningMode, restorePlan, restorePlanningSnapshot, saveProjectScenario, saveProjectScenarioVersion, scenarioSource]);
 
   const draftOptimizationSource = useMemo(() => {
     const source = resolveDraftOptimizationSource({
@@ -3248,7 +3301,7 @@ export default function App() {
     const references = [];
     for (const scenario of activeProject?.scenarios ?? []) {
       for (const revision of scenario.domain?.revisions ?? []) {
-        if (revision.originating_run_id === run.run_id) {
+        if (revision.originating_run_id === run.run_id || revision.metadata?.source_run_id === run.run_id) {
           references.push({ type: "scenario_revision", id: revision.scenario_revision_id });
         }
       }
@@ -3267,7 +3320,7 @@ export default function App() {
     if (!globalThis.confirm?.("Clear every unreferenced local run-history record?")) return;
     const referencedRunIds = (projectWorkspace.workspace.projects ?? []).flatMap((project) => (
       (project.scenarios ?? []).flatMap((scenario) => (
-        (scenario.domain?.revisions ?? []).map((revision) => revision.originating_run_id).filter(Boolean)
+        (scenario.domain?.revisions ?? []).flatMap((revision) => [revision.originating_run_id, revision.metadata?.source_run_id]).filter(Boolean)
       ))
     ));
     await runHistory.clearAllUnreferenced(referencedRunIds);
@@ -3277,7 +3330,7 @@ export default function App() {
     const projectID = activeProject?.domain?.project_id ?? activeProject?.id;
     const referencedRunIds = [
       ...(activeProject?.scenarios ?? []).flatMap((scenario) => (
-        (scenario.domain?.revisions ?? []).map((revision) => revision.originating_run_id).filter(Boolean)
+        (scenario.domain?.revisions ?? []).flatMap((revision) => [revision.originating_run_id, revision.metadata?.source_run_id]).filter(Boolean)
       )),
       ...(activeProject?.domain?.report_definitions ?? []).flatMap((report) => report.run_ids ?? []),
     ];
@@ -3726,8 +3779,8 @@ export default function App() {
         primaryActionLabel={primaryActionLabel}
         primaryDisabled={primaryDisabled}
         resultContext={resultContext}
-        runState={runState}
-        statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty || runState === "Run needed" ? "pending" : "ready"}
+        runState={commandRunState}
+        statusTone={visibleError ? "error" : activeRFTask !== null ? "busy" : planDirty || commandRunState === "Run needed" ? "pending" : "ready"}
       />
 
       <section className={`workspace-frame ${drawerOpen ? "drawer-open" : ""} ${inspectedEntity ? "inspector-open" : ""} ${inspectedEntity && chooserStage ? "inspector-suspended" : ""}`}>
@@ -4197,6 +4250,9 @@ export default function App() {
               recommending={isRecommendingSites}
               comparisonSources={comparisonSources}
               onShowComparisonSource={showComparisonSource}
+              onRestoreMapLayers={restoreMapLayers}
+              restoreExplanation={restorableRun.reason}
+              restoreLayersNeeded={Boolean(resultContext?.restored && !hasResults)}
               candidateRequirements={candidateRequirements}
               isDrawingSearchArea={isDrawingSearchArea}
               onDrawSearchArea={startSearchAreaSelection}
@@ -4700,6 +4756,9 @@ function ResultsPanel({
   unsupportedInterferenceReason = "",
   comparisonSources = [],
   onShowComparisonSource,
+  onRestoreMapLayers,
+  restoreExplanation = "",
+  restoreLayersNeeded = false,
   selectedSolutionId,
   simulationResult = null,
   stats,
@@ -4725,12 +4784,16 @@ function ResultsPanel({
         <ResultContextBadge
           context={resultContext}
           currentWorkspace={currentWorkspace}
-          primaryLabel={resultContext.freshness === "stale" ? "Run again" : ["unavailable", RESULT_FRESHNESS.OTHER_MODE].includes(resultContext.freshness) ? "Run current plan" : ""}
-          onPrimaryAction={onRerunCurrent}
+          primaryLabel={resultContext.freshness === "stale" ? "Run again" : ["unavailable", RESULT_FRESHNESS.OTHER_MODE].includes(resultContext.freshness) ? "Run current plan" : restoreLayersNeeded ? "Restore map layers" : ""}
+          onPrimaryAction={resultContext.restored ? onRestoreMapLayers : onRerunCurrent}
           secondaryLabel={resultContext.run_id ? "View Run" : ""}
           onSecondaryAction={resultContext.run ? () => onOpenRun?.(resultContext.run) : undefined}
         />
       ) : null}
+      {resultContext?.restored ? (
+        <RestoredResultSummary run={resultContext.run} restoreLayersNeeded={restoreLayersNeeded} />
+      ) : null}
+      {!resultContext && restoreExplanation ? <p className="data-note restored-result-explanation" role="status">{restoreExplanation}</p> : null}
       <ResultTabs views={views} value={activeView} onChange={onViewChange} />
 
       {activeView === "rf" ? (
@@ -5032,6 +5095,23 @@ function formatSignedNumber(value, digits = 0) {
   const numeric = Number(value);
   const prefix = numeric > 0 ? "+" : "";
   return `${prefix}${formatNumber(numeric, digits)}`;
+}
+
+function RestoredResultSummary({ restoreLayersNeeded, run }) {
+  const summary = summaryFromRun(run) ?? {};
+  const rows = COMPARISON_METRICS
+    .filter((metric) => summary[metric.key] !== null && summary[metric.key] !== undefined)
+    .map((metric) => [metric.label, `${formatNumber(summary[metric.key], 1)}${metric.unit ? ` ${metric.unit}` : ""}`]);
+  return (
+    <section className="restored-result-summary" aria-label="Restored result summary">
+      {rows.length ? <KeyValueRows label="Retained Run summary" items={rows} /> : <p className="data-note">This Run retained no summary metrics.</p>}
+      <p className="data-note">
+        {restoreLayersNeeded
+          ? "This Run computed exactly the restored plan. Map layers are not stored with the plan; Restore map layers runs the plan once (one RF request) and redraws them."
+          : "This Run computed exactly the restored plan."}
+      </p>
+    </section>
+  );
 }
 
 const PARETO_LIST_PREVIEW = 5;

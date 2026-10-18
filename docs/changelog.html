@@ -201,6 +201,15 @@ Solutions marks the solution already loaded in the draft.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Restore result context after a reload: the newest retained Run that
+computed exactly the restored plan (canonical request, dataset and model
+version, the same rule as applying a draft Pareto alternative) is shown
+as HISTORICAL with its summary, and a working draft offers Restore map
+layers as the only RF request. Saving a Version right after a matching
+run records that Run as its source in Version metadata, Results explains
+when no Run applies, live network evaluations no longer borrow an
+earlier optimization Run, and the command bar never shows Ready with
+UNAVAILABLE.</li>
 <li>Give CSV Measurement Validation its own section in Review → Data
 instead of a collapsed Research disclosure, and rename the Analyze → RF
 Diagnostics campaign tool to Research campaign evidence so no two tools

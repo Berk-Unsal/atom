@@ -59,6 +59,8 @@ import { defaultScenarioName, scenarioRevisionFromLegacySnapshot } from "./domai
 import { buildComparisonSources } from "./utils/comparisonSources.js";
 import ResultCompareView from "./components/ResultCompareView.jsx";
 import CandidateCellAction from "./components/CandidateCellAction.jsx";
+import FirstRunCard from "./components/FirstRunCard.jsx";
+import { isFirstRunWorkspace, readFirstRunDismissed, SAMPLE_PROJECT_TEXT, sampleNetworkSelection, writeFirstRunDismissed } from "./utils/sampleProject.js";
 import { candidatePrerequisites } from "./utils/candidatePrerequisites.js";
 import { paretoObjectiveValue, readOptimizationRawMetric } from "./utils/paretoChart.js";
 import ParetoTradeoffChart from "./components/ParetoTradeoffChart.jsx";
@@ -341,6 +343,10 @@ export default function App() {
   const [startupLoadFailed, setStartupLoadFailed] = useState(false);
 	const [hydratedDatasetRevision, setHydratedDatasetRevision] = useState(0);
 	const [workspaceRestored, setWorkspaceRestored] = useState(false);
+  const [firstRunDismissed, setFirstRunDismissed] = useState(() => readFirstRunDismissed());
+  const [openingSample, setOpeningSample] = useState(false);
+  // Set while the bundled sample is imported; its Cells are selected once the new project has been restored.
+  const pendingSampleRef = useRef(null);
 	const [installedDatasets, setInstalledDatasets] = useState({ active_id: "", datasets: [], warnings: [] });
 	const [isSwitchingDataset, setIsSwitchingDataset] = useState(false);
 	const [datasetMessage, setDatasetMessage] = useState("");
@@ -704,6 +710,18 @@ export default function App() {
     restoredProjectRef.current = project.id;
     setWorkspaceRestored(true);
   }, [activeProject, restorePlanningSnapshot, towers.length, workspaceLoaded]);
+
+  useEffect(() => {
+    const pending = pendingSampleRef.current;
+    if (!pending || !workspaceRestored || !activeProject || pending.previousProjectIds.includes(activeProject.id) || towers.length === 0) return;
+    pendingSampleRef.current = null;
+    const anchor = towers.find((tower) => tower.id === pending.anchorId) ?? towers[0];
+    const selected = sampleNetworkSelection(towers, anchor, 2);
+    setSelectedNetworkTowerIds(selected.map((tower) => tower.id));
+    setSelectedTower(selected[0] ?? anchor);
+    dispatchPlanChange("input");
+    setSelectionNotice(`Sample opened as a new project. Selected Cells ${selected.map((tower) => tower.cellId ?? tower.id).join(" and ")}, nearest the pre-selected sector; change them here.`);
+  }, [activeProject, towers, workspaceRestored]);
 
   useEffect(() => {
     if (!workspaceLoaded || restoredProjectRef.current !== activeProject?.id || hydratedDatasetRevision !== datasetRevision) {
@@ -3099,6 +3117,31 @@ export default function App() {
     return openScenarioRevision(source.scenarioId, source.revisionId);
   }, [activeProject?.scenarios, openSavedScenario, openScenarioRevision, recommendedSolutionId, selectParetoSolution, selectedSolutionId]);
 
+  const openSampleProject = useCallback(() => {
+    setOpeningSample(true);
+    pendingSampleRef.current = { anchorId: selectedTower?.id ?? null, previousProjectIds: projectWorkspace.workspace.projects.map((project) => project.id) };
+    let imported;
+    try {
+      imported = projectWorkspace.importProject(SAMPLE_PROJECT_TEXT);
+    } catch (importError) {
+      pendingSampleRef.current = null;
+      setOpeningSample(false);
+      setError(importError.message);
+      return;
+    }
+    clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null);
+    restoredProjectRef.current = null; setWorkspaceRestored(false);
+    imported.catch((importError) => {
+      pendingSampleRef.current = null;
+      setError(importError.message);
+    }).finally(() => setOpeningSample(false));
+  }, [clearCurrentResultRun, clearSpatialContext, projectWorkspace, selectedTower?.id]);
+
+  const dismissFirstRunCard = useCallback(() => {
+    writeFirstRunDismissed();
+    setFirstRunDismissed(true);
+  }, []);
+
   const handleBranchScenario = useCallback(async ({ name, revisionId, scenarioId }) => {
     clearSpatialContext();
     try {
@@ -3861,6 +3904,15 @@ export default function App() {
           subtitle={drawerSubtitles[activeTool]}
           title={activeToolDefinition.label}
         >
+          {drawerMode === "tool" && activeTool === "setup" && workspaceLoaded && !firstRunDismissed && !hasResults && isFirstRunWorkspace(projectWorkspace.workspace, runHistory.runs.length) ? (
+            <FirstRunCard
+              onDismiss={dismissFirstRunCard}
+              onOpenSample={openSampleProject}
+              onRunSector={runSimulation}
+              runDisabled={primaryDisabled}
+              sampleBusy={openingSample}
+            />
+          ) : null}
           {drawerMode === "tool" && ["setup", "propagation", "interference"].includes(activeTool) ? (
             ["setup", "propagation"].includes(activeTool) ? (
               <DisclosureSection

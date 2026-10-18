@@ -1102,6 +1102,56 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("offers a first-run card that opens the sample as a separate project and reaches a network evaluation in two actions", async () => {
+    useNetworkFixture = true;
+    const view = render(<App />);
+    const card = await screen.findByRole("region", { name: "Plan an urban 4G/5G network" });
+    expect(within(card).getByRole("link", { name: "Planning glossary" })).toHaveAttribute("href", "https://berk-unsal.github.io/atom/terminology.html");
+    await waitFor(() => expect(within(card).getByRole("button", { name: "Run the pre-selected sector" })).toBeEnabled());
+
+    fireEvent.click(within(card).getByRole("button", { name: "Open sample network project" }));
+    expect(await screen.findByRole("button", { name: "Network mode, 2 selected" })).toBeInTheDocument();
+    expect(screen.getAllByText(/Sample opened as a new project\. Selected Cells 101 and 102/).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("region", { name: "Plan an urban 4G/5G network" })).not.toBeInTheDocument();
+
+    const evaluate = screen.getByRole("button", { name: "Evaluate Network", exact: true });
+    await waitFor(() => expect(evaluate).toBeEnabled());
+    fireEvent.click(evaluate);
+    await waitFor(() => expect(api.postJSON.mock.calls.some(([path]) => path === "/api/evaluate-network")).toBe(true));
+    expect(api.postJSON.mock.calls.find(([path]) => path === "/api/evaluate-network")[1].towers.map((tower) => tower.id)).toEqual(["101", "102"]);
+
+    await waitFor(() => {
+      const stored = JSON.parse(window.localStorage.getItem("atom.planning.workspace.v1"));
+      expect(stored.projects).toHaveLength(2);
+      expect(stored.projects[0]).toMatchObject({ name: "Ankara Plan", scenarios: [] });
+      expect(stored.projects[1].name).toBe("Ankara First-Use Sample (Imported)");
+      expect(stored.activeProjectId).toBe(stored.projects[1].id);
+    });
+    view.unmount();
+  });
+
+  it("keeps the first-run card through the automatic draft and hides it once work produces a result", async () => {
+    render(<App />);
+    await screen.findByRole("region", { name: "Plan an urban 4G/5G network" });
+    // The workspace autosaves a draft of the untouched plan about 500 ms after load.
+    await waitFor(() => expect(document.querySelector(".workspace-lineage-context > summary")).toHaveAttribute("aria-label", expect.stringContaining("Working draft")), { timeout: 3000 });
+    expect(screen.getByRole("region", { name: "Plan an urban 4G/5G network" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Run the pre-selected sector" }));
+    await screen.findByRole("button", { name: /Open Current result details/i });
+    await waitFor(() => expect(screen.queryByRole("region", { name: "Plan an urban 4G/5G network" })).not.toBeInTheDocument());
+  });
+
+  it("keeps the first-run card dismissed across reloads", async () => {
+    const first = render(<App />);
+    const card = await screen.findByRole("region", { name: "Plan an urban 4G/5G network" });
+    fireEvent.click(within(card).getByRole("button", { name: "Dismiss getting started" }));
+    expect(screen.queryByRole("region", { name: "Plan an urban 4G/5G network" })).not.toBeInTheDocument();
+    first.unmount();
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    expect(screen.queryByRole("region", { name: "Plan an urban 4G/5G network" })).not.toBeInTheDocument();
+  });
+
   it("inspects Pareto solutions from the trade-off chart by pointer and keyboard without RF requests", async () => {
     useNetworkFixture = true;
     const payload = structuredClone(networkOptimizationPayload);

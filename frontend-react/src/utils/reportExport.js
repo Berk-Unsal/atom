@@ -1,4 +1,5 @@
 import { rxPowerColor } from "./geojson.js";
+import { areaOfInterestRows } from "./areaOfInterest.js";
 import { downloadFilename } from "./downloadNames.js";
 import { formatMetricValue, getComparisonMetrics } from "./comparisonCharts.js";
 import { normalizedNetworkScore } from "./appWorkspace.js";
@@ -454,6 +455,7 @@ function buildReportViewModel(report) {
     topGaps,
     optimizationRunID: optimization?.optimization_run_id ?? null,
     resultStats,
+    areaOfInterestRows: areaOfInterestRows(resultStats),
   };
 }
 
@@ -587,6 +589,11 @@ ${renderMarkdownTable(["Metric", "Value"], view.rfPerformanceRows)}`;
   const heading = view.isOptimizationRecommendation ? "Recommended Network Solution" : view.resultStats ? "Evaluated Network Configuration" : "Network Result";
   const body = [];
   body.push(view.performanceRows.length > 0 ? renderMarkdownTable(["Metric", "Achieved"], view.performanceRows) : "Network performance metrics: Not available.");
+  if (view.areaOfInterestRows.length > 0) {
+    body.push("### Inside the area of interest");
+    body.push(renderMarkdownTable(["KPI", "Network", "Inside area"], view.areaOfInterestRows));
+    body.push("Buildings count as inside when their footprint centroid is in the area. The area changes reporting only; objectives and scores are network-wide.");
+  }
   if (view.recommendedConfigurations.length > 0) {
     body.push("### Cell configuration");
     body.push(renderMarkdownCellConfigurationTable(view));
@@ -623,7 +630,7 @@ function renderPrintableRecommendedSolution(view) {
     priorityContent.push('<p class="report-note">Configured priorities are relative importance values on a 0–100 scale; effective weights are normalized percentages.</p>');
   }
   if (view.constraintRows.length > 0) priorityContent.push(renderHtmlTable(["Constraint", "Configured threshold", "Status"], view.constraintRows));
-  return `<section data-report-section="recommended-solution"><h2>${escapeHtml(heading)}</h2>${view.performanceRows.length > 0 ? renderHtmlTable(["Metric", "Achieved"], view.performanceRows) : `<p>Network performance metrics: ${REPORT_NOT_AVAILABLE}.</p>`}${view.recommendedConfigurations.length > 0 ? `<h3>Cell configuration</h3>${renderHtmlCellConfigurationTable(view)}` : ""}${domainRows.length > 0 ? `<h3>Optimization domain</h3>${renderHtmlTable(["Field", "Value"], domainRows)}` : ""}${priorityContent.length > 0 ? `<h3>Priorities and feasibility</h3>${priorityContent.join("\n")}` : ""}${!view.isOptimizationRecommendation && view.networkOptimization && !view.comparisonRows.length ? `<p class="report-note">Alternative-solution and baseline metadata are not available for this saved network result.</p>` : ""}</section>`;
+  return `<section data-report-section="recommended-solution"><h2>${escapeHtml(heading)}</h2>${view.performanceRows.length > 0 ? renderHtmlTable(["Metric", "Achieved"], view.performanceRows) : `<p>Network performance metrics: ${REPORT_NOT_AVAILABLE}.</p>`}${view.areaOfInterestRows.length > 0 ? `<h3>Inside the area of interest</h3>${renderHtmlTable(["KPI", "Network", "Inside area"], view.areaOfInterestRows)}<p class="report-note">Buildings count as inside when their footprint centroid is in the area. The area changes reporting only; objectives and scores are network-wide.</p>` : ""}${view.recommendedConfigurations.length > 0 ? `<h3>Cell configuration</h3>${renderHtmlCellConfigurationTable(view)}` : ""}${domainRows.length > 0 ? `<h3>Optimization domain</h3>${renderHtmlTable(["Field", "Value"], domainRows)}` : ""}${priorityContent.length > 0 ? `<h3>Priorities and feasibility</h3>${priorityContent.join("\n")}` : ""}${!view.isOptimizationRecommendation && view.networkOptimization && !view.comparisonRows.length ? `<p class="report-note">Alternative-solution and baseline metadata are not available for this saved network result.</p>` : ""}</section>`;
 }
 
 function renderMarkdownComparison(view) {

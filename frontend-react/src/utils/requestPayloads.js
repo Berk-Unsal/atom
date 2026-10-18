@@ -276,7 +276,14 @@ export function defaultPathModelProfile(frequencyGHz) {
   return "research-sub-thz";
 }
 
-export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths = {}, optimizationConfig) {
+/** [[lon, lat], ...] for a drawn polygon with at least 3 vertices, otherwise null. */
+export function normalizeAreaOfInterest(polygon) {
+  if (!Array.isArray(polygon) || polygon.length < 3) return null;
+  return polygon.map((point) => (Array.isArray(point) ? [point[0], point[1]] : [point.lng ?? point.lon, point.lat]));
+}
+
+export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths = {}, optimizationConfig, areaOfInterest = null) {
+  const aoi = normalizeAreaOfInterest(areaOfInterest);
   return {
     towers: selectedNetworkTowers.map((tower, index) => ({
       id: String(tower.cellId ?? tower.id),
@@ -292,6 +299,8 @@ export function buildNetworkOptimizationPayload(selectedNetworkTowers, settings,
     beam_width: settings.beamWidthDeg,
     calibration_offset_db: settings.calibrationOffsetDb ?? 0,
     ...(optimizationConfig ? { optimization: optimizationConfigToPayload(optimizationConfig) } : {}),
+    // Reporting-only: inside-area KPIs; the evaluated domain and scores are unchanged.
+    ...(aoi ? { aoi } : {}),
   };
 }
 

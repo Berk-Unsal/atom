@@ -51,6 +51,10 @@ type PreparedNetworkOptimizationContext struct {
 	ObjectiveAvailability        map[string]OptimizationObjectiveAvailability
 	RadioQuality                 *radioQualityOptimizationContext
 	RadioQualityMetadata         OptimizationRadioQualityMetadata
+	// AreaOfInterestBuildings is nil without an area of interest; membership is decided once per request.
+	AreaOfInterestBuildings    map[string]struct{}
+	AreaOfInterestDemandWeight float64
+	AreaOfInterestResidential  int
 }
 
 func prepareNetworkOptimizationContext(ctx context.Context, req NetworkOptimizationRequest, buildings *BuildingIndex) (*PreparedNetworkOptimizationContext, error) {
@@ -135,6 +139,29 @@ func prepareNetworkOptimizationContext(ctx context.Context, req NetworkOptimizat
 	}
 
 	prepared.TotalRelevantResidential = len(prepared.RelevantResidentialBuildings)
+	if len(req.AreaOfInterest) >= 3 {
+		prepared.AreaOfInterestBuildings = make(map[string]struct{})
+		relevantIDs := make([]string, 0, len(prepared.RelevantBuildings))
+		for id := range prepared.RelevantBuildings {
+			relevantIDs = append(relevantIDs, id)
+		}
+		sort.Strings(relevantIDs)
+		for _, id := range relevantIDs {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+			if !buildingInsideArea(prepared.RelevantBuildings[id], req.AreaOfInterest) {
+				continue
+			}
+			prepared.AreaOfInterestBuildings[id] = struct{}{}
+			if building, relevant := prepared.RelevantDemandBuildings[id]; relevant {
+				prepared.AreaOfInterestDemandWeight += building.DemandWeight
+			}
+			if _, relevant := prepared.RelevantResidentialBuildings[id]; relevant {
+				prepared.AreaOfInterestResidential++
+			}
+		}
+	}
 	prepared.DomainMetadata.RelevantBuildingEntities = len(prepared.RelevantBuildings)
 	prepared.DomainMetadata.RelevantDemandEntities = len(prepared.RelevantDemandBuildings)
 	prepared.DomainMetadata.RelevantResidentialEntities = prepared.TotalRelevantResidential
@@ -239,4 +266,35 @@ func pointToSegmentDistanceMeters(point Point, start Point, end Point) float64 {
 	closestX := x1 + t*dx
 	closestY := y1 + t*dy
 	return math.Sqrt(closestX*closestX + closestY*closestY)
+}
+
+// buildingInsideArea uses the footprint centroid, falling back to the bounds centre for degenerate footprints.
+func buildingInsideArea(building *BuildingFootprint, area []Point) bool {
+	if building == nil {
+		return false
+	}
+	point, ok := PolygonCentroid(building.Vertices)
+	if !ok {
+		point = Point{Lon: (building.Bounds.MinLon + building.Bounds.MaxLon) / 2, Lat: (building.Bounds.MinLat + building.Bounds.MaxLat) / 2}
+	}
+	return PointInPolygon(point, area)
+}
+
+// ValidateAreaOfInterest applies the same bounds as the candidate search polygon. An empty area is valid.
+func ValidateAreaOfInterest(area []Point) string {
+	if len(area) == 0 {
+		return ""
+	}
+	if len(area) < 3 {
+		return "aoi must contain at least 3 coordinates"
+	}
+	if len(area) > MaxSearchPolygonCoordinates {
+		return "aoi must contain no more than 256 coordinates"
+	}
+	for _, point := range area {
+		if math.IsNaN(point.Lon) || math.IsNaN(point.Lat) || point.Lon < MinLongitude || point.Lon > MaxLongitude || point.Lat < MinLatitude || point.Lat > MaxLatitude {
+			return "aoi contains an invalid coordinate"
+		}
+	}
+	return ""
 }

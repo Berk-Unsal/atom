@@ -74,6 +74,7 @@ The selected `urban_short_range` model uses deterministic height-aware footprint
 - Single-sector optimization performs a deterministic azimuth sweep.
 - Network evaluation scores two to eight selected cells using coverage, unique demand, and overlap.
 - Network optimization coordinates selected-cell azimuths using selected objectives/weights, optional minimum coverage/demand and maximum-overlap constraints, feasibility violations, and an explained Pareto frontier. Tilt, power, and site selection are not silently adjusted.
+- Optionally report network KPIs inside one drawn area of interest: served demand, residential buildings served and overlap inside the area appear beside the network-wide values in Results and reports. The area scopes reporting only; objectives, scores and the evaluated network are unchanged.
 - Results → Solutions plots the retained Pareto frontier on two selectable objectives (or the optimization score), marking Recommended with a diamond and Selected with a ring. Choosing a point by pointer or keyboard inspects that solution without an RF request; a table lists every plotted solution, and the list shows the top five until you ask for all.
 
 ## Batch Experiments

@@ -2566,6 +2566,19 @@ test("explores retained Pareto alternatives with keyboard score help and no hidd
   await expect(scoreDetails).not.toHaveAttribute("open");
   await expect(actionsDetails).not.toHaveAttribute("open");
   await actionsSummary.focus();
+  // #111: the trade-off chart sits between the help and the inspected solution, with one tab stop per control.
+  const chart = page.getByRole("figure", { name: "Trade-off between two objectives" });
+  await page.keyboard.press("Tab");
+  await expect(chart.getByRole("combobox", { name: "Horizontal axis" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(chart.getByRole("combobox", { name: "Vertical axis" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  const focusedPoint = page.locator(":focus");
+  await expect(focusedPoint).toHaveAttribute("aria-label", /^Solution #2:.*selected/);
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator(":focus")).toHaveAttribute("aria-label", /^Solution #\d+:/);
+  await page.keyboard.press("Tab");
+  await expect(chart.getByText("Plotted solutions as a table")).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(scoreSummary).toBeFocused();
   await page.keyboard.press("Enter");

@@ -10296,3 +10296,32 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 .candidate-prerequisites small { color: var(--muted); }
 .candidate-cell-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .candidate-cell-actions .panel-primary-action { flex: 1 1 auto; }
+
+/* #111: Pareto trade-off scatter. Identity is shape + label, never color alone. */
+.pareto-tradeoff-chart { display: grid; gap: var(--space-2); margin: 0; padding: var(--space-3) 0; border-top: 1px solid var(--line); }
+.pareto-tradeoff-title { color: var(--ink, inherit); font-size: var(--text-label); font-weight: var(--weight-label); }
+.pareto-tradeoff-axes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.pareto-tradeoff-axes label { display: grid; gap: 2px; min-width: 0; color: var(--muted); font-size: var(--text-meta); }
+.pareto-tradeoff-axes select { min-width: 0; }
+.pareto-tradeoff-plot { width: 100%; height: auto; overflow: visible; }
+.pareto-tradeoff-grid line { stroke: var(--line); stroke-width: 1; }
+.pareto-tradeoff-grid .pareto-tradeoff-baseline { stroke: var(--muted); }
+.pareto-tradeoff-grid text { fill: var(--muted); font-size: 9px; }
+.pareto-tradeoff-grid .pareto-tradeoff-axis-title { font-size: 10px; }
+.pareto-tradeoff-point { cursor: pointer; outline: none; }
+.pareto-tradeoff-hit { fill: transparent; }
+.pareto-tradeoff-mark { fill: var(--muted); stroke: var(--surface-raised, #ffffff); stroke-width: 2; }
+.pareto-tradeoff-point.recommended .pareto-tradeoff-mark { fill: var(--ui-warning, var(--amber)); }
+.pareto-tradeoff-ring { fill: none; stroke: var(--ui-accent, var(--teal)); stroke-width: 2; }
+.pareto-tradeoff-point.focused .pareto-tradeoff-hit,
+.pareto-tradeoff-point:focus-visible .pareto-tradeoff-hit { stroke: var(--ui-focus, var(--focus, var(--teal))); stroke-width: 2; stroke-dasharray: 3 2; }
+.pareto-tradeoff-label { fill: var(--ink, currentColor); font-size: 9px; font-weight: 600; paint-order: stroke; stroke: var(--surface-raised, #ffffff); stroke-width: 3px; }
+.pareto-tradeoff-readout { min-height: 2.6em; margin: 0; color: var(--muted); font-size: var(--text-meta); }
+.pareto-tradeoff-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: var(--text-meta); }
+.pareto-tradeoff-legend li { display: inline-flex; align-items: center; gap: var(--space-1); }
+.pareto-tradeoff-legend .legend-mark { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.pareto-tradeoff-legend .legend-mark.recommended { border-radius: 1px; background: var(--ui-warning, var(--amber)); transform: rotate(45deg); }
+.pareto-tradeoff-legend .legend-mark.selected { background: transparent; box-shadow: inset 0 0 0 2px var(--ui-accent, var(--teal)); }
+.pareto-tradeoff-table table { width: 100%; border-collapse: collapse; font-size: var(--text-meta); }
+.pareto-tradeoff-table th, .pareto-tradeoff-table td { padding: 2px var(--space-1); border-bottom: 1px solid var(--line); text-align: left; }
+.pareto-list-toggle { justify-self: start; }

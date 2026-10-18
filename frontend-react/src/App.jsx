@@ -60,6 +60,8 @@ import { buildComparisonSources } from "./utils/comparisonSources.js";
 import ResultCompareView from "./components/ResultCompareView.jsx";
 import CandidateCellAction from "./components/CandidateCellAction.jsx";
 import { candidatePrerequisites } from "./utils/candidatePrerequisites.js";
+import { paretoObjectiveValue, readOptimizationRawMetric } from "./utils/paretoChart.js";
+import ParetoTradeoffChart from "./components/ParetoTradeoffChart.jsx";
 import { canonicalSerialize } from "./domain/serialization.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { fitTargetsForCells } from "./utils/mapFit.js";
@@ -4980,8 +4982,11 @@ function formatSignedNumber(value, digits = 0) {
   return `${prefix}${formatNumber(numeric, digits)}`;
 }
 
+const PARETO_LIST_PREVIEW = 5;
+
 function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured, draftOptimizationSource, draftSolutionIds, onApplySolution, onExplainCell, onSelectSolution, paretoComparison, recommendedSolutionId, resultContext, selectedSolutionId, solutions }) {
   const [applyTarget, setApplyTarget] = useState(null);
+  const [showAllSolutions, setShowAllSolutions] = useState(false);
   if (!solutions?.length) {
     return (
       <AnalysisEmptyState
@@ -4998,6 +5003,10 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
   );
   const selectedSolution = solutions[selectedIndex];
   const showRadioQuality = solutions.every((solution) => isRadioQualityEvaluated(solution.stats));
+  // The list shows the top-ranked solutions (plus the inspected one) until the user asks for all of them.
+  const listedSolutions = showAllSolutions || solutions.length <= PARETO_LIST_PREVIEW
+    ? solutions.map((solution, index) => ({ solution, index }))
+    : solutions.map((solution, index) => ({ solution, index })).filter(({ solution, index }) => index < PARETO_LIST_PREVIEW || String(solution.id) === String(selectedSolutionId));
   return (
     <section className="pareto-explorer" aria-label="Pareto alternative solutions">
       <div className="pareto-explorer-heading">
@@ -5021,6 +5030,15 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
         <p><strong>Selected</strong><span>Solution currently being inspected.</span></p>
         <p><strong>Pareto</strong><span>Non-dominated alternatives.</span></p>
       </div>
+      {solutions.length > 1 ? (
+        <ParetoTradeoffChart
+          onSelectSolution={onSelectSolution}
+          radioQualityEvaluated={showRadioQuality}
+          recommendedSolutionId={recommendedSolutionId}
+          selectedSolutionId={selectedSolutionId}
+          solutions={solutions}
+        />
+      ) : null}
       <ParetoSolutionDetail
         baseline={baseline}
         cellExplanation={cellExplanation}
@@ -5034,7 +5052,7 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
         solution={selectedSolution}
       />
       <div className="pareto-solution-list" aria-label="Retained Pareto solutions">
-        {solutions.map((solution, index) => {
+        {listedSolutions.map(({ solution, index }) => {
           const solutionID = String(solution.id);
           const isSelected = solutionID === String(selectedSolutionId);
           const isRecommended = solutionID === String(recommendedSolutionId);
@@ -5071,6 +5089,11 @@ function ParetoSolutionsPanel({ baseline, cellExplanation, constraintsConfigured
           );
         })}
       </div>
+      {solutions.length > PARETO_LIST_PREVIEW ? (
+        <button type="button" className="scenario-text-button pareto-list-toggle" aria-expanded={showAllSolutions} onClick={() => setShowAllSolutions((current) => !current)}>
+          {showAllSolutions ? `Show the top ${PARETO_LIST_PREVIEW} solutions` : `Show all ${solutions.length} solutions`}
+        </button>
+      ) : null}
       <ApplySolutionDialog
         open={Boolean(applyTarget)}
         draftSource={draftOptimizationSource}
@@ -5448,26 +5471,8 @@ function formatPercent(value) {
 }
 
 function formatParetoObjectivePercent(stats, id) {
-  const objectiveID = id === "propagation_reach" ? "coverage" : id;
-  const objectiveStatus = stats?.objective_status ?? stats?.objectiveStatus ?? {};
-  if (objectiveStatus?.[objectiveID]?.available === false) return UNAVAILABLE_VALUE;
-  const utilities = stats?.objectives ?? stats?.objectives_normalized ?? {};
-  const raw = stats?.raw_metrics ?? stats?.rawMetrics ?? {};
-  if (id === "overlap") {
-    const rawRatio = readOptimizationRawMetric(raw, "overlap_ratio", "overlapRatio");
-    if (rawRatio !== undefined) return formatPercent(rawRatio);
-    const utilityValue = utilities.overlap;
-    if (utilityValue === null || utilityValue === undefined || utilityValue === "") return UNAVAILABLE_VALUE;
-    const utility = Number(utilityValue);
-    return Number.isFinite(utility) ? formatPercent(1 - utility) : UNAVAILABLE_VALUE;
-  }
-  if (id === "radio_quality") {
-    const rawFraction = readOptimizationRawMetric(raw, "radio_quality_serviceable_fraction", "radioQualityServiceableFraction");
-    if (rawFraction !== undefined) return formatPercent(rawFraction);
-  }
-  const utilityValue = utilities[objectiveID];
-  if (utilityValue === null || utilityValue === undefined || utilityValue === "") return UNAVAILABLE_VALUE;
-  return formatPercent(utilityValue);
+  const value = paretoObjectiveValue(stats, id);
+  return value === null ? UNAVAILABLE_VALUE : formatPercent(value);
 }
 
 function hasParetoSolutionData(solution) {
@@ -5582,16 +5587,6 @@ function formatParetoTradeoffDelta(metric, key) {
   if (!metric?.available || !Number.isFinite(Number(metric.absolute_delta))) return UNAVAILABLE_VALUE;
   if (key === "score") return `${formatSignedNumber(metric.absolute_delta, 1)} points`;
   return `${formatSignedNumber(metric.absolute_delta * 100, 1)} pp`;
-}
-
-function readOptimizationRawMetric(raw, ...keys) {
-  for (const key of keys) {
-    const value = raw?.[key];
-    if (value === null || value === undefined || value === "") continue;
-    const numeric = Number(value);
-    if (Number.isFinite(numeric)) return numeric;
-  }
-  return undefined;
 }
 
 function DataPanel({

@@ -14,8 +14,9 @@ vi.mock("./utils/apiClient.js", () => ({
 }));
 
 vi.mock("./components/MapCanvas.jsx", () => ({
-  default: ({ fitRequest, onFinishAreaSelection, onSelectMapCell, onSelectTower, towers = [] }) => (
+  default: ({ fitRequest, onFinishAreaSelection, onPlaceCell, onSelectMapCell, onSelectTower, towers = [] }) => (
     <div data-testid="map-canvas" data-fit-request={JSON.stringify(fitRequest ?? null)}>
+      <button type="button" aria-label="Place at mock map point" onClick={() => onPlaceCell?.([32.86, 39.925])} />
       <button
         type="button"
         aria-label="Finish mock area around all cells"
@@ -1207,6 +1208,64 @@ describe("App planning workflow", () => {
     expect(list.querySelectorAll(".pareto-solution-card")).toHaveLength(7);
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
+
+  it("places a three-sector site whose Cells move together and stay ordinary Cells in requests", async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    openWorkspaceTool("Inventory");
+    expect(screen.getByRole("textbox", { name: "Site sector azimuths (°)" })).toHaveValue("0, 120, 240");
+    fireEvent.click(screen.getByRole("button", { name: "Place site" }));
+    fireEvent.click(screen.getByRole("button", { name: "Place at mock map point" }));
+
+    let editor = await screen.findByRole("region", { name: /^Edit Cell manual-/ });
+    const site = within(editor).getByRole("region", { name: "Site group" });
+    expect(site).toHaveTextContent("Site group · 3 co-located Cells");
+    expect(site).toHaveTextContent(/no claim about a physical site’s feasibility, ownership, permitting or cost/);
+    const memberIds = site.textContent.match(/manual-\d+/g).filter((id, index, ids) => ids.indexOf(id) === index);
+    expect(memberIds).toHaveLength(3);
+
+    fireEvent.change(within(editor).getByRole("spinbutton", { name: /Longitude/ }), { target: { value: "32.87" } });
+    fireEvent.click(screen.getByRole("button", { name: "Back to Inventory" }));
+    openInventoryCell(memberIds[2]);
+    editor = screen.getByRole("region", { name: `Edit Cell ${memberIds[2]}` });
+    expect(within(editor).getByRole("spinbutton", { name: /Longitude/ })).toHaveValue(32.87);
+
+    const power = within(editor).getByRole("spinbutton", { name: /Conducted TX power/ });
+    fireEvent.change(power, { target: { value: "37" } });
+    fireEvent.click(screen.getByRole("button", { name: "Back to Inventory" }));
+    openInventoryCell(memberIds[0]);
+    expect(within(screen.getByRole("region", { name: `Edit Cell ${memberIds[0]}` })).getByRole("spinbutton", { name: /Conducted TX power/ })).not.toHaveValue(37);
+    fireEvent.click(screen.getByRole("button", { name: "Back to Inventory" }));
+    openInventoryCell(memberIds[2]);
+    fireEvent.click(screen.getByRole("button", { name: "Apply this RF profile to the other 2 Cells" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to Inventory" }));
+    openInventoryCell(memberIds[0]);
+    expect(within(screen.getByRole("region", { name: `Edit Cell ${memberIds[0]}` })).getByRole("spinbutton", { name: /Conducted TX power/ })).toHaveValue(37);
+
+    openWorkspaceTool("Setup");
+    // Network mode starts from the active Cell (the first member); add the other two sectors.
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    await screen.findByRole("button", { name: "Network mode, 1 selected" });
+    fireEvent.click(screen.getByRole("button", { name: `Select map tower ${memberIds[1]}` }));
+    fireEvent.click(screen.getByRole("button", { name: `Select map tower ${memberIds[2]}` }));
+    await screen.findByRole("button", { name: "Network mode, 3 selected" });
+    const evaluate = screen.getByRole("button", { name: "Evaluate Network", exact: true });
+    await waitFor(() => expect(evaluate).toBeEnabled());
+    fireEvent.click(evaluate);
+    await waitFor(() => expect(api.postJSON.mock.calls.some(([path]) => path === "/api/evaluate-network")).toBe(true));
+    const request = api.postJSON.mock.calls.find(([path]) => path === "/api/evaluate-network")[1];
+    const siteTowers = request.towers.filter((tower) => memberIds.includes(tower.id));
+    expect(siteTowers).toHaveLength(3);
+    expect(siteTowers.map((tower) => tower.azimuth).sort((left, right) => left - right)).toEqual([0, 120, 240]);
+    expect(siteTowers.every((tower) => tower.tower_lon === 32.87)).toBe(true);
+    expect(JSON.stringify(request)).not.toMatch(/siteGroup|site_group|sectorAzimuth/);
+
+    openWorkspaceTool("Inventory");
+    // With Cells selected, Inventory opens on its Network scope, which lists them directly.
+    if (!screen.queryByRole("region", { name: `Edit Cell ${memberIds[0]}` })) fireEvent.click(screen.getByRole("button", { name: `Edit Cell ${memberIds[0]}` }));
+    fireEvent.click(screen.getByRole("button", { name: "Ungroup site" }));
+    expect(within(screen.getByRole("region", { name: `Edit Cell ${memberIds[0]}` })).queryByRole("region", { name: "Site group" })).not.toBeInTheDocument();
+  }, 20_000);
 
   it("exports a local review package only for a saved Version, without an RF request", async () => {
     const downloads = [];

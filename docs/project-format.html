@@ -90,6 +90,9 @@ Format page contents">
       <li><a href="#file-versions-and-compatibility"
       id="toc-file-versions-and-compatibility">File versions and
       compatibility</a></li>
+      <li><a href="#site-groups-optional-cell-fields"
+      id="toc-site-groups-optional-cell-fields">Site groups (optional
+      Cell fields)</a></li>
       <li><a href="#lossless-columns" id="toc-lossless-columns">Lossless
       columns</a></li>
       <li><a href="#identity-and-provenance"
@@ -136,6 +139,24 @@ a version with v3 support to exchange new files.</p>
 arrays remain arrays. Ordinary workspace/API GeoJSON is unchanged;
 reconstruction restores the complete feature array, order, properties,
 geometry and number values.</p>
+<h2 id="site-groups-optional-cell-fields">Site groups (optional Cell
+fields)</h2>
+<p>A Cell placed with <strong>Place site</strong> carries two optional
+fields in the plan inventory: <code>siteGroupId</code> (a project-local
+group name such as <code>site-1</code>) and
+<code>sectorAzimuthDeg</code> (the sector's default azimuth in degrees).
+In the domain inventory they are stored as <code>site_group_id</code>
+and <code>sector_azimuth_deg</code>. Both fields are written only for
+grouped Cells, so files without groups are unchanged and still import as
+before; no file version change is involved.</p>
+<p>The group only keeps co-located Cells together for placing and
+moving. Every member is an ordinary Cell in every request: its azimuth
+comes from an explicit per-Cell azimuth when set, otherwise from
+<code>sectorAzimuthDeg</code>, otherwise from the plan azimuth, and no
+group field is sent to the API. Ungrouping removes
+<code>siteGroupId</code> and keeps each Cell's position and
+<code>sectorAzimuthDeg</code>. A group makes no claim about a physical
+site's feasibility, ownership, permitting or cost.</p>
 <h2 id="lossless-columns">Lossless columns</h2>
 <p>A column represents N values. Tags have these exact JSON forms:</p>
 <table>

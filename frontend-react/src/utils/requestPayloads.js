@@ -418,5 +418,8 @@ export function buildMeasurementPayload(towers, settings, samples, networkOptimi
 export function azimuthForTower(tower, settings, networkAzimuths = {}) {
   const explicit = networkAzimuths[tower.id] ?? networkAzimuths[String(tower.id)]
     ?? networkAzimuths[String(tower.cellId ?? "")];
-  return Number.isFinite(Number(explicit)) ? Number(explicit) : settings.azimuthDeg;
+  if (Number.isFinite(Number(explicit)) && explicit !== null && explicit !== "") return Number(explicit);
+  // A Cell placed as a site sector starts from its sector azimuth; other Cells use the plan azimuth.
+  const sector = tower.sectorAzimuthDeg;
+  return sector !== null && sector !== undefined && Number.isFinite(Number(sector)) ? Number(sector) : settings.azimuthDeg;
 }

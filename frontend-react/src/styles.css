@@ -10284,3 +10284,15 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 
 /* #109: CSV Measurement Validation is a first-class Review → Data section. */
 .data-section-status { flex: 0 0 auto; padding: 2px var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-small); color: var(--muted); font-size: var(--text-meta); white-space: nowrap; }
+
+/* #108: candidate Cell recommendation is an explicit network action with visible prerequisites. */
+.candidate-cell-action { display: grid; gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
+.candidate-prerequisites { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.candidate-prerequisites li { display: flex; align-items: flex-start; gap: var(--space-2); font-size: var(--text-meta); }
+.candidate-prerequisites li > svg { flex: 0 0 auto; margin-top: 2px; }
+.candidate-prerequisites li.met > svg { color: var(--ui-accent, var(--teal)); }
+.candidate-prerequisites li.unmet > svg { color: var(--muted); }
+.candidate-prerequisites li > span { display: grid; gap: 2px; min-width: 0; }
+.candidate-prerequisites small { color: var(--muted); }
+.candidate-cell-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.candidate-cell-actions .panel-primary-action { flex: 1 1 auto; }

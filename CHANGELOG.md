@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Expose candidate Cell recommendation as an explicit Find an additional Cell action in Network mode (Propagation and Results → Candidates) that lists its prerequisites before you run it. Candidates keeps its own Results tab beside Solutions after a Pareto optimization, and Draw search area keeps the selected Cells instead of replacing them with the eight nearest. Candidate scoring and the request are unchanged.
 - Compare any two states from Results → Compare, even while a network result is shown: pick the current result, the optimization baseline or recommended solution, the inspected Pareto alternative, or any saved Version, and see KPI deltas, input differences and an A/B map switch in one view. Pairs with a different dataset or model version show an incompatibility notice instead of deltas, Baseline vs Recommended stays the default after an optimization, and Plan → Scenarios links to the same view.
 - Explain normalized network scores, Pareto trade-offs, local reranking and explicit apply/search actions with accessible Results help.
 - Define OpenAPI response schemas for readiness and batch experiment discovery, with shared response-contract fixtures checked against the existing handlers.

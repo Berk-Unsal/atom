@@ -10332,3 +10332,12 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 .first-run-card h3 { margin: 0; font-size: var(--text-label); }
 .first-run-card p { margin: 0; }
 .first-run-card-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* #113: area-of-interest KPIs. */
+.area-of-interest-control { display: grid; gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
+.area-of-interest-toggle { display: flex; align-items: center; gap: var(--space-2); font-weight: var(--weight-label); }
+.area-of-interest-control .selection-map-action { justify-self: start; }
+.area-of-interest-kpis { display: grid; gap: var(--space-2); margin-top: var(--space-3); }
+.area-of-interest-kpis table { width: 100%; border-collapse: collapse; font-size: var(--text-meta); }
+.area-of-interest-kpis th, .area-of-interest-kpis td { padding: var(--space-1); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.area-of-interest-kpis thead th { color: var(--muted); font-weight: var(--weight-label); }

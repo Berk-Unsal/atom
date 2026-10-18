@@ -2,6 +2,7 @@ package raytracer
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -42,6 +43,7 @@ type NetworkOptimizationRequestInput struct {
 	MaxUniqueEvaluations int                 `json:"max_unique_evaluations"`
 	MaxExpandedStates    int                 `json:"max_expanded_states"`
 	MaxSearchRounds      int                 `json:"max_search_rounds"`
+	AreaOfInterest       [][]float64         `json:"aoi"`
 }
 
 type InterferenceRequestInput struct {
@@ -153,7 +155,24 @@ func (input NetworkOptimizationRequestInput) ToRequest() NetworkOptimizationRequ
 		MaxUniqueEvaluations: input.MaxUniqueEvaluations,
 		MaxExpandedStates:    input.MaxExpandedStates,
 		MaxSearchRounds:      input.MaxSearchRounds,
+		AreaOfInterest:       areaOfInterestPoints(input.AreaOfInterest),
 	}
+}
+
+// areaOfInterestPoints keeps malformed coordinates as NaN so validation rejects them instead of dropping them.
+func areaOfInterestPoints(coordinates [][]float64) []Point {
+	if len(coordinates) == 0 {
+		return nil
+	}
+	points := make([]Point, 0, len(coordinates))
+	for _, coordinate := range coordinates {
+		if len(coordinate) < 2 {
+			points = append(points, Point{Lon: math.NaN(), Lat: math.NaN()})
+			continue
+		}
+		points = append(points, Point{Lon: coordinate[0], Lat: coordinate[1]})
+	}
+	return points
 }
 
 func (input InterferenceRequestInput) ToRequest() InterferenceRequest {

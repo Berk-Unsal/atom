@@ -61,6 +61,7 @@ import { buildComparisonSources, COMPARISON_METRICS, summaryFromRun } from "./ut
 import ResultCompareView from "./components/ResultCompareView.jsx";
 import CandidateCellAction from "./components/CandidateCellAction.jsx";
 import FirstRunCard from "./components/FirstRunCard.jsx";
+import { AreaOfInterestControl, AreaOfInterestKpis } from "./components/AreaOfInterestPanels.jsx";
 import { isFirstRunWorkspace, readFirstRunDismissed, SAMPLE_PROJECT_TEXT, sampleNetworkSelection, writeFirstRunDismissed } from "./utils/sampleProject.js";
 import { candidatePrerequisites } from "./utils/candidatePrerequisites.js";
 import { paretoObjectiveValue, readOptimizationRawMetric } from "./utils/paretoChart.js";
@@ -135,6 +136,7 @@ import {
   buildCoverageSurfaceSourceKey,
   buildBuildingEntryAnalysisPayload,
   buildBuildingEntryAnalysisSourceKey,
+  normalizeAreaOfInterest,
 } from "./utils/requestPayloads.js";
 import { buildComparisonBarChartSvg, buildComparisonSlopeChartSvg, getComparisonMetrics } from "./utils/comparisonCharts.js";
 
@@ -232,7 +234,13 @@ export default function App() {
   const [isDrawingSelection, setIsDrawingSelection] = useState(false);
   // "cells" selects up to eight Cells inside the area; "search" only records a candidate search area.
   const [areaSelectionPurpose, setAreaSelectionPurpose] = useState("cells");
+  // When on, network runs also report KPIs inside the drawn area (reporting only).
+  const [areaOfInterestEnabled, setAreaOfInterestEnabled] = useState(false);
   const [selectionPolygon, setSelectionPolygon] = useState([]);
+  const areaOfInterest = useMemo(
+    () => (areaOfInterestEnabled ? normalizeAreaOfInterest(selectionPolygon) : null),
+    [areaOfInterestEnabled, selectionPolygon],
+  );
   const [selectionNotice, setSelectionNotice] = useState("");
   const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
   const { themePreference, resolvedTheme, setThemePreference } = useTheme();
@@ -634,6 +642,7 @@ export default function App() {
 		setSettings(restoredSettings);
     if (plan.planningMode) setPlanningMode(plan.planningMode);
     if (Array.isArray(plan.selectionPolygon)) setSelectionPolygon(plan.selectionPolygon);
+    setAreaOfInterestEnabled(plan.areaOfInterestEnabled === true);
 		const restoredNetworkTowerIds = normalizeNetworkSelection(plan.selectedNetworkTowerIds, restoredInventory);
 		setSelectedNetworkTowerIds(restoredNetworkTowerIds);
 		setNetworkAzimuths(Object.fromEntries(
@@ -738,6 +747,7 @@ export default function App() {
           optimizationConfig,
           selectedTowerId: selectedTower?.id ?? null,
           selectionPolygon,
+          areaOfInterestEnabled,
           settings,
 			inventory: towers,
         },
@@ -748,6 +758,7 @@ export default function App() {
     layerVisibility,
     planningMode,
     activeProject?.id,
+    areaOfInterestEnabled,
     saveProjectDraft,
     selectedNetworkTowerIds,
     networkAzimuths,
@@ -1214,7 +1225,7 @@ export default function App() {
     setError("");
     clearCellExplanation();
     clearInterferenceAnalysis();
-    const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig);
+    const networkRequest = buildNetworkOptimizationPayload(selectedNetworkTowers, settings, networkAzimuths, optimizationConfig, areaOfInterest);
     const operation = { startedAt: performance.now(), scope: describeOptimizationScope(networkRequest), signal: request.signal };
     const clearOperation = () => setNetworkOptimizationOperation((current) => current === operation ? null : current);
     setNetworkOptimizationOperation(operation);
@@ -1311,7 +1322,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [appMeta, beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requestMapFit, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [appMeta, areaOfInterest, beginDurableRun, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, finishDurableRun, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requestMapFit, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const evaluateNetwork = useCallback(async () => {
     const priorityError = optimizationConfigValidationMessage(optimizationConfig);
@@ -1336,7 +1347,7 @@ export default function App() {
     clearCellExplanation();
     clearInterferenceAnalysis();
     try {
-      const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths, optimizationConfig);
+      const networkRequest = buildNetworkOptimizationPayload(selected, settings, networkAzimuths, optimizationConfig, areaOfInterest);
       const payload = await workflow.root(
         "/api/evaluate-network",
         networkRequest,
@@ -1376,7 +1387,7 @@ export default function App() {
         request.finish();
       }
     }
-  }, [appMeta, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requestMapFit, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
+  }, [appMeta, areaOfInterest, clearCellExplanation, clearCoverageSurface, clearInterferenceAnalysis, markCoverageSurfaceAvailable, networkAzimuths, optimizationConfig, requestMapFit, requests, selectedNetworkTowerIds, settings, simulateRaysForSettings, towers]);
 
   const explainNetworkCell = useCallback(async (solutionID, cellID) => {
     const response = displayedNetworkOptimization;
@@ -2097,7 +2108,8 @@ export default function App() {
       return;
     }
     if (areaSelectionPurpose === "search") {
-      // A search area never replaces the selected Cells and is not an RF input of the current results.
+      // A search area never replaces the selected Cells. It is an RF request input only as an area of interest.
+      if (areaOfInterestEnabled) invalidatePlanResults();
       setAreaSelectionPurpose("cells");
       setIsDrawingSelection(false);
       setSelectionPolygon(finalPolygon);
@@ -2127,7 +2139,7 @@ export default function App() {
     setSelectionPolygon(finalPolygon);
     setSelectionNotice(describeAreaSelection(inside.length, selected.length, MAX_NETWORK_CELLS));
     requestMapFit(selected);
-  }, [areaSelectionPurpose, invalidatePlanResults, requestMapFit, selectedNetworkTowerIds.length, selectionPolygon, towers]);
+  }, [areaOfInterestEnabled, areaSelectionPurpose, invalidatePlanResults, requestMapFit, selectedNetworkTowerIds.length, selectionPolygon, towers]);
 
   const addSelectionPolygonPoint = useCallback((coordinate) => {
     setSelectionPolygon((current) => [...current, coordinate]);
@@ -2696,13 +2708,14 @@ export default function App() {
     String(revision.scenario_revision_id) === String(activeRevisionId)
   )) ?? null;
   const restorePlan = useMemo(() => ({
+    areaOfInterest,
     planningMode,
     selectedTower,
     selectedNetworkTowers,
     settings,
     networkAzimuths,
     optimizationConfig,
-  }), [networkAzimuths, optimizationConfig, planningMode, selectedNetworkTowers, selectedTower, settings]);
+  }), [areaOfInterest, networkAzimuths, optimizationConfig, planningMode, selectedNetworkTowers, selectedTower, settings]);
   const restorableRun = useMemo(() => {
     if (currentResultRun || !workspaceRestored || !appMeta) return { run: null, reason: "" };
     return findRestorableRun({
@@ -2924,6 +2937,7 @@ export default function App() {
         networkAzimuths,
         optimizationConfig,
       selectionPolygon,
+      areaOfInterestEnabled,
       layerVisibility,
       ...overrides.plan,
     },
@@ -2933,6 +2947,7 @@ export default function App() {
         settings,
         overrides.plan?.networkAzimuths ?? networkAzimuths,
         overrides.plan?.optimizationConfig ?? optimizationConfig,
+        areaOfInterest,
       )
       : selectedTower ? buildSimulationPayload(selectedTower, settings) : null,
     summary: {
@@ -2962,6 +2977,8 @@ export default function App() {
     requiresRerun: overrides.requiresRerun ?? Boolean(planDirty),
   }), [
     activeResultsView,
+    areaOfInterest,
+    areaOfInterestEnabled,
 	    appMeta,
 	    buildingEntrySourceKey,
 	    currentBuildingEntryAnalysis,
@@ -3018,6 +3035,7 @@ export default function App() {
 
   const draftOptimizationSource = useMemo(() => {
     const source = resolveDraftOptimizationSource({
+      areaOfInterest,
       run: currentResultRun,
       planningMode,
       selectedTowers: selectedNetworkTowers,
@@ -3030,7 +3048,7 @@ export default function App() {
       scenarioName: scenarioSource?.name ?? defaultScenarioName({ planningMode: "network", scenarios: activeProject?.scenarios }),
       versionLabel: scenarioSource ? `Version ${Number(scenarioSource.domain?.revision ?? 0) + 1}` : "Version 1",
     };
-  }, [activeProject?.scenarios, currentResultRun, networkAzimuths, planningMode, scenarioSource, selectedNetworkTowers, settings]);
+  }, [activeProject?.scenarios, areaOfInterest, currentResultRun, networkAzimuths, planningMode, scenarioSource, selectedNetworkTowers, settings]);
 
   const draftSolutionIds = useMemo(() => new Set(
     rankedParetoSolutions
@@ -4024,6 +4042,15 @@ export default function App() {
             <>
               {researchProfileActive ? (
                 <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. Radio-quality output is UNSUPPORTED at this frequency.</p>
+              ) : null}
+              {planningMode === "network" ? (
+                <AreaOfInterestControl
+                  enabled={areaOfInterestEnabled}
+                  hasArea={selectionPolygon.length >= 3 && !isDrawingSelection}
+                  isDrawing={isDrawingSearchArea}
+                  onChange={(enabled) => { setAreaOfInterestEnabled(enabled); invalidatePlanResults(); }}
+                  onDrawArea={startSearchAreaSelection}
+                />
               ) : null}
               {planningMode === "network" ? (
                 <CandidateCellAction
@@ -5557,6 +5584,7 @@ function NetworkOptimizationPanel({ comparison, kind, onViewComparison, onViewSo
         <MetricRow label="Overlap ratio" value={overlapRatio} />
         {radioQualityValue !== null ? <MetricRow label="Radio quality" value={radioQualityValue} /> : null}
       </div>
+      <AreaOfInterestKpis stats={stats} />
       {isSingleEvaluation ? (
         <p className="data-note">This evaluates one configuration. Run network optimization to inspect Pareto alternatives.</p>
       ) : frontier.length > 0 ? (

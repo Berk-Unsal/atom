@@ -93,6 +93,9 @@ type NetworkOptimizationRequest struct {
 	MaxUniqueEvaluations int                   `json:"max_unique_evaluations,omitempty"`
 	MaxExpandedStates    int                   `json:"max_expanded_states,omitempty"`
 	MaxSearchRounds      int                   `json:"max_search_rounds,omitempty"`
+	// AreaOfInterest scopes reported KPIs only. It never changes the evaluated domain, scoring or the
+	// scenario fingerprint.
+	AreaOfInterest []Point `json:"-"`
 }
 
 type OptimizationObjective struct {
@@ -167,6 +170,20 @@ type NetworkOptimizationStats struct {
 	Score                      float64                        `json:"score"`
 	ObjectiveBreakdown         OptimizationObjectiveBreakdown `json:"objective_breakdown"`
 	ObjectiveStatus            OptimizationObjectiveStatusMap `json:"objective_status,omitempty"`
+	AreaOfInterest             *AreaOfInterestStats           `json:"area_of_interest,omitempty"`
+}
+
+// AreaOfInterestStats is a subset aggregation of the same per-building results as the network-wide stats,
+// restricted to relevant buildings whose footprint centroid lies inside the requested area of interest.
+type AreaOfInterestStats struct {
+	ServedDemandWeight       float64 `json:"served_demand_weight"`
+	RelevantDemandWeight     float64 `json:"relevant_demand_weight"`
+	ResidentialCovered       int     `json:"residential_covered"`
+	RelevantResidentialTotal int     `json:"relevant_residential_total"`
+	OverlapBuildings         int     `json:"overlap_buildings"`
+	CoveredUnits             int     `json:"covered_units"`
+	OverlapRatio             float64 `json:"overlap_ratio"`
+	RelevantBuildings        int     `json:"relevant_buildings"`
 }
 
 // NetworkOptimizationCellConfiguration is the resolved configuration of one
@@ -1012,6 +1029,34 @@ func networkCoverageScoreBreakdownPreparedContext(ctx context.Context, req Netwo
 	}
 	stats.OverlapPenalty = float64(stats.OverlapBuildings) * NetworkOverlapPenaltyPerBuilding
 	stats.NetworkScore = stats.DemandScore + stats.ResidentialScore + stats.CoverageScore - stats.OverlapPenalty
+	if prepared.AreaOfInterestBuildings != nil {
+		area := AreaOfInterestStats{
+			RelevantDemandWeight:     prepared.AreaOfInterestDemandWeight,
+			RelevantResidentialTotal: prepared.AreaOfInterestResidential,
+			RelevantBuildings:        len(prepared.AreaOfInterestBuildings),
+		}
+		for _, buildingID := range coveredBuildingIDs {
+			if _, inside := prepared.AreaOfInterestBuildings[buildingID]; !inside {
+				continue
+			}
+			building := prepared.RelevantBuildings[buildingID]
+			if building == nil {
+				continue
+			}
+			area.CoveredUnits++
+			if _, relevant := prepared.RelevantDemandBuildings[buildingID]; relevant {
+				area.ServedDemandWeight += building.DemandWeight
+			}
+			if _, relevant := prepared.RelevantResidentialBuildings[buildingID]; relevant {
+				area.ResidentialCovered++
+			}
+			if servedCounts[buildingID] > 1 {
+				area.OverlapBuildings++
+			}
+		}
+		area.OverlapRatio = ratio01(float64(area.OverlapBuildings), float64(area.CoveredUnits))
+		stats.AreaOfInterest = &area
+	}
 	coveredUnits := len(coveredBuildingIDs)
 	overlapRatio := ratio01(float64(stats.OverlapBuildings), float64(coveredUnits))
 	stats.RawMetrics = OptimizationRawMetrics{

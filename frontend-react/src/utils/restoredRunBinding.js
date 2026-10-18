@@ -40,7 +40,7 @@ export function runMatchesPlan(run, plan = {}) {
   if (!run || run.status !== "succeeded") return false;
   const request = run.canonical_input_snapshot?.request;
   if (!request) return false;
-  const { planningMode, selectedTower = null, selectedNetworkTowers = [], settings = {}, networkAzimuths = {}, optimizationConfig = null } = plan;
+  const { planningMode, selectedTower = null, selectedNetworkTowers = [], settings = {}, networkAzimuths = {}, optimizationConfig = null, areaOfInterest = null } = plan;
   if (run.run_type === "simulation") {
     return planningMode === "single" && Boolean(selectedTower) && sameRequest(buildSimulationPayload(selectedTower, settings), request);
   }
@@ -49,7 +49,7 @@ export function runMatchesPlan(run, plan = {}) {
   if (Array.isArray(request.towers)) {
     if (planningMode !== "network" || selectedNetworkTowers.length === 0) return false;
     const startingAzimuths = sourceAzimuthsFromRequest(selectedNetworkTowers, request, networkAzimuths);
-    if (!sameRequest(buildNetworkOptimizationPayload(selectedNetworkTowers, settings, startingAzimuths, optimizationConfig), request)) return false;
+    if (!sameRequest(buildNetworkOptimizationPayload(selectedNetworkTowers, settings, startingAzimuths, optimizationConfig, areaOfInterest), request)) return false;
     return solutions.some((solution) => solutionMatchesDraft({ towers: solutionTowers(solution) }, selectedNetworkTowers, settings, networkAzimuths));
   }
   if (planningMode !== "single" || !selectedTower) return false;

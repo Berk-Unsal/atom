@@ -1208,6 +1208,61 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("reports KPIs inside a drawn area of interest beside network-wide values only when asked", async () => {
+    useNetworkFixture = true;
+    const area = { served_demand_weight: 120, relevant_demand_weight: 300, residential_covered: 4, relevant_residential_total: 10, overlap_buildings: 1, overlap_ratio: 0.2, covered_units: 5, relevant_buildings: 9 };
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, body, ...args) => {
+      if (path !== "/api/evaluate-network") return originalPost(path, body, ...args);
+      const payload = structuredClone(networkOptimizationPayload);
+      // As in the backend, every solution's stats come from the same aggregation and carry the area.
+      if (body.aoi) {
+        payload.stats.area_of_interest = area;
+        payload.pareto_frontier.forEach((solution) => { solution.stats.area_of_interest = area; });
+      }
+      return Promise.resolve(payload);
+    });
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+
+    openWorkspaceTool("Propagation");
+    let control = screen.getByRole("region", { name: "Area of interest" });
+    const toggle = within(control).getByRole("checkbox", { name: "Report KPIs inside the drawn area" });
+    expect(toggle).toBeDisabled();
+    fireEvent.click(within(control).getByRole("button", { name: "Draw area" }));
+    fireEvent.click(screen.getByRole("button", { name: "Finish mock area around all cells" }));
+    control = screen.getByRole("region", { name: "Area of interest" });
+    fireEvent.click(within(control).getByRole("checkbox", { name: "Report KPIs inside the drawn area" }));
+
+    const evaluate = screen.getByRole("button", { name: "Evaluate Network", exact: true });
+    await waitFor(() => expect(evaluate).toBeEnabled());
+    fireEvent.click(evaluate);
+    await waitFor(() => expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/evaluate-network")).toHaveLength(1));
+    const scopedRequest = api.postJSON.mock.calls.find(([path]) => path === "/api/evaluate-network")[1];
+    expect(scopedRequest.aoi).toEqual([[32.84, 39.91], [32.87, 39.91], [32.87, 39.93], [32.84, 39.93]]);
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    openWorkspaceTool("Results");
+    const kpis = await screen.findByRole("region", { name: "Area of interest KPIs" });
+    expect(kpis).toHaveTextContent("4 of 10");
+    expect(kpis).toHaveTextContent("40.0%");
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(within(screen.getByRole("region", { name: "Area of interest" })).getByRole("checkbox", { name: "Report KPIs inside the drawn area" }));
+    fireEvent.click(screen.getByRole("button", { name: "Evaluate Network", exact: true }));
+    await waitFor(() => expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/evaluate-network")).toHaveLength(2));
+    const networkRequest = api.postJSON.mock.calls.filter(([path]) => path === "/api/evaluate-network")[1][1];
+    expect(networkRequest).not.toHaveProperty("aoi");
+    const scopedWithoutArea = { ...scopedRequest };
+    delete scopedWithoutArea.aoi;
+    expect(networkRequest).toEqual(scopedWithoutArea);
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    openWorkspaceTool("Results");
+    expect(screen.queryByRole("region", { name: "Area of interest KPIs" })).not.toBeInTheDocument();
+  }, 20_000);
+
   it("finds an additional Cell before and after a network optimization without replacing the selection", async () => {
     useNetworkFixture = true;
     const recommendation = { recommendations: [{ id: "rec-1", cell_id: "103", marginal_network_score: 3.2, reason: "Adds unserved demand inside the area.", optimal_azimuth: 120, stats: { overlap_buildings: 1 } }], notes: [] };

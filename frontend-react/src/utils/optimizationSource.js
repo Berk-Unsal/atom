@@ -24,7 +24,7 @@ export function sourceAzimuthsFromRequest(selectedTowers = [], request = null, e
  * The plan is rebuilt with the Run's starting azimuths and optimization priorities; it is eligible only
  * when the rebuilt request is canonically identical to the request the Run retained.
  */
-export function resolveDraftOptimizationSource({ run, planningMode, selectedTowers = [], settings, networkAzimuths = {} } = {}) {
+export function resolveDraftOptimizationSource({ run, planningMode, selectedTowers = [], settings, networkAzimuths = {}, areaOfInterest = null } = {}) {
   if (!run || run.run_type !== "optimization" || run.status !== "succeeded") {
     return unavailable("This solution is not bound to a successful Optimization Run.");
   }
@@ -38,7 +38,7 @@ export function resolveDraftOptimizationSource({ run, planningMode, selectedTowe
   }
   const optimizationConfig = run.optimizer_contract ?? run.canonical_input_snapshot?.optimization ?? null;
   const sourceAzimuths = sourceAzimuthsFromRequest(selectedTowers, request, networkAzimuths);
-  const rebuilt = buildNetworkOptimizationPayload(selectedTowers, settings, sourceAzimuths, optimizationConfig);
+  const rebuilt = buildNetworkOptimizationPayload(selectedTowers, settings, sourceAzimuths, optimizationConfig, areaOfInterest);
   if (canonicalSerialize(rebuilt) !== canonicalSerialize(request)) {
     return unavailable("The plan changed after this optimization (Cells, RF settings or inventory), so its starting plan cannot be saved exactly. Run Optimize Network again to apply an alternative.");
   }

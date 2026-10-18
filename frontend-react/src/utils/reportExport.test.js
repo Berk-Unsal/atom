@@ -669,3 +669,26 @@ describe("readable report output outside A.T.O.M", () => {
     expect(markdown).not.toMatch(/<svg|<path/);
   });
 });
+
+describe("area-of-interest KPIs in reports", () => {
+  const area = { served_demand_weight: 120, relevant_demand_weight: 300, residential_covered: 4, relevant_residential_total: 10, overlap_buildings: 1, overlap_ratio: 0.2, covered_units: 5, relevant_buildings: 9 };
+  const withArea = () => {
+    const optimization = makeNetworkOptimization();
+    optimization.stats = { ...optimization.stats, area_of_interest: area };
+    optimization.pareto_frontier = optimization.pareto_frontier.map((solution) => ({ ...solution, stats: { ...solution.stats, area_of_interest: area } }));
+    return makeNetworkReport({ networkOptimization: optimization });
+  };
+
+  it("adds an inside-area table beside network-wide values in Markdown and HTML", () => {
+    const markdown = renderMarkdownReport(withArea());
+    expect(markdown).toContain("### Inside the area of interest");
+    expect(markdown).toContain("| Residential buildings served |");
+    expect(markdown).toContain("4 of 10");
+    expect(renderHtmlReport(withArea())).toContain("<h3>Inside the area of interest</h3>");
+  });
+
+  it("changes nothing when no area of interest was requested", () => {
+    const markdown = renderMarkdownReport(makeNetworkReport({ networkOptimization: makeNetworkOptimization() }));
+    expect(markdown).not.toContain("Inside the area of interest");
+  });
+});

@@ -525,6 +525,9 @@ func validateNetworkOptimizationRequest(req raytracer.NetworkOptimizationRequest
 	if validationError := raytracer.ValidateSimulationFeatureBudget(req.Rays, req.RadiusMeters); validationError != "" {
 		return validationError
 	}
+	if validationError := raytracer.ValidateAreaOfInterest(req.AreaOfInterest); validationError != "" {
+		return validationError
+	}
 	if req.FrequencyGHz <= 0 || req.FrequencyGHz > raytracer.MaxFrequencyGHz {
 		return "frequency_ghz must be between 0 and 300"
 	}

@@ -1102,6 +1102,61 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("finds an additional Cell before and after a network optimization without replacing the selection", async () => {
+    useNetworkFixture = true;
+    const recommendation = { recommendations: [{ id: "rec-1", cell_id: "103", marginal_network_score: 3.2, reason: "Adds unserved demand inside the area.", optimal_azimuth: 120, stats: { overlap_buildings: 1 } }], notes: [] };
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, ...args) => path === "/api/recommend-sites" ? Promise.resolve(recommendation) : originalPost(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+
+    openWorkspaceTool("Propagation");
+    let action = screen.getByRole("region", { name: "Find an additional Cell" });
+    expect(within(action).getByRole("list", { name: "Prerequisites" })).toHaveTextContent("Draw a search area on the map; your selected Cells stay as they are.");
+    expect(within(action).getByRole("button", { name: "Find an additional Cell" })).toBeDisabled();
+
+    fireEvent.click(within(action).getByRole("button", { name: "Draw search area" }));
+    fireEvent.click(screen.getByRole("button", { name: "Finish mock area around all cells" }));
+    openWorkspaceTool("Setup");
+    expect(screen.getByRole("button", { name: "Network mode, 2 selected" })).toBeInTheDocument();
+    expect(screen.getAllByText("Search area set. Your 2 selected Cells are unchanged.").length).toBeGreaterThan(0);
+
+    openWorkspaceTool("Propagation");
+    action = screen.getByRole("region", { name: "Find an additional Cell" });
+    fireEvent.click(within(action).getByRole("button", { name: "Find an additional Cell" }));
+    expect(await screen.findByRole("region", { name: "Candidate cell recommendations" })).toHaveTextContent("Cell 103");
+    expect(screen.getByRole("tab", { name: "Candidates" })).toHaveAttribute("aria-selected", "true");
+    const beforeOptimization = api.postJSON.mock.calls.filter(([path]) => path === "/api/recommend-sites");
+    expect(beforeOptimization).toHaveLength(1);
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+
+    openWorkspaceTool("Results");
+    expect(screen.getByRole("tab", { name: "Solutions" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "Candidates" }));
+    const panel = screen.getByRole("region", { name: "Candidate cell recommendations" });
+    fireEvent.click(within(panel).getByRole("button", { name: "Find an additional Cell" }));
+    await waitFor(() => expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/recommend-sites")).toHaveLength(2));
+    const fromResults = api.postJSON.mock.calls.filter(([path]) => path === "/api/recommend-sites")[1][1];
+    expect(fromResults.towers.map((tower) => [tower.id, tower.azimuth])).toEqual([["101", 20], ["102", 140]]);
+    expect(fromResults.search_polygon).toEqual([[32.84, 39.91], [32.87, 39.91], [32.87, 39.93], [32.84, 39.93]]);
+    expect(fromResults.max_results).toBe(5);
+
+    openWorkspaceTool("Propagation");
+    fireEvent.click(within(screen.getByRole("region", { name: "Find an additional Cell" })).getByRole("button", { name: "Find an additional Cell" }));
+    await waitFor(() => expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/recommend-sites")).toHaveLength(3));
+    expect(api.postJSON.mock.calls.filter(([path]) => path === "/api/recommend-sites")[2][1]).toEqual(fromResults);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Apply as scenario" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+    expect(await within(screen.getByRole("dialog", { name: "Project and scenarios" })).findByText(/Candidate 103/)).toBeInTheDocument();
+  });
+
   it("compares two saved Versions from Results while a network result is present, without RF requests", async () => {
     useNetworkFixture = true;
     render(<App />);

@@ -26,6 +26,7 @@ export default function ControlPanel({
   networkSelectionCount,
   isSelectingCellsOnMap = false,
   isDrawingSelection = false,
+  isDrawingSearchArea = false,
   planningMode,
   selectionNotice,
 }) {
@@ -130,7 +131,7 @@ export default function ControlPanel({
             </div>
             <p className="selection-minimum-note">Minimum 2 · Maximum {MAX_NETWORK_CELLS}</p>
             {isDrawingSelection ? (
-              <p className="selection-map-mode" role="status">Drawing selection area…</p>
+              <p className="selection-map-mode" role="status">{isDrawingSearchArea ? "Drawing search area…" : "Drawing selection area…"}</p>
             ) : isSelectingCellsOnMap ? (
               <p className="selection-map-mode" role="status">Selecting cells on map…</p>
             ) : (

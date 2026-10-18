@@ -658,6 +658,7 @@ export function MapToolbar({
   canInspectMapFocus = false,
   mapFocusIsInspected = false,
   isDrawingSelection,
+  drawAreaPurpose = "cells",
   isPlacingCell = false,
   isSelectingPathEndpoint = false,
   layerMenuOpen,
@@ -870,7 +871,7 @@ export function MapToolbar({
   );
 
   const currentInteractionLabel = specialMode === "draw-area"
-    ? "Draw area"
+    ? drawAreaPurpose === "search" ? "Draw search area" : "Draw area"
     : specialMode === "place-cell"
       ? "Place cell"
       : specialMode === "pick-receiver"
@@ -889,7 +890,7 @@ export function MapToolbar({
               {specialMode === "place-cell" ? <LocateFixed size={15} aria-hidden="true" /> : null}
               {specialMode === "pick-receiver" ? <MousePointer2 size={15} aria-hidden="true" /> : null}
               <strong>{currentInteractionLabel}</strong>
-              <small>{specialMode === "draw-area" ? "Click map points" : specialMode === "place-cell" ? "Click a position on the map" : "Click a receiver position"}</small>
+              <small>{specialMode === "draw-area" ? drawAreaPurpose === "search" ? "Click map points · selected Cells stay" : "Click map points" : specialMode === "place-cell" ? "Click a position on the map" : "Click a receiver position"}</small>
             </span>
             {specialMode === "draw-area" ? (
               <button type="button" onClick={onFinishAreaSelection} disabled={!selectionCanFinish}>Finish</button>

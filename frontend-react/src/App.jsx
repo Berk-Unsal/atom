@@ -4,7 +4,6 @@ import {
   AlertTriangle,
   BarChart3,
   Database,
-  MapPin,
   RadioTower,
   SlidersHorizontal,
   Upload,
@@ -59,6 +58,8 @@ import { readableRunLabel } from "./domain/runLabel.js";
 import { defaultScenarioName, scenarioRevisionFromLegacySnapshot } from "./domain/scenario.js";
 import { buildComparisonSources } from "./utils/comparisonSources.js";
 import ResultCompareView from "./components/ResultCompareView.jsx";
+import CandidateCellAction from "./components/CandidateCellAction.jsx";
+import { candidatePrerequisites } from "./utils/candidatePrerequisites.js";
 import { canonicalSerialize } from "./domain/serialization.js";
 import { selectScenarioArtifacts } from "./utils/scenarioSnapshot.js";
 import { fitTargetsForCells } from "./utils/mapFit.js";
@@ -224,6 +225,8 @@ export default function App() {
   const [networkResultKind, setNetworkResultKind] = useState(null);
   const [planningMode, setPlanningMode] = useState("single");
   const [isDrawingSelection, setIsDrawingSelection] = useState(false);
+  // "cells" selects up to eight Cells inside the area; "search" only records a candidate search area.
+  const [areaSelectionPurpose, setAreaSelectionPurpose] = useState("cells");
   const [selectionPolygon, setSelectionPolygon] = useState([]);
   const [selectionNotice, setSelectionNotice] = useState("");
   const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
@@ -2036,12 +2039,23 @@ export default function App() {
     }
     setIsPlacingCell(false);
     setIsSelectingPathEndpoint(false);
+    setAreaSelectionPurpose("cells");
     setIsDrawingSelection(true);
     setSelectionPolygon([]);
     setSelectionNotice("");
   }, [changePlanningMode, planningMode]);
 
+  const startSearchAreaSelection = useCallback(() => {
+    setIsPlacingCell(false);
+    setIsSelectingPathEndpoint(false);
+    setAreaSelectionPurpose("search");
+    setIsDrawingSelection(true);
+    setSelectionPolygon([]);
+    setSelectionNotice("Draw a candidate search area. Your selected Cells stay as they are.");
+  }, []);
+
   const cancelAreaSelection = useCallback(() => {
+    setAreaSelectionPurpose("cells");
     setIsDrawingSelection(false);
     setSelectionPolygon([]);
     setSelectionNotice("");
@@ -2059,6 +2073,14 @@ export default function App() {
     const finalPolygon = polygon ?? selectionPolygon;
     if (!Array.isArray(finalPolygon) || finalPolygon.length < 3) {
       setSelectionNotice("Add at least 3 points to finish an area.");
+      return;
+    }
+    if (areaSelectionPurpose === "search") {
+      // A search area never replaces the selected Cells and is not an RF input of the current results.
+      setAreaSelectionPurpose("cells");
+      setIsDrawingSelection(false);
+      setSelectionPolygon(finalPolygon);
+      setSelectionNotice(`Search area set. Your ${selectedNetworkTowerIds.length} selected Cell${selectedNetworkTowerIds.length === 1 ? "" : "s"} are unchanged.`);
       return;
     }
 
@@ -2084,7 +2106,7 @@ export default function App() {
     setSelectionPolygon(finalPolygon);
     setSelectionNotice(describeAreaSelection(inside.length, selected.length, MAX_NETWORK_CELLS));
     requestMapFit(selected);
-  }, [invalidatePlanResults, requestMapFit, selectionPolygon, towers]);
+  }, [areaSelectionPurpose, invalidatePlanResults, requestMapFit, selectedNetworkTowerIds.length, selectionPolygon, towers]);
 
   const addSelectionPolygonPoint = useCallback((coordinate) => {
     setSelectionPolygon((current) => [...current, coordinate]);
@@ -2118,6 +2140,7 @@ export default function App() {
       setActiveResultsView("recommendations");
       setLastAnalysisKind("recommendation");
       dispatchPlanChange(null);
+      return true;
     } catch (requestError) {
       if (!isAbortError(requestError) && request.isCurrent()) setError(requestError.message);
     } finally {
@@ -2126,6 +2149,7 @@ export default function App() {
         request.finish();
       }
     }
+    return false;
   }, [interferenceApplicable, networkAzimuths, networkOptimization, requests, selectedNetworkTowers, selectionPolygon, settings]);
 
   const loadMeasurementFile = useCallback(async (file) => {
@@ -2761,6 +2785,13 @@ export default function App() {
   const activeToolDefinition = WORKSPACE_TOOLS.find((tool) => tool.id === activeTool) ?? WORKSPACE_TOOLS[0];
   const cellsNeeded = Math.max(0, 2 - selectedCellCount);
   const specialMapToolArmed = isDrawingSelection || isPlacingCell || isSelectingPathEndpoint;
+  const candidateRequirements = candidatePrerequisites({
+    selectedCount: selectedNetworkTowers.length,
+    maxCells: MAX_RECOMMENDATION_CELLS,
+    hasSearchArea: selectionPolygon.length >= 3 && !isDrawingSelection,
+    technologySupported: interferenceApplicable,
+  });
+  const isDrawingSearchArea = isDrawingSelection && areaSelectionPurpose === "search";
   const isSelectingCellsOnMap = mapInteractionMode === "select-cells" && !specialMapToolArmed;
   const startMapCellSelection = useCallback(() => {
     setMapInteractionMode("select-cells");
@@ -3508,6 +3539,7 @@ export default function App() {
       networkSelectionCount={selectedCellCount}
       isSelectingCellsOnMap={isSelectingCellsOnMap}
       isDrawingSelection={isDrawingSelection}
+      isDrawingSearchArea={isDrawingSelection && areaSelectionPurpose === "search"}
       onOptimizeNetwork={optimizeNetwork}
       onAnalyzeInterference={analyzeInterference}
       onFocusMap={startMapCellSelection}
@@ -3689,6 +3721,7 @@ export default function App() {
             mapFocusIsInspected={mapFocusIsInspected}
             onInspectMapFocus={inspectFocusedMapCell}
             isDrawingSelection={isDrawingSelection}
+            drawAreaPurpose={areaSelectionPurpose}
             isPlacingCell={isPlacingCell}
             isSelectingPathEndpoint={isSelectingPathEndpoint}
             layerMenuOpen={layerMenuOpen}
@@ -3884,6 +3917,15 @@ export default function App() {
             <>
               {researchProfileActive ? (
                 <p className="research-profile-boundary"><ResearchReferenceBadge />140 GHz is not canonical validation or production-calibrated. Radio-quality output is UNSUPPORTED at this frequency.</p>
+              ) : null}
+              {planningMode === "network" ? (
+                <CandidateCellAction
+                  prerequisites={candidateRequirements}
+                  loading={isRecommendingSites}
+                  isDrawingSearchArea={isDrawingSearchArea}
+                  onDrawSearchArea={startSearchAreaSelection}
+                  onFind={() => recommendSites().then((found) => { if (found) selectWorkspaceTool("results"); })}
+                />
               ) : null}
               <DisclosureSection
                 title="Advanced analysis"
@@ -4101,7 +4143,9 @@ export default function App() {
               recommending={isRecommendingSites}
               comparisonSources={comparisonSources}
               onShowComparisonSource={showComparisonSource}
-              recommendationDisabled={selectedNetworkTowers.length < 2 || selectedNetworkTowers.length > MAX_RECOMMENDATION_CELLS || selectionPolygon.length < 3 || !interferenceApplicable}
+              candidateRequirements={candidateRequirements}
+              isDrawingSearchArea={isDrawingSearchArea}
+              onDrawSearchArea={startSearchAreaSelection}
               simulationResult={simulation}
               stats={stats}
             />
@@ -4590,7 +4634,9 @@ function ResultsPanel({
   paretoComparison,
   paretoSolutions,
   recommendedSolutionId,
-  recommendationDisabled,
+  candidateRequirements = [],
+  isDrawingSearchArea = false,
+  onDrawSearchArea,
   recommendations,
   recommending,
   resultContext,
@@ -4610,8 +4656,11 @@ function ResultsPanel({
     { id: "optimization", label: "Optimization" },
     { id: "interference", label: "Interference" },
     { id: "compare", label: "Compare" },
-    { id: "recommendations", label: isParetoOptimizationResult ? "Solutions" : "Candidates" },
+    ...(isParetoOptimizationResult ? [{ id: "solutions", label: "Solutions" }] : []),
+    { id: "recommendations", label: "Candidates" },
   ];
+  // A restored "solutions" view without Pareto data falls back to the optimization summary.
+  if (activeView === "solutions" && !isParetoOptimizationResult) activeView = "optimization";
   const hasOptimizationResults = Boolean(
     networkOptimization || diagnostics || getComparisonMetrics(comparison).length > 0,
   );
@@ -4679,7 +4728,7 @@ function ResultsPanel({
               comparison={comparison}
               kind={networkResultKind}
               onViewComparison={() => onViewChange("compare")}
-              onViewSolutions={() => onViewChange("recommendations")}
+              onViewSolutions={() => onViewChange("solutions")}
               optimization={networkOptimization}
             />
             {!networkOptimization ? <OptimizerBreakdown diagnostics={diagnostics} /> : null}
@@ -4723,45 +4772,50 @@ function ResultsPanel({
         />
       ) : null}
 
+      {activeView === "solutions" ? (
+        <ParetoSolutionsPanel
+          baseline={networkOptimization?.baseline}
+          cellExplanation={cellExplanation}
+          constraintsConfigured={constraintsConfigured}
+          draftOptimizationSource={draftOptimizationSource}
+          draftSolutionIds={draftSolutionIds}
+          onExplainCell={onExplainCell}
+          onApplySolution={onApplySolution}
+          onSelectSolution={onSelectParetoSolution}
+          resultContext={resultContext}
+          paretoComparison={paretoComparison}
+          recommendedSolutionId={recommendedSolutionId}
+          selectedSolutionId={selectedSolutionId}
+          solutions={paretoSolutions}
+        />
+      ) : null}
+
       {activeView === "recommendations" ? (
-        isParetoOptimizationResult ? (
-          <ParetoSolutionsPanel
-            baseline={networkOptimization?.baseline}
-            cellExplanation={cellExplanation}
-            constraintsConfigured={constraintsConfigured}
-            draftOptimizationSource={draftOptimizationSource}
-            draftSolutionIds={draftSolutionIds}
-            onExplainCell={onExplainCell}
-            onApplySolution={onApplySolution}
-            onSelectSolution={onSelectParetoSolution}
-            resultContext={resultContext}
-            paretoComparison={paretoComparison}
-            recommendedSolutionId={recommendedSolutionId}
-            selectedSolutionId={selectedSolutionId}
-            solutions={paretoSolutions}
-          />
-        ) : (
-          <RecommendationPanel
-            disabled={recommendationDisabled}
-            loading={recommending}
-            onApply={onApplyRecommendation}
-            onRun={onRecommendSites}
-            response={recommendations}
-          />
-        )
+        <RecommendationPanel
+          isDrawingSearchArea={isDrawingSearchArea}
+          loading={recommending}
+          onApply={onApplyRecommendation}
+          onDrawSearchArea={onDrawSearchArea}
+          onRun={onRecommendSites}
+          prerequisites={candidateRequirements}
+          response={recommendations}
+        />
       ) : null}
     </section>
   );
 }
 
-function RecommendationPanel({ disabled, loading, onApply, onRun, response }) {
+function RecommendationPanel({ isDrawingSearchArea, loading, onApply, onDrawSearchArea, onRun, prerequisites, response }) {
   const recommendations = response?.recommendations ?? [];
   return (
     <section className="recommendation-panel" aria-label="Candidate cell recommendations">
-      <button type="button" className="panel-primary-action" onClick={onRun} disabled={disabled || loading}>
-        <MapPin size={15} /> {loading ? "Scoring candidates..." : "Recommend candidate cells"}
-      </button>
-      {disabled ? <p className="data-note">Select 2–5 cells and draw a search area in a 4G or 5G plan.</p> : null}
+      <CandidateCellAction
+        prerequisites={prerequisites}
+        loading={loading}
+        isDrawingSearchArea={isDrawingSearchArea}
+        onDrawSearchArea={onDrawSearchArea}
+        onFind={onRun}
+      />
       {recommendations.map((recommendation, index) => (
         <article key={recommendation.id} className="recommendation-row">
           <div><span>#{index + 1} · Cell {recommendation.cell_id}</span><strong>Raw Δ {formatCompactNumber(recommendation.marginal_network_score)}</strong></div>

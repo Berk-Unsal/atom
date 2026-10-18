@@ -110,6 +110,8 @@ Near-equal co-channel powers can correctly produce SINR near `0 dB`; the Inspect
 
 ## Candidate Cell Recommendations
 
+- Starts from **Find an additional Cell** in Simulate → Propagation (Network mode) or Results → Candidates, which list the prerequisites (2–5 selected Cells, a search area, a 4G/5G plan) and how to meet each one. Candidates keeps its own Results tab, next to Solutions after a Pareto optimization.
+- **Draw search area** records the candidate search area without replacing the selected Cells; ordinary area drawing still selects up to eight Cells.
 - Uses unselected towers from the active dataset as candidate records.
 - Restricts candidates to the user-drawn planning area.
 - Prefilters at most 50 records by proximity to unmet demand and evaluates a bounded subset.

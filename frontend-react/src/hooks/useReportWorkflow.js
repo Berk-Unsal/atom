@@ -5,6 +5,7 @@ import { namingForSource } from "../utils/downloadNames.js";
 const loadReportExportModule = () => importDeferredModule(() => import("../utils/reportExport.js"));
 const loadReportArtifactModule = () => importDeferredModule(() => import("../utils/reportArtifact.js"));
 const loadReportArtifactDownloadModule = () => importDeferredModule(() => import("../utils/reportArtifactDownload.js"));
+const loadReviewPackageModule = () => importDeferredModule(() => import("../utils/reviewPackage.js"));
 
 /** Coordinates report sources, on-demand renderers, retained artifact storage and downloads. */
 export default function useReportWorkflow({
@@ -13,6 +14,7 @@ export default function useReportWorkflow({
   appMeta,
   currentReportInputs,
   deleteArtifact,
+  exportProjectFile = () => "",
   getArtifact,
   onArtifactSelected = () => {},
   selectedArtifactId = null,
@@ -252,6 +254,38 @@ export default function useReportWorkflow({
     }
   }, [getArtifact, setApplicationError]);
 
+  // A local zip for the saved Version. It renders existing data only and never requests RF work.
+  const exportReviewPackage = useCallback(async () => {
+    const { reviewPackageRefusal } = await loadReviewPackageModule().catch(() => ({ reviewPackageRefusal: null }));
+    const hasDraft = Boolean(activeProject?.draft && activeProject?.activeScenarioId === null);
+    const refusal = reviewPackageRefusal?.({ source: currentReportSource, planDirty, hasDraft });
+    if (refusal) {
+      setReportWarning(refusal);
+      return null;
+    }
+    try {
+      const [{ buildReviewPackage, verifyReviewPackage }, report, { downloadReportBytes }] = await Promise.all([
+        loadReviewPackageModule(),
+        createPlanningReport(),
+        loadReportArtifactDownloadModule(),
+      ]);
+      const naming = namingForSource(activeProject, currentReportSource.scenario_id, currentReportSource.scenario_revision_id);
+      const reviewPackage = await buildReviewPackage({ report, projectFileText: exportProjectFile(), naming, source: currentReportSource, appMeta });
+      const check = await verifyReviewPackage(reviewPackage.bytes);
+      if (!check.valid) throw new Error(`The review package failed its own manifest check: ${check.problems.join("; ")}`);
+      downloadReportBytes({ filename: reviewPackage.filename, media_type: "application/zip" }, reviewPackage.bytes);
+      setReportWarning("");
+      return reviewPackage;
+    } catch (packageError) {
+      if (isDeferredModuleLoadError(packageError)) {
+        setReportWarning("Review package tools could not be loaded. Reload the application to retry the export.");
+      } else {
+        setApplicationError(packageError.message);
+      }
+      return null;
+    }
+  }, [activeProject, appMeta, createPlanningReport, currentReportSource, exportProjectFile, planDirty, setApplicationError]);
+
   const deleteArtifactWithConfirmation = useCallback(async (artifact) => {
     if (!globalThis.confirm?.("Delete this retained report artifact? Its source Run and Version will remain.")) return;
     const deleted = await deleteArtifact(artifact.artifact_id);
@@ -266,6 +300,7 @@ export default function useReportWorkflow({
       downloadArtifact,
       exportCurrentHtml,
       exportCurrentMarkdown,
+      exportReviewPackage,
       generateHistoricalReport,
       regenerateArtifact,
     },

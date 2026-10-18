@@ -1208,6 +1208,48 @@ describe("App planning workflow", () => {
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
   });
 
+  it("exports a local review package only for a saved Version, without an RF request", async () => {
+    const downloads = [];
+    const createObjectURL = vi.fn((blob) => { downloads.push(blob); return "blob:review-package"; });
+    vi.stubGlobal("URL", Object.assign(globalThis.URL, { createObjectURL, revokeObjectURL: vi.fn() }));
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await screen.findByRole("button", { name: /Open Current result details/i });
+
+    openWorkspaceTool("Report");
+    fireEvent.click(await screen.findByRole("button", { name: "Review package" }));
+    expect(await screen.findByText(/Save a Version first/)).toBeInTheDocument();
+    expect(downloads).toHaveLength(0);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+    const menu = screen.getByRole("dialog", { name: "Project and scenarios" });
+    fireEvent.click(within(menu).getByRole("button", { name: "Save Version" }));
+    await waitFor(() => expect(within(menu).getByRole("status")).toHaveTextContent("Version saved"));
+    fireEvent.click(screen.getByRole("button", { name: /^Project menu/ }));
+
+    const requestCount = api.postJSON.mock.calls.length;
+    openWorkspaceTool("Report");
+    fireEvent.click(await screen.findByRole("button", { name: "Review package" }));
+    await waitFor(() => expect(downloads).toHaveLength(1));
+    expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+    const anchor = click.mock.instances.at(-1);
+    expect(anchor.download).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-review-package\.zip$/);
+    const bytes = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(new Uint8Array(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(downloads[0]);
+    });
+    const { verifyReviewPackage } = await import("./utils/reviewPackage.js");
+    const check = await verifyReviewPackage(bytes);
+    expect(check.valid).toBe(true);
+    expect(check.manifest.lineage).toMatchObject({ scenario: "Sector plan 1", version: "Version 1" });
+    click.mockRestore();
+    vi.unstubAllGlobals();
+  });
+
   it("reports KPIs inside a drawn area of interest beside network-wide values only when asked", async () => {
     useNetworkFixture = true;
     const area = { served_demand_weight: 120, relevant_demand_weight: 300, residential_covered: 4, relevant_residential_total: 10, overlap_buildings: 1, overlap_ratio: 0.2, covered_units: 5, relevant_buildings: 9 };

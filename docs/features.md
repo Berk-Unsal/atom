@@ -170,6 +170,7 @@ It is a planning overlay, not an LTE/EPC model or a complete bundled Open5GS dep
 - Network responses preserve request-level defaults alongside normalized effective per-cell RF profiles.
 - Scenarios and reports retain exact request inputs and runtime metadata.
 - Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available.
+- **Review package** (Review → Report) downloads one local `.zip` for the current saved Version: the HTML and Markdown reports, the project file, the report map (SVG) and `manifest.json` with each file's SHA-256, dataset and model identity, Version/Run lineage and the report's limitations. It is built in the browser without an RF request; unsaved drafts are refused until a Version is saved. Hashes support integrity checks, not signing.
 - The downloadable OpenAPI 3.1 specification documents current REST routes and error envelopes.
 - RF requests support cancellation, latest-response protection, a 1 MiB body limit, bounded workers, and `429` overload behavior.
 

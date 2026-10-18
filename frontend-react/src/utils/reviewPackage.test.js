@@ -33,8 +33,8 @@ const source = {
   runs: [{ run_id: "run-1", run_type: "simulation", created_at: "2026-10-18T10:00:00Z" }],
 };
 
-const build = () => buildReviewPackage({
-  report: report(),
+const build = (planningReport = report()) => buildReviewPackage({
+  report: planningReport,
   projectFileText: '{"schemaVersion":3}',
   naming: { project: "Ankara Plan", scenario: "Sector plan 1", version: 1 },
   source,
@@ -73,7 +73,9 @@ describe("review package", () => {
   });
 
   it("is reproducible for the same inputs and time", async () => {
-    expect(Array.from((await build()).bytes)).toEqual(Array.from((await build()).bytes));
+    // The same report: a freshly built report stamps its own generation time and ID.
+    const planningReport = report();
+    expect(Array.from((await build(planningReport)).bytes)).toEqual(Array.from((await build(planningReport)).bytes));
   });
 
   it("detects a tampered file or an unlisted extra", async () => {

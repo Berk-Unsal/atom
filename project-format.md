@@ -8,6 +8,12 @@ New exports use `{ "schemaVersion": 3, "project": ... }`. The workspace IndexedD
 
 Version 3 stores nonempty GeoJSON FeatureCollection `features` in retained Scenario artifacts as `{ "count": N, "columns": <column> }`. Empty feature arrays remain arrays. Ordinary workspace/API GeoJSON is unchanged; reconstruction restores the complete feature array, order, properties, geometry and number values.
 
+## Site groups (optional Cell fields)
+
+A Cell placed with **Place site** carries two optional fields in the plan inventory: `siteGroupId` (a project-local group name such as `site-1`) and `sectorAzimuthDeg` (the sector's default azimuth in degrees). In the domain inventory they are stored as `site_group_id` and `sector_azimuth_deg`. Both fields are written only for grouped Cells, so files without groups are unchanged and still import as before; no file version change is involved.
+
+The group only keeps co-located Cells together for placing and moving. Every member is an ordinary Cell in every request: its azimuth comes from an explicit per-Cell azimuth when set, otherwise from `sectorAzimuthDeg`, otherwise from the plan azimuth, and no group field is sent to the API. Ungrouping removes `siteGroupId` and keeps each Cell's position and `sectorAzimuthDeg`. A group makes no claim about a physical site's feasibility, ownership, permitting or cost.
+
 ## Lossless columns
 
 A column represents N values. Tags have these exact JSON forms:

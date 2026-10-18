@@ -177,7 +177,7 @@ docker compose up --build -d atom
 
 Open **`http://localhost:8080`** and verify readiness with `curl http://localhost:8080/readyz`.
 
-For a settings-first verification without bundled analysis output, import [`examples/ankara-sample.atom-project.json`](examples/ankara-sample.atom-project.json) from the project menu, select two local cells, and run **Evaluate Network**.
+For a settings-first verification without bundled analysis output, choose **Open sample network project** on the first-run card (it opens [`examples/ankara-sample.atom-project.json`](examples/ankara-sample.atom-project.json) as a new project and selects the two Cells nearest the pre-selected sector), then run **Evaluate Network**. You can also import the file from the project menu and select two local Cells yourself.
 
 Validate the bundled dataset pack independently:
 

@@ -4,6 +4,7 @@ import { CircleMarker, GeoJSON, ImageOverlay, MapContainer, Marker, Polygon, Pol
 import { getJSON } from "../utils/apiClient.js";
 import { boundsForFitTargets, shouldApplyFit } from "../utils/mapFit.js";
 import { recommendationMapFeatures } from "../utils/recommendations.js";
+import { COMPARISON_CLASS_BY_ID, comparisonOutline } from "../utils/spatialComparison.js";
 import { cellMarkerPresentation } from "./cellMarkerPresentation.js";
 import { filterRayFeatures, rayPresentation, RAY_SCOPE_ALL } from "../utils/rfVisualization.js";
 
@@ -52,6 +53,7 @@ export default function MapCanvas({
   interferenceMetric,
   interferenceModel,
   measurements,
+  comparisonBuildings = null,
   recommendations,
   isPlacingCell,
 	onPlaceCell,
@@ -92,6 +94,8 @@ export default function MapCanvas({
       )}
 
       {layerVisibility?.buildings ? <ViewportBuildingLayer onSelectMapObject={onSelectMapObject} selectedMapObject={selectedMapObject} /> : null}
+
+      {comparisonBuildings?.length ? <ComparisonLayer buildings={comparisonBuildings} theme={theme} /> : null}
 
       {layerVisibility?.measurements === false ? null : (
         <MeasurementLayer
@@ -521,6 +525,25 @@ function RecommendationLayer({ onSelectMapObject, recommendations, selectedMapOb
           },
         }}
       />
+    );
+  });
+}
+
+// Where two plans differ. Each class keeps its own fill and outline pattern, and the tooltip names it.
+function ComparisonLayer({ buildings, theme = "light" }) {
+  return buildings.map((building) => {
+    const style = COMPARISON_CLASS_BY_ID[building.class];
+    if (!style || !Number.isFinite(building.lon) || !Number.isFinite(building.lat)) return null;
+    return (
+      <CircleMarker
+        key={`comparison-${building.id}-${building.class}`}
+        center={[building.lat, building.lon]}
+        radius={6}
+        interactive
+        pathOptions={{ color: comparisonOutline(style, theme).color, weight: comparisonOutline(style, theme).width, fillColor: theme === "dark" ? style.darkColor : style.color, fillOpacity: style.fillOpacity, dashArray: style.dashArray ?? undefined }}
+      >
+        <Tooltip>{style.label} · {building.id}</Tooltip>
+      </CircleMarker>
     );
   });
 }

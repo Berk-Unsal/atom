@@ -10349,3 +10349,12 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 .inventory-site-group { display: grid; gap: var(--space-1); margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-small); }
 .inventory-site-group p { margin: 0; }
 .inventory-site-group-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* #112: where two plans differ. */
+.spatial-comparison { display: grid; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--line); }
+.spatial-comparison .selection-map-action { justify-self: start; }
+.spatial-comparison-counts { width: 100%; border-collapse: collapse; font-size: var(--text-meta); }
+.spatial-comparison-counts th, .spatial-comparison-counts td { padding: var(--space-1); border-bottom: 1px solid var(--line); text-align: left; }
+.spatial-comparison-counts th[scope="row"] { display: flex; align-items: center; gap: var(--space-1); font-weight: var(--weight-label); }
+.spatial-swatch { flex: 0 0 auto; color: var(--ink, #0f172a); }
+.spatial-comparison-error { margin: 0; color: var(--text-danger, #b91c1c); font-size: var(--text-meta); }

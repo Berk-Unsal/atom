@@ -236,6 +236,7 @@ function makeNetworkReport(overrides = {}) {
     diagnostics: null,
     interferenceAnalysis: overrides.interferenceAnalysis ?? null,
     measurementAnalysis: null,
+    spatialComparison: overrides.spatialComparison ?? null,
     networkOptimization,
     networkResultKind: overrides.networkResultKind ?? "optimization",
     optimizationConfig: OPTIMIZATION_CONFIG,
@@ -690,5 +691,31 @@ describe("area-of-interest KPIs in reports", () => {
   it("changes nothing when no area of interest was requested", () => {
     const markdown = renderMarkdownReport(makeNetworkReport({ networkOptimization: makeNetworkOptimization() }));
     expect(markdown).not.toContain("Inside the area of interest");
+  });
+});
+
+describe("spatial comparison in reports", () => {
+  const spatialComparison = {
+    labels: { a: "Optimization baseline", b: "Recommended solution" },
+    result: {
+      counts: { newly_served: 3, newly_lost: 1, overlap_gained: 2, overlap_removed: 0 },
+      buildings: [{ id: "b1", lon: 32.85, lat: 39.92, class: "newly_served" }, { id: "b2", lon: 32.851, lat: 39.921, class: "overlap_gained" }],
+      buildings_truncated: false,
+    },
+  };
+
+  it("adds delta counts to Markdown and counts plus a static map to HTML", () => {
+    const markdown = renderMarkdownReport(makeNetworkReport({ spatialComparison }));
+    expect(markdown).toContain("## Where the Plans Differ");
+    expect(markdown).toContain("Optimization baseline → Recommended solution");
+    expect(markdown).toContain("| Newly served | 3 |");
+    expect(markdown).not.toContain("<svg");
+    const html = renderHtmlReport(makeNetworkReport({ spatialComparison }));
+    expect(html).toContain('data-report-section="spatial-comparison"');
+    expect(html).toContain("Where the two plans differ: changed buildings by class");
+  });
+
+  it("is omitted when no spatial comparison was run", () => {
+    expect(renderMarkdownReport(makeNetworkReport())).not.toContain("Where the Plans Differ");
   });
 });

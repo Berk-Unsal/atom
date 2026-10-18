@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { compareSources, defaultComparisonPair } from "../utils/comparisonSources.js";
 import { ToolEmptyState } from "./ToolPrimitives.jsx";
+import { COMPARISON_CLASSES, comparisonOutline } from "../utils/spatialComparison.js";
 
 // Results → Compare: pick any two retained states. Selecting sources never starts RF work.
 
-export default function ResultCompareView({ baselinePairView = null, onShowSource, sources }) {
+export default function ResultCompareView({ baselinePairView = null, onRunSpatialComparison, onShowSource, sources, spatialComparisonFor }) {
   const [selection, setSelection] = useState({ a: null, b: null });
   if (sources.length < 2) {
     return (
@@ -86,6 +87,10 @@ export default function ResultCompareView({ baselinePairView = null, onShowSourc
         </section>
       ) : null}
 
+      {spatialComparisonFor && result?.compatible !== false ? (
+        <SpatialComparisonSection first={first} second={second} pair={spatialComparisonFor(first, second)} onRun={() => onRunSpatialComparison?.(first, second)} />
+      ) : null}
+
       <div className="scenario-map-switch">
         {[["A", first], ["B", second]].map(([label, source]) => (
           <button key={label} type="button" onClick={() => onShowSource?.(source)} disabled={!canShow(source)} title={canShow(source) ? undefined : "This state has no map layers to show"}>
@@ -104,4 +109,50 @@ function canShow(source) {
 
 function formatValue(value, unit) {
   return value === null ? "—" : `${value.toFixed(1)}${unit ? ` ${unit}` : ""}`;
+}
+
+function ClassSwatch({ item }) {
+  return (
+    <svg className="spatial-swatch" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+      <circle cx="7" cy="7" r="5" fill={item.color} fillOpacity={item.fillOpacity} stroke={item.fillOpacity < 0.5 ? item.color : "currentColor"} strokeWidth={comparisonOutline(item).width} strokeDasharray={item.dashArray ?? undefined} />
+    </svg>
+  );
+}
+
+function SpatialComparisonSection({ first, second, onRun, pair }) {
+  const result = pair.result;
+  const aggregates = result?.aggregates;
+  return (
+    <section className="spatial-comparison" aria-label="Where the plans differ">
+      <strong>Where the plans differ</strong>
+      {!pair.available ? <p className="data-note">{pair.reason}</p> : (
+        <>
+          <button type="button" className="selection-map-action" onClick={onRun} disabled={pair.loading}>
+            {pair.loading ? "Comparing on the server…" : result ? "Compare again" : "Show where they differ"}
+          </button>
+          <p className="data-note">Evaluates both plans once on the active dataset and model (one RF request) and marks demand buildings newly served or lost and buildings whose overlap changed. The map layer shows while Compare is open.</p>
+        </>
+      )}
+      {pair.error ? <p className="spatial-comparison-error" role="alert">{pair.error}</p> : null}
+      {result ? (
+        <>
+          <table className="spatial-comparison-counts" aria-label="Changed buildings by class">
+            <thead><tr><th scope="col">Change (A → B)</th><th scope="col">Buildings</th></tr></thead>
+            <tbody>
+              {COMPARISON_CLASSES.map((item) => (
+                <tr key={item.id}><th scope="row"><ClassSwatch item={item} /> {item.label}</th><td>{result.counts?.[item.id] ?? 0}</td></tr>
+              ))}
+            </tbody>
+          </table>
+          {aggregates ? (
+            <p className="data-note">
+              Demand buildings served: {aggregates.unique_demand_buildings_a} in A ({first.label}), {aggregates.unique_demand_buildings_b} in B ({second.label}).
+              {" "}Overlap buildings: {aggregates.overlap_buildings_a} → {aggregates.overlap_buildings_b}. These differences equal newly served − newly lost and overlap gained − overlap removed.
+            </p>
+          ) : null}
+          {result.buildings_truncated ? <p className="data-note">The map shows the first {result.buildings.length} changed buildings by ID; the counts above are complete.</p> : null}
+        </>
+      ) : null}
+    </section>
+  );
 }

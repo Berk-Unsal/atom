@@ -1569,6 +1569,25 @@ the same per-building results as the network-wide stats. The area never
 changes the evaluated domain, objectives, scores, constraints or
 <code>scenario_fingerprint</code>; without <code>aoi</code> the response
 is unchanged.</p>
+<p><strong>Spatial comparison.</strong>
+<code>POST /api/compare-network</code> takes
+<code>{ "a": &lt;network request&gt;, "b": &lt;network request&gt; }</code>
+(each validated exactly like <code>evaluate-network</code>) and
+evaluates both plans on the active dataset and model, so they always
+share dataset and model identity. It returns <code>counts</code> of
+demand buildings <code>newly_served</code> and <code>newly_lost</code>
+and of buildings with <code>overlap_gained</code> or
+<code>overlap_removed</code>, the <code>aggregates</code>
+(<code>unique_demand_buildings_a/b</code>,
+<code>overlap_buildings_a/b</code>), and a <code>buildings</code> list
+of <code>{ id, lon, lat, class }</code> sorted by ID and bounded to
+5,000 entries (<code>buildings_truncated</code> reports truncation;
+counts are always complete). Served and overlap use exactly the
+network-evaluation definitions, so
+<code>newly_served − newly_lost</code> equals the demand-building delta
+and <code>overlap_gained − overlap_removed</code> the overlap delta. One
+comparison costs one protected RF request; it adds no physics and no
+SINR deltas.</p>
 <p><code>POST /api/optimize-network</code> additionally returns
 <code>baseline</code>, an authoritative compact snapshot of the exact
 normalized selected-cell configuration that entered that optimization

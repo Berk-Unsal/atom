@@ -14,8 +14,8 @@ vi.mock("./utils/apiClient.js", () => ({
 }));
 
 vi.mock("./components/MapCanvas.jsx", () => ({
-  default: ({ fitRequest, onFinishAreaSelection, onPlaceCell, onSelectMapCell, onSelectTower, towers = [] }) => (
-    <div data-testid="map-canvas" data-fit-request={JSON.stringify(fitRequest ?? null)}>
+  default: ({ comparisonBuildings = null, fitRequest, onFinishAreaSelection, onPlaceCell, onSelectMapCell, onSelectTower, towers = [] }) => (
+    <div data-testid="map-canvas" data-fit-request={JSON.stringify(fitRequest ?? null)} data-comparison-buildings={comparisonBuildings?.length ?? 0}>
       <button type="button" aria-label="Place at mock map point" onClick={() => onPlaceCell?.([32.86, 39.925])} />
       <button
         type="button"
@@ -1207,6 +1207,51 @@ describe("App planning workflow", () => {
     fireEvent.click(screen.getByRole("button", { name: "Show all 7 solutions" }));
     expect(list.querySelectorAll(".pareto-solution-card")).toHaveLength(7);
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
+  });
+
+  it("shows where Baseline and Recommended differ only after an explicit comparison request", async () => {
+    useNetworkFixture = true;
+    const comparison = {
+      counts: { newly_served: 2, newly_lost: 1, overlap_gained: 1, overlap_removed: 0 },
+      aggregates: { unique_demand_buildings_a: 5, unique_demand_buildings_b: 6, overlap_buildings_a: 1, overlap_buildings_b: 2 },
+      buildings: [
+        { id: "b1", lon: 32.85, lat: 39.92, class: "newly_served" },
+        { id: "b2", lon: 32.851, lat: 39.921, class: "newly_served" },
+        { id: "b3", lon: 32.849, lat: 39.919, class: "newly_lost" },
+        { id: "b4", lon: 32.852, lat: 39.918, class: "overlap_gained" },
+      ],
+      buildings_truncated: false,
+    };
+    const originalPost = api.postJSON.getMockImplementation();
+    api.postJSON.mockImplementation((path, ...args) => path === "/api/compare-network" ? Promise.resolve(comparison) : originalPost(path, ...args));
+    render(<App />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Network mode, 0 selected" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select map tower 102" }));
+    await screen.findByRole("button", { name: "Network mode, 2 selected" });
+    openWorkspaceTool("Propagation");
+    fireEvent.click(screen.getByRole("button", { name: "Optimize Network" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
+    const optimizeRequest = api.postJSON.mock.calls.find(([path]) => path === "/api/optimize-network")[1];
+
+    openWorkspaceTool("Results");
+    fireEvent.click(screen.getByRole("tab", { name: "Compare" }));
+    const spatial = screen.getByRole("region", { name: "Where the plans differ" });
+    expect(api.postJSON.mock.calls.some(([path]) => path === "/api/compare-network")).toBe(false);
+    expect(screen.getByTestId("map-canvas")).toHaveAttribute("data-comparison-buildings", "0");
+
+    fireEvent.click(within(spatial).getByRole("button", { name: "Show where they differ" }));
+    const counts = await within(spatial).findByRole("table", { name: "Changed buildings by class" });
+    expect(within(counts).getByRole("row", { name: /Newly served/ })).toHaveTextContent("2");
+    expect(within(counts).getByRole("row", { name: /Newly lost/ })).toHaveTextContent("1");
+    const calls = api.postJSON.mock.calls.filter(([path]) => path === "/api/compare-network");
+    expect(calls).toHaveLength(1);
+    expect(calls[0][1].a).toEqual(optimizeRequest);
+    expect(calls[0][1].b.towers.map((tower) => tower.azimuth)).toEqual(networkOptimizationPayload.pareto_frontier[0].towers.map((tower) => tower.azimuth_deg));
+    expect(screen.getByTestId("map-canvas")).toHaveAttribute("data-comparison-buildings", "4");
+
+    openWorkspaceTool("Setup");
+    expect(screen.getByTestId("map-canvas")).toHaveAttribute("data-comparison-buildings", "0");
   });
 
   it("places a three-sector site whose Cells move together and stay ordinary Cells in requests", async () => {

@@ -151,6 +151,15 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.12.3...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li>Show where two compatible network plans differ: Results → Compare
+offers Show where they differ for saved network Versions, the current
+network plan, or an optimization's baseline and solutions on the current
+dataset and model. A new <code>POST /api/compare-network</code> endpoint
+evaluates both plans (one protected RF request) and returns demand
+buildings newly served or lost and buildings whose overlap changed, with
+counts that reconcile exactly with the aggregate KPI deltas and a
+bounded building list. The map layer has a labeled legend, and reports
+include the counts and a static map.</li>
 <li>Place and manage co-located multi-sector Cells as one site group:
 Inventory → Place site adds N Cells (default 0/120/240°, editable) at
 one map point that move together. Each remains an ordinary Cell in every

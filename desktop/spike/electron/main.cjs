@@ -304,6 +304,9 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(async () => {
+    // Dialog automation on Linux reads the accessibility tree (AT-SPI); Chromium
+    // only joins it when accessibility support is on.
+    if (process.env.ATOM_SPIKE_A11Y === "1") app.setAccessibilitySupportEnabled(true);
     trace(`app ready (${process.platform}, sandbox enabled for renderers)`);
     if (process.env.ATOM_SPIKE_TRACE === "1") {
       // Heartbeat: proves the main thread is alive and lists child processes.

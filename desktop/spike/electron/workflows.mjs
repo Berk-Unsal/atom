@@ -39,6 +39,7 @@ const app = await electron.launch({ chromiumSandbox: true,
     ATOM_SPIKE_DATASET_DIR: resolve(root, "data-pipeline"),
     ATOM_SPIKE_PROFILE: resolve(here, `build/profile-${runName}`),
     ATOM_SPIKE_DOWNLOADS: downloads,
+    ...(process.platform === "linux" && driver ? { ATOM_SPIKE_A11Y: "1", ACCESSIBILITY_ENABLED: "1" } : {}),
     ATOM_SPIKE_NO_EXTERNAL: "1",
   },
   timeout: 60_000,
@@ -253,7 +254,16 @@ async function driveDialog(kind, title, target) {
       await run("xdotool", ["key", "--clearmodifiers", "Return"]);
       await sleep(1200);
     }
-    dialogTrace.push(`${kind}: window=${id} active=${JSON.stringify(active)} returns=${presses} open=${await visible()}`);
+    const stillOpen = await visible();
+    if (stillOpen) {
+      await run("import", ["-window", "root", resolve(evidence, `${runName}-x11-${kind}-dialog.png`)]).catch(() => {});
+      // Fall back to the dialog's own button through AT-SPI.
+      const viaAtspi = await run("python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"), title, kind === "save" ? "Save" : "Open"], { timeout: 40_000 })
+        .then((r) => r.stdout.trim(), (error) => `${error.stdout || ""}${error.stderr || ""}`.trim());
+      dialogTrace.push(`${kind}: window=${id} active=${JSON.stringify(active)} returns=${presses} still-open, atspi: ${viaAtspi}`);
+    } else {
+      dialogTrace.push(`${kind}: window=${id} active=${JSON.stringify(active)} returns=${presses} closed`);
+    }
   } else if (driver === "atspi") {
     const { stdout } = await run("python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"), title, ...(kind === "save" ? ["Save"] : ["Open"])], { timeout: 40_000 })
       .catch((error) => ({ stdout: `${error.stdout || ""}${error.stderr || ""}`.trim() }));

@@ -7,7 +7,7 @@ The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based
 - Docker Desktop or Docker Engine with Compose
 - Git and [Git LFS](https://git-lfs.com/)
 - Internet access during the first build and for the default OpenStreetMap basemap
-- For source development: Go 1.26.9 and Node.js 24 or newer
+- For source development: Go 1.26.10 and Node.js 24 or newer
 
 ## Get the Complete Repository
 
@@ -192,6 +192,10 @@ When the server has `ATOM_DATASETS_ROOT` configured, **Data** lists installed ch
 - Select a tower, gap, path, interference sample, candidate, or measurement residual to open the persistent Inspector.
 - Use **Data** to review dataset provenance, runtime/model versions, measurement evidence, RF assumptions, and exclusions.
 - Use **Report** to export Markdown or a printable PDF report from the current plan state.
+
+### Read a planning report
+
+Use the [report reader guide](report-guide.html) to interpret the decision summary, metric units and populations, grouped RF profiles, map sampling, source provenance and historical evidence boundaries. It also documents UTC naming and the reference A4 PDF print settings.
 
 ## Troubleshooting
 

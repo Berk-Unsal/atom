@@ -12,7 +12,7 @@ CURRENT = {'README.md', 'CHANGELOG.md', *('docs/' + name for name in [
     'getting-started.md', 'download.html', 'modeling-limits.md', 'modeling-limits.html',
     'visualization.md', 'visualization.html', 'deployment.md', 'deployment.html',
     'dataset-pack-studio.md', 'dataset-pack-studio.html', 'faq.md', 'faq.html',
-    'terminology.md', 'terminology.html',
+    'terminology.md', 'terminology.html', 'report-guide.md', 'report-guide.html',
     'project-format.md', 'project-format.html', 'contributing.md', 'contributing.html',
     'changelog.html',
 ])}
@@ -33,7 +33,7 @@ def classify(path):
         return 'INTERNAL DESIGN', 'Product/design or generated navigation infrastructure; search entries inherit the referenced page scope.'
     if 'claim-reconciliation' in name or 'post-release-product-scientific-audit' in name:
         return 'HISTORICAL AUDIT / QUALIFICATION', 'Dated audit/remediation evidence, not maintained product copy.'
-    if 'design' in name or 'campaign-spec' in name:
+    if 'design' in name.lower() or 'campaign-spec' in name:
         return 'INTERNAL DESIGN', 'Dated design/collection proposal; no implementation or qualification inferred.'
     if name.startswith('concept-'):
         return 'RESEARCH REFERENCE', 'Scoped concept/model/research record; historical results and non-promotion boundaries preserved.'

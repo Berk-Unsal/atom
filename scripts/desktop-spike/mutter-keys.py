@@ -13,7 +13,7 @@ import time
 
 from gi.repository import Gio, GLib
 
-KEYSYMS = {"Return": 0xFF0D, "Control_L": 0xFFE3, "l": 0x006C, "a": 0x0061}
+KEYSYMS = {"Return": 0xFF0D, "Control_L": 0xFFE3, "Alt_L": 0xFFE9, "l": 0x006C, "a": 0x0061, "o": 0x006F, "s": 0x0073}
 BUS_NAME = "org.gnome.Mutter.RemoteDesktop"
 
 

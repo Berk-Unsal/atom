@@ -250,24 +250,47 @@ async function driveDialog(kind, title, target, settled = () => false) {
     await run("xdotool", ["windowactivate", "--sync", id], { timeout: 10_000 }).catch(() => {});
     await run("xdotool", ["windowfocus", "--sync", id], { timeout: 10_000 }).catch(() => {});
     await sleep(800);
-    let presses = 0;
-    for (; presses < 3 && !settled(); presses += 1) {
-      if (kind === "open" && presses === 1) {
+    const mnemonic = kind === "save" ? "alt+s" : "alt+o";
+    const attempts = [];
+    const attempt = async (label, action) => {
+      if (settled()) return;
+      await action();
+      await sleep(1500);
+      attempts.push(`${label}:${settled() ? "closed" : "open"}`);
+    };
+    await attempt("return", () => run("xdotool", ["key", "--clearmodifiers", "Return"]));
+    await attempt(mnemonic, () => run("xdotool", ["key", "--clearmodifiers", mnemonic]));
+    await attempt("click-button", async () => {
+      // Save/Open sits at the bottom-right of the GTK dialog's client area.
+      const geometry = Object.fromEntries((await run("xdotool", ["getwindowgeometry", "--shell", id])).stdout.trim().split("\n").map((line) => line.split("=")));
+      const x = Number(geometry.X) + Number(geometry.WIDTH) - 50;
+      const y = Number(geometry.Y) + Number(geometry.HEIGHT) - 23;
+      await run("xdotool", ["mousemove", "--sync", String(x), String(y), "click", "1"]);
+    });
+    if (kind === "open") {
+      await attempt("location-bar", async () => {
         await run("xdotool", ["key", "--clearmodifiers", "ctrl+l"]);
         await run("xdotool", ["type", "--delay", "15", target]);
         await sleep(300);
-      }
-      await run("xdotool", ["key", "--clearmodifiers", "Return"]);
-      await sleep(1500);
+        await run("xdotool", ["key", "--clearmodifiers", "Return"]);
+      });
     }
-    if (!settled()) await run("import", ["-window", "root", resolve(evidence, `${runName}-x11-${kind}-dialog.png`)]).catch(() => {});
-    dialogTrace.push(`${kind}: candidates=${ids.length} chosen=${id} owner-match=${ids.length > 1} returns=${presses} settled=${settled()}`);
+    if (!settled()) {
+      await run("xdotool", ["key", "--clearmodifiers", "End"]);
+      await sleep(500);
+      await run("import", ["-window", "root", resolve(evidence, `${runName}-x11-${kind}-dialog.png`)]).catch(() => {});
+    }
+    dialogTrace.push(`${kind}: candidates=${ids.length} chosen=${id} ${attempts.join(" ")}`);
   } else if (driver === "mutter") {
     const keys = (...steps) => run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), ...steps], { timeout: 30_000 })
       .then((r) => r.stdout.trim(), (error) => `${error.stdout || ""}${error.stderr || ""}`.trim().split("\n").slice(-2).join(" "));
     await sleep(1500);
-    const sent = [await keys("key:Return")];
-    await sleep(2000);
+    const sent = [];
+    for (const steps of [["key:Return"], [kind === "save" ? "combo:Alt_L+s" : "combo:Alt_L+o"]]) {
+      if (settled()) break;
+      sent.push(`${steps.join(",")} -> ${await keys(...steps)}`);
+      await sleep(2000);
+    }
     if (kind === "open" && !settled()) {
       sent.push(await keys("combo:Control_L+l", `text:${target}`, "key:Return"));
       await sleep(2000);

@@ -6,6 +6,7 @@ import {
   renderMarkdownReport,
 } from "./reportExport.js";
 import { buildNetworkOptimizationComparison } from "./optimizationConfig.js";
+import { reportMarkdownText } from "./reportFormatting.js";
 
 const OBJECTIVE_STATUS = {
   demand: { available: true },
@@ -288,20 +289,20 @@ describe("planning report network workflow", () => {
 
     expect(markdown.startsWith("# A.T.O.M Network Planning Report")).toBe(true);
     expect(markdown).toContain("Ankara Plan · Network planning");
-    expect(markdown).toContain("| Selected cells | 2 |");
-    expect(markdown).toContain("## Executive Summary");
-    expect(markdown).toContain("## Recommended Network Solution");
+    expect(markdown).toContain("2 selected Cells");
+    expect(markdown).toContain("## Decision summary");
+    expect(markdown).toContain("Recommended Network Solution");
     expect(markdown).toContain("630.0 / 1,315.0 (47.9%)");
-    expect(markdown).toContain("15 / 42.0 (35.7%)");
-    expect(markdown).toContain("231.6 / 400.0 (57.9%)");
+    expect(markdown).toContain("15 / 42 (35.7%)");
+    expect(markdown).toContain("231.6 / 400.0 | reach-score units");
     expect(markdown).toContain("7.5%");
-    expect(markdown).toContain("## RF Configuration & Assumptions");
-    expect(markdown.indexOf("## RF Configuration & Assumptions")).toBeGreaterThan(markdown.indexOf("## RF Propagation Performance"));
+    expect(markdown).toContain("## RF configuration & receiver assumptions");
+    expect(markdown.indexOf("## RF configuration & receiver assumptions")).toBeGreaterThan(markdown.indexOf("## Planning map & Cells"));
     expect(markdown).not.toContain("## Demand Optimization");
     expect(markdown).not.toContain("## Per-cell RF Profiles");
     expect(markdown).toContain("| Demand | 25 / 100 | 25.0% | Available |");
     expect(markdown).toContain("Configured priorities are relative importance values on a 0–100 scale; effective weights are normalized percentages.");
-    expect(markdown).toContain("| Load / reuse | Receiver / sensitivity |");
+    expect(markdown).toContain("### Cell-specific configuration / deviations");
     expect(markdown).not.toContain("PCI Not available");
     expect(markdown).toContain("Selected-cell service-radius envelope");
     expect(markdown).toContain("Minimum propagation reach");
@@ -329,8 +330,8 @@ describe("planning report network workflow", () => {
     const report = makeNetworkReport();
     const markdown = renderMarkdownReport(report);
 
-    expect(markdown).toContain("## Optimization Trade-offs");
-    expect(markdown).toContain("6 feasible non-dominated solutions were evaluated");
+    expect(markdown).toContain("## Optimization trade-offs");
+    expect(markdown).toContain("5 of 6 retained feasible non-dominated solutions shown");
     expect(markdown).toContain("#1 Recommended");
     expect(markdown).toContain("#5");
     expect(markdown).not.toContain("#6");
@@ -342,12 +343,12 @@ describe("planning report network workflow", () => {
     const report = makeNetworkReport({ cellExplanations: [makeCellExplanation(), makeCellExplanation({ unchanged: true })] });
     const markdown = renderMarkdownReport(report);
 
-    expect(markdown).toContain("## Evaluated Cell Changes");
-    expect(markdown).toContain("### Cell 8414746");
+    expect(markdown).toContain("Evaluated Cell changes");
+    expect(markdown).toContain("### Evaluated Cell changes · Cell 8414746");
     expect(markdown).toContain("Baseline: 20° · Selected/recommended: 100°");
     expect(markdown).toContain("Marginal effect is measured by restoring only this cell to its baseline configuration while all other cells remain fixed.");
     expect(markdown).toContain("This is a conditional marginal comparison, not causal attribution or an additive decomposition.");
-    expect(markdown).not.toContain("### Cell 8414743");
+    expect(markdown).not.toContain("### Evaluated Cell changes · Cell 8414743");
     expect(markdown).toContain("Retained fixture limitation");
   });
 
@@ -356,7 +357,7 @@ describe("planning report network workflow", () => {
     const report = makeNetworkReport({ cellExplanations: [alternateExplanation] });
     const markdown = renderMarkdownReport(report);
 
-    expect(markdown).not.toContain("## Evaluated Cell Changes");
+    expect(markdown).not.toContain("Evaluated Cell changes");
     expect(markdown).toContain("#1 Recommended");
   });
 });
@@ -378,7 +379,7 @@ describe("planning report conditional and fallback behavior", () => {
     const html = renderHtmlReport(report);
 
     expect(markdown).not.toContain("## Interference and Radio Quality");
-    expect(markdown).toContain("Interference analysis: Not evaluated.");
+    expect(markdown).toContain("**Standalone interference:** Not evaluated");
     expect(html).not.toContain('data-report-section="interference"');
   });
 
@@ -413,10 +414,10 @@ describe("planning report conditional and fallback behavior", () => {
     const markdown = renderMarkdownReport(report);
 
     expect(markdown).toContain("# A.T.O.M Network Planning Report");
-    expect(markdown).toContain("## Evaluated Network Configuration");
-    expect(markdown).toContain("Alternative-solution and baseline metadata are not available for this saved network result.");
+    expect(markdown).toContain("Evaluated Network Configuration");
+    expect(markdown).toContain("Optimization was not run for this evaluated configuration.");
     expect(markdown).not.toContain("## Baseline vs Recommended");
-    expect(markdown).not.toContain("## Optimization Trade-offs");
+    expect(markdown).not.toContain("## Optimization trade-offs");
   });
 
   it("keeps a single-cell RF-only report useful and scoped", () => {
@@ -445,15 +446,15 @@ describe("planning report conditional and fallback behavior", () => {
     const markdown = renderMarkdownReport(report);
 
     expect(markdown.startsWith("# A.T.O.M Single-cell RF Planning Report")).toBe(true);
-    expect(markdown).toContain("| Cell | 8414746 |");
-    expect(markdown).toContain("## RF Result");
-    expect(markdown).toContain("## RF Configuration & Assumptions");
-    expect(markdown).toContain("## Planning Map");
-    expect(markdown).toContain("## Coverage Gaps");
+    expect(markdown).toContain("| 1 | 8414746 | 90° |");
+    expect(markdown).toContain("## Decision summary");
+    expect(markdown).toContain("## RF configuration & receiver assumptions");
+    expect(markdown).toContain("## Planning map & Cells");
+    expect(markdown).toContain("## Coverage gaps");
     expect(markdown).toContain("Coverage gaps: None identified");
-    expect(markdown).not.toContain("## Optimization Trade-offs");
+    expect(markdown).not.toContain("## Optimization trade-offs");
     expect(markdown).not.toContain("## Baseline vs Recommended");
-    expect(markdown).not.toContain("Interference analysis: Not evaluated.");
+    expect(markdown).toContain("**Standalone interference:** Not evaluated");
   });
 });
 
@@ -515,13 +516,13 @@ describe("planning report values", () => {
     const markdown = renderMarkdownReport(report);
 
     expect(markdown).toContain("Radio-quality serviceability");
-    expect(markdown).toContain("25 / 100 (25.0%)");
+    expect(markdown).toContain("25 / 100 | fixed-domain samples");
     expect(markdown).toContain("p10 -3.4 dB · median 18.2 dB");
-    expect(markdown).toContain("no_carrier: 72");
+    expect(markdown).toContain(reportMarkdownText("no_carrier: 72"));
     expect(markdown).toContain("Deterministic Fixed Union Grid");
     expect(markdown).toContain("100");
     expect(markdown).toContain("Per-cell effective-radius horizon");
-    expect(markdown).toContain("RSRP >= -110 dBm; SINR >= 0 dB; RSRQ >= -17 dB");
+    expect(markdown).toContain(reportMarkdownText("RSRP >= -110 dBm; SINR >= 0 dB; RSRQ >= -17 dB"));
   });
 
   it("does not format a raw compatibility aggregate as a normalized score", () => {
@@ -574,12 +575,12 @@ describe("planning report values", () => {
     const report = makeNetworkReport({ interferenceAnalysis: makeInterferenceAnalysis(), cellExplanations: [makeCellExplanation()] });
     const markdown = renderMarkdownReport(report);
     const html = renderHtmlReport(report);
-    for (const section of ["Executive Summary", "Recommended Network Solution", "Baseline vs Recommended", "Optimization Trade-offs", "Evaluated Cell Changes", "Interference and Radio Quality", "RF Configuration & Assumptions", "Data, Methodology & Limitations"]) {
+    for (const section of ["Decision summary", "Recommended Network Solution", "Baseline vs Recommended", "Optimization trade-offs", "Evaluated Cell changes", "Interference and Radio Quality", "RF configuration & receiver assumptions", "Dataset, model & provenance", "Engineering appendix"]) {
       expect(markdown).toContain(section);
       expect(html.replaceAll("&amp;", "&")).toContain(section);
     }
-    expect(html.indexOf('data-report-section="executive-summary"')).toBeLessThan(html.indexOf('data-report-section="recommended-solution"'));
-    expect(html.indexOf('data-report-section="recommended-solution"')).toBeLessThan(html.indexOf('data-report-section="baseline-comparison"'));
+    expect(html.indexOf('data-report-section="executive-summary"')).toBeLessThan(html.indexOf('data-report-section="network-evaluation"'));
+    expect(html.indexOf('data-report-section="network-evaluation"')).toBeLessThan(html.indexOf('data-report-section="baseline-comparison"'));
   });
 
   it("retains the comparison helper's percentage-point semantics", () => {
@@ -612,9 +613,9 @@ describe("planning report values", () => {
     });
     const markdown = renderMarkdownReport(report);
 
-    expect(markdown).toContain("| Constraints | Not configured | Not configured | Not configured |");
+    expect(markdown).not.toMatch(/\| Constraints \|/);
     expect(markdown).not.toContain("| Constraints | Satisfied | Satisfied |");
-    expect(markdown).toContain("| Constraints | Not configured |");
+    expect(markdown).not.toContain("### Configured constraints");
   });
 });
 
@@ -645,22 +646,22 @@ describe("readable report output outside A.T.O.M", () => {
 
   it("lists the single-cell RF metrics once and omits an unconfigured constraint row", () => {
     const markdown = renderMarkdownReport(singleCellReport());
-    expect(headings(markdown).filter((heading) => heading === "## RF Result")).toHaveLength(1);
-    expect(markdown).not.toContain("## RF Propagation Performance");
-    expect(markdown.match(/\| Average received power \|/g)).toHaveLength(1);
+    expect(headings(markdown).filter((heading) => heading === "## Decision summary")).toHaveLength(1);
+    expect(markdown).toContain("## Ray / propagation diagnostics");
+    expect(markdown.split("## Engineering appendix")[0].match(/\| Mean ray-endpoint Rx \|/g)).toHaveLength(1);
     expect(markdown).not.toMatch(/\| Constraints \|/);
     expect(new Set(headings(markdown)).size).toBe(headings(markdown).length);
 
     const html = renderHtmlReport(singleCellReport());
-    expect(html.match(/data-report-section="rf-result"/g)).toHaveLength(1);
-    expect(html).not.toContain('data-report-section="rf-performance"');
+    expect(html.match(/data-report-section="executive-summary"/g)).toHaveLength(1);
+    expect(new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[data-report-section="rf-performance"] table')).toHaveLength(0);
   });
 
   it("keeps the map out of Markdown but in the HTML report", () => {
     const report = singleCellReport();
     const markdown = renderMarkdownReport(report);
     expect(markdown).not.toMatch(/<svg|<path/);
-    expect(markdown).toContain("The planning map is included in the HTML report (Report → PDF / Print)");
+    expect(markdown).toContain("The planning map is included in the HTML/PDF report");
     expect(renderHtmlReport(report)).toMatch(/<svg[^>]*aria-label="A\.T\.O\.M RF planning map export"/);
   });
 

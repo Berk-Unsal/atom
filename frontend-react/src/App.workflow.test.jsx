@@ -1339,7 +1339,7 @@ describe("App planning workflow", () => {
     await waitFor(() => expect(downloads).toHaveLength(1));
     expect(api.postJSON).toHaveBeenCalledTimes(requestCount);
     const anchor = click.mock.instances.at(-1);
-    expect(anchor.download).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-review-package\.zip$/);
+    expect(anchor.download).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-\d{6}z-single-cell-review-package\.zip$/);
     const bytes = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(new Uint8Array(reader.result));

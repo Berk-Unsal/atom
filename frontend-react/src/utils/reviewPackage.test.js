@@ -43,14 +43,21 @@ const build = (planningReport = report()) => buildReviewPackage({
 });
 
 describe("review package", () => {
+  it("derives omitted names from the same report identity used by the body and manifest", async () => {
+    const packageOutput = await buildReviewPackage({ report: report(), source, projectFileText: "{}", generatedAt: new Date("2026-10-18T12:00:00Z") });
+    expect(packageOutput.filename).toBe("ankara-plan-sector-plan-1-v1-20261018-120000z-single-cell-review-package.zip");
+    expect(packageOutput.manifest.lineage).toMatchObject({ project: "Ankara Plan", scenario: "Sector plan 1", version: "Version 1", scenario_revision_id: "rev-1" });
+    const markdown = new TextDecoder().decode(readZip(packageOutput.bytes).find((file) => file.name.endsWith(".md")).bytes);
+    expect(markdown).toContain("Source: Sector plan 1 · Version 1");
+  });
   it("contains both reports, the project file, the map and a manifest named by the download rule", async () => {
     const reviewPackage = await build();
-    expect(reviewPackage.filename).toBe("ankara-plan-sector-plan-1-v1-20261018-review-package.zip");
+    expect(reviewPackage.filename).toBe("ankara-plan-sector-plan-1-v1-20261018-120000z-single-cell-review-package.zip");
     expect(readZip(reviewPackage.bytes).map((entry) => entry.name)).toEqual([
-      "ankara-plan-sector-plan-1-v1-20261018-report.html",
-      "ankara-plan-sector-plan-1-v1-20261018-report.md",
+      "ankara-plan-sector-plan-1-v1-20261018-120000z-single-cell-report.html",
+      "ankara-plan-sector-plan-1-v1-20261018-120000z-single-cell-report.md",
       "ankara-plan-sector-plan-1-v1-20261018.atom-project.json",
-      "ankara-plan-sector-plan-1-v1-20261018-map.svg",
+      "ankara-plan-sector-plan-1-v1-20261018-120000z-single-cell-map.svg",
       "manifest.json",
     ]);
   });
@@ -78,10 +85,22 @@ describe("review package", () => {
     expect(Array.from((await build(planningReport)).bytes)).toEqual(Array.from((await build(planningReport)).bytes));
   });
 
+  it("uses one captured instant and links Markdown only to actual companion files", async () => {
+    const reviewPackage = await build();
+    const entries = readZip(reviewPackage.bytes);
+    const markdown = new TextDecoder().decode(entries.find(({ name }) => name.endsWith(".md")).bytes);
+    const html = new TextDecoder().decode(entries.find(({ name }) => name.endsWith(".html")).bytes);
+    expect(markdown).toContain("Generated: 2026-10-18 12:00 UTC");
+    expect(html).toContain("2026-10-18 12:00 UTC");
+    for (const [, target] of markdown.matchAll(/\]\(([^)]+)\)/g)) expect(entries.some(({ name }) => name === decodeURIComponent(target))).toBe(true);
+    expect(markdown).toContain("Source: Sector plan 1 · Version 1 · Runs:");
+    expect(markdown).not.toMatch(/<svg|<path/);
+  });
+
   it("detects a tampered file or an unlisted extra", async () => {
     const entries = readZip((await build()).bytes);
     const tampered = entries.map((entry) => (entry.name.endsWith(".md") ? { name: entry.name, bytes: new TextEncoder().encode("edited") } : entry));
-    expect((await verifyReviewPackage(createZip(tampered))).problems).toEqual(["ankara-plan-sector-plan-1-v1-20261018-report.md does not match its SHA-256"]);
+    expect((await verifyReviewPackage(createZip(tampered))).problems).toEqual(["ankara-plan-sector-plan-1-v1-20261018-120000z-single-cell-report.md does not match its SHA-256"]);
     const extra = await verifyReviewPackage(createZip([...entries, { name: "notes.txt", bytes: new TextEncoder().encode("x") }]));
     expect(extra.problems).toEqual(["notes.txt is not listed in the manifest"]);
   });

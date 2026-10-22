@@ -36,6 +36,18 @@ The 140 GHz mode is a 6G research profile for comparative propagation planning. 
 
 ## Projects And Results
 
+### Why can a report show full demand service with very low ray-endpoint Rx?
+
+Demand service and ray-endpoint diagnostics use different populations and thresholds. Building service tests the best modeled building Rx against its separate threshold. Rays continue until receiver sensitivity or the planning radius, so their terminal powers can be low even when many buildings are served along their paths. Obstructed ray endpoints are not unserved demand. See the [report reader guide](report-guide.html).
+
+### Does a report score mean coverage or confidence?
+
+The `/100` optimization score is normalized preference-weighted planning utility under the current priorities. It is not coverage percentage, measured accuracy, probability or confidence. Demand weight, residential building counts, ray-distance reach and multi-Cell overlap keep their own units and denominators. An evaluation can produce a score without running optimization; missing standalone interference does not establish radio-quality performance.
+
+### Why do historical reports omit maps or RF fields, and why can PDF page breaks differ?
+
+Historical reports use retained source evidence. Missing geometry is not reconstructed, and missing RF inputs do not inherit today's defaults. Existing retained artifacts download unchanged; regeneration uses the current generator. For the reference PDF layout, print from current Chromium in A4 portrait at default scale, with browser headers and footers off. Browser overrides can change pagination or add URLs. See [report export and source details](report-guide.html).
+
 ### Where are projects stored?
 
 Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a versioned `.atom-project.json` file for backup or transfer to another browser.

@@ -2,6 +2,18 @@ import { escapeHtml, formatCompactNumber, formatNumber } from "./reportFormattin
 
 const REPORT_NOT_AVAILABLE = "Not available";
 
+/** Shared semantic content used by the planning report's format-independent section plan. */
+export function buildInterferenceReportContent(analysis) {
+  if (!analysis?.stats || !analysis?.model) return null;
+  return {
+    statsRows: buildStatsRows(analysis.stats),
+    modelRows: buildModelRows(analysis.model),
+    cellRows: buildCellRows(analysis.stats.per_serving_cell),
+    demandRows: buildDemandRows(analysis.demand_geojson?.features),
+    note: "Planning estimate only; values are not UE or protocol measurements. Serviceability over all grid samples and serviceability among signal samples have different denominators.",
+  };
+}
+
 export function renderMarkdownInterferenceSection(report) {
   const analysis = report?.interferenceAnalysis;
   if (!analysis?.stats || !analysis?.model) return "";
@@ -53,9 +65,11 @@ function buildStatsRows(stats) {
     ["Median SINR", formatUnit(stats.median_sinr_db, 1, "dB")],
     ["Average RSRP", formatUnit(stats.avg_rsrp_dbm, 1, "dBm")],
     ["Average RSRQ", formatUnit(stats.avg_rsrq_db, 1, "dB")],
-    ["Serviceable surface", formatPercent(stats.serviceable_pct, true)],
-    ["Serviceable of signal", formatPercent(stats.serviceable_fraction)],
-    ["Interference-limited surface", formatPercent(stats.interference_limited_pct, true)],
+    ["Serviceable grid samples (all samples)", formatPercent(stats.serviceable_pct, true)],
+    ["Serviceable among signal samples", formatPercent(stats.serviceable_fraction)],
+    ["Interference-limited grid samples (all samples)", formatPercent(stats.interference_limited_pct, true)],
+    ["All grid samples", formatCount(stats.sample_count)],
+    ["Signal samples", formatCount(stats.signal_samples)],
     ["Affected demand buildings", formatCount(stats.affected_demand_buildings)],
     ["Affected demand", formatCompact(stats.affected_demand)],
   ].filter((row) => row[1] !== null);

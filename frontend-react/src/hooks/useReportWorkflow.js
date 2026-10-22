@@ -36,12 +36,14 @@ export default function useReportWorkflow({
   const currentReportRuns = useMemo(() => {
     const revisionID = activeScenario?.domain?.current_revision_id;
     if (planDirty || !revisionID) return [];
+    // A live evaluation has no persisted optimization Run, even if this Version has an older one.
+    if (planningMode === "network" && currentReportInputs?.networkResultKind === "evaluation") return [];
     const compatible = runHistoryRuns.filter((run) => (
       String(run.scenario_revision_id) === String(revisionID) && run.status === "succeeded"
     ));
     const type = planningMode === "network" ? "optimization" : "simulation";
     return compatible.filter((run) => run.run_type === type).slice(0, 1);
-  }, [activeScenario?.domain?.current_revision_id, planDirty, planningMode, runHistoryRuns]);
+  }, [activeScenario?.domain?.current_revision_id, currentReportInputs?.networkResultKind, planDirty, planningMode, runHistoryRuns]);
 
   // One lineage for the current Report: the definition stores it and the Report source card shows it.
   const currentReportSource = useMemo(() => {
@@ -50,11 +52,17 @@ export default function useReportWorkflow({
       ? activeScenario?.domain?.revisions?.find((candidate) => String(candidate.scenario_revision_id) === String(revisionID))
       : null;
     return {
+      project_name: activeProject?.name ?? null,
       project_id: activeProject?.domain?.project_id ?? activeProject?.id ?? null,
       scenario_id: activeScenario?.domain?.scenario_id ?? activeScenario?.id ?? null,
       scenario_name: activeScenario?.name ?? activeProject?.name ?? null,
       scenario_revision_id: revisionID,
       version_label: revisionID ? `Version ${revision?.revision ?? activeScenario?.domain?.revision ?? "unavailable"}` : null,
+      version: revision?.revision ?? null,
+      source_kind: revisionID ? "scenario_revision" : "live_compatibility",
+      scenario_fingerprint: revision?.resolved_fingerprints?.scenario_fingerprint ?? null,
+      input_fingerprints: currentReportRuns.map((run) => run.input_fingerprint).filter(Boolean),
+      dataset_references: revision?.dataset_references ?? [],
       run_ids: revisionID ? currentReportRuns.map((run) => run.run_id) : [],
       runs: revisionID ? currentReportRuns : [],
     };
@@ -62,8 +70,17 @@ export default function useReportWorkflow({
 
   const createPlanningReport = useCallback(async () => {
     const { buildPlanningReport } = await loadReportExportModule();
-    return buildPlanningReport(currentReportInputs ?? {});
-  }, [currentReportInputs]);
+    return buildPlanningReport({ ...currentReportInputs, sourceContext: currentReportSource, domainBinding: {
+      project_id: currentReportSource.project_id,
+      scenario_id: currentReportSource.scenario_id,
+      scenario_revision_id: currentReportSource.scenario_revision_id,
+      run_ids: currentReportSource.run_ids,
+      source_kind: currentReportSource.source_kind,
+      scenario_fingerprint: currentReportSource.scenario_fingerprint,
+      input_fingerprints: currentReportSource.input_fingerprints,
+      dataset_references: currentReportSource.dataset_references,
+    } });
+  }, [currentReportInputs, currentReportSource]);
 
   const createCurrentReportDefinition = useCallback((report) => {
     const { project_id: projectID, scenario_id: scenarioID, scenario_revision_id: revisionID, run_ids: runIDs } = currentReportSource;
@@ -100,7 +117,7 @@ export default function useReportWorkflow({
       }
       if (download && format === "html") {
         const { openPdfReport } = await loadReportExportModule();
-        openPdfReport(report);
+        openPdfReport(output.report ?? report);
       }
       return null;
     }

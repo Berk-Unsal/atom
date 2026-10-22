@@ -220,15 +220,19 @@ const dialogTrace = [];
 async function driveDialog(kind, title, target) {
   await sleep(1500);
   if (driver === "macos") {
+    // The panel runs in a separate system service, so System Events sees the
+    // sheet but none of its controls. Wait for the remote panel, then press
+    // Return until the sheet closes.
+    const waitSheet = ["repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat", "delay 1.5"];
+    const confirm = ["set tries to 0", "repeat 4 times", "if not (exists sheet 1 of window 1) then exit repeat", "set tries to tries + 1", "keystroke return", "delay 1.5", "end repeat"];
     const lines = kind === "save"
-      ? ['tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
-        'set sheetSeen to (exists sheet 1 of window 1) as text', "keystroke return", 'return "sheet=" & sheetSeen & " frontmost=" & ((frontmost) as text)', "end tell"]
-      : [`set the clipboard to ${JSON.stringify(target)}`, 'tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
-        'set panelSeen to (exists sheet 1 of window 1) as text', 'keystroke "g" using {command down, shift down}',
-        "repeat 40 times", "if exists sheet 1 of sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
-        'set goToSeen to (exists sheet 1 of sheet 1 of window 1) as text', 'keystroke "a" using {command down}', 'keystroke "v" using {command down}', "delay 1", "keystroke return",
-        "repeat 40 times", "if not (exists sheet 1 of sheet 1 of window 1) then exit repeat", "delay 0.25", "end repeat", "delay 1", "keystroke return",
-        'return "panel=" & panelSeen & " goto=" & goToSeen', "end tell"];
+      ? ['tell application "System Events" to tell process "Electron"', "set frontmost to true", ...waitSheet,
+        'set sheetSeen to (exists sheet 1 of window 1) as text', ...confirm,
+        'return "sheet=" & sheetSeen & " returns=" & tries & " closed=" & ((not (exists sheet 1 of window 1)) as text)', "end tell"]
+      : [`set the clipboard to ${JSON.stringify(target)}`, 'tell application "System Events" to tell process "Electron"', "set frontmost to true", ...waitSheet,
+        'set panelSeen to (exists sheet 1 of window 1) as text', 'keystroke "g" using {command down, shift down}', "delay 1.5",
+        'keystroke "a" using {command down}', 'keystroke "v" using {command down}', "delay 1", "keystroke return", "delay 2", ...confirm,
+        'return "panel=" & panelSeen & " returns=" & tries & " closed=" & ((not (exists sheet 1 of window 1)) as text)', "end tell"];
     const { stdout } = await run("osascript", lines.flatMap((line) => ["-e", line]), { timeout: 40_000 });
     dialogTrace.push(`${kind}: ${stdout.trim() || "ok"}`);
   } else if (driver === "xdotool") {

@@ -29,5 +29,6 @@ step probe-run1-print node probe.mjs probe-run1 --print
 step probe-run2-memory node probe.mjs probe-run2 --memory
 step probe-run3-lifecycle node probe.mjs probe-run3 --lifecycle
 step parent-death node parent-death.mjs
+step missing-sidecar node missing-sidecar.mjs
 step hmr node hmr.mjs
 exit $status

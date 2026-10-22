@@ -40,7 +40,7 @@ start_session() {
 # Direct launch with logging: shows startup milestones and sandbox errors that
 # Playwright's launch timeout would hide.
 diagnose() {
-  ATOM_SPIKE_TRACE=1 ELECTRON_ENABLE_LOGGING=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR=/bin/false     ATOM_SPIKE_PROFILE="$SPIKE/build/profile-diagnose-$1" timeout -s KILL 40     node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} --remote-debugging-port=0 >"$OUT/diagnose-$1.log" 2>&1
+  ATOM_SPIKE_TRACE=1 ELECTRON_ENABLE_LOGGING=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR="$SPIKE/build/atom-api" ATOM_SPIKE_DATASET_DIR="$ROOT/data-pipeline" ATOM_SPIKE_PROFILE="$SPIKE/build/profile-diagnose-$1" timeout -s KILL 40     node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} --remote-debugging-port=0 >"$OUT/diagnose-$1.log" 2>&1
   echo "diagnose $1: exit $?"
   grep -E "atom-spike:|DevTools listening|FATAL|ERROR|sandbox|Sandbox|zygote|namespace" "$OUT/diagnose-$1.log" | head -60
 }
@@ -51,7 +51,6 @@ diagnose_variants() {
   ls /usr/share/dbus-1/services >"$OUT/dbus-activatable-services.txt" 2>&1
   # Which part of startup blocks the main thread: no sidecar, a sidecar that
   # exits at once, or the real sidecar. Baseline also gets a native backtrace.
-  (cd "$ROOT/backend-go" && go build -o "$SPIKE/build/atom-api" .)
   for variant in no-sidecar exiting-sidecar real-sidecar; do
     case $variant in
       no-sidecar) sidecar=none ;;
@@ -77,7 +76,7 @@ launch_check() {
     const { _electron } = require("playwright-core");
     (async () => {
       const app = await _electron.launch({ chromiumSandbox: true, executablePath: require("electron"), args: [process.cwd(), ...(process.env.ATOM_SPIKE_ELECTRON_ARGS || "").split(" ").filter(Boolean)],
-        env: { ...process.env, ATOM_SPIKE_DIST: process.env.ROOT + "/frontend-react/dist", ATOM_SPIKE_SIDECAR: "/bin/false", ATOM_SPIKE_PROFILE: process.cwd() + "/build/profile-launch-check" }, timeout: 45000 });
+        env: { ...process.env, ATOM_SPIKE_DIST: process.env.ROOT + "/frontend-react/dist", ATOM_SPIKE_SIDECAR: process.cwd() + "/build/atom-api", ATOM_SPIKE_DATASET_DIR: process.env.ROOT + "/data-pipeline", ATOM_SPIKE_PROFILE: process.cwd() + "/build/profile-launch-check" }, timeout: 45000 });
       const page = await app.firstWindow();
       console.log("renderer has no Node:", await page.evaluate(() => typeof process === "undefined"), "platform:", JSON.stringify(await app.evaluate(() => global.__atomSpike.platform)));
       await app.close();
@@ -98,6 +97,7 @@ try_sandbox() {
 
 run_session() {
   start_session
+  (cd "$ROOT/backend-go" && go build -o "$SPIKE/build/atom-api" .) || exit 1
   cd "$SPIKE"
   export ROOT
   # 1. As shipped by npm. 2. AppArmor profile granting userns to this binary,

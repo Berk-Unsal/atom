@@ -71,18 +71,35 @@ function startSidecar() {
   const started = Date.now();
   const child = spawn(config.sidecar, ["--desktop-control"], { stdio: ["ignore", "inherit", "inherit", "pipe", "pipe"], env: curatedEnv() });
   const exited = new Promise((resolve) => child.once("exit", (code, signal) => resolve({ code, signal })));
-  child.stdio[3].write(`${JSON.stringify({ protocol: 1, token, generation, allowed_origins: [APP_ORIGIN] })}\n`);
   return new Promise((resolve, reject) => {
     const state = { child, token, generation, exited, address: null, pid: child.pid, dataset: null, readyMs: null, stopping: false };
-    const fail = (error) => { clearTimeout(timer); child.kill("SIGKILL"); reject(error); };
-    const timer = setTimeout(() => fail(new Error("sidecar startup timed out")), STARTUP_TIMEOUT_MS);
-    child.once("error", fail);
-    exited.then(({ code, signal }) => {
+    let settled = false;
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
       clearTimeout(timer);
+      child.kill("SIGKILL");
+      reject(error);
+    };
+    const timer = setTimeout(() => fail(new Error("sidecar startup timed out")), STARTUP_TIMEOUT_MS);
+    child.once("error", (error) => fail(new Error(`sidecar could not start: ${error.code || error.message}`)));
+    exited.then(({ code, signal }) => {
       spike.events.push({ event: "sidecar-exit", generation, code, signal, expected: state.stopping });
-      reject(new Error(`sidecar exited during startup: ${code ?? signal}`));
+      fail(new Error(`sidecar exited during startup: ${code ?? signal}`));
     });
-    readline.createInterface({ input: child.stdio[4] }).on("line", (line) => {
+    const [control, events] = [child.stdio[3], child.stdio[4]];
+    if (!control || !events) return fail(new Error("sidecar control pipes are unavailable"));
+    // A child that exits early closes its end of the pipes. That must surface
+    // as a failed startup or a recorded crash, never as an uncaught exception
+    // (Electron would block the main thread on a native error dialog).
+    for (const stream of [control, events]) {
+      stream.on("error", (error) => {
+        spike.events.push({ event: "control-pipe-error", generation, code: error.code });
+        fail(new Error(`sidecar control pipe: ${error.code || error.message}`));
+      });
+    }
+    control.write(`${JSON.stringify({ protocol: 1, token, generation, allowed_origins: [APP_ORIGIN] })}\n`);
+    readline.createInterface({ input: events }).on("line", (line) => {
       let event;
       try { event = JSON.parse(line); } catch { return fail(new Error("sidecar sent an unreadable control event")); }
       if (event.generation !== generation || event.protocol !== 1) return fail(new Error("sidecar generation mismatch"));
@@ -93,7 +110,8 @@ function startSidecar() {
         state.meta = { version: event.application_version, commit: event.build_commit, model: event.model_version };
       } else if (event.event === "dataset") {
         state.dataset = event.dataset;
-      } else if (event.event === "ready") {
+      } else if (event.event === "ready" && !settled) {
+        settled = true;
         clearTimeout(timer);
         state.readyMs = Date.now() - started;
         resolve(state);

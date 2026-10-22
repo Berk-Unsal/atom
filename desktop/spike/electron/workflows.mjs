@@ -282,6 +282,10 @@ async function driveDialog(kind, title, target, settled = () => false) {
     }
     dialogTrace.push(`${kind}: candidates=${ids.length} chosen=${id} ${attempts.join(" ")}`);
   } else if (driver === "mutter") {
+    if (kind === "save") {
+      // Does Mutter's injected keyboard reach the Electron surface at all?
+      dialogTrace.push(`pre-check: ${mutterInputCheck}`);
+    }
     const keys = (...steps) => run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), ...steps], { timeout: 30_000 })
       .then((r) => r.stdout.trim(), (error) => `${error.stdout || ""}${error.stderr || ""}`.trim().split("\n").slice(-2).join(" "));
     await sleep(1500);
@@ -309,6 +313,25 @@ async function dialogDriverAvailable() {
   } catch { return false; }
 }
 
+let mutterInputCheck = "not run";
+if (driver === "mutter") {
+  await step("Mutter keyboard input reaches the app", async () => {
+    await page.getByRole("button", { name: /^Project menu/ }).click();
+    const field = page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("textbox", { name: "Project name" });
+    await field.click();
+    await page.keyboard.press("End");
+    const before = await field.inputValue();
+    const sent = await run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), "text:Z"], { timeout: 30_000 }).then((r) => r.stdout.trim(), (e) => `${e.stdout || ""}${e.stderr || ""}`.trim());
+    await sleep(800);
+    const after = await field.inputValue();
+    await page.keyboard.press("Escape");
+    mutterInputCheck = `arrived=${after === `${before}Z`} sent=${sent.slice(0, 80)}`;
+    if (after !== `${before}Z`) throw new Error(`injected key did not arrive (${mutterInputCheck})`);
+    await page.getByRole("button", { name: /^Project menu/ }).click().catch(() => {});
+    return { arrived: true };
+  }, { critical: false });
+}
+
 await step("native Save and Open dialogs", async () => {
   if (!driver) throw new Error("no dialog driver for this platform");
   if (!(await dialogDriverAvailable())) throw new Error(`${driver} dialog driver unavailable (Accessibility/UI scripting not permitted)`);
@@ -330,7 +353,7 @@ await step("native Save and Open dialogs", async () => {
   open.then(() => { openSettled = true; }, () => { openSettled = true; });
   await within(Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath, () => openSettled)]), 60_000, "Open dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
   const opened = await open;
-  if (opened.canceled) throw new Error("Open dialog was cancelled");
+  if (opened.canceled) throw new Error(`Open dialog was cancelled; driver: ${dialogTrace.join(" | ")}`);
   const [savedStat, openedStat] = [statSync(saved.filePath), statSync(opened.filePath)];
   if (savedStat.ino !== openedStat.ino || savedStat.dev !== openedStat.dev) throw new Error(`Open dialog returned a different file: ${opened.filePath}`);
   const roundTrip = Buffer.from(opened.base64, "base64");
@@ -340,7 +363,7 @@ await step("native Save and Open dialogs", async () => {
   return { saved_path_chars: saved.filePath.length, opened_identical_string: opened.filePath === saved.filePath,
     opened_same_after_nfc: opened.filePath.normalize("NFC") === saved.filePath.normalize("NFC"),
     opened_same_realpath_nfc: realpathSync(opened.filePath).normalize("NFC") === realpathSync(saved.filePath).normalize("NFC"), opened_same_file_identity: true,
-    saved_path: saved.filePath, opened_path: opened.filePath, sha256: sha256(roundTrip), bytes: roundTrip.length };
+    saved_path: saved.filePath, opened_path: opened.filePath, driver_trace: dialogTrace, sha256: sha256(roundTrip), bytes: roundTrip.length };
 });
 
 await step("no uncaught page errors", async () => {

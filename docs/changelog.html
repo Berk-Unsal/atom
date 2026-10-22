@@ -151,6 +151,20 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.12.3...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li>Add a Figma-authored ATOM signal-path icon with scalable SVG,
+transparent and monochrome marks, a small-size favicon, PNG exports, and
+Windows ICO/macOS ICNS assets. Refresh the app, README and documentation
+icon and provide a reproducible export and validation script.</li>
+<li>Redesign generated Markdown and printable reports around one
+semantic model: a decision summary with evaluation completeness,
+explicit KPI units and populations, deterministic interpretation,
+numbered collision-aware maps sampled to 300 RF segments, grouped
+common/reference RF profiles with per-Cell deviations, separated
+source/generator provenance and an engineering appendix. Add UTC
+timestamps and shared report filename stems, preserve retained artifact
+bytes and historical unknowns, document reading/print settings, and
+verify real A4 PDFs and accessibility. RF, optimization, score and
+persistence contracts are unchanged.</li>
 <li>Show where two compatible network plans differ: Results → Compare
 offers Show where they differ for saved network Versions, the current
 network plan, or an optimization's baseline and solutions on the current
@@ -234,6 +248,12 @@ Solutions marks the solution already loaded in the draft.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Build with Go 1.26.10 to include the fix for GO-2026-6809 in
+<code>crypto/x509</code>, which <code>govulncheck</code> reports for Go
+1.26.9.</li>
+<li>Update the frontend build tooling to Vite 6.4.5 and Vitest 4.1.12
+for the <code>launch-editor</code> command-injection and
+mock-registration advisories reported by <code>npm audit</code>.</li>
 <li>Restore result context after a reload: the newest retained Run that
 computed exactly the restored plan (canonical request, dataset and model
 version, the same rule as applying a draft Pareto alternative) is shown

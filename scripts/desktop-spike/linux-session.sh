@@ -49,20 +49,26 @@ diagnose() {
 # whether the main window finishes loading through the app:// handler.
 diagnose_variants() {
   ls /usr/share/dbus-1/services >"$OUT/dbus-activatable-services.txt" 2>&1
-  # Variants marked diagnostic-only weaken isolation to localize the blocker;
-  # they never count as a qualification pass.
-  for variant in baseline disable-gpu in-process-gpu network-service-in-process diagnostic-only-no-sandbox; do
-    extra=""; envs=""
+  # Which part of startup blocks the main thread: no sidecar, a sidecar that
+  # exits at once, or the real sidecar. Baseline also gets a native backtrace.
+  (cd "$ROOT/backend-go" && go build -o "$SPIKE/build/atom-api" .)
+  for variant in no-sidecar exiting-sidecar real-sidecar; do
     case $variant in
-      disable-gpu) extra="--disable-gpu" ;;
-      in-process-gpu) extra="--in-process-gpu" ;;
-      network-service-in-process) extra="--enable-features=NetworkServiceInProcess" ;;
-      diagnostic-only-no-sandbox) extra="--no-sandbox" ;;
+      no-sidecar) sidecar=none ;;
+      exiting-sidecar) sidecar=/bin/false ;;
+      real-sidecar) sidecar="$SPIKE/build/atom-api" ;;
     esac
-    started=$(date +%s)
-    env $envs ATOM_SPIKE_TRACE=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR=/bin/false ATOM_SPIKE_PROFILE="$SPIKE/build/profile-variant-$variant"       timeout -s KILL 25 node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} $extra >"$OUT/variant-$variant.log" 2>&1
+    ATOM_SPIKE_TRACE=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR="$sidecar" ATOM_SPIKE_DATASET_DIR="$ROOT/data-pipeline" ATOM_SPIKE_PROFILE="$SPIKE/build/profile-variant-$variant" \
+      node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} >"$OUT/variant-$variant.log" 2>&1 &
+    pid=$!
+    sleep 15
+    if [ "$variant" = exiting-sidecar ] || ! grep -q "main window loaded" "$OUT/variant-$variant.log"; then
+      sudo gdb -p "$pid" -batch -ex "info threads" -ex "thread 1" -ex "bt 40" >"$OUT/variant-$variant-gdb.txt" 2>&1
+    fi
+    kill -9 "$pid" 2>/dev/null; pkill -9 -f "profile-variant-$variant" 2>/dev/null; pkill -9 -f "atom-api --desktop-control" 2>/dev/null
     loaded=$(grep -c "main window loaded" "$OUT/variant-$variant.log")
     echo "variant $variant: window_loaded=$loaded fetch=$(grep -o 'net.fetch[^$]*' "$OUT/variant-$variant.log" | head -1 | cut -c1-60) heartbeat=$(grep -o 'heartbeat 2:.*' "$OUT/variant-$variant.log" | head -1 | cut -c1-200)" | tee -a "$OUT/startup-variants.txt"
+    [ -f "$OUT/variant-$variant-gdb.txt" ] && grep -E "^#[0-9]+ " "$OUT/variant-$variant-gdb.txt" | head -25
   done
 }
 

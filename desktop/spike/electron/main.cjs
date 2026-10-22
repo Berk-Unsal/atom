@@ -326,6 +326,12 @@ if (!app.requestSingleInstanceLock()) {
     if (process.env.ATOM_SPIKE_TRACE === "1") {
       net.fetch(`${APP_ORIGIN}/index.html`).then((r) => trace(`main-process net.fetch app:// -> ${r.status}`), (e) => trace(`main-process net.fetch failed: ${e.message}`));
     }
+    if (config.sidecar === "none") {
+      // Diagnostic: start the shell without spawning any sidecar.
+      trace("sidecar skipped");
+      resolveFirstSidecar(null);
+      return;
+    }
     try {
       current = await startSidecar();
       spike.sidecar = { address: current.address, generation: current.generation, pid: current.pid, readyMs: current.readyMs, dataset: current.dataset, meta: current.meta };

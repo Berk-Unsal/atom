@@ -224,7 +224,11 @@ async function driveDialog(kind, title, target) {
       ? ['tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
         'set sheetSeen to (exists sheet 1 of window 1) as text', "keystroke return", 'return "sheet=" & sheetSeen & " frontmost=" & ((frontmost) as text)', "end tell"]
       : [`set the clipboard to ${JSON.stringify(target)}`, 'tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
-        'keystroke "g" using {command down, shift down}', "delay 1", 'keystroke "a" using {command down}', 'keystroke "v" using {command down}', "delay 0.5", "keystroke return", "delay 1.5", "keystroke return", "end tell"];
+        'set panelSeen to (exists sheet 1 of window 1) as text', 'keystroke "g" using {command down, shift down}',
+        "repeat 40 times", "if exists sheet 1 of sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
+        'set goToSeen to (exists sheet 1 of sheet 1 of window 1) as text', 'keystroke "a" using {command down}', 'keystroke "v" using {command down}', "delay 1", "keystroke return",
+        "repeat 40 times", "if not (exists sheet 1 of sheet 1 of window 1) then exit repeat", "delay 0.25", "end repeat", "delay 1", "keystroke return",
+        'return "panel=" & panelSeen & " goto=" & goToSeen', "end tell"];
     const { stdout } = await run("osascript", lines.flatMap((line) => ["-e", line]), { timeout: 40_000 });
     dialogTrace.push(`${kind}: ${stdout.trim() || "ok"}`);
   } else if (driver === "xdotool") {
@@ -265,7 +269,7 @@ await step("native Save and Open dialogs", async () => {
   if (saved.canceled || !existsSync(saved.filePath)) throw new Error("Save dialog did not write the file");
   const open = app.evaluate((_e, dir) => global.__atomSpike.openWithDialog(dir, "A.T.O.M Open Project"), folder);
   open.catch(() => {});
-  await within(Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath)]), 60_000, "Open dialog");
+  await within(Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath)]), 60_000, "Open dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
   const opened = await open;
   if (opened.canceled) throw new Error("Open dialog was cancelled");
   const [savedStat, openedStat] = [statSync(saved.filePath), statSync(opened.filePath)];

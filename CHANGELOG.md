@@ -4,8 +4,11 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-22
+
 ### Added
 
+- Add an opt-in desktop API sidecar control protocol: the host supplies inherited control pipes, the sidecar binds to loopback, reports lifecycle/readiness events, authenticates each request with a per-launch token and exact host/origin, and drains cleanly when the host closes the pipe. Default web, Docker, and CLI modes are unchanged; this is sidecar support, not a packaged desktop application.
 - Add a Figma-authored ATOM signal-path icon with scalable SVG, transparent and monochrome marks, a small-size favicon, PNG exports, and Windows ICO/macOS ICNS assets. Refresh the app, README and documentation icon and provide a reproducible export and validation script.
 - Redesign generated Markdown and printable reports around one semantic model: a decision summary with evaluation completeness, explicit KPI units and populations, deterministic interpretation, numbered collision-aware maps sampled to 300 RF segments, grouped common/reference RF profiles with per-Cell deviations, separated source/generator provenance and an engineering appendix. Add UTC timestamps and shared report filename stems, preserve retained artifact bytes and historical unknowns, document reading/print settings, and verify real A4 PDFs and accessibility. RF, optimization, score and persistence contracts are unchanged.
 - Show where two compatible network plans differ: Results → Compare offers Show where they differ for saved network Versions, the current network plan, or an optimization's baseline and solutions on the current dataset and model. A new `POST /api/compare-network` endpoint evaluates both plans (one protected RF request) and returns demand buildings newly served or lost and buildings whose overlap changed, with counts that reconcile exactly with the aggregate KPI deltas and a bounded building list. The map layer has a labeled legend, and reports include the counts and a static map.
@@ -364,7 +367,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.3...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/Berk-Unsal/atom/compare/v0.12.3...v0.13.0
 [0.12.3]: https://github.com/Berk-Unsal/atom/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1

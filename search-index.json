@@ -1143,9 +1143,15 @@
     },
     {
       "page": "Changelog",
+      "title": "0.13.0 - 2026-10-22",
+      "url": "./changelog.html#0130---2026-10-22",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
       "title": "Added",
       "url": "./changelog.html#added",
-      "text": "Add a Figma-authored ATOM signal-path icon with scalable SVG, transparent and monochrome marks, a small-size favicon, PNG exports, and Windows ICO/macOS ICNS assets. Refresh the app, README and documentation icon and provide a reproducible export and validation script. Redesign generated Markdown and printable reports around one semantic model: a decision summary with evaluation completeness, explicit KPI units and populations, deterministic interpretation, numbered collision-aware maps sampled to 300 RF segments, grouped common/reference RF profiles with per-Cell deviations, separated source/generator provenance and an engineering appendix. Add UTC timestamps and shared report filename stems, preserve retained artifact bytes and historical unknowns, document reading/print settings, and verify real A4 PDFs and accessibility. RF, optimization, score and persistence contracts are unchanged. Show where two compatible network plans differ: Results → Compare offers Show where they differ for saved network Versions, the current network plan, or an optimization's baseline and solutions on the current dataset and model. A new POST /api/compare-network endpoint evaluates both plans (one protected RF request) and returns demand buildings newly served or lost and buildings whose overlap changed, with counts that reconcile exactly with the aggregate KPI deltas and a bounded building list. The map layer has a labeled legend, and reports include the counts and a static map. Place and manage co-located multi-sector Cells as one site group: Inventory → Place site adds N Cells (default 0/120/240°, editable) at one map point that move together. Each remains an ordinary Cell in every request (sector azimuths are its default azimuth); editing one member changes only that Cell unless you apply its RF profile to the site, and Ungroup site restores independent Cells. Projects round-trip the optional siteGroupId / sectorAzimuthDeg fields without a file version change, and older files import unchanged. Export a local review package for the current saved Version from Review → Report: one .zip with the HTML and Markdown reports, the project file, the report map and a manifest.json (file SHA-256 hashes, dataset and model identity, Version/Run lineage, limitations). It is generated in the browser with no RF request, checks its own manifest before downloading, follows the shareable filen"
+      "text": "Add an opt-in desktop API sidecar control protocol: the host supplies inherited control pipes, the sidecar binds to loopback, reports lifecycle/readiness events, authenticates each request with a per-launch token and exact host/origin, and drains cleanly when the host closes the pipe. Default web, Docker, and CLI modes are unchanged; this is sidecar support, not a packaged desktop application. Add a Figma-authored ATOM signal-path icon with scalable SVG, transparent and monochrome marks, a small-size favicon, PNG exports, and Windows ICO/macOS ICNS assets. Refresh the app, README and documentation icon and provide a reproducible export and validation script. Redesign generated Markdown and printable reports around one semantic model: a decision summary with evaluation completeness, explicit KPI units and populations, deterministic interpretation, numbered collision-aware maps sampled to 300 RF segments, grouped common/reference RF profiles with per-Cell deviations, separated source/generator provenance and an engineering appendix. Add UTC timestamps and shared report filename stems, preserve retained artifact bytes and historical unknowns, document reading/print settings, and verify real A4 PDFs and accessibility. RF, optimization, score and persistence contracts are unchanged. Show where two compatible network plans differ: Results → Compare offers Show where they differ for saved network Versions, the current network plan, or an optimization's baseline and solutions on the current dataset and model. A new POST /api/compare-network endpoint evaluates both plans (one protected RF request) and returns demand buildings newly served or lost and buildings whose overlap changed, with counts that reconcile exactly with the aggregate KPI deltas and a bounded building list. The map layer has a labeled legend, and reports include the counts and a static map. Place and manage co-located multi-sector Cells as one site group: Inventory → Place site adds N Cells (default 0/120/240°, editable) at one map point that move together. Each remains an ordinary Cell in every request (sector azimuths are its default azimuth); editing one member changes only that Cell unless you apply its RF profile to the site, and Ungroup site restores independent Cells. Projects round-trip the optional siteGroupId / sectorAzimuthDeg fields without a file version change, and older files import u"
     },
     {
       "page": "Changelog",
@@ -4223,7 +4229,7 @@
       "page": "Download and Use",
       "title": "Guided first-use workflows",
       "url": "./download.html#first-use-heading",
-      "text": "The map is the workspace. The command bar holds the active context and RF run action; the rail opens one focused tool at a time. Start with Setup, then move only to the analysis needed for the current question. A/B Optional first-run project Import examples/ankara-sample.atom-project.json from the project menu for a settings-first baseline, then select local cells and rerun before interpreting results. Workflow 01"
+      "text": "The map is the workspace. The command bar holds the active context and RF run action; the rail opens one focused tool at a time. Start with Setup, then move only to the analysis needed for the current question. A/B Start with a sample network Choose Open sample network project on the first-run card. It opens examples/ankara-sample.atom-project.json as a new project and selects the two Cells nearest the pre-selected sector; run Evaluate Network to see a baseline. Workflow 01"
     },
     {
       "page": "Download and Use",
@@ -4235,7 +4241,7 @@
       "page": "Download and Use",
       "title": "Evaluate a cell cluster",
       "url": "./download.html#network-workflow",
-      "text": "1 Build the cluster Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order. 2 Evaluate or optimize Use Evaluate Network in the command bar, or Optimize Network from Propagation. 3 Compare evidence Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially. Workflow 03"
+      "text": "1 Build the cluster Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order. 2 Evaluate or optimize Use Evaluate Network in the command bar, or Optimize Network from Propagation. 3 Compare evidence Open Results for score, demand reach, overlap, and optimization deltas. Optionally report KPIs inside a drawn area or map which buildings became served, lost service, or changed overlap between compatible plans. Workflow 03"
     },
     {
       "page": "Download and Use",
@@ -4253,7 +4259,7 @@
       "page": "Download and Use",
       "title": "Save and compare scenarios",
       "url": "./download.html#project-workflow",
-      "text": "1 Name the project Use the project selector in the command bar and save a scenario after each meaningful run. 2 Compare two plans Open Results and Compare, then switch the map between A and B while reviewing KPI deltas. 3 Make it portable Export the bounded .atom-project.json file for retained Scenario inputs/results and provenance. Separate Run History, generated reports, coverage surfaces and view/Undo state are excluded; download reports separately. Workflow 06"
+      "text": "1 Name the project Use the project selector in the command bar and save a scenario after each meaningful run. 2 Compare two plans Open Results and Compare to inspect the current result, optimization alternatives, or saved Versions. Switch the map between A and B while reviewing KPI and input deltas. 3 Make it portable Export the bounded .atom-project.json file for retained Scenario inputs/results and provenance. For a saved Version, Review → Report can also create one ZIP with HTML and Markdown reports, the project, map, and a SHA-256 manifest. Separate Run History and transient view/Undo state are excluded from project exports. Workflow 06"
     },
     {
       "page": "Download and Use",

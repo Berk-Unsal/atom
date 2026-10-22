@@ -295,8 +295,8 @@ docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
         <div class="info-band">
           <span class="info-icon" aria-hidden="true">A/B</span>
           <div>
-            <strong>Optional first-run project</strong>
-            <p>Import <a href="../examples/ankara-sample.atom-project.json"><code>examples/ankara-sample.atom-project.json</code></a> from the project menu for a settings-first baseline, then select local cells and rerun before interpreting results.</p>
+            <strong>Start with a sample network</strong>
+            <p>Choose <em>Open sample network project</em> on the first-run card. It opens <a href="../examples/ankara-sample.atom-project.json"><code>examples/ankara-sample.atom-project.json</code></a> as a new project and selects the two Cells nearest the pre-selected sector; run <em>Evaluate Network</em> to see a baseline.</p>
           </div>
         </div>
 
@@ -314,7 +314,7 @@ docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
           <div class="workflow-steps">
             <div class="workflow-step"><span>1</span><strong>Build the cluster</strong><p>Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order.</p></div>
             <div class="workflow-step"><span>2</span><strong>Evaluate or optimize</strong><p>Use Evaluate Network in the command bar, or Optimize Network from Propagation.</p></div>
-            <div class="workflow-step"><span>3</span><strong>Compare evidence</strong><p>Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Compare evidence</strong><p>Open Results for score, demand reach, overlap, and optimization deltas. Optionally report KPIs inside a drawn area or map which buildings became served, lost service, or changed overlap between compatible plans.</p></div>
           </div>
         </section>
 
@@ -340,8 +340,8 @@ docker compose -f docker-compose.yml -f docker-compose.core-lab.yml \
           <div class="workflow-name"><span>Workflow 05</span><h3 id="project-workflow">Save and compare scenarios</h3></div>
           <div class="workflow-steps">
             <div class="workflow-step"><span>1</span><strong>Name the project</strong><p>Use the project selector in the command bar and save a scenario after each meaningful run.</p></div>
-            <div class="workflow-step"><span>2</span><strong>Compare two plans</strong><p>Open Results and Compare, then switch the map between A and B while reviewing KPI deltas.</p></div>
-            <div class="workflow-step"><span>3</span><strong>Make it portable</strong><p>Export the bounded <code>.atom-project.json</code> file for retained Scenario inputs/results and provenance. Separate Run History, generated reports, coverage surfaces and view/Undo state are excluded; download reports separately.</p></div>
+            <div class="workflow-step"><span>2</span><strong>Compare two plans</strong><p>Open Results and Compare to inspect the current result, optimization alternatives, or saved Versions. Switch the map between A and B while reviewing KPI and input deltas.</p></div>
+            <div class="workflow-step"><span>3</span><strong>Make it portable</strong><p>Export the bounded <code>.atom-project.json</code> file for retained Scenario inputs/results and provenance. For a saved Version, Review → Report can also create one ZIP with HTML and Markdown reports, the project, map, and a SHA-256 manifest. Separate Run History and transient view/Undo state are excluded from project exports.</p></div>
           </div>
         </section>
 

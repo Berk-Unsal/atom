@@ -216,14 +216,17 @@ await step("report HTML artifact and Markdown download", async () => {
   return { html: html.filename, html_bytes: text.length, html_contains_turkish: text.includes(TURKISH), markdown: markdown.filename, popup_print_alert: alerts };
 });
 
+const dialogTrace = [];
 async function driveDialog(kind, title, target) {
   await sleep(1500);
   if (driver === "macos") {
     const lines = kind === "save"
-      ? ['tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat", "keystroke return", "end tell"]
+      ? ['tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
+        'set sheetSeen to (exists sheet 1 of window 1) as text', "keystroke return", 'return "sheet=" & sheetSeen & " frontmost=" & ((frontmost) as text)', "end tell"]
       : [`set the clipboard to ${JSON.stringify(target)}`, 'tell application "System Events" to tell process "Electron"', "set frontmost to true", "repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat",
         'keystroke "g" using {command down, shift down}', "delay 1", 'keystroke "a" using {command down}', 'keystroke "v" using {command down}', "delay 0.5", "keystroke return", "delay 1.5", "keystroke return", "end tell"];
-    await run("osascript", lines.flatMap((line) => ["-e", line]), { timeout: 40_000 });
+    const { stdout } = await run("osascript", lines.flatMap((line) => ["-e", line]), { timeout: 40_000 });
+    dialogTrace.push(`${kind}: ${stdout.trim() || "ok"}`);
   } else if (driver === "xdotool") {
     const { stdout } = await run("xdotool", ["search", "--sync", "--name", title], { timeout: 20_000 });
     const id = stdout.trim().split("\n")[0];
@@ -257,7 +260,7 @@ await step("native Save and Open dialogs", async () => {
   const target = resolve(folder, `${TURKISH} ${Date.now()}.atom-project.json`);
   const save = app.evaluate((_e, [b64, file]) => global.__atomSpike.saveWithDialog(b64, file, "A.T.O.M Save Project"), [projectBytes.toString("base64"), target]);
   save.catch(() => {});
-  await within(Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target)]), 60_000, "Save dialog");
+  await within(Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target)]), 60_000, "Save dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
   const saved = await save;
   if (saved.canceled || !existsSync(saved.filePath)) throw new Error("Save dialog did not write the file");
   const open = app.evaluate((_e, dir) => global.__atomSpike.openWithDialog(dir, "A.T.O.M Open Project"), folder);

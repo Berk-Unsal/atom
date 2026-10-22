@@ -45,6 +45,25 @@ diagnose() {
   grep -E "atom-spike:|DevTools listening|FATAL|ERROR|sandbox|Sandbox|zygote|namespace" "$OUT/diagnose-$1.log" | head -60
 }
 
+# Startup-blocker matrix: each variant launches directly for 25 s and records
+# whether the main window finishes loading through the app:// handler.
+diagnose_variants() {
+  ls /usr/share/dbus-1/services >"$OUT/dbus-activatable-services.txt" 2>&1
+  for variant in baseline no-a11y-bridge password-store-basic no-session-bus combined; do
+    extra=""; envs=""
+    case $variant in
+      no-a11y-bridge) envs="NO_AT_BRIDGE=1 GTK_A11Y=none" ;;
+      password-store-basic) extra="--password-store=basic" ;;
+      no-session-bus) envs="DBUS_SESSION_BUS_ADDRESS=disabled:" ;;
+      combined) envs="NO_AT_BRIDGE=1 GTK_A11Y=none"; extra="--password-store=basic" ;;
+    esac
+    started=$(date +%s)
+    env $envs ATOM_SPIKE_TRACE=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR=/bin/false ATOM_SPIKE_PROFILE="$SPIKE/build/profile-variant-$variant"       timeout -s KILL 25 node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} $extra >"$OUT/variant-$variant.log" 2>&1
+    loaded=$(grep -c "main window loaded" "$OUT/variant-$variant.log")
+    echo "variant $variant: window_loaded=$loaded last=$(grep 'atom-spike:' "$OUT/variant-$variant.log" | tail -1 | cut -c1-120)" | tee -a "$OUT/startup-variants.txt"
+  done
+}
+
 launch_check() {
   node -e '
     const { _electron } = require("playwright-core");
@@ -85,6 +104,7 @@ profile atom-desktop-spike %s flags=(unconfined) {
 }
 ' "$electron_bin" | sudo tee /etc/apparmor.d/atom-desktop-spike >/dev/null
     sudo apparmor_parser -r /etc/apparmor.d/atom-desktop-spike
+    diagnose_variants
     if ! try_sandbox apparmor-userns-profile; then
       sudo rm -f /etc/apparmor.d/atom-desktop-spike
       sudo apparmor_parser -R atom-desktop-spike 2>/dev/null || true

@@ -40,9 +40,9 @@ start_session() {
 # Direct launch with logging: shows startup milestones and sandbox errors that
 # Playwright's launch timeout would hide.
 diagnose() {
-  ATOM_SPIKE_TRACE=1 ELECTRON_ENABLE_LOGGING=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR=/bin/false     ATOM_SPIKE_PROFILE="$SPIKE/build/profile-diagnose-$1" timeout -s KILL 30     node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} --remote-debugging-port=0 >"$OUT/diagnose-$1.log" 2>&1
+  ATOM_SPIKE_TRACE=1 ELECTRON_ENABLE_LOGGING=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR=/bin/false     ATOM_SPIKE_PROFILE="$SPIKE/build/profile-diagnose-$1" timeout -s KILL 40     node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} --remote-debugging-port=0 >"$OUT/diagnose-$1.log" 2>&1
   echo "diagnose $1: exit $?"
-  grep -E "atom-spike:|DevTools listening|FATAL|sandbox|Sandbox|zygote|namespace" "$OUT/diagnose-$1.log" | head -20
+  grep -E "atom-spike:|DevTools listening|FATAL|ERROR|sandbox|Sandbox|zygote|namespace" "$OUT/diagnose-$1.log" | head -60
 }
 
 launch_check() {

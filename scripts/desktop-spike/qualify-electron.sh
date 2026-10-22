@@ -14,7 +14,8 @@ status=0
 step() {
   name=$1; shift
   echo "::group::$name"
-  if "$@" >"$EVIDENCE/$name.log" 2>&1; then echo "PASS $name"; else echo "FAIL $name"; status=1; fi
+  # perl alarm: a portable per-step ceiling so one hung step cannot eat the job.
+  if perl -e 'alarm shift; exec @ARGV' 900 "$@" >"$EVIDENCE/$name.log" 2>&1; then echo "PASS $name"; else echo "FAIL $name"; status=1; fi
   tail -n 40 "$EVIDENCE/$name.log"
   echo "::endgroup::"
 }

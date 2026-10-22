@@ -7,7 +7,7 @@
 //        ATOM_SPIKE_ELECTRON_ARGS = extra Chromium switches
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -26,6 +26,7 @@ const driver = process.env.ATOM_SPIKE_DIALOG_DRIVER || "";
 const TURKISH = "Çankaya İş Ağı Şebeke Öğrenim Üssü";
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
+const within = (promise, ms, label) => Promise.race([promise, sleep(ms).then(() => { throw new Error(`${label} timed out after ${ms} ms`); })]);
 
 const { ELECTRON_RUN_AS_NODE: _ignored, ...inherited } = process.env;
 const app = await electron.launch({ chromiumSandbox: true,
@@ -55,8 +56,10 @@ async function step(name, fn, { critical = true } = {}) {
   try {
     const detail = await fn();
     result.steps.push({ name, ok: true, ms: Date.now() - started, detail: detail ?? null });
+    console.log(`PASS ${name} (${Date.now() - started} ms)`);
   } catch (error) {
     result.steps.push({ name, ok: false, critical, ms: Date.now() - started, error: String(error.message).split("\n")[0].slice(0, 400) });
+    console.log(`FAIL ${name} (${Date.now() - started} ms) — ${result.steps.at(-1).error}`);
     await page.screenshot({ path: resolve(evidence, `${runName}-failed-${name.replace(/\W+/g, "-")}.png`) }).catch(() => {});
   }
 }
@@ -69,7 +72,7 @@ async function selectTool(stage, label, tool) {
 async function waitDownload(match, timeout = 30_000) {
   const started = Date.now();
   while (Date.now() - started < timeout) {
-    const found = (await spikeState()).downloads.find((d) => match.test(d.filename) && d.state === "completed");
+    const found = (await within(spikeState(), 10_000, "main-process state")).downloads.find((d) => match.test(d.filename) && d.state === "completed");
     if (found) return found;
     await sleep(200);
   }
@@ -254,17 +257,24 @@ await step("native Save and Open dialogs", async () => {
   const target = resolve(folder, `${TURKISH} ${Date.now()}.atom-project.json`);
   const save = app.evaluate((_e, [b64, file]) => global.__atomSpike.saveWithDialog(b64, file, "A.T.O.M Save Project"), [projectBytes.toString("base64"), target]);
   save.catch(() => {});
-  await Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target)]);
+  await within(Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target)]), 60_000, "Save dialog");
   const saved = await save;
   if (saved.canceled || !existsSync(saved.filePath)) throw new Error("Save dialog did not write the file");
   const open = app.evaluate((_e, dir) => global.__atomSpike.openWithDialog(dir, "A.T.O.M Open Project"), folder);
   open.catch(() => {});
-  await Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath)]);
+  await within(Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath)]), 60_000, "Open dialog");
   const opened = await open;
   if (opened.canceled) throw new Error("Open dialog was cancelled");
+  const [savedStat, openedStat] = [statSync(saved.filePath), statSync(opened.filePath)];
+  if (savedStat.ino !== openedStat.ino || savedStat.dev !== openedStat.dev) throw new Error(`Open dialog returned a different file: ${opened.filePath}`);
   const roundTrip = Buffer.from(opened.base64, "base64");
   if (sha256(roundTrip) !== sha256(projectBytes)) throw new Error("opened bytes differ from saved bytes");
-  return { saved_path_chars: saved.filePath.length, opened_same_path: opened.filePath === saved.filePath, sha256: sha256(roundTrip), bytes: roundTrip.length };
+  // macOS panels may hand back decomposed (NFD) Unicode or resolved symlinks;
+  // D07 must compare paths by identity, not by string.
+  return { saved_path_chars: saved.filePath.length, opened_identical_string: opened.filePath === saved.filePath,
+    opened_same_after_nfc: opened.filePath.normalize("NFC") === saved.filePath.normalize("NFC"),
+    opened_same_realpath_nfc: realpathSync(opened.filePath).normalize("NFC") === realpathSync(saved.filePath).normalize("NFC"), opened_same_file_identity: true,
+    saved_path: saved.filePath, opened_path: opened.filePath, sha256: sha256(roundTrip), bytes: roundTrip.length };
 });
 
 await step("no uncaught page errors", async () => {
@@ -282,5 +292,4 @@ await Promise.race([app.close(), sleep(20_000)]).catch(() => {});
 try { app.process().kill("SIGKILL"); } catch { /* already exited */ }
 result.critical_failures = result.steps.filter((s) => !s.ok && s.critical !== false).map((s) => s.name);
 writeFileSync(resolve(evidence, `${runName}.json`), JSON.stringify(result, null, 2));
-for (const s of result.steps) console.log(`${s.ok ? "PASS" : "FAIL"} ${s.name} (${s.ms} ms)${s.ok ? "" : ` — ${s.error}`}`);
 process.exitCode = result.critical_failures.length ? 1 : 0;

@@ -191,8 +191,10 @@ async function serveDev(request, url) {
   return new Response(response.body, { status: response.status, headers });
 }
 
+let tracedRequests = 0;
 function handleApp(request) {
   const url = new URL(request.url);
+  if (tracedRequests < 25) { tracedRequests += 1; trace(`protocol ${request.method} ${url.pathname}`); }
   if (url.host !== "atom") return new Response("not found", { status: 404 });
   if (isAPIPath(url.pathname)) return proxyAPI(request, url);
   return config.devServer ? serveDev(request, url) : serveDist(url);
@@ -303,8 +305,14 @@ if (!app.requestSingleInstanceLock()) {
       width: 1440, height: 900, minWidth: 1024, minHeight: 700, title: "A.T.O.M (Electron spike)",
       webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, webviewTag: false, spellcheck: false },
     });
-    mainWindow.webContents.once("did-finish-load", () => trace("main window loaded"));
-    mainWindow.webContents.on("render-process-gone", (_event, details) => trace(`renderer gone: ${details.reason}`));
+    const contents = mainWindow.webContents;
+    contents.once("did-finish-load", () => trace("main window loaded"));
+    contents.on("did-start-loading", () => trace("main window did-start-loading"));
+    contents.on("dom-ready", () => trace("main window dom-ready"));
+    contents.on("did-fail-load", (_event, code, description, url) => trace(`main window did-fail-load ${code} ${description} ${url}`));
+    contents.on("render-process-gone", (_event, details) => trace(`renderer gone: ${details.reason} ${details.exitCode}`));
+    contents.on("console-message", (event) => trace(`renderer console ${event.level}: ${String(event.message).slice(0, 160)}`));
+    app.on("child-process-gone", (_event, details) => trace(`child process gone: ${details.type} ${details.reason} ${details.exitCode}`));
     mainWindow.loadURL(`${APP_ORIGIN}/`);
     try {
       current = await startSidecar();

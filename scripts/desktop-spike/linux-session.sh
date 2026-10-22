@@ -32,6 +32,7 @@ start_session() {
     mutter --wayland --headless --no-x11 --virtual-monitor 1440x900 --wayland-display wayland-atom >"$OUT/mutter.log" 2>&1 &
     export WAYLAND_DISPLAY=wayland-atom
     export ATOM_SPIKE_ELECTRON_ARGS="--ozone-platform=wayland"
+    export ATOM_SPIKE_DIALOG_DRIVER=atspi
   fi
   sleep 4
   if pgrep -x mutter >/dev/null; then echo "compositor: mutter ($session)"; else echo "compositor: mutter failed to start"; cat "$OUT/mutter.log"; fi

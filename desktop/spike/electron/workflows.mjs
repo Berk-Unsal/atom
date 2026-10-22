@@ -236,20 +236,33 @@ async function driveDialog(kind, title, target) {
     const { stdout } = await run("osascript", lines.flatMap((line) => ["-e", line]), { timeout: 40_000 });
     dialogTrace.push(`${kind}: ${stdout.trim() || "ok"}`);
   } else if (driver === "xdotool") {
-    const { stdout } = await run("xdotool", ["search", "--sync", "--name", title], { timeout: 20_000 });
-    const id = stdout.trim().split("\n")[0];
-    await run("xdotool", ["windowfocus", "--sync", id]);
-    if (kind === "open") {
-      await run("xdotool", ["key", "--clearmodifiers", "ctrl+l"]);
-      await run("xdotool", ["type", "--delay", "15", target]);
-      await sleep(300);
+    const visible = async () => run("xdotool", ["search", "--onlyvisible", "--name", title]).then((r) => r.stdout.trim() !== "", () => false);
+    const { stdout } = await run("xdotool", ["search", "--sync", "--onlyvisible", "--name", title], { timeout: 20_000 });
+    const id = stdout.trim().split("\n").at(-1);
+    await run("xdotool", ["windowactivate", "--sync", id], { timeout: 10_000 }).catch(() => run("xdotool", ["windowfocus", "--sync", id], { timeout: 10_000 }));
+    await sleep(800);
+    const active = await run("xdotool", ["getactivewindow", "getwindowname"]).then((r) => r.stdout.trim(), () => "unknown");
+    let presses = 0;
+    for (; presses < 4 && (await visible()); presses += 1) {
+      if (kind === "open" && presses === 1) {
+        // The file was not preselected: type its path into the location bar.
+        await run("xdotool", ["key", "--clearmodifiers", "ctrl+l"]);
+        await run("xdotool", ["type", "--delay", "15", target]);
+        await sleep(300);
+      }
+      await run("xdotool", ["key", "--clearmodifiers", "Return"]);
+      await sleep(1200);
     }
-    await run("xdotool", ["key", "--clearmodifiers", "Return"]);
+    dialogTrace.push(`${kind}: window=${id} active=${JSON.stringify(active)} returns=${presses} open=${await visible()}`);
+  } else if (driver === "atspi") {
+    const { stdout } = await run("python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"), title, ...(kind === "save" ? ["Save"] : ["Open"])], { timeout: 40_000 })
+      .catch((error) => ({ stdout: `${error.stdout || ""}${error.stderr || ""}`.trim() }));
+    dialogTrace.push(`${kind}: ${stdout.trim()}`);
   }
 }
 
 async function dialogDriverAvailable() {
-  if (driver !== "macos") return driver === "xdotool";
+  if (driver !== "macos") return driver === "xdotool" || driver === "atspi";
   // Without Accessibility for the calling app, System Events cannot press keys
   // and the sheet would stay open; check first instead of hanging.
   try {
@@ -271,7 +284,9 @@ await step("native Save and Open dialogs", async () => {
   await within(Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target)]), 60_000, "Save dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
   const saved = await save;
   if (saved.canceled || !existsSync(saved.filePath)) throw new Error("Save dialog did not write the file");
-  const open = app.evaluate((_e, dir) => global.__atomSpike.openWithDialog(dir, "A.T.O.M Open Project"), folder);
+  // GTK preselects a file given as the default path; macOS panels only take a folder.
+  const openDefault = process.platform === "linux" ? saved.filePath : folder;
+  const open = app.evaluate((_e, start) => global.__atomSpike.openWithDialog(start, "A.T.O.M Open Project"), openDefault);
   open.catch(() => {});
   await within(Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath)]), 60_000, "Open dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
   const opened = await open;

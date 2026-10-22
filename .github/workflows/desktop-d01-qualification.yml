@@ -50,7 +50,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            mutter dbus-x11 xvfb xdotool lsof gdb \
+            mutter dbus-x11 xvfb xdotool lsof gdb at-spi2-core python3-gi gir1.2-atspi-2.0 \
             libgtk-3-0t64 libnss3 libasound2t64 libgbm1 libxss1 libxshmfence1 libxkbcommon0 libatk-bridge2.0-0t64 libcups2t64
       - name: Record platform after runtime packages
         run: scripts/desktop-spike/linux-environment.sh after

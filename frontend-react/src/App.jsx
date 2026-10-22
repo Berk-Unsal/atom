@@ -3655,9 +3655,15 @@ export default function App() {
     selectedNetworkTowers: planningMode === "network" ? selectedNetworkTowers : [],
     settings,
     simulation,
+    simulationSource: lastAnalysisKind === "network" ? {
+      kind: networkResultKind,
+      solution_id: networkOptimization?.optimization?.recommended_solution_id ?? null,
+    } : null,
     stats,
   }), [
     spatialComparison,
+    lastAnalysisKind,
+    networkOptimization,
     activeNetworkTech,
     activeProject,
     activeComparison,

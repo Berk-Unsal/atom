@@ -193,6 +193,10 @@ When the server has `ATOM_DATASETS_ROOT` configured, **Data** lists installed ch
 - Use **Data** to review dataset provenance, runtime/model versions, measurement evidence, RF assumptions, and exclusions.
 - Use **Report** to export Markdown or a printable PDF report from the current plan state.
 
+### Read a planning report
+
+Use the [report reader guide](report-guide.html) to interpret the decision summary, metric units and populations, grouped RF profiles, map sampling, source provenance and historical evidence boundaries. It also documents UTC naming and the reference A4 PDF print settings.
+
 ## Troubleshooting
 
 ### Git LFS Pointer Instead of GeoJSON

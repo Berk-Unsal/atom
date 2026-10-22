@@ -57,10 +57,10 @@ describe("report artifact output", () => {
 
     const markdown = buildReportArtifactOutput({ report, reportDefinition: definition, format: "markdown", naming });
     const html = buildReportArtifactOutput({ report, reportDefinition: definition, format: "html", naming });
-    expect(markdown.artifact.filename).toBe("ankara-plan-sector-plan-1-v1-20261017-report.md");
-    expect(html.artifact.filename).toBe("ankara-plan-sector-plan-1-v1-20261017-report.html");
+    expect(markdown.artifact.filename).toBe("ankara-plan-sector-plan-1-v1-20261017-145455z-single-cell-report.md");
+    expect(html.artifact.filename).toBe("ankara-plan-sector-plan-1-v1-20261017-145455z-single-cell-report.html");
     expect(markdown.artifact.report_id).toBe("f079b4f3-b688-4148-9fc3-5289e4c1523a");
     // Without naming context the report's own scenario name and date still give a readable name.
-    expect(buildReportArtifactOutput({ report, reportDefinition: definition, format: "markdown" }).artifact.filename).toBe("sector-plan-1-20261017-report.md");
+    expect(buildReportArtifactOutput({ report, reportDefinition: definition, format: "markdown" }).artifact.filename).toBe("ankara-plan-sector-plan-1-20261017-145455z-single-cell-report.md");
   });
 });

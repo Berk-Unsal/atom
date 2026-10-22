@@ -4701,10 +4701,10 @@ test("report and project downloads are named for people and share one lineage li
   const reportDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "Markdown", exact: true }).click();
   const report = await reportDownload;
-  expect(report.suggestedFilename()).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-report\.md$/);
+  expect(report.suggestedFilename()).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-\d{6}z-single-cell-report\.md$/);
   const markdown = await readFile(await report.path(), "utf8");
   expect(markdown).not.toMatch(/<svg|<path/);
-  expect(markdown.match(/^## RF Result$/gm)).toHaveLength(1);
+  expect(markdown.match(/^## Decision summary$/gm)).toHaveLength(1);
   await expect(page.getByRole("list", { name: "Reports" }).getByRole("listitem").first()).toContainText(sourceLine);
 });
 

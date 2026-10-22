@@ -39,7 +39,7 @@ async function waitGone(pid, limitMs) {
 }
 
 const launchStarted = Date.now();
-const app = await electron.launch({ executablePath: electronBinary, args: [here, ...extraArgs], env, timeout: 60_000 });
+const app = await electron.launch({ chromiumSandbox: true, executablePath: electronBinary, args: [here, ...extraArgs], env, timeout: 60_000 });
 const page = await app.firstWindow();
 Object.assign(result, await app.evaluate(() => ({ electron_version: process.versions.electron, chromium_version: process.versions.chrome })));
 result.platform = (await spikeState(app)).platform;

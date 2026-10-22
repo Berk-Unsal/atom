@@ -40,7 +40,7 @@ const server = await createServer({
 await server.listen();
 
 const { ELECTRON_RUN_AS_NODE: _ignored, ...inherited } = process.env;
-const app = await electron.launch({
+const app = await electron.launch({ chromiumSandbox: true,
   executablePath: process.env.ATOM_SPIKE_ELECTRON || (await import("electron")).default,
   args: [here, ...(process.env.ATOM_SPIKE_ELECTRON_ARGS || "").split(" ").filter(Boolean)],
   env: { ...inherited, ATOM_SPIKE_DEV_SERVER: "http://127.0.0.1:5173", ATOM_SPIKE_SIDECAR: resolve(here, "build/atom-api"), ATOM_SPIKE_DATASET_DIR: resolve(root, "data-pipeline"), ATOM_SPIKE_PROFILE: resolve(here, "build/profile-dev"), ATOM_SPIKE_NO_EXTERNAL: "1" },

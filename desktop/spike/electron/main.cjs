@@ -39,6 +39,8 @@ const TILE_ORIGINS = "https://tile.openstreetmap.org https://tiles.stadiamaps.co
 const RELEASE_CSP = `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: ${TILE_ORIGINS}; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:`;
 const DEV_CSP = RELEASE_CSP.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'").replace("connect-src 'self'", "connect-src 'self' ws://127.0.0.1:5173");
 
+const trace = (message) => { if (process.env.ATOM_SPIKE_TRACE === "1") console.log(`atom-spike: ${message}`); };
+
 // Observations for the Playwright probe; nothing here is read by the UI.
 const spike = {
   blockedNavigations: [], externalRequests: [], apiRequests: [], rejectedRequests: [], events: [], downloads: [], sidecar: null, secondInstance: 0,
@@ -282,6 +284,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(async () => {
+    trace(`app ready (${process.platform}, sandbox enabled for renderers)`);
     session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
     session.defaultSession.setPermissionCheckHandler(() => false);
     // Without a handler Electron would open its own Save dialog for every
@@ -300,6 +303,8 @@ if (!app.requestSingleInstanceLock()) {
       width: 1440, height: 900, minWidth: 1024, minHeight: 700, title: "A.T.O.M (Electron spike)",
       webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, webviewTag: false, spellcheck: false },
     });
+    mainWindow.webContents.once("did-finish-load", () => trace("main window loaded"));
+    mainWindow.webContents.on("render-process-gone", (_event, details) => trace(`renderer gone: ${details.reason}`));
     mainWindow.loadURL(`${APP_ORIGIN}/`);
     try {
       current = await startSidecar();

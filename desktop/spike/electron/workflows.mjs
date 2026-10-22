@@ -28,7 +28,7 @@ const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
 const { ELECTRON_RUN_AS_NODE: _ignored, ...inherited } = process.env;
-const app = await electron.launch({
+const app = await electron.launch({ chromiumSandbox: true,
   executablePath: process.env.ATOM_SPIKE_ELECTRON || (await import("electron")).default,
   args: [here, ...(process.env.ATOM_SPIKE_ELECTRON_ARGS || "").split(" ").filter(Boolean)],
   env: {
@@ -234,18 +234,31 @@ async function driveDialog(kind, title, target) {
   }
 }
 
+async function dialogDriverAvailable() {
+  if (driver !== "macos") return driver === "xdotool";
+  // Without Accessibility for the calling app, System Events cannot press keys
+  // and the sheet would stay open; check first instead of hanging.
+  try {
+    const { stdout } = await run("osascript", ["-e", "with timeout of 10 seconds", "-e", 'tell application "System Events" to get UI elements enabled', "-e", "end timeout"], { timeout: 20_000 });
+    return stdout.trim() === "true";
+  } catch { return false; }
+}
+
 await step("native Save and Open dialogs", async () => {
   if (!driver) throw new Error("no dialog driver for this platform");
+  if (!(await dialogDriverAvailable())) throw new Error(`${driver} dialog driver unavailable (Accessibility/UI scripting not permitted)`);
   if (!projectBytes) throw new Error("no exported project bytes");
   const folder = resolve(here, "build/dialog", "Çankaya Ağ Planı klasörü with a deliberately long directory name", "İkinci düzey — uzun yol testi için ek klasör adı");
   rmSync(resolve(here, "build/dialog"), { recursive: true, force: true });
   mkdirSync(folder, { recursive: true });
   const target = resolve(folder, `${TURKISH} ${Date.now()}.atom-project.json`);
   const save = app.evaluate((_e, [b64, file]) => global.__atomSpike.saveWithDialog(b64, file, "A.T.O.M Save Project"), [projectBytes.toString("base64"), target]);
+  save.catch(() => {});
   await Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target)]);
   const saved = await save;
   if (saved.canceled || !existsSync(saved.filePath)) throw new Error("Save dialog did not write the file");
   const open = app.evaluate((_e, dir) => global.__atomSpike.openWithDialog(dir, "A.T.O.M Open Project"), folder);
+  open.catch(() => {});
   await Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath)]);
   const opened = await open;
   if (opened.canceled) throw new Error("Open dialog was cancelled");
@@ -259,10 +272,14 @@ await step("no uncaught page errors", async () => {
   return { console_errors: consoleErrors.slice(0, 20) };
 });
 
-const state = await spikeState();
+const state = await Promise.race([spikeState(), sleep(10_000).then(() => ({ blockedNavigations: [], downloads: [] }))]);
 result.blocked_navigations = state.blockedNavigations;
 result.downloads = state.downloads.map(({ filename, state: downloadState }) => ({ filename, state: downloadState }));
-await app.close();
+// A dialog left open by a failed driver can block quit; destroy the windows
+// and bound the close so evidence is always written.
+await Promise.race([app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().forEach((w) => w.destroy())), sleep(5_000)]).catch(() => {});
+await Promise.race([app.close(), sleep(20_000)]).catch(() => {});
+try { app.process().kill("SIGKILL"); } catch { /* already exited */ }
 result.critical_failures = result.steps.filter((s) => !s.ok && s.critical !== false).map((s) => s.name);
 writeFileSync(resolve(evidence, `${runName}.json`), JSON.stringify(result, null, 2));
 for (const s of result.steps) console.log(`${s.ok ? "PASS" : "FAIL"} ${s.name} (${s.ms} ms)${s.ok ? "" : ` — ${s.error}`}`);

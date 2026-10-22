@@ -31,7 +31,20 @@ var (
 )
 
 func main() {
+	desktop, err := startDesktopControlFromArgs(os.Args[1:])
+	if err != nil {
+		log.Fatalf("desktop control: %v", err)
+	}
+	var desktopListener net.Listener
+	if desktop != nil {
+		if desktopListener, err = desktop.listen(); err != nil {
+			log.Fatalf("desktop listen: %v", err)
+		}
+	}
 	datasetPack, datasetErr := loadRuntimeDataset()
+	if desktop != nil {
+		desktop.announceDataset(datasetPack, datasetErr)
+	}
 	datasets := newDatasetRuntime(datasetPack, datasetErr, os.Getenv("ATOM_DATASETS_ROOT"))
 	experiments := newExperimentManager(modelVersion, envInt("EXPERIMENT_WORKERS", 1), envInt("EXPERIMENT_QUEUE_SIZE", defaultExperimentQueueSize))
 	buildingIndex := raytracer.EmptyBuildingIndex()
@@ -99,20 +112,31 @@ func main() {
 	frontendReady := fileExists(indexPath)
 	router := gin.New()
 	trustedProxies := splitCommaSeparated(os.Getenv("TRUSTED_PROXIES"))
+	requireTLS := envBool("REQUIRE_HTTPS", false)
+	if desktop != nil {
+		// The desktop host is the only client: no proxies, authenticated
+		// loopback HTTP as the intentional transport, and host-served UI assets.
+		trustedProxies, requireTLS, frontendReady = nil, false, true
+	}
 	if err := router.SetTrustedProxies(trustedProxies); err != nil {
 		log.Fatalf("configure trusted proxies: %v", err)
 	}
 	router.Use(gin.Logger(), gin.Recovery())
-	router.Use(securityHeaders(trustedProxies), requireHTTPS(envBool("REQUIRE_HTTPS", false), trustedProxies))
+	if desktop != nil {
+		router.Use(desktop.requireDesktopTransport())
+	}
+	router.Use(securityHeaders(trustedProxies), requireHTTPS(requireTLS, trustedProxies))
 	router.Use(limitRequestBody(maxRequestBodyBytes))
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key", "RF-Workflow", "RF-Workflow-ID", "RF-Workflow-Index"},
-		ExposeHeaders:    []string{"RateLimit-Limit", "RateLimit-Remaining", "RateLimit-Reset", "Retry-After", "RF-Budget-Policy", "RF-Followup-Limit", "RF-Followup-Remaining", "RF-Followup-Reset", "RF-Workflow-ID", "RF-Workflow-Remaining", "RF-Workflow-Expires"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	if desktop == nil {
+		router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
+			AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodOptions},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key", "RF-Workflow", "RF-Workflow-ID", "RF-Workflow-Index"},
+			ExposeHeaders:    []string{"RateLimit-Limit", "RateLimit-Remaining", "RateLimit-Reset", "Retry-After", "RF-Budget-Policy", "RF-Followup-Limit", "RF-Followup-Remaining", "RF-Followup-Reset", "RF-Workflow-ID", "RF-Workflow-Remaining", "RF-Workflow-Expires"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
 
 	router.GET("/healthz", func(c *gin.Context) {
 		pack := datasets.Current()
@@ -368,10 +392,11 @@ func main() {
 	})
 	registerMeasurementRouteProvider(router, func() *raytracer.BuildingIndex { return currentBuildingIndex(datasets) })
 	registerCoreLabRoutes(router)
-	registerFrontendRoutes(router, distPath, indexPath, frontendReady)
+	if desktop == nil {
+		registerFrontendRoutes(router, distPath, indexPath, frontendReady)
+	}
 
 	addr := net.JoinHostPort(getenv("BIND_ADDRESS", "127.0.0.1"), getenv("PORT", "8080"))
-	log.Printf("A.T.O.M API listening on %s", addr)
 	server := &http.Server{
 		Addr:              addr,
 		Handler:           router,
@@ -380,7 +405,14 @@ func main() {
 		WriteTimeout:      120 * time.Second,
 		IdleTimeout:       60 * time.Second,
 	}
-	if err := runHTTPServer(server); err != nil {
+	if desktop != nil {
+		log.Printf("A.T.O.M desktop API listening on %s", desktopListener.Addr())
+		err = desktop.serve(server, desktopListener)
+	} else {
+		log.Printf("A.T.O.M API listening on %s", addr)
+		err = runHTTPServer(server)
+	}
+	if err != nil {
 		log.Fatalf("run server: %v", err)
 	}
 }

@@ -4,7 +4,7 @@
 // in --desktop-control mode (backend-go/desktop_control.go), stable app://atom
 // origin, locked navigation and an isolated print surface. Not a release shell.
 
-const { app, BrowserWindow, dialog, protocol, session, shell } = require("electron");
+const { app, BrowserWindow, dialog, net, protocol, session, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
@@ -287,6 +287,15 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(async () => {
     trace(`app ready (${process.platform}, sandbox enabled for renderers)`);
+    if (process.env.ATOM_SPIKE_TRACE === "1") {
+      // Heartbeat: proves the main thread is alive and lists child processes.
+      let beats = 0;
+      const timer = setInterval(() => {
+        beats += 1;
+        trace(`heartbeat ${beats}: ${app.getAppMetrics().map((m) => `${m.type}${m.serviceName ? `(${m.serviceName})` : ""}:${m.sandboxed === undefined ? "?" : m.sandboxed ? "sandboxed" : "unsandboxed"}`).join(" ")}`);
+        if (beats >= 8) clearInterval(timer);
+      }, 2500);
+    }
     session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
     session.defaultSession.setPermissionCheckHandler(() => false);
     // Without a handler Electron would open its own Save dialog for every
@@ -314,6 +323,9 @@ if (!app.requestSingleInstanceLock()) {
     contents.on("console-message", (event) => trace(`renderer console ${event.level}: ${String(event.message).slice(0, 160)}`));
     app.on("child-process-gone", (_event, details) => trace(`child process gone: ${details.type} ${details.reason} ${details.exitCode}`));
     mainWindow.loadURL(`${APP_ORIGIN}/`);
+    if (process.env.ATOM_SPIKE_TRACE === "1") {
+      net.fetch(`${APP_ORIGIN}/index.html`).then((r) => trace(`main-process net.fetch app:// -> ${r.status}`), (e) => trace(`main-process net.fetch failed: ${e.message}`));
+    }
     try {
       current = await startSidecar();
       spike.sidecar = { address: current.address, generation: current.generation, pid: current.pid, readyMs: current.readyMs, dataset: current.dataset, meta: current.meta };

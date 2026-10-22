@@ -49,18 +49,20 @@ diagnose() {
 # whether the main window finishes loading through the app:// handler.
 diagnose_variants() {
   ls /usr/share/dbus-1/services >"$OUT/dbus-activatable-services.txt" 2>&1
-  for variant in baseline no-a11y-bridge password-store-basic no-session-bus combined; do
+  # Variants marked diagnostic-only weaken isolation to localize the blocker;
+  # they never count as a qualification pass.
+  for variant in baseline disable-gpu in-process-gpu network-service-in-process diagnostic-only-no-sandbox; do
     extra=""; envs=""
     case $variant in
-      no-a11y-bridge) envs="NO_AT_BRIDGE=1 GTK_A11Y=none" ;;
-      password-store-basic) extra="--password-store=basic" ;;
-      no-session-bus) envs="DBUS_SESSION_BUS_ADDRESS=disabled:" ;;
-      combined) envs="NO_AT_BRIDGE=1 GTK_A11Y=none"; extra="--password-store=basic" ;;
+      disable-gpu) extra="--disable-gpu" ;;
+      in-process-gpu) extra="--in-process-gpu" ;;
+      network-service-in-process) extra="--enable-features=NetworkServiceInProcess" ;;
+      diagnostic-only-no-sandbox) extra="--no-sandbox" ;;
     esac
     started=$(date +%s)
     env $envs ATOM_SPIKE_TRACE=1 ATOM_SPIKE_DIST="$ROOT/frontend-react/dist" ATOM_SPIKE_SIDECAR=/bin/false ATOM_SPIKE_PROFILE="$SPIKE/build/profile-variant-$variant"       timeout -s KILL 25 node_modules/electron/dist/electron "$SPIKE" ${ATOM_SPIKE_ELECTRON_ARGS:-} $extra >"$OUT/variant-$variant.log" 2>&1
     loaded=$(grep -c "main window loaded" "$OUT/variant-$variant.log")
-    echo "variant $variant: window_loaded=$loaded last=$(grep 'atom-spike:' "$OUT/variant-$variant.log" | tail -1 | cut -c1-120)" | tee -a "$OUT/startup-variants.txt"
+    echo "variant $variant: window_loaded=$loaded fetch=$(grep -o 'net.fetch[^$]*' "$OUT/variant-$variant.log" | head -1 | cut -c1-60) heartbeat=$(grep -o 'heartbeat 2:.*' "$OUT/variant-$variant.log" | head -1 | cut -c1-200)" | tee -a "$OUT/startup-variants.txt"
   done
 }
 

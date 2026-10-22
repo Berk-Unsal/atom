@@ -258,7 +258,8 @@ async function driveDialog(kind, title, target, settled = () => false) {
       await sleep(1500);
       attempts.push(`${label}:${settled() ? "closed" : "open"}`);
     };
-    await attempt("return", () => run("xdotool", ["key", "--clearmodifiers", "Return"]));
+    // Return is unreliable in Electron's GTK dialogs (Save has no default
+    // response; Open closes as cancelled), so press the button mnemonic first.
     await attempt(mnemonic, () => run("xdotool", ["key", "--clearmodifiers", mnemonic]));
     await attempt("click-button", async () => {
       // Save/Open sits at the bottom-right of the GTK dialog's client area.
@@ -272,7 +273,7 @@ async function driveDialog(kind, title, target, settled = () => false) {
         await run("xdotool", ["key", "--clearmodifiers", "ctrl+l"]);
         await run("xdotool", ["type", "--delay", "15", target]);
         await sleep(300);
-        await run("xdotool", ["key", "--clearmodifiers", "Return"]);
+        await run("xdotool", ["key", "--clearmodifiers", "alt+o"]);
       });
     }
     if (!settled()) {
@@ -290,13 +291,15 @@ async function driveDialog(kind, title, target, settled = () => false) {
       .then((r) => r.stdout.trim(), (error) => `${error.stdout || ""}${error.stderr || ""}`.trim().split("\n").slice(-2).join(" "));
     await sleep(1500);
     const sent = [];
-    for (const steps of [["key:Return"], [kind === "save" ? "combo:Alt_L+s" : "combo:Alt_L+o"]]) {
+    // Give the dialog keyboard focus with a pointer click on its centre (the
+    // empty file list), then press the button mnemonic.
+    for (const steps of [["move:720,450", "click", kind === "save" ? "combo:Alt_L+s" : "combo:Alt_L+o"]]) {
       if (settled()) break;
       sent.push(`${steps.join(",")} -> ${await keys(...steps)}`);
       await sleep(2000);
     }
     if (kind === "open" && !settled()) {
-      sent.push(await keys("combo:Control_L+l", `text:${target}`, "key:Return"));
+      sent.push(await keys("combo:Control_L+l", `text:${target}`, "combo:Alt_L+o"));
       await sleep(2000);
     }
     dialogTrace.push(`${kind}: mutter remote desktop ${sent.join(" / ")} settled=${settled()}`);
@@ -321,7 +324,8 @@ if (driver === "mutter") {
     await field.click();
     await page.keyboard.press("End");
     const before = await field.inputValue();
-    const sent = await run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), "text:Z"], { timeout: 30_000 }).then((r) => r.stdout.trim(), (e) => `${e.stdout || ""}${e.stderr || ""}`.trim());
+    const box = await field.boundingBox();
+    const sent = await run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), `move:${Math.round(box.x + box.width - 8)},${Math.round(box.y + box.height / 2)}`, "click", "key:End", "text:Z"], { timeout: 30_000 }).then((r) => r.stdout.trim(), (e) => `${e.stdout || ""}${e.stderr || ""}`.trim());
     await sleep(800);
     const after = await field.inputValue();
     await page.keyboard.press("Escape");

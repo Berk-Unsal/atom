@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / 'docs/doc-sources.json'
-CURRENT = {'README.md', 'CHANGELOG.md', *('docs/' + name for name in [
+CURRENT = {'README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', *('docs/' + name for name in [
     'index.md', 'index.html', 'overview.md', 'algorithms.md', 'algorithms.html', 'api.md', 'api.html', 'openapi.yaml',
     'architecture.md', 'architecture.html', 'features.md', 'features.html',
     'getting-started.md', 'download.html', 'modeling-limits.md', 'modeling-limits.html',
@@ -14,21 +14,27 @@ CURRENT = {'README.md', 'CHANGELOG.md', *('docs/' + name for name in [
     'dataset-pack-studio.md', 'dataset-pack-studio.html', 'faq.md', 'faq.html',
     'terminology.md', 'terminology.html', 'report-guide.md', 'report-guide.html',
     'project-format.md', 'project-format.html', 'contributing.md', 'contributing.html',
-    'changelog.html',
+    'changelog.html', 'planning-walkthrough.md', 'planning-walkthrough.html',
 ])}
 CLASSES = {'CURRENT PRODUCT DOC', 'HISTORICAL AUDIT / QUALIFICATION', 'RESEARCH REFERENCE', 'INTERNAL DESIGN'}
+LOCAL_TOOL_DIRS = {'.impeccable', '.venv', '__pycache__'}
 
 
 def source_paths():
-    return sorted({'docs/doc-sources.json', 'README.md', 'CHANGELOG.md', 'PRODUCT.md', 'planning/product-compass.md',
+    return sorted({'docs/doc-sources.json', 'README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'PRODUCT.md', 'planning/product-compass.md',
                    *(p.relative_to(ROOT).as_posix() for p in (ROOT/'docs').rglob('*')
-                     if p.is_file() and p.suffix in ('.md', '.html', '.json', '.yaml', '.yml'))})
+                     if p.is_file() and p.suffix in ('.md', '.html', '.json', '.yaml', '.yml')
+                     and not LOCAL_TOOL_DIRS.intersection(p.relative_to(ROOT/'docs').parts))})
 
 
 def classify(path):
     name = Path(path).name
     if path in CURRENT:
         return 'CURRENT PRODUCT DOC', 'Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable.'
+    if name == 'priority-issue-plan.md':
+        return 'INTERNAL DESIGN', 'Dated issue triage and execution scope; not completion or release evidence.'
+    if name == 'planning-walkthrough-evidence.json':
+        return 'HISTORICAL AUDIT / QUALIFICATION', 'Recorded deterministic public-pack example, exact inputs and runtime scope; not measured physical accuracy.'
     if path in ('PRODUCT.md', 'planning/product-compass.md') or name in ('doc-sources.json', 'search-index.json', 'reference-template.html'):
         return 'INTERNAL DESIGN', 'Product/design or generated navigation infrastructure; search entries inherit the referenced page scope.'
     if 'claim-reconciliation' in name or 'post-release-product-scientific-audit' in name:

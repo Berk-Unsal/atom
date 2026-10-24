@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="A fixed Ankara baseline, azimuth
+recommendation, overlap trade-off and portable project/report evidence
+with recorded API inputs." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Two-Cell Planning Walkthrough | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./terminology.html">Terminology</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Two-Cell Planning
+Walkthrough page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#exact-inputs-and-scope"
+      id="toc-exact-inputs-and-scope">Exact inputs and scope</a></li>
+      <li><a href="#evaluate-and-preserve-the-baseline"
+      id="toc-evaluate-and-preserve-the-baseline">Evaluate and preserve
+      the baseline</a></li>
+      <li><a href="#optimize-and-inspect-the-trade-off"
+      id="toc-optimize-and-inspect-the-trade-off">Optimize and inspect
+      the trade-off</a></li>
+      <li><a href="#save-the-chosen-plan-and-export-review-evidence"
+      id="toc-save-the-chosen-plan-and-export-review-evidence">Save the
+      chosen plan and export review evidence</a></li>
+      <li><a href="#reproduce-the-recorded-api-comparison"
+      id="toc-reproduce-the-recorded-api-comparison">Reproduce the
+      recorded API comparison</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Reproducible example</span>
+        <h1>Two-Cell Planning Walkthrough</h1>
+        <p>A fixed Ankara baseline, azimuth recommendation, overlap
+trade-off and portable project/report evidence with recorded API
+inputs.</p>
+        <div class="hero-actions">
+          <a class="button" href="./planning-walkthrough.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Can changing only two planning Cells' azimuths serve more modeled
+demand without excessive duplicate service? This walkthrough records a
+baseline, a recommendation and an alternative with less overlap in a
+small Ankara area. It uses public planning inputs; measured real-world
+RF accuracy remains unestablished, and the result does not approve a
+deployment.</p>
+<h2 id="exact-inputs-and-scope">Exact inputs and scope</h2>
+<p>Use a complete Git LFS checkout and the default
+<code>ankara-open-planning@2026.07</code> pack from <a
+href="./download.html">Getting Started</a>. Download the separate <a
+href="https://raw.githubusercontent.com/Berk-Unsal/atom/main/examples/ankara-two-cell-walkthrough.atom-project.json">two-Cell
+walkthrough project</a> using the link's Save link as action, or use the
+file in your checkout. The legacy <a
+href="https://raw.githubusercontent.com/Berk-Unsal/atom/main/examples/ankara-sample.atom-project.json">first-use
+sample</a> remains an input-only example; its first-run UI selects
+nearby Cells dynamically and is not this fixed comparison.</p>
+<p>The walkthrough project contains two selected records and their
+complete planning RF profiles, dataset ID/version/hashes and priorities.
+It intentionally contains no computed results: import it and evaluate on
+the matching runtime.</p>
+<table>
+<thead>
+<tr>
+<th>Planning record</th>
+<th>API Cell ID</th>
+<th>Longitude</th>
+<th>Latitude</th>
+<th>Baseline azimuth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LTE-26380</code></td>
+<td><code>26380</code></td>
+<td>32.8279</td>
+<td>39.9279</td>
+<td>90°</td>
+</tr>
+<tr>
+<td><code>LTE-26381</code></td>
+<td><code>26381</code></td>
+<td>32.8283</td>
+<td>39.9270</td>
+<td>90°</td>
+</tr>
+</tbody>
+</table>
+<p>These are OpenCellID-derived planning records, not verified physical
+sites or operator-authoritative RF identities. Coordinates identify the
+existing public pack records, not a new measurement campaign. Demand
+attributes are heuristic planning weights, not measured traffic or
+population.</p>
+<p>The recorded run used A.T.O.M <strong>0.13.0</strong>, source
+<strong>fc0f1e489110bbd30277c3454e4db95e0ca302d6</strong>, Go
+<strong>1.26.10</strong> on macOS arm64, and model/version
+<strong>urban_short_range</strong>. Exact hashes and the complete
+canonical request are in the <a
+href="planning-walkthrough-evidence.json">recorded evidence</a>.
+Buildings SHA-256 is
+<code>d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc</code>;
+Cells SHA-256 is
+<code>c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8</code>.</p>
+<p>Keep these settings fixed throughout:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Technology / frequency / bandwidth</td>
+<td>4G, 2.6 GHz, 20 MHz</td>
+</tr>
+<tr>
+<td>Model</td>
+<td><code>urban_short_range</code> (3GPP UMa median outdoor
+planning)</td>
+</tr>
+<tr>
+<td>Rays / radius / beam</td>
+<td>120 rays per Cell / 400 m / 120°</td>
+</tr>
+<tr>
+<td>Conducted TX power / absolute TX gain</td>
+<td>30 dBm / 25 dBi</td>
+</tr>
+<tr>
+<td>RX gain / system and polarization losses</td>
+<td>0 dBi / 0 dB each</td>
+</tr>
+<tr>
+<td>TX height / RX height</td>
+<td>25 m / 1.5 m</td>
+</tr>
+<tr>
+<td>Horizontal / vertical pattern</td>
+<td>Ideal sector / flat</td>
+</tr>
+<tr>
+<td>Mechanical and electrical tilt / pattern orientation</td>
+<td>0° each</td>
+</tr>
+<tr>
+<td>Receiver sensitivity / calibration offset</td>
+<td>Manual −115 dBm / 0 dB</td>
+</tr>
+<tr>
+<td>Demand / residential / propagation reach / reduce overlap / radio
+quality priorities</td>
+<td>100 / 50 / 50 / 20 / 0</td>
+</tr>
+<tr>
+<td>Constraints / search</td>
+<td>None / existing default coordinate search</td>
+</tr>
+</tbody>
+</table>
+<p>The fixture also freezes load 70%, reuse 1, channel CH-1, noise
+figure 7 dB and sample spacing 40 m. Radio quality is disabled in this
+optimization, so no SINR or throughput conclusion follows from those
+settings. Only azimuth changes; power, locations, heights, frequency and
+patterns remain fixed. The default bounded search and retained Pareto
+frontier do not prove a global optimum.</p>
+<h2 id="evaluate-and-preserve-the-baseline">Evaluate and preserve the
+baseline</h2>
+<ol type="1">
+<li>Open the app at <code>http://localhost:8080</code> (Docker) or
+<code>http://localhost:5173</code> (Go + Vite). In the project menu,
+choose <strong>Import</strong> and select
+<code>ankara-two-cell-walkthrough.atom-project.json</code>. Import
+creates a separate project.</li>
+<li>Check <strong>Network</strong> mode with <strong>2
+selected</strong>. In <strong>Inventory</strong>, confirm the two
+records and their fixed per-Cell profiles. Do not replace them by
+drawing an area or opening the dynamic first-run sample.</li>
+<li>In <strong>Data</strong>, confirm the dataset/version and model.
+Stop if the project shows <strong>Dataset differs from this
+project</strong>. Replacing a pack or accepting a different model makes
+the numeric example inapplicable.</li>
+<li>Select <strong>Evaluate Network</strong>. Wait for
+<strong>Ready</strong>, then open <strong>Results</strong>. Record the
+baseline row below. The map rays show propagation; served buildings and
+overlap have their own populations and are not ray blockage
+percentages.</li>
+<li>Choose <strong>Save Version</strong> to preserve the evaluated
+baseline. In <strong>Plan → Scenarios</strong>, give it a readable
+baseline name. Keep it available for comparison before changing the
+plan.</li>
+</ol>
+<h2 id="optimize-and-inspect-the-trade-off">Optimize and inspect the
+trade-off</h2>
+<ol type="1">
+<li>Open <strong>Simulate → Propagation → Advanced analysis</strong>,
+check the five <strong>Optimization priorities</strong> above, and
+choose <strong>Optimize Network</strong>. This runs RF; changing
+priorities later only reranks the retained alternatives until you
+explicitly search again.</li>
+<li>In <strong>Results → Optimization</strong>, choose <strong>View
+comparison</strong> to inspect <strong>Baseline vs Recommended</strong>.
+The recommended azimuths are <strong>240° / 130°</strong> in API Cell
+order <code>26380</code> / <code>26381</code>. Optimization loads these
+into the working draft; verify them before saving.</li>
+<li>Open <strong>Results → Solutions</strong> and inspect the
+alternative <strong>240° / 110°</strong>, using <strong>Show
+all</strong> if necessary. Choose its point or row to inspect it;
+inspection alone does not apply it. Use the explicit apply action only
+if you want that plan in the draft.</li>
+<li>Compare all three on the same domain and priorities:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Baseline 90° / 90°</th>
+<th style="text-align: right;">Recommended 240° / 130°</th>
+<th style="text-align: right;">Alternative 240° / 110°</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normalized optimization score (0–100)</td>
+<td style="text-align: right;">40.0089</td>
+<td style="text-align: right;">81.4048</td>
+<td style="text-align: right;">80.6990</td>
+</tr>
+<tr>
+<td>Served demand weight / relevant weight</td>
+<td style="text-align: right;">115 / 305</td>
+<td style="text-align: right;">305 / 305</td>
+<td style="text-align: right;">305 / 305</td>
+</tr>
+<tr>
+<td>Covered residential buildings</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">338</td>
+<td style="text-align: right;">327</td>
+</tr>
+<tr>
+<td>Overlapping buildings</td>
+<td style="text-align: right;">109</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Summed usable ray reach (m)</td>
+<td style="text-align: right;">13,418.6562</td>
+<td style="text-align: right;">14,970.5508</td>
+<td style="text-align: right;">14,559.8919</td>
+</tr>
+</tbody>
+</table>
+<p>The recommendation gains <strong>190 demand-weight units</strong> and
+<strong>171 residential buildings</strong>, while removing <strong>105
+overlapping buildings</strong>, relative to the baseline. Its score
+increases <strong>41.3959 points</strong>; that score is a weighted
+planning utility, not a coverage percentage or confidence level.</p>
+<p>The zero-overlap alternative keeps all 305 demand-weight units but
+gives up <strong>11 residential buildings</strong> and about
+<strong>410.66 m of summed ray reach</strong> relative to the
+recommendation. It illustrates why the highest weighted score and
+minimum overlap need not select the same plan. The domain contains 601
+relevant residential buildings; neither result means all homes or all
+outdoor locations are covered. Summed ray reach is not geographic area,
+user coverage or a path length between the Cells.</p>
+<h2 id="save-the-chosen-plan-and-export-review-evidence">Save the chosen
+plan and export review evidence</h2>
+<ol type="1">
+<li>Choose the recommendation or explicitly apply the inspected
+alternative. Keep the baseline Version for comparison. Run
+<strong>Evaluate Network</strong> for the chosen current azimuths so the
+retained execution matches the exact plan you are saving, then choose
+<strong>Save Version</strong>. Read any stale/history notice before
+using a result.</li>
+<li>Use <strong>Results → Compare</strong> to select the baseline and
+chosen saved evidence. Confirm matching dataset and model identity
+before interpreting deltas. A changed radius, frequency or priority is a
+different comparison.</li>
+<li>Open the project menu and choose <strong>Export</strong>. Keep the
+<code>.atom-project.json</code> outside browser storage. Import it in a
+separate browser profile and confirm both preserved inputs/Versions.
+Imported IDs are remapped; provenance records the source identity.
+Historical results can remain readable without being a new live run, and
+some map layers require an explicit rerun.</li>
+<li>In <strong>Review → Report</strong>, choose
+<strong>Markdown</strong> to generate and download a report from the
+chosen saved Version, or use <strong>PDF / Print</strong> and save the
+print output. These files are separate from project export. Choose
+<strong>Review package</strong> for a local ZIP containing both HTML and
+Markdown reports, the project and manifest. See the report reader guide
+for lineage and A4 print settings.</li>
+<li>A reviewer should receive the editable project plus a readable
+report/review package. Check the project/scenario/Version and any source
+Run, dataset/model, UTC timestamp, complete RF settings and the
+unestablished-accuracy boundary. A project file does not include the
+separate Run History database, generated report store or coverage
+surfaces.</li>
+</ol>
+<h2 id="reproduce-the-recorded-api-comparison">Reproduce the recorded
+API comparison</h2>
+<p>With the Go API already running on the matching pack, run from the
+repository root using Node 24 or newer:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> scripts/reproduce-planning-walkthrough.mjs http://localhost:8080 /tmp/atom-walkthrough-evidence</span></code></pre></div>
+<p>The script uses the same project importer and request builder as the
+frontend. It checks dataset hashes and model version, sends <strong>two
+sequential RF requests</strong> (Evaluate and Optimize), checks the
+recorded fingerprint and comparison, and writes
+<code>request.json</code>, <code>meta.json</code>,
+<code>baseline.json</code>, <code>optimization.json</code> and
+<code>summary.json</code> into the output directory. The recorded
+scenario fingerprint is
+<code>network-6fe95eaddbb92e9ba9a3bf0fa5384544</code>. These JSON files
+are execution evidence, not importable portable projects or UI
+reports.</p>
+<p>No request is automatically retried. If the API is busy
+(<code>429</code>), wait for its <code>Retry-After</code> before
+rerunning. A changed dataset, model, fixture or result fails the
+comparison; keep the output and investigate instead of silently
+replacing the recorded values. This command verifies the API
+calculation; the UI steps above separately exercise preservation and
+reporting.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

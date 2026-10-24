@@ -16,6 +16,27 @@ test.beforeEach(async ({ context }) => {
 });
 
 const appearance = (page) => page.getByRole("switch", { name: "Dark mode", exact: true });
+
+test("download guide keeps walkthrough text readable and primary hover text visible", async ({ page }, testInfo) => {
+  await page.goto("/docs/download.html");
+  for (const value of ["light", "dark"]) {
+    await setTheme(page, value);
+    const sizes = await page.locator(".workflow-step p, .workflow-name span, th, .command-caption").evaluateAll(
+      (nodes) => nodes.map((node) => Number.parseFloat(getComputedStyle(node).fontSize)),
+    );
+    expect(sizes.length).toBeGreaterThan(0);
+    expect(Math.min(...sizes)).toBeGreaterThanOrEqual(14);
+    const primary = page.getByRole("link", { name: "Start with Docker", exact: true });
+    await primary.hover();
+    await expect(primary).toHaveCSS("color", "rgb(255, 255, 255)");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  }
+  await page.getByRole("heading", { name: "Guided first-use workflows" }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("walkthrough-guide.png") });
+  await page.getByRole("link", { name: "two-Cell planning walkthrough" }).click();
+  await expect(page.getByRole("heading", { name: "Two-Cell Planning Walkthrough", exact: true })).toBeVisible();
+});
+
 const theme = (page, value) => expect(page.locator("html")).toHaveAttribute("data-theme", value);
 async function setTheme(page, value) {
   if (await page.locator("html").getAttribute("data-theme") !== value) await appearance(page).click();

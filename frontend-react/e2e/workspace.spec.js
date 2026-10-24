@@ -1834,8 +1834,6 @@ test("project budget recovery preserves evidence and offers working Report and N
   const trigger = page.getByRole("button", { name: /^Project menu/ });
   await trigger.click();
   const menu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await menu.getByRole("button", { name: "Save Version" }).click();
-  await expect(menu.getByRole("status")).toHaveText("Version saved");
   const readWorkspace = () => page.evaluate(async () => {
     const request = indexedDB.open("atom-planning-workspace");
     const db = await new Promise((resolve, reject) => {
@@ -1850,6 +1848,16 @@ test("project budget recovery preserves evidence and offers working Report and N
     db.close();
     return workspace;
   });
+  // Let the initial draft autosave commit before saving the Version. Otherwise
+  // that already-scheduled write can land after "Version saved" and change the
+  // baseline while the rejected-import assertion is running.
+  await expect.poll(async () => {
+    const workspace = await readWorkspace();
+    const project = workspace?.projects.find((candidate) => candidate.id === workspace.activeProjectId);
+    return { scenarios: project?.scenarios.length, selectedTowerId: project?.draft?.plan?.selectedTowerId };
+  }).toEqual({ scenarios: 0, selectedTowerId: "tower-1" });
+  await menu.getByRole("button", { name: "Save Version" }).click();
+  await expect(menu.getByRole("status")).toHaveText("Version saved");
   const before = await readWorkspace();
   const original = before.projects.find((project) => project.id === before.activeProjectId);
   const rfCount = computeRequests.length;

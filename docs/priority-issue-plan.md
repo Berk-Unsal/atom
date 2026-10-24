@@ -75,3 +75,13 @@ contrast false positive and table-wrapper padding false positive have local,
 file-scoped detector ignores; the existing font is intentionally retained.
 No blanket rule or file ignore was added. No RF implementation, request budget,
 portable-file limit, desktop gate or release metadata was changed.
+
+## CI security follow-up
+
+The first PR run exposed two high-severity findings in the pre-existing frontend
+development dependency lock: undici 7.30.0 (via jsdom) and zod 4.4.3 (via the React
+Hooks ESLint plugin). Upstream advisories were checked; the compatible lockfile
+updates are undici 7.30.1 and zod 4.6.7. No direct dependency range, runtime major
+version or audit threshold was changed. A clean install, security audit (zero
+vulnerabilities), lint, all 734 frontend tests and production build passed after
+the updates for this separate remediation commit.

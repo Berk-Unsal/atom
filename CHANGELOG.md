@@ -10,6 +10,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Update transitive frontend development dependencies undici to 7.30.1 and zod to 4.6.7 to clear the high-severity advisories reported by the CI security audit.
 - Make contribution guidance discoverable from the README and root CONTRIBUTING.md; repair Git LFS and Go/Vite setup, split-server readiness, Vitest/Playwright and Go checks, pinned documentation tooling, public links and the VERSION-based release workflow.
 
 ## [0.13.0] - 2026-10-22

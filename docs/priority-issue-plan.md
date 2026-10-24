@@ -85,3 +85,12 @@ updates are undici 7.30.1 and zod 4.6.7. No direct dependency range, runtime maj
 version or audit threshold was changed. A clean install, security audit (zero
 vulnerabilities), lint, all 734 frontend tests and production build passed after
 the updates for this separate remediation commit.
+
+The full browser run also exposed a race in the pre-existing project-budget
+recovery test: it captured the persisted workspace after Save Version but before
+the pending 500 ms draft autosave committed. The test now waits for the initial
+draft to exist in IndexedDB before saving the Version and capturing its baseline.
+The complete before/after workspace equality check remains, including persistence
+metadata; no production persistence behavior or limit was changed.
+The recovery flow passed 12 targeted runs (three repetitions at each of four
+viewport sizes), with frontend lint passing afterward.

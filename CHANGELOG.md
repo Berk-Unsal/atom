@@ -4,6 +4,14 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add a reproducible two-Cell Ankara planning walkthrough with a dataset-bound portable project, exact RF inputs, recorded baseline/recommendation/overlap trade-off and an API reproduction script; document separate Version, project and report preservation.
+
+### Fixed
+
+- Make contribution guidance discoverable from the README and root CONTRIBUTING.md; repair Git LFS and Go/Vite setup, split-server readiness, Vitest/Playwright and Go checks, pinned documentation tooling, public links and the VERSION-based release workflow.
+
 ## [0.13.0] - 2026-10-22
 
 ### Added

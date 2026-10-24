@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 2,
+  "project": {
+    "id": "project-ankara-walkthrough",
+    "name": "Ankara Two-Cell Walkthrough",
+    "datasetRef": {
+      "id": "ankara-open-planning",
+      "version": "2026.07",
+      "hashes": {
+        "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+        "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+      }
+    },
+    "createdAt": "2026-10-24T00:00:00.000Z",
+    "updatedAt": "2026-10-24T00:00:00.000Z",
+    "activeScenarioId": "scenario-walkthrough-baseline",
+    "draft": null,
+    "scenarios": [
+      {
+        "id": "scenario-walkthrough-baseline",
+        "name": "Two-Cell 4G baseline",
+        "createdAt": "2026-10-24T00:00:00.000Z",
+        "updatedAt": "2026-10-24T00:00:00.000Z",
+        "plan": {
+          "settings": {
+            "frequencyGHz": 2.6,
+            "propagationModelID": "urban_short_range",
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 20,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "planningMode": "network",
+          "selectedTowerId": "LTE-26380",
+          "selectedNetworkTowerIds": [
+            "LTE-26380",
+            "LTE-26381"
+          ],
+          "selectionPolygon": [],
+          "layerVisibility": {
+            "rays": true,
+            "gaps": true,
+            "selectedCells": true,
+            "communicationPaths": true,
+            "interference": true,
+            "measurements": true
+          },
+          "networkAzimuths": {
+            "26380": 90,
+            "26381": 90
+          },
+          "optimizationConfig": {
+            "objectives": [
+              {
+                "id": "demand",
+                "weight": 100
+              },
+              {
+                "id": "residential",
+                "weight": 50
+              },
+              {
+                "id": "coverage",
+                "weight": 50
+              },
+              {
+                "id": "overlap",
+                "weight": 20
+              },
+              {
+                "id": "radio_quality",
+                "weight": 0
+              }
+            ],
+            "constraints": {}
+          },
+          "inventory": [
+            {
+              "id": "LTE-26380",
+              "cellId": 26380,
+              "coordinates": [
+                32.8279,
+                39.9279
+              ],
+              "rfProfile": {
+                "schemaVersion": 1,
+                "networkTech": "4g",
+                "propagationModelID": "urban_short_range",
+                "frequencyGHz": 2.6,
+                "band": "LTE Band 7",
+                "bandwidthMHz": 20,
+                "channelId": "CH-1",
+                "duplexMode": "fdd",
+                "txPowerDbm": 30,
+                "antennaGainDbi": 25,
+                "rxAntennaGainDbi": 0,
+                "systemLossDb": 0,
+                "polarizationLossDb": 0,
+                "radiusMeters": 400,
+                "beamWidthDeg": 120,
+                "antennaHeightM": 25,
+                "mechanicalDowntiltDeg": 0,
+                "electricalDowntiltDeg": 0,
+                "orientationDeg": 0,
+                "horizontalPatternId": "ideal-sector",
+                "verticalPatternId": "flat",
+                "loadFactor": 0.7,
+                "reuseFactor": 1,
+                "pci": null,
+                "receiverHeightM": 1.5,
+                "receiverSensitivityDbm": -115,
+                "receiverSensitivityMode": "manual",
+                "receiverNoiseBandwidthHz": 20000000,
+                "receiverNoiseBandwidthSource": "channel_bandwidth_approximation",
+                "receiverNoiseFigureDb": 7,
+                "receiverRequiredSnrDb": 3,
+                "receiverMarginDb": 0
+              },
+              "radioType": "LTE",
+              "isSimulated": true,
+              "editable": true,
+              "inventorySource": "dataset"
+            },
+            {
+              "id": "LTE-26381",
+              "cellId": 26381,
+              "coordinates": [
+                32.8283,
+                39.927
+              ],
+              "rfProfile": {
+                "schemaVersion": 1,
+                "networkTech": "4g",
+                "propagationModelID": "urban_short_range",
+                "frequencyGHz": 2.6,
+                "band": "LTE Band 7",
+                "bandwidthMHz": 20,
+                "channelId": "CH-1",
+                "duplexMode": "fdd",
+                "txPowerDbm": 30,
+                "antennaGainDbi": 25,
+                "rxAntennaGainDbi": 0,
+                "systemLossDb": 0,
+                "polarizationLossDb": 0,
+                "radiusMeters": 400,
+                "beamWidthDeg": 120,
+                "antennaHeightM": 25,
+                "mechanicalDowntiltDeg": 0,
+                "electricalDowntiltDeg": 0,
+                "orientationDeg": 0,
+                "horizontalPatternId": "ideal-sector",
+                "verticalPatternId": "flat",
+                "loadFactor": 0.7,
+                "reuseFactor": 1,
+                "pci": null,
+                "receiverHeightM": 1.5,
+                "receiverSensitivityDbm": -115,
+                "receiverSensitivityMode": "manual",
+                "receiverNoiseBandwidthHz": 20000000,
+                "receiverNoiseBandwidthSource": "channel_bandwidth_approximation",
+                "receiverNoiseFigureDb": 7,
+                "receiverRequiredSnrDb": 3,
+                "receiverMarginDb": 0
+              },
+              "radioType": "LTE",
+              "isSimulated": true,
+              "editable": true,
+              "inventorySource": "dataset"
+            }
+          ]
+        },
+        "request": null,
+        "meta": null,
+        "calibrationProfile": null,
+        "summary": {
+          "kind": "rf",
+          "resultsView": "rf",
+          "avgRxDBm": null,
+          "gapPct": null,
+          "networkScore": null,
+          "overlapBuildings": null,
+          "avgSINRDB": null,
+          "serviceablePct": null,
+          "affectedDemand": null,
+          "calibrationOffsetDB": 0
+        },
+        "artifacts": null,
+        "requiresRerun": true
+      }
+    ]
+  }
+}

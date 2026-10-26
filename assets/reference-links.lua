@@ -13,6 +13,7 @@ local page_routes = {
   ["deployment.md"] = "deployment.html",
   ["faq.md"] = "faq.html",
   ["contributing.md"] = "contributing.html",
+  ["planning-walkthrough.md"] = "planning-walkthrough.html",
   ["CONTRIBUTING.md"] = "contributing.html",
   ["modeling-limits.md"] = "modeling-limits.html",
   ["architecture.md"] = "architecture.html",

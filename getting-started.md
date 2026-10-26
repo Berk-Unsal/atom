@@ -108,6 +108,8 @@ Compare a small urban baseline with a bounded azimuth recommendation: configure 
 
 Before starting, see [Cell, sector, site, and tower record terminology](terminology.html) to distinguish planning Cells and dataset records from verified physical sites.
 
+For a fully specified example, follow the [two-Cell planning walkthrough](planning-walkthrough.html): import a fixed public-pack project, evaluate the baseline, inspect a recorded azimuth recommendation and overlap trade-off, then preserve the chosen Version, project and reports.
+
 ### Build A Cell Inventory
 
 Inventory Cells are planning records; a Cell or sector does not necessarily represent a separate physical site. See [the terminology guide](terminology.html#planning-cell).

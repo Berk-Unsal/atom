@@ -98,7 +98,7 @@ The adapter is available only to the Compose service network and runs as a non-r
 1. Use the project selector in the command bar to rename the default project or create a new one.
 2. Configure a plan and save a named scenario after each meaningful analysis.
 3. Reopen scenarios from the project menu; stale results are labeled when inputs or runtime metadata no longer match.
-4. Export a `.atom-project.json` file to move the full project to another browser or keep an external archive.
+4. Export a bounded `.atom-project.json` file to transfer retained project inputs, Scenario/Version evidence and provenance. Download generated Reports separately; the separate Run History database, coverage surfaces and view/Undo state are not included. See [what survives where](report-guide.html#what-survives-where).
 
 The five most recently used scenarios retain complete map layers. Older scenarios keep settings and summaries and may require a rerun.
 

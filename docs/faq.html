@@ -222,9 +222,13 @@ details</a>.</p>
 <p>Projects are stored in the current browser through IndexedDB. Saves
 are serialized, and local storage is used only when an IndexedDB write
 fails. If both copies exist, persistence revisions select the newest
-valid workspace. The server remains stateless. Export a versioned
-<code>.atom-project.json</code> file for backup or transfer to another
-browser.</p>
+valid workspace. The server remains stateless. Export a bounded
+<code>.atom-project.json</code> file for retained inputs,
+Scenario/Version evidence and provenance. Download generated Reports
+separately; project files do not include the separate Run History
+database, generated Report store, coverage surfaces or view/Undo state.
+See <a href="report-guide.html#what-survives-where">what survives
+where</a>.</p>
 <h3 id="why-is-a-saved-result-marked-stale">Why is a saved result marked
 stale?</h3>
 <p>The saved inputs, dataset, model, or calibration profile no longer

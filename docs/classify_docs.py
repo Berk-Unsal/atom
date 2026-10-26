@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / 'docs/doc-sources.json'
-CURRENT = {'README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', *('docs/' + name for name in [
+CURRENT = {'README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'planning/future_plans.md', *('docs/' + name for name in [
     'index.md', 'index.html', 'overview.md', 'algorithms.md', 'algorithms.html', 'api.md', 'api.html', 'openapi.yaml',
     'architecture.md', 'architecture.html', 'features.md', 'features.html',
     'getting-started.md', 'download.html', 'modeling-limits.md', 'modeling-limits.html',
@@ -21,7 +21,7 @@ LOCAL_TOOL_DIRS = {'.impeccable', '.venv', '__pycache__'}
 
 
 def source_paths():
-    return sorted({'docs/doc-sources.json', 'README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'PRODUCT.md', 'planning/product-compass.md',
+    return sorted({'docs/doc-sources.json', 'README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'PRODUCT.md', 'planning/product-compass.md', 'planning/future_plans.md',
                    *(p.relative_to(ROOT).as_posix() for p in (ROOT/'docs').rglob('*')
                      if p.is_file() and p.suffix in ('.md', '.html', '.json', '.yaml', '.yml')
                      and not LOCAL_TOOL_DIRS.intersection(p.relative_to(ROOT/'docs').parts))})

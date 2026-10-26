@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve, extname, sep } from "node:path";
 
 const docsRoot = resolve("../docs");
@@ -71,8 +72,40 @@ async function preview(page, dark) {
   await expect(page.locator(dark ? ".theme-preview-light" : ".theme-preview-dark")).toBeHidden();
   await expect(visible).toHaveJSProperty("complete", true);
   expect(await visible.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
-  await expect(visible).toHaveAttribute("src", dark ? "./assets/v0.12.0/network-workspace.png" : "./assets/focused-workspace.jpg");
+  await expect(visible).toHaveAttribute("src", `./assets/current-workspace/${dark ? "dark" : "light"}.png`);
+  await expect(visible).toHaveAttribute("alt", /two-Cell Ankara baseline/);
+  expect(await visible.evaluate((node) => [node.naturalWidth, node.naturalHeight])).toEqual([1440, 900]);
+  const bounds = await visible.boundingBox();
+  expect(bounds.width / bounds.height).toBeCloseTo(1440 / 900, 2);
 }
+
+test("landing previews retain a matched, verifiable real-app capture", async ({ page }) => {
+  const directory = resolve(docsRoot, "assets/current-workspace");
+  const manifest = JSON.parse(await readFile(resolve(directory, "capture.json"), "utf8"));
+  expect(manifest.schema).toBe("atom.documentation-hero.v1");
+  expect(manifest.sourceCommit).toMatch(/^[a-f0-9]{40}$/);
+  expect(manifest.fixtureSha256).toBe(createHash("sha256").update(await readFile(resolve("..", manifest.fixture))).digest("hex"));
+  expect(manifest.viewport).toEqual({ width: 1440, height: 900 });
+  expect(manifest.captures.map((capture) => capture.theme)).toEqual(["light", "dark"]);
+  expect(manifest.captures[0].state).toEqual(manifest.captures[1].state);
+  expect(manifest.captures[0].state.selectedMarkers).toHaveLength(2);
+  expect(manifest.scope).toContain("not field measurements");
+  expect(manifest.rfRequests).toEqual(["/api/evaluate-network", "/api/simulate", "/api/simulate"]);
+  await page.goto("/docs/index.html");
+  for (const capture of manifest.captures) {
+    expect(createHash("sha256").update(await readFile(resolve(directory, capture.file))).digest("hex")).toBe(capture.sha256);
+    expect(capture.tileHttpStatus).toBe(200);
+    await setTheme(page, capture.theme);
+    await preview(page, capture.theme === "dark");
+    const primary = page.getByRole("link", { name: "Download & Use", exact: true });
+    const navToggle = page.getByRole("button", { name: "Toggle documentation navigation" });
+    if (await navToggle.isVisible()) await navToggle.click();
+    await primary.hover();
+    await expect(primary).toHaveCSS("color", "rgb(255, 255, 255)");
+    if (await navToggle.isVisible()) await navToggle.click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
 
 test("docs keep every primary tab and highlight the current page after navigation", async ({ page }, testInfo) => {
   const tabs = ["Overview", "Terminology", "Architecture", "API", "Changelog", "GitHub", "Download & Use"];

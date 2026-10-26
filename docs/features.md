@@ -4,7 +4,16 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 
 ## Focused Planning Workspace
 
-- Ten workflow tools in one rail: Setup, Inventory, Propagation, Experiments, Surfaces, Interference, 5G Core, Results, Data, and Report.
+The workspace has **14 tools in four stages**, matching the current tool rail:
+
+| Stage | Tools |
+| --- | --- |
+| Plan | Setup, Inventory, Scenarios |
+| Simulate | Propagation, Experiments, Signal surface |
+| Analyze | Interference, RF Diagnostics, Building entry, 5G Core |
+| Review | Results, Run history, Data, Report |
+
+- Each stage opens one focused tool at a time.
 - A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible.
 - The map remains full size while tool and Inspector drawers overlay it.
 - Contextual layers appear only when their results exist.
@@ -14,7 +23,7 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 
 - Native browser IndexedDB persistence with automatic last-workspace restoration.
 - Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers.
-- Rename, duplicate, delete, import, and export complete projects as versioned `.atom-project.json` files.
+- Rename, duplicate, delete, import, and export bounded project evidence as versioned `.atom-project.json` files.
 - Result-bearing six-Cell projects use [lossless project file v3](project-format.md) with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload.
 - Input changes mark saved results stale instead of presenting them as current.
 - After a reload, the newest retained Run that computed exactly the restored plan (same request, dataset and model version) is shown as HISTORICAL with its summary; a working draft offers **Restore map layers**, one explicit RF run, because drafts keep inputs only. When no Run matches, Results says why. Saving a Version right after a run records that Run as the Version's source when the plan is unchanged.

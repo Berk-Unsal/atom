@@ -214,11 +214,16 @@ Suggested Docker memory allocation:
 Start with the static [documentation hub](docs/index.html), then use:
 
 - [System architecture](docs/architecture.html) for runtime components, request lifecycles, spatial data, reliability controls, and model boundaries.
-- [Product compass](planning/product-compass.md) for enduring product strengths, capability horizons, feature-admission criteria, and deliberate non-goals.
+- [Product roadmap](docs/product-roadmap-post-audit.md) for workflow priorities and the independent evidence gates; check linked GitHub issues for current status.
 - [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
+- [Two-Cell planning walkthrough](docs/planning-walkthrough.md) for a fixed Ankara baseline, recommendation, overlap trade-off and reviewable project/report exports.
 - [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), [Dataset Pack Studio](docs/dataset-pack-studio.html), and [model limitations](docs/modeling-limits.html) for implementation details.
 - [Map interpretation guide](docs/visualization.html) for reading propagation and radio-quality evidence.
+
+## Contributing
+
+Read the [contribution guide](docs/contributing.md) for a complete Git LFS checkout, Docker and Go/Vite development, focused tests and the full validation matrix. Start with an existing [GitHub issue](https://github.com/Berk-Unsal/atom/issues) and use the PR template to describe impact and validation.
 
 ## Versions and Release Notes
 

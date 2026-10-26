@@ -1386,6 +1386,17 @@ td strong {
   line-height: 1.45;
 }
 
+/* Keep installation instructions and table headings readable at every viewport. */
+.download-page .command-caption,
+.download-page .workflow-name span,
+.download-page .workflow-step span,
+.download-page .workflow-step strong,
+.download-page .workflow-step p,
+.download-page th,
+.download-page .footer-inner {
+  font-size: 0.875rem;
+}
+
 .faq-list {
   display: grid;
   gap: 8px;

@@ -86,7 +86,27 @@ PDF print settings." />
     <aside class="page-toc reference-toc" aria-label="Reading Planning
 Reports page contents">
       <strong>On this page</strong>
-      
+      <ul>
+      <li><a href="#find-the-evidence-in-the-report"
+      id="toc-find-the-evidence-in-the-report">Find the evidence in the
+      report</a></li>
+      <li><a href="#read-quantities-and-missing-analyses"
+      id="toc-read-quantities-and-missing-analyses">Read quantities and
+      missing analyses</a></li>
+      <li><a href="#print-to-pdf" id="toc-print-to-pdf">Print to
+      PDF</a></li>
+      <li><a href="#file-identity-and-regeneration"
+      id="toc-file-identity-and-regeneration">File identity and
+      regeneration</a></li>
+      <li><a href="#check-the-source-before-sharing"
+      id="toc-check-the-source-before-sharing">Check the source before
+      sharing</a></li>
+      <li><a href="#download-the-right-evidence"
+      id="toc-download-the-right-evidence">Download the right
+      evidence</a></li>
+      <li><a href="#what-survives-where"
+      id="toc-what-survives-where">What survives where</a></li>
+      </ul>
     </aside>
 
     <article class="page-content reference-page">
@@ -109,6 +129,8 @@ plan, source Runs, selected Cells, primary result and evaluation
 completeness. A score can exist after <strong>Evaluate Network</strong>
 without an optimization search. Standalone interference and the
 optimizer's radio-quality objective have separate status entries.</p>
+<h2 id="find-the-evidence-in-the-report">Find the evidence in the
+report</h2>
 <p>Continue through the report in this order:</p>
 <ol type="1">
 <li><strong>Planning map &amp; Cells</strong> ties stable numbered
@@ -139,6 +161,8 @@ source IDs, fingerprints, dataset hashes, receiver/model contracts and
 retained supporting evidence. Hashes establish identity or byte
 integrity, not physical validation.</li>
 </ol>
+<h2 id="read-quantities-and-missing-analyses">Read quantities and
+missing analyses</h2>
 <p>Read the units before comparing figures:</p>
 <table>
 <thead>
@@ -204,6 +228,7 @@ none is a zero result. In 6G research mode, unsupported interference
 remains unavailable. Optimizer radio quality uses its fixed sampled
 domain, including no-carrier samples as denominator failures; standalone
 interference has its own sampled and signal-only denominators.</p>
+<h2 id="print-to-pdf">Print to PDF</h2>
 <p>For PDF export, use <strong>A4 portrait</strong>, default scale and
 the report's CSS margins, and turn <strong>browser headers and footers
 off</strong>. Current Chromium is the reference print path: it supports
@@ -214,6 +239,8 @@ waits for document fonts and images before opening print; the
 self-contained HTML button invokes the browser's print command directly.
 The report remains selectable text; browser output is not a claim of
 PDF/UA conformance.</p>
+<h2 id="file-identity-and-regeneration">File identity and
+regeneration</h2>
 <p>New report downloads share a name such as
 <code>ankara-plan-network-plan-2-v3-20261019-083612z-network-evaluation-report.html</code>,
 with matching Markdown/map stems and UTC time. All displayed generation
@@ -223,6 +250,101 @@ generator, while downloading an already retained artifact preserves its
 original bytes, filename, timestamp and hash. A <strong>Review
 package</strong> collects existing saved-Version evidence locally and
 does not run RF or rebuild missing results.</p>
+<h2 id="check-the-source-before-sharing">Check the source before
+sharing</h2>
+<p>In <strong>Review → Report</strong>, read <strong>Report
+source</strong> before generating anything. A saved Version identifies
+immutable inputs within a Scenario; a Run identifies an execution
+against its recorded dataset/model. <strong>Current unsaved
+plan</strong> is not tied to a saved Version. A historical Report
+describes the evidence retained when it was generated, not the currently
+edited plan, and <strong>Runs: None</strong> must not be filled by
+inference. Use <strong>Open source Version</strong> when available to
+inspect its inputs; opening a source does not perform RF
+computation.</p>
+<p>The decision summary's completeness entries distinguish an evaluated
+network from an optimized recommendation. A standalone interference
+analysis can be <strong>Not evaluated</strong> even when an optimization
+score exists; the optimizer's optional radio-quality objective is
+separate. Missing map geometry is <strong>Not retained</strong>, missing
+old inputs are <strong>Not recorded</strong>, and
+unavailable/unsupported analyses are not zero-valued results. Never use
+a Pareto alternative's ray map as fresh simulation evidence merely
+because that alternative is selected for inspection.</p>
+<h2 id="download-the-right-evidence">Download the right evidence</h2>
+<ol type="1">
+<li>Choose <strong>Markdown</strong> to generate, retain and download a
+Markdown Report for the current source. It is readable offline and omits
+inline SVG maps; it is not an editable project.</li>
+<li>Choose <strong>PDF / Print</strong> to generate retained HTML and
+open the browser print surface. Saving a PDF is a browser print action,
+not a separate stored PDF artifact. Allow the local report popup when
+prompted.</li>
+<li>In <strong>Reports</strong>, <strong>Download Report</strong>
+downloads the retained HTML or Markdown bytes in their recorded format
+without running RF or opening the print surface. Open a downloaded HTML
+file in a browser to read it offline or use its print control.
+<strong>Regenerate as a new Report</strong> uses the current generator
+and creates a new artifact; it does not overwrite historical bytes or
+run new RF to reconstruct missing evidence.</li>
+<li>For a saved Version, <strong>Review package</strong> downloads a
+local ZIP with HTML and Markdown reports, a project file, map and
+manifest. It refuses an unsaved draft until a Version is saved. Check
+the file hashes against the manifest after transfer; matching hashes
+establish byte integrity, not authorship, signing or physical RF
+accuracy.</li>
+<li>Export the <strong>project</strong> separately from the project menu
+when the reviewer needs editable retained inputs/Scenario evidence. See
+the portable-project format and <a
+href="./planning-walkthrough.html">worked comparison</a> before assuming
+an export contains a particular result.</li>
+</ol>
+<h2 id="what-survives-where">What survives where</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Retention and transfer boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working draft</td>
+<td>Inputs autosave in this browser; a draft does not retain a complete
+live execution or all map layers.</td>
+</tr>
+<tr>
+<td>Scenario/Version and retained Scenario artifacts</td>
+<td>Portable project export carries bounded retained evidence and remaps
+imported local IDs with provenance. The five most recently used
+Scenarios retain complete map layers; older ones can need an explicit
+rerun.</td>
+</tr>
+<tr>
+<td>Separate Run History</td>
+<td>Its own browser-local database; it is not exported as the complete
+Run History database in a project file. Embedded Run metadata in a
+retained Scenario does not change this boundary.</td>
+</tr>
+<tr>
+<td>Generated Reports</td>
+<td>Separate artifact storage. Download the desired bytes or a review
+package outside browser storage; project export does not include the
+generated Report store.</td>
+</tr>
+<tr>
+<td>Coverage surfaces and view/Undo state</td>
+<td>Not a portable project backup. A transient surface may need
+regeneration from compatible retained inputs.</td>
+</tr>
+</tbody>
+</table>
+<p>Browser site-data deletion, quota failures or explicit deletion can
+remove local evidence. A <code>.atom-project.json</code> file is not a
+full-browser archive. Existing encoded/decoded size and complexity
+limits still apply: if an export/import is refused, current evidence
+remains in this browser; download a readable Report and follow the
+recovery guidance, rather than assuming a partial project was saved.</p>
       </div>
     </article>
   </main>

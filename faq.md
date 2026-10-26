@@ -50,7 +50,7 @@ Historical reports use retained source evidence. Missing geometry is not reconst
 
 ### Where are projects stored?
 
-Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a versioned `.atom-project.json` file for backup or transfer to another browser.
+Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a bounded `.atom-project.json` file for retained inputs, Scenario/Version evidence and provenance. Download generated Reports separately; project files do not include the separate Run History database, generated Report store, coverage surfaces or view/Undo state. See [what survives where](report-guide.html#what-survives-where).
 
 ### Why is a saved result marked stale?
 

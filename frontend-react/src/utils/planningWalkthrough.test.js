@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { exportProjectFile, importProjectFile, isDatasetCompatible } from "./projectStore.js";
 import { buildNetworkOptimizationPayload } from "./requestPayloads.js";
 import { validateRFProfile } from "./rfProfile.js";
+import { buildReportMetrics } from "./reportModel.js";
 
 const text = readFileSync("../examples/ankara-two-cell-walkthrough.atom-project.json", "utf8");
 const evidence = JSON.parse(readFileSync("../docs/planning-walkthrough-evidence.json", "utf8"));
@@ -10,6 +11,13 @@ const manifest = JSON.parse(readFileSync("../data-pipeline/manifest.json", "utf8
 const towers = JSON.parse(readFileSync("../data-pipeline/ankara_5g_nodes.geojson", "utf8")).features;
 
 describe("reproducible public Ankara walkthrough", () => {
+  it("uses the report's normalized reach-score units in the worked comparison", () => {
+    const metric = buildReportMetrics({ raw_metrics: { coverage_reach_score: evidence.baseline.propagationReach, coverage_reach_maximum: 24000 } }).find((row) => row.id === "coverage");
+    const guide = readFileSync("../docs/planning-walkthrough.md", "utf8");
+    expect(guide).toContain(`${metric.label} (${metric.unit})`);
+    expect(metric.value).toBe(evidence.baseline.propagationReach);
+    expect(guide).not.toMatch(/\bm of summed ray reach\b/);
+  });
   it("imports and round-trips the exact selected Cells, profiles and priorities", () => {
     const project = importProjectFile(text);
     const plan = project.scenarios[0].plan;

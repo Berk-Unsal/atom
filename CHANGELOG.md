@@ -10,6 +10,9 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Replace the documentation landing previews with a matched light/dark pair from the real two-Cell Ankara workflow, with source, dataset, request and image provenance.
+- Clarify report source identity, retained downloads, regeneration and project evidence limits; correct walkthrough propagation reach to normalized score units.
+- Reconcile the maintained roadmap with delivered features and explicit blockers, list all fourteen workspace tools, and separate the current API contract from deferred ideas and application release versions.
 - Update transitive frontend development dependencies undici to 7.30.1 and zod to 4.6.7 to clear the high-severity advisories reported by the CI security audit.
 - Make contribution guidance discoverable from the README and root CONTRIBUTING.md; repair Git LFS and Go/Vite setup, split-server readiness, Vitest/Playwright and Go checks, pinned documentation tooling, public links and the VERSION-based release workflow.
 

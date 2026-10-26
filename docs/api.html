@@ -2069,16 +2069,28 @@ a gateway-level bandwidth budget for multi-replica or internet-facing
 deployments.</p>
 <hr />
 <h2 id="versioning">Versioning</h2>
-<p><strong>Current API Version</strong>: <code>1.0</code></p>
-<p>Future versions will:</p>
-<ul>
-<li>Add webhook support for async simulations</li>
-<li>Support batch optimization requests</li>
-<li>Include terrain elevation models</li>
-<li>Add custom propagation model endpoints</li>
-</ul>
-<p>Breaking changes will increment major version (e.g.,
-<code>/v2</code>).</p>
+<p>The downloadable <a href="openapi.yaml">OpenAPI contract</a> declares
+API contract version <strong>1.0.0</strong>. That identifier is separate
+from the application release in root <code>VERSION</code> and the
+running server's <code>application_version</code> in
+<code>/api/meta</code>; it is not an upcoming release number. Current
+routes use <code>/api</code>, not a newly introduced versioned
+prefix.</p>
+<p>The supported asynchronous workflow is the existing batch-experiment
+process and job resources (<code>/api/processes/batch-experiment</code>,
+<code>/api/processes/batch-experiment/execution</code> and
+<code>/api/jobs/{jobID}</code>), within their documented limits. It is
+not a promise of a new batch-optimization endpoint. Webhook delivery and
+arbitrary custom propagation-model endpoints are not supported
+contracts. Terrain remains limited to the documented path-profile
+diagnostic; it is not silently added to canonical network
+calculations.</p>
+<p>New endpoints or breaking changes require a separately scoped design,
+implementation, compatibility review and updated contract. No webhook,
+terrain, custom-model or application release date is committed by this
+page. See the <a
+href="https://github.com/Berk-Unsal/atom/blob/main/planning/future_plans.md">maintained
+roadmap</a> for implemented, partial, blocked and deferred work.</p>
 <hr />
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="503-service-unavailable">503 Service Unavailable</h3>

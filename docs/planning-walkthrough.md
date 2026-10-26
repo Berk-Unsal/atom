@@ -56,11 +56,11 @@ The fixture also freezes load 70%, reuse 1, channel CH-1, noise figure 7 dB and 
 | Served demand weight / relevant weight | 115 / 305 | 305 / 305 | 305 / 305 |
 | Covered residential buildings | 167 | 338 | 327 |
 | Overlapping buildings | 109 | 4 | 0 |
-| Summed usable ray reach (m) | 13,418.6562 | 14,970.5508 | 14,559.8919 |
+| Normalized propagation reach (reach-score units) | 13,418.6562 | 14,970.5508 | 14,559.8919 |
 
 The recommendation gains **190 demand-weight units** and **171 residential buildings**, while removing **105 overlapping buildings**, relative to the baseline. Its score increases **41.3959 points**; that score is a weighted planning utility, not a coverage percentage or confidence level.
 
-The zero-overlap alternative keeps all 305 demand-weight units but gives up **11 residential buildings** and about **410.66 m of summed ray reach** relative to the recommendation. It illustrates why the highest weighted score and minimum overlap need not select the same plan. The domain contains 601 relevant residential buildings; neither result means all homes or all outdoor locations are covered. Summed ray reach is not geographic area, user coverage or a path length between the Cells.
+The zero-overlap alternative keeps all 305 demand-weight units but gives up **11 residential buildings** and about **410.66 normalized reach-score units** relative to the recommendation. It illustrates why the highest weighted score and minimum overlap need not select the same plan. The domain contains 601 relevant residential buildings; neither result means all homes or all outdoor locations are covered. Propagation reach is distance-normalized: each ray contributes up to 100 score units, capped at the lesser of its radius and 500 m. It is not metres, geographic area, user coverage or a path length between the Cells.
 
 ## Save the chosen plan and export review evidence
 

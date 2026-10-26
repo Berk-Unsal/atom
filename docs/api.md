@@ -1288,15 +1288,11 @@ Set `RF_REQUEST_TIMEOUT_SECONDS` to bound compute time; the default is 60 second
 
 ## Versioning
 
-**Current API Version**: `1.0`
+The downloadable [OpenAPI contract](openapi.yaml) declares API contract version **1.0.0**. That identifier is separate from the application release in root `VERSION` and the running server's `application_version` in `/api/meta`; it is not an upcoming release number. Current routes use `/api`, not a newly introduced versioned prefix.
 
-Future versions will:
-- Add webhook support for async simulations
-- Support batch optimization requests
-- Include terrain elevation models
-- Add custom propagation model endpoints
+The supported asynchronous workflow is the existing batch-experiment process and job resources (`/api/processes/batch-experiment`, `/api/processes/batch-experiment/execution` and `/api/jobs/{jobID}`), within their documented limits. It is not a promise of a new batch-optimization endpoint. Webhook delivery and arbitrary custom propagation-model endpoints are not supported contracts. Terrain remains limited to the documented path-profile diagnostic; it is not silently added to canonical network calculations.
 
-Breaking changes will increment major version (e.g., `/v2`).
+New endpoints or breaking changes require a separately scoped design, implementation, compatibility review and updated contract. No webhook, terrain, custom-model or application release date is committed by this page. See the [maintained roadmap](https://github.com/Berk-Unsal/atom/blob/main/planning/future_plans.md) for implemented, partial, blocked and deferred work.
 
 ---
 

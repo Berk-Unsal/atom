@@ -324,7 +324,7 @@ if you want that plan in the draft.</li>
 <td style="text-align: right;">0</td>
 </tr>
 <tr>
-<td>Summed usable ray reach (m)</td>
+<td>Normalized propagation reach (reach-score units)</td>
 <td style="text-align: right;">13,418.6562</td>
 <td style="text-align: right;">14,970.5508</td>
 <td style="text-align: right;">14,559.8919</td>
@@ -338,12 +338,14 @@ increases <strong>41.3959 points</strong>; that score is a weighted
 planning utility, not a coverage percentage or confidence level.</p>
 <p>The zero-overlap alternative keeps all 305 demand-weight units but
 gives up <strong>11 residential buildings</strong> and about
-<strong>410.66 m of summed ray reach</strong> relative to the
+<strong>410.66 normalized reach-score units</strong> relative to the
 recommendation. It illustrates why the highest weighted score and
 minimum overlap need not select the same plan. The domain contains 601
 relevant residential buildings; neither result means all homes or all
-outdoor locations are covered. Summed ray reach is not geographic area,
-user coverage or a path length between the Cells.</p>
+outdoor locations are covered. Propagation reach is distance-normalized:
+each ray contributes up to 100 score units, capped at the lesser of its
+radius and 500 m. It is not metres, geographic area, user coverage or a
+path length between the Cells.</p>
 <h2 id="save-the-chosen-plan-and-export-review-evidence">Save the chosen
 plan and export review evidence</h2>
 <ol type="1">

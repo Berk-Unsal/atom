@@ -10,6 +10,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Increase documentation landing-page guidance to 16px prose and 14px secondary text, and stack reference descriptions so long labels wrap without clipping.
 - Replace the documentation landing previews with a matched light/dark pair from the real two-Cell Ankara workflow, with source, dataset, request and image provenance.
 - Clarify report source identity, retained downloads, regeneration and project evidence limits; correct walkthrough propagation reach to normalized score units.
 - Reconcile the maintained roadmap with delivered features and explicit blockers, list all fourteen workspace tools, and separate the current API contract from deferred ideas and application release versions.

@@ -107,6 +107,32 @@ test("landing previews retain a matched, verifiable real-app capture", async ({ 
   }
 });
 
+test("landing guidance keeps readable type and unclipped reference labels", async ({ page }, testInfo) => {
+  await page.goto("/docs/index.html");
+  for (const value of ["light", "dark"]) {
+    await setTheme(page, value);
+    const secondary = page.locator(".home-page .hero-label, .hero-actions .button, .hero-preview figcaption, .task-type, .task-link strong, .feature-output, .flow-step span, .flow-step strong, .flow-step small, .info-band strong, .reference-list a, .reference-list span:last-child, .footer-inner, .footer-links a");
+    const prose = page.locator("main p");
+    const sizes = (nodes) => nodes.map((node) => Number.parseFloat(getComputedStyle(node).fontSize));
+    expect(Math.min(...await secondary.evaluateAll(sizes))).toBeGreaterThanOrEqual(14);
+    expect(Math.min(...await prose.evaluateAll(sizes))).toBeGreaterThanOrEqual(16);
+    // Measure the workflow text itself; its decorative ::after arrows cross the cell boundary.
+    expect(await page.locator(".reference-list a, .flow-step > *, .hero-preview figcaption, .info-band").evaluateAll(
+      (nodes) => nodes.filter((node) => node.scrollWidth > node.clientWidth + 1).map((node) => node.textContent),
+    )).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.locator("#workflow").screenshot({ path: testInfo.outputPath(`readable-workflow-${value}.png`) });
+    await page.locator("#reference").screenshot({ path: testInfo.outputPath(`readable-reference-${value}.png`) });
+    await page.getByRole("combobox", { name: "Search documentation" }).fill("network");
+    await expect(page.locator(".docs-search-result").first()).toBeVisible();
+    const searchSizes = await page.locator(".docs-search-status, .docs-search-result-heading strong, .docs-search-result-heading span, .docs-search-result p, .docs-search-hints, .docs-search-hints kbd").evaluateAll(sizes);
+    expect(searchSizes.length).toBeGreaterThan(0);
+    expect(Math.min(...searchSizes)).toBeGreaterThanOrEqual(14);
+    await page.getByRole("combobox", { name: "Search documentation" }).press("Escape");
+    await page.getByRole("combobox", { name: "Search documentation" }).fill("");
+  }
+});
+
 test("docs keep every primary tab and highlight the current page after navigation", async ({ page }, testInfo) => {
   const tabs = ["Overview", "Terminology", "Architecture", "API", "Changelog", "GitHub", "Download & Use"];
   for (const value of ["light", "dark"]) {

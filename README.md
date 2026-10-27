@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.13.0-0f766e?style=for-the-badge)](VERSION)
+[![Version](https://img.shields.io/badge/version-0.13.1-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -26,9 +26,9 @@ A first planning question: **does changing a small urban Cell plan's azimuths be
 
 ---
 
-## Current Version: 0.13.0
+## Current Version: 0.13.1
 
-Version **0.13.0** adds local review-package exports, area-scoped network KPIs, multi-sector site groups, plan-difference maps, richer reproducible reports, and opt-in API sidecar support for future desktop hosting, alongside clearer first-run guidance and contributor tooling.
+Version **0.13.1** refreshes contributor and planning guides, adds a reproducible two-Cell Ankara walkthrough, improves documentation readability, and patches frontend development dependency advisories. Application behavior is unchanged.
 
 | Workflow | Current scope |
 |----------|---------------|

@@ -4,6 +4,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-10-27
+
 ### Added
 
 - Add a reproducible two-Cell Ankara planning walkthrough with a dataset-bound portable project, exact RF inputs, recorded baseline/recommendation/overlap trade-off and an API reproduction script; document separate Version, project and report preservation.
@@ -380,7 +382,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD
+[0.13.1]: https://github.com/Berk-Unsal/atom/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/Berk-Unsal/atom/compare/v0.12.3...v0.13.0
 [0.12.3]: https://github.com/Berk-Unsal/atom/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...v0.12.2

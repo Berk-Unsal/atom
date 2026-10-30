@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Decision summaries, KPI units and
+populations, RF profiles, map evidence, source provenance and reference
+PDF print settings." />
+  <link rel="icon" type="image/svg+xml" href="./icon/icon.svg" />
+  <script src="./assets/docs-theme.js"></script>
+  <link rel="stylesheet" href="./assets/docs.css" />
+  <title>Reading Planning Reports | A.T.O.M Documentation</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="site-brand" href="./index.html" aria-label="A.T.O.M documentation home">
+        <img src="./icon/icon.svg" alt="" />
+        <span>
+          <strong>A.T.O.M Docs</strong>
+          <small>Ankara Telecom Optimization Model</small>
+        </span>
+      </a>
+      <div class="docs-search" data-docs-search data-search-index="./search-index.json">
+        <label class="visually-hidden" for="docs-search-input">Search documentation</label>
+        <div class="docs-search-control">
+          <svg aria-hidden="true" viewBox="0 0 20 20">
+            <path d="m14.2 14.2 4 4m-1.8-9A7.4 7.4 0 1 1 1.6 9.2a7.4 7.4 0 0 1 14.8 0Z"></path>
+          </svg>
+          <input
+            id="docs-search-input"
+            type="search"
+            placeholder="Search documentation"
+            autocomplete="off"
+            spellcheck="false"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="docs-search-results"
+            aria-keyshortcuts="Control+K Meta+K /"
+            data-search-input
+          />
+          <kbd data-search-shortcut aria-hidden="true">⌘K</kbd>
+        </div>
+        <div class="docs-search-panel" data-search-panel hidden>
+          <div class="docs-search-status" role="status" aria-live="polite" data-search-status>
+            Search page titles, sections, and API terms.
+          </div>
+          <ol class="docs-search-results" id="docs-search-results" role="listbox" data-search-results></ol>
+          <div class="docs-search-hints" data-search-hints hidden aria-hidden="true">
+            <span><kbd>↑↓</kbd> Navigate</span>
+            <span><kbd>Enter</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+        </div>
+      </div>
+      <button class="docs-theme-toggle" type="button" role="switch" aria-label="Dark mode" aria-checked="false" title="Switch to dark mode" data-theme-toggle>
+        <span class="theme-toggle-thumb" aria-hidden="true"></span>
+        <svg class="theme-toggle-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+        </svg>
+        <svg class="theme-toggle-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"></path>
+        </svg>
+      </button>
+      <button class="nav-toggle" type="button" aria-label="Toggle documentation navigation" aria-expanded="false" data-nav-toggle>
+        <span class="nav-toggle-lines" aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" aria-label="Primary documentation" data-site-nav>
+        <a href="./index.html">Overview</a>
+        <a href="./terminology.html">Terminology</a>
+        <a href="./architecture.html">Architecture</a>
+        <a href="./api.html">API</a>
+        <a href="./changelog.html">Changelog</a>
+        <a href="https://github.com/Berk-Unsal/atom" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="./download.html">Download &amp; Use</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell docs-layout reference-layout" id="main-content">
+    <aside class="page-toc reference-toc" aria-label="Reading Planning
+Reports page contents">
+      <strong>On this page</strong>
+      <ul>
+      <li><a href="#find-the-evidence-in-the-report"
+      id="toc-find-the-evidence-in-the-report">Find the evidence in the
+      report</a></li>
+      <li><a href="#read-quantities-and-missing-analyses"
+      id="toc-read-quantities-and-missing-analyses">Read quantities and
+      missing analyses</a></li>
+      <li><a href="#print-to-pdf" id="toc-print-to-pdf">Print to
+      PDF</a></li>
+      <li><a href="#file-identity-and-regeneration"
+      id="toc-file-identity-and-regeneration">File identity and
+      regeneration</a></li>
+      <li><a href="#check-the-source-before-sharing"
+      id="toc-check-the-source-before-sharing">Check the source before
+      sharing</a></li>
+      <li><a href="#download-the-right-evidence"
+      id="toc-download-the-right-evidence">Download the right
+      evidence</a></li>
+      <li><a href="#what-survives-where"
+      id="toc-what-survives-where">What survives where</a></li>
+      </ul>
+    </aside>
+
+    <article class="page-content reference-page">
+      <header class="reference-hero">
+        <span class="hero-label">Report reader guide</span>
+        <h1>Reading Planning Reports</h1>
+        <p>Decision summaries, KPI units and populations, RF profiles,
+map evidence, source provenance and reference PDF print settings.</p>
+        <div class="hero-actions">
+          <a class="button" href="./report-guide.md">View Markdown source</a>
+          <a class="button" href="./architecture.html">System architecture</a>
+        </div>
+      </header>
+
+      <div class="prose">
+<p>Markdown and printable HTML use the same report model, quantities,
+interpretation and conditional sections. Start with <strong>Decision
+summary</strong>: it identifies the Scenario, saved Version or unsaved
+plan, source Runs, selected Cells, primary result and evaluation
+completeness. A score can exist after <strong>Evaluate Network</strong>
+without an optimization search. Standalone interference and the
+optimizer's radio-quality objective have separate status entries.</p>
+<h2 id="find-the-evidence-in-the-report">Find the evidence in the
+report</h2>
+<p>Continue through the report in this order:</p>
+<ol type="1">
+<li><strong>Planning map &amp; Cells</strong> ties stable numbered
+callouts to full Cell IDs and configured or recommended azimuths. Leader
+lines point to the true locations of co-located Cells. The schematic map
+shows at most 300 RF <strong>segments</strong>, sampled across Cells,
+with bounds from the full retained geometry. Sampling never changes
+KPIs. Its caption identifies the simulation source and warns when a
+locally reranked recommendation differs from that simulation. Markdown
+omits the SVG; a review package links its actual sibling map and HTML
+files.</li>
+<li><strong>Network evaluation</strong> explains quantities,
+denominators, the evaluation domain and configured priorities. A
+compatible recorded baseline enables before/after comparison; an
+evaluated configuration alone does not create one. Pareto alternatives
+and marginal Cell effects appear only when retained.</li>
+<li><strong>RF configuration &amp; receiver assumptions</strong> records
+common fields once. A reference profile names how many Cells match it
+and lists lossless per-Cell deviations. Missing historical inputs say
+<strong>Not recorded</strong> instead of inheriting current
+defaults.</li>
+<li><strong>Dataset, model &amp; provenance</strong> identifies the
+source computation separately from the application and report generator
+used for this export. Dataset-wide counts and pack QA describe the pack,
+not the selected network domain or physical accuracy.</li>
+<li><strong>Engineering appendix</strong> holds metric definitions, full
+source IDs, fingerprints, dataset hashes, receiver/model contracts and
+retained supporting evidence. Hashes establish identity or byte
+integrity, not physical validation.</li>
+</ol>
+<h2 id="read-quantities-and-missing-analyses">Read quantities and
+missing analyses</h2>
+<p>Read the units before comparing figures:</p>
+<table>
+<thead>
+<tr>
+<th>Report quantity</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optimization score, <code>/100</code></td>
+<td>Normalized preference-weighted planning utility under the current
+priorities. It is not coverage percentage, probability, measured
+accuracy or confidence. Unavailable objectives are excluded from
+scoring.</td>
+</tr>
+<tr>
+<td>Modeled demand weight served</td>
+<td>Served weight divided by relevant weight. For example, six demand
+building entities can carry a total weight of 260; neither quantity is a
+population estimate.</td>
+</tr>
+<tr>
+<td>Residential building entities served</td>
+<td>Positive-residential building entities served out of the relevant
+entities whose footprints intersect the selected-Cell radius union. It
+is not residents or dwellings.</td>
+</tr>
+<tr>
+<td>Normalized propagation reach</td>
+<td>A ray-distance score, with up to 100 units per configured ray and
+distance normalization capped at the lesser of radius and 500 m. It is
+not meters or area coverage.</td>
+</tr>
+<tr>
+<td>Served building entities</td>
+<td>Building entities with best modeled building Rx strictly above the
+recorded building-service threshold; multipart footprint records can be
+separate entities.</td>
+</tr>
+<tr>
+<td>Multi-Cell overlap</td>
+<td>Share of served building entities served by multiple Cells. It does
+not establish interference performance.</td>
+</tr>
+<tr>
+<td>Ray-endpoint Rx and obstruction</td>
+<td>Terminal-ray diagnostics. Rays terminate at receiver sensitivity or
+the planning radius; low endpoint Rx and high building service can
+coexist because building service uses a different population and
+threshold. Network means retain the existing mean of per-Cell
+summaries.</td>
+</tr>
+</tbody>
+</table>
+<p>The interpretation uses recorded values and availability, without
+adding a grade. Rounded <code>100.0%</code> is described as
+<strong>all</strong> only when the recorded numerator equals the
+positive denominator. <strong>Not evaluated</strong>, <strong>Not
+retained</strong>, <strong>Not recorded</strong> and
+<strong>Unavailable</strong> identify different evidence boundaries;
+none is a zero result. In 6G research mode, unsupported interference
+remains unavailable. Optimizer radio quality uses its fixed sampled
+domain, including no-carrier samples as denominator failures; standalone
+interference has its own sampled and signal-only denominators.</p>
+<h2 id="print-to-pdf">Print to PDF</h2>
+<p>For PDF export, use <strong>A4 portrait</strong>, default scale and
+the report's CSS margins, and turn <strong>browser headers and footers
+off</strong>. Current Chromium is the reference print path: it supports
+the report's running identity, generation time and <strong>Page X of
+Y</strong>. Other browsers or user print overrides may paginate
+differently or omit margin-box chrome. The in-app export/reopen path
+waits for document fonts and images before opening print; the
+self-contained HTML button invokes the browser's print command directly.
+The report remains selectable text; browser output is not a claim of
+PDF/UA conformance.</p>
+<h2 id="file-identity-and-regeneration">File identity and
+regeneration</h2>
+<p>New report downloads share a name such as
+<code>ankara-plan-network-plan-2-v3-20261019-083612z-network-evaluation-report.html</code>,
+with matching Markdown/map stems and UTC time. All displayed generation
+dates use <code>YYYY-MM-DD HH:mm UTC</code>; legacy timestamps without a
+recorded zone remain unknown. Regeneration uses the current report
+generator, while downloading an already retained artifact preserves its
+original bytes, filename, timestamp and hash. A <strong>Review
+package</strong> collects existing saved-Version evidence locally and
+does not run RF or rebuild missing results.</p>
+<h2 id="check-the-source-before-sharing">Check the source before
+sharing</h2>
+<p>In <strong>Review → Report</strong>, read <strong>Report
+source</strong> before generating anything. A saved Version identifies
+immutable inputs within a Scenario; a Run identifies an execution
+against its recorded dataset/model. <strong>Current unsaved
+plan</strong> is not tied to a saved Version. A historical Report
+describes the evidence retained when it was generated, not the currently
+edited plan, and <strong>Runs: None</strong> must not be filled by
+inference. Use <strong>Open source Version</strong> when available to
+inspect its inputs; opening a source does not perform RF
+computation.</p>
+<p>The decision summary's completeness entries distinguish an evaluated
+network from an optimized recommendation. A standalone interference
+analysis can be <strong>Not evaluated</strong> even when an optimization
+score exists; the optimizer's optional radio-quality objective is
+separate. Missing map geometry is <strong>Not retained</strong>, missing
+old inputs are <strong>Not recorded</strong>, and
+unavailable/unsupported analyses are not zero-valued results. Never use
+a Pareto alternative's ray map as fresh simulation evidence merely
+because that alternative is selected for inspection.</p>
+<h2 id="download-the-right-evidence">Download the right evidence</h2>
+<ol type="1">
+<li>Choose <strong>Markdown</strong> to generate, retain and download a
+Markdown Report for the current source. It is readable offline and omits
+inline SVG maps; it is not an editable project.</li>
+<li>Choose <strong>PDF / Print</strong> to generate retained HTML and
+open the browser print surface. Saving a PDF is a browser print action,
+not a separate stored PDF artifact. Allow the local report popup when
+prompted.</li>
+<li>In <strong>Reports</strong>, <strong>Download Report</strong>
+downloads the retained HTML or Markdown bytes in their recorded format
+without running RF or opening the print surface. Open a downloaded HTML
+file in a browser to read it offline or use its print control.
+<strong>Regenerate as a new Report</strong> uses the current generator
+and creates a new artifact; it does not overwrite historical bytes or
+run new RF to reconstruct missing evidence.</li>
+<li>For a saved Version, <strong>Review package</strong> downloads a
+local ZIP with HTML and Markdown reports, a project file, map and
+manifest. It refuses an unsaved draft until a Version is saved. Check
+the file hashes against the manifest after transfer; matching hashes
+establish byte integrity, not authorship, signing or physical RF
+accuracy.</li>
+<li>Export the <strong>project</strong> separately from the project menu
+when the reviewer needs editable retained inputs/Scenario evidence. See
+the portable-project format and <a
+href="./planning-walkthrough.html">worked comparison</a> before assuming
+an export contains a particular result.</li>
+</ol>
+<h2 id="what-survives-where">What survives where</h2>
+<table>
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Retention and transfer boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working draft</td>
+<td>Inputs autosave in this browser; a draft does not retain a complete
+live execution or all map layers.</td>
+</tr>
+<tr>
+<td>Scenario/Version and retained Scenario artifacts</td>
+<td>Portable project export carries bounded retained evidence and remaps
+imported local IDs with provenance. The five most recently used
+Scenarios retain complete map layers; older ones can need an explicit
+rerun.</td>
+</tr>
+<tr>
+<td>Separate Run History</td>
+<td>Its own browser-local database; it is not exported as the complete
+Run History database in a project file. Embedded Run metadata in a
+retained Scenario does not change this boundary.</td>
+</tr>
+<tr>
+<td>Generated Reports</td>
+<td>Separate artifact storage. Download the desired bytes or a review
+package outside browser storage; project export does not include the
+generated Report store.</td>
+</tr>
+<tr>
+<td>Coverage surfaces and view/Undo state</td>
+<td>Not a portable project backup. A transient surface may need
+regeneration from compatible retained inputs.</td>
+</tr>
+</tbody>
+</table>
+<p>Browser site-data deletion, quota failures or explicit deletion can
+remove local evidence. A <code>.atom-project.json</code> file is not a
+full-browser archive. Existing encoded/decoded size and complexity
+limits still apply: if an export/import is refused, current evidence
+remains in this browser; download a readable Report and follow the
+recovery guidance, rather than assuming a partial project was saved.</p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><strong>A.T.O.M</strong><span>Deterministic planning-grade RF analysis for Ankara.</span></div>
+      <div><span>Documentation updated <span data-current-year>2026</span></span><a href="https://github.com/Berk-Unsal/atom">Source on GitHub</a></div>
+    </div>
+  </footer>
+
+  <script src="./assets/docs.js" defer></script>
+</body>
+</html>

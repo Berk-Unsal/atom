@@ -14,6 +14,12 @@ inspect · download · regenerate · retain · delete
 
 The change does not add PostgreSQL, PostGIS, S3/MinIO, authentication, remote jobs, or a server-side PDF service. It does not change RF propagation, interference, optimization, Pareto membership, recommendation semantics, `atom-scenario-v1`, Concept 6 readiness, ProjectV2 compatibility, workspace IndexedDB, or Concept 7C Run History capture.
 
+## Current report presentation
+
+`atom-report-generator-v2` renders Markdown and printable HTML from one transient semantic model and section plan. It separates the decision summary, evaluation evidence, grouped RF configuration, provenance and technical appendix. Source computation identity stays distinct from export-generation identity; exact unknown historical fields remain unknown. See the [report reader guide](report-guide.html) for metric populations, map sampling, naming, UTC dates and reference print settings.
+
+This presentation revision does not change ReportDefinition, artifact, project or review-package schema versions, RF results, score semantics, source fingerprints or retention behavior. Existing artifacts keep their original bytes, names and content hashes. The later [local review package](features.html#reproducibility-and-reports) implements a bounded evidence ZIP on the existing sources; the original Concept 7D scope below describes its earlier boundary.
+
 ## Validation debt closure
 
 `docs/requirements.txt` already documents a hashed PyYAML 6.0.3 lock. The active system Python did not expose `yaml`, so `python3 docs/validate_docs.py` initially failed with `ModuleNotFoundError`. The repository policy was left unchanged. A temporary virtual environment installed the documented lock and produced:

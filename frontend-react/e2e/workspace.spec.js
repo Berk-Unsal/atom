@@ -1834,8 +1834,6 @@ test("project budget recovery preserves evidence and offers working Report and N
   const trigger = page.getByRole("button", { name: /^Project menu/ });
   await trigger.click();
   const menu = page.getByRole("dialog", { name: "Project and scenarios" });
-  await menu.getByRole("button", { name: "Save Version" }).click();
-  await expect(menu.getByRole("status")).toHaveText("Version saved");
   const readWorkspace = () => page.evaluate(async () => {
     const request = indexedDB.open("atom-planning-workspace");
     const db = await new Promise((resolve, reject) => {
@@ -1850,6 +1848,16 @@ test("project budget recovery preserves evidence and offers working Report and N
     db.close();
     return workspace;
   });
+  // Let the initial draft autosave commit before saving the Version. Otherwise
+  // that already-scheduled write can land after "Version saved" and change the
+  // baseline while the rejected-import assertion is running.
+  await expect.poll(async () => {
+    const workspace = await readWorkspace();
+    const project = workspace?.projects.find((candidate) => candidate.id === workspace.activeProjectId);
+    return { scenarios: project?.scenarios.length, selectedTowerId: project?.draft?.plan?.selectedTowerId };
+  }).toEqual({ scenarios: 0, selectedTowerId: "tower-1" });
+  await menu.getByRole("button", { name: "Save Version" }).click();
+  await expect(menu.getByRole("status")).toHaveText("Version saved");
   const before = await readWorkspace();
   const original = before.projects.find((project) => project.id === before.activeProjectId);
   const rfCount = computeRequests.length;
@@ -4701,10 +4709,10 @@ test("report and project downloads are named for people and share one lineage li
   const reportDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "Markdown", exact: true }).click();
   const report = await reportDownload;
-  expect(report.suggestedFilename()).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-report\.md$/);
+  expect(report.suggestedFilename()).toMatch(/^ankara-plan-sector-plan-1-v1-\d{8}-\d{6}z-single-cell-report\.md$/);
   const markdown = await readFile(await report.path(), "utf8");
   expect(markdown).not.toMatch(/<svg|<path/);
-  expect(markdown.match(/^## RF Result$/gm)).toHaveLength(1);
+  expect(markdown.match(/^## Decision summary$/gm)).toHaveLength(1);
   await expect(page.getByRole("list", { name: "Reports" }).getByRole("listitem").first()).toContainText(sourceLine);
 });
 

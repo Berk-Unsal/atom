@@ -32,6 +32,16 @@ afterEach(() => {
 });
 
 describe("useReportWorkflow", () => {
+  it("does not borrow an older optimization Run for the current network evaluation", () => {
+    const { result } = renderHook(() => useReportWorkflow({
+      activeProject: { id: "project-1", name: "Example" },
+      activeScenario: { id: "scenario-1", domain: { current_revision_id: "revision-1", revisions: [{ scenario_revision_id: "revision-1", revision: 2 }] } },
+      planningMode: "network", planDirty: false,
+      currentReportInputs: { networkResultKind: "evaluation" },
+      runHistoryRuns: [{ run_id: "older-optimizer", run_type: "optimization", status: "succeeded", scenario_revision_id: "revision-1" }],
+    }));
+    expect(result.current.state.currentReportSource).toMatchObject({ run_ids: [], runs: [], version_label: "Version 2" });
+  });
   it("loads report code only on export and keeps generated output usable when artifact retention fails", async () => {
     const report = { domainBinding: { project_id: "project-1" }, view: { title: "Current planning report" } };
     const appError = vi.fn();
@@ -74,7 +84,7 @@ describe("useReportWorkflow", () => {
       run_ids: ["run-1"],
       source_kind: "scenario_revision",
     });
-    expect(reportModules.buildPlanningReport).toHaveBeenCalledWith({ planningMode: "single", generatedAt: "2026-09-23T10:00:00.000Z" });
+    expect(reportModules.buildPlanningReport).toHaveBeenCalledWith(expect.objectContaining({ planningMode: "single", generatedAt: "2026-09-23T10:00:00.000Z", domainBinding: expect.objectContaining({ scenario_revision_id: "revision-1", run_ids: ["run-1"] }), sourceContext: expect.objectContaining({ run_ids: ["run-1"] }) }));
     expect(saveArtifact).toHaveBeenCalledWith({ artifact_id: "artifact-1", media_type: "text/markdown" }, new Uint8Array([1, 2, 3]));
     expect(reportModules.downloadReportBytes).toHaveBeenCalled();
     expect(result.current.state.reportWarning).toMatch(/still available for download/);

@@ -2,6 +2,7 @@ import { AlertTriangle, Clock3, Download, FileText, RefreshCw, Trash2 } from "lu
 import { buildResultContext, shortID } from "../domain/resultContext.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
 import { reportLineageLine, reportRunLabels } from "../utils/reportLineage.js";
+import { formatReportTimestamp } from "../utils/reportFormatting.js";
 
 export default function ReportArtifactsPanel({
   artifacts = [],
@@ -131,8 +132,7 @@ function formatBytes(value) {
 }
 
 function formatTimestamp(value) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Unknown time" : date.toLocaleString();
+  return formatReportTimestamp(value);
 }
 
 function scenarioName(artifact, scenarios) {

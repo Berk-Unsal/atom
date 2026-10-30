@@ -1386,6 +1386,17 @@ td strong {
   line-height: 1.45;
 }
 
+/* Keep installation instructions and table headings readable at every viewport. */
+.download-page .command-caption,
+.download-page .workflow-name span,
+.download-page .workflow-step span,
+.download-page .workflow-step strong,
+.download-page .workflow-step p,
+.download-page th,
+.download-page .footer-inner {
+  font-size: 0.875rem;
+}
+
 .faq-list {
   display: grid;
   gap: 8px;
@@ -1635,6 +1646,45 @@ td strong {
 
 .footer-links a:hover {
   color: var(--teal-dark);
+}
+
+/* Landing-page guidance keeps prose at 16px and secondary text at 14px. */
+.home-page .section-heading p,
+.home-page .task-link p,
+.home-page .feature-row p,
+.home-page .info-band p {
+  font-size: 1rem;
+}
+
+.home-page .hero-label,
+.home-page .hero-actions .button,
+.home-page .hero-preview figcaption,
+.home-page .task-link .task-type,
+.home-page .task-link strong,
+.home-page .feature-row .feature-output,
+.home-page .flow-step span,
+.home-page .flow-step strong,
+.home-page .flow-step small,
+.home-page .info-band strong,
+.home-page .reference-list a,
+.home-page .reference-list span:last-child,
+.home-page .docs-search-status,
+.home-page .docs-search-result-heading strong,
+.home-page .docs-search-result-heading span,
+.home-page .docs-search-result p,
+.home-page .docs-search-hints,
+.home-page .docs-search-hints kbd,
+.home-page .footer-inner {
+  font-size: 0.875rem;
+}
+
+.home-page .flow-step small {
+  line-height: 1.5;
+}
+
+.home-page .reference-list a {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
 }
 
 @media (max-width: 960px) {

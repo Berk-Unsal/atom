@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { downloadFilename, namingForSource } from "./downloadNames.js";
+import { downloadFilename, namingForSource, reportFilename } from "./downloadNames.js";
 
 const generatedAt = "2026-10-17T14:54:55.000Z";
 
@@ -25,6 +25,22 @@ describe("downloadFilename", () => {
   it("is deterministic for the same artifact", () => {
     const input = { project: "P", scenario: "S", version: 2, date: generatedAt, kind: "report", extension: "md" };
     expect(downloadFilename(input)).toBe(downloadFilename({ ...input }));
+  });
+});
+
+describe("canonical report names", () => {
+  it("deduplicates matching project/scenario names and shares a UTC stem across formats", () => {
+    const input = { project: "Ankara / Çankaya", scenario: "Ankara / Çankaya", version: 2, date: "2026-10-20T00:02:03+03:00", mode: "network-evaluation" };
+    const stem = "ankara-cankaya-v2-20261019-210203z-network-evaluation-report";
+    for (const extension of ["html", "md", "pdf"]) expect(reportFilename({ ...input, extension })).toBe(`${stem}.${extension}`);
+  });
+
+  it("keeps distinct scenario context, omits missing Versions and remains filesystem safe", () => {
+    expect(reportFilename({ project: "Plan", scenario: "Plan north", date: generatedAt, mode: "network-configuration", extension: "md" })).toBe("plan-plan-north-20261017-145455z-network-configuration-report.md");
+    const filename = reportFilename({ project: "p/".repeat(100), scenario: "s?".repeat(100), date: generatedAt, mode: "network-optimization", extension: "pdf" });
+    expect(filename).toMatch(/^[a-z0-9-]+\.pdf$/);
+    expect(filename.length).toBeLessThan(180);
+    expect(reportFilename({ extension: "md" })).toBe("atom-report.md");
   });
 });
 

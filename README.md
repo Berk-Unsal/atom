@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/React-18.0+-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.12.3-0f766e?style=for-the-badge)](VERSION)
+[![Version](https://img.shields.io/badge/version-0.13.1-0f766e?style=for-the-badge)](VERSION)
 
 </div>
 
@@ -26,9 +26,9 @@ A first planning question: **does changing a small urban Cell plan's azimuths be
 
 ---
 
-## Current Version: 0.12.3
+## Current Version: 0.13.1
 
-Version **0.12.3** clarifies planning terminology throughout setup and workflow documentation, adds a contribution-readiness audit and structured contributor templates, and makes generated reference pages reproducible with the pinned documentation toolchain. Product scope and RF behavior remain unchanged.
+Version **0.13.1** refreshes contributor and planning guides, adds a reproducible two-Cell Ankara walkthrough, improves documentation readability, and patches frontend development dependency advisories. Application behavior is unchanged.
 
 | Workflow | Current scope |
 |----------|---------------|
@@ -59,7 +59,7 @@ The eight-cell operational qualification covers the Ankara2026.07 dataset at 120
 
 - **Experiments and Surfaces**: Asynchronous reproducible parameter matrices, Pareto evidence, regular coverage rasters/isolines, and GeoTIFF/GeoJSON/CSV interchange.
 
-- **Per-Cell RF Inventory**: Places, drags, duplicates, imports, validates, and persists cells with independent technology, band/channel, duplex, power, gain/loss, antenna geometry and patterns, load/reuse, PCI, and receiver assumptions.
+- **Per-Cell RF Inventory**: Places, drags, duplicates, imports, validates, and persists cells with independent technology, band/channel, duplex, power, gain/loss, antenna geometry and patterns, load/reuse, PCI, and receiver assumptions. Co-located sectors can be placed and managed together as a site group while remaining ordinary Cells in RF requests.
 
 - **Inspectable Link Budgets and Receiver Thresholds**: Distinguishes conducted power, EIRP, absolute antenna gain, pattern attenuation, receiver gain, and polarization loss. Manual sensitivity remains available alongside opt-in thermal-noise-derived per-cell thresholds, separate from building-service and interference criteria.
 
@@ -77,7 +77,7 @@ The eight-cell operational qualification covers the Ankara2026.07 dataset at 120
 
 - **Local Projects, Scenario Versions, and Run History**: Autosaves drafts in IndexedDB, saves immutable scenario Versions, supports branching and input comparisons, and retains Run lineage with explicit current, stale, and historical result context. Project schema-v3 exports preserve retained Scenario results and Version/embedded Run provenance, with valid v1/v2 imports supported. They exclude the separate Run History database, generated report files, coverage surfaces and transient view/Undo state; download reports separately. Imports retain a 16 MiB file ceiling and decoded-content limits; large ray-bearing exports can still exceed those guards.
 
-- **Reproducible Planning Reports**: Generates local Markdown/HTML report artifacts from current or historical Runs, with exact scenario Version/Run lineage, SHA-256 verification, baseline/Pareto evidence, and offline downloads.
+- **Reproducible Planning Reports**: Generates local Markdown/HTML report artifacts from current or historical Runs, with exact scenario Version/Run lineage, SHA-256 verification, baseline/Pareto evidence, and offline downloads. A saved Version can also be exported as a review ZIP with its report, project, map, and integrity manifest; reports can include area-scoped network KPIs and plan-difference maps.
 
 - **Candidate Cell Recommendations**: Ranks known, unselected 4G/5G planning records inside a drawn search area by marginal coverage, POI/residential demand, and overlap, using up to five existing cells. Recommendations do not claim site availability, cost, backhaul, or permitting feasibility.
 
@@ -214,11 +214,16 @@ Suggested Docker memory allocation:
 Start with the static [documentation hub](docs/index.html), then use:
 
 - [System architecture](docs/architecture.html) for runtime components, request lifecycles, spatial data, reliability controls, and model boundaries.
-- [Product compass](planning/product-compass.md) for enduring product strengths, capability horizons, feature-admission criteria, and deliberate non-goals.
+- [Product roadmap](docs/product-roadmap-post-audit.md) for workflow priorities and the independent evidence gates; check linked GitHub issues for current status.
 - [Download and use](docs/download.html) for Docker, source development, Core Lab, troubleshooting, and guided workflows.
 - [Getting started](docs/getting-started.md) for the Markdown onboarding reference.
+- [Two-Cell planning walkthrough](docs/planning-walkthrough.md) for a fixed Ankara baseline, recommendation, overlap trade-off and reviewable project/report exports.
 - [REST API](docs/api.html), downloadable [OpenAPI 3.1 contract](docs/openapi.yaml), [RF algorithms](docs/algorithms.html), [Dataset Pack Studio](docs/dataset-pack-studio.html), and [model limitations](docs/modeling-limits.html) for implementation details.
 - [Map interpretation guide](docs/visualization.html) for reading propagation and radio-quality evidence.
+
+## Contributing
+
+Read the [contribution guide](docs/contributing.md) for a complete Git LFS checkout, Docker and Go/Vite development, focused tests and the full validation matrix. Start with an existing [GitHub issue](https://github.com/Berk-Unsal/atom/issues) and use the PR template to describe impact and validation.
 
 ## Versions and Release Notes
 

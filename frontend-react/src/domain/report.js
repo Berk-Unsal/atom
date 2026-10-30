@@ -2,7 +2,7 @@ import { cloneDomainValue, createEntityId, deepFreeze } from "./identifiers.js";
 
 export const REPORT_DEFINITION_SCHEMA_VERSION = 1;
 export const REPORT_SCHEMA_VERSION = "atom-report-v1";
-export const REPORT_GENERATOR_VERSION = "atom-report-generator-v1";
+export const REPORT_GENERATOR_VERSION = "atom-report-generator-v2";
 export const GENERATED_ARTIFACT_SCHEMA_VERSION = 1;
 
 export const REPORT_FORMATS = Object.freeze(["markdown", "html"]);

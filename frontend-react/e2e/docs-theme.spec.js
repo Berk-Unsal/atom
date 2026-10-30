@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve, extname, sep } from "node:path";
 
 const docsRoot = resolve("../docs");
@@ -16,6 +17,27 @@ test.beforeEach(async ({ context }) => {
 });
 
 const appearance = (page) => page.getByRole("switch", { name: "Dark mode", exact: true });
+
+test("download guide keeps walkthrough text readable and primary hover text visible", async ({ page }, testInfo) => {
+  await page.goto("/docs/download.html");
+  for (const value of ["light", "dark"]) {
+    await setTheme(page, value);
+    const sizes = await page.locator(".workflow-step p, .workflow-name span, th, .command-caption").evaluateAll(
+      (nodes) => nodes.map((node) => Number.parseFloat(getComputedStyle(node).fontSize)),
+    );
+    expect(sizes.length).toBeGreaterThan(0);
+    expect(Math.min(...sizes)).toBeGreaterThanOrEqual(14);
+    const primary = page.getByRole("link", { name: "Start with Docker", exact: true });
+    await primary.hover();
+    await expect(primary).toHaveCSS("color", "rgb(255, 255, 255)");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  }
+  await page.getByRole("heading", { name: "Guided first-use workflows" }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("walkthrough-guide.png") });
+  await page.getByRole("link", { name: "two-Cell planning walkthrough" }).click();
+  await expect(page.getByRole("heading", { name: "Two-Cell Planning Walkthrough", exact: true })).toBeVisible();
+});
+
 const theme = (page, value) => expect(page.locator("html")).toHaveAttribute("data-theme", value);
 async function setTheme(page, value) {
   if (await page.locator("html").getAttribute("data-theme") !== value) await appearance(page).click();
@@ -50,8 +72,66 @@ async function preview(page, dark) {
   await expect(page.locator(dark ? ".theme-preview-light" : ".theme-preview-dark")).toBeHidden();
   await expect(visible).toHaveJSProperty("complete", true);
   expect(await visible.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
-  await expect(visible).toHaveAttribute("src", dark ? "./assets/v0.12.0/network-workspace.png" : "./assets/focused-workspace.jpg");
+  await expect(visible).toHaveAttribute("src", `./assets/current-workspace/${dark ? "dark" : "light"}.png`);
+  await expect(visible).toHaveAttribute("alt", /two-Cell Ankara baseline/);
+  expect(await visible.evaluate((node) => [node.naturalWidth, node.naturalHeight])).toEqual([1440, 900]);
+  const bounds = await visible.boundingBox();
+  expect(bounds.width / bounds.height).toBeCloseTo(1440 / 900, 2);
 }
+
+test("landing previews retain a matched, verifiable real-app capture", async ({ page }) => {
+  const directory = resolve(docsRoot, "assets/current-workspace");
+  const manifest = JSON.parse(await readFile(resolve(directory, "capture.json"), "utf8"));
+  expect(manifest.schema).toBe("atom.documentation-hero.v1");
+  expect(manifest.sourceCommit).toMatch(/^[a-f0-9]{40}$/);
+  expect(manifest.fixtureSha256).toBe(createHash("sha256").update(await readFile(resolve("..", manifest.fixture))).digest("hex"));
+  expect(manifest.viewport).toEqual({ width: 1440, height: 900 });
+  expect(manifest.captures.map((capture) => capture.theme)).toEqual(["light", "dark"]);
+  expect(manifest.captures[0].state).toEqual(manifest.captures[1].state);
+  expect(manifest.captures[0].state.selectedMarkers).toHaveLength(2);
+  expect(manifest.scope).toContain("not field measurements");
+  expect(manifest.rfRequests).toEqual(["/api/evaluate-network", "/api/simulate", "/api/simulate"]);
+  await page.goto("/docs/index.html");
+  for (const capture of manifest.captures) {
+    expect(createHash("sha256").update(await readFile(resolve(directory, capture.file))).digest("hex")).toBe(capture.sha256);
+    expect(capture.tileHttpStatus).toBe(200);
+    await setTheme(page, capture.theme);
+    await preview(page, capture.theme === "dark");
+    const primary = page.getByRole("link", { name: "Download & Use", exact: true });
+    const navToggle = page.getByRole("button", { name: "Toggle documentation navigation" });
+    if (await navToggle.isVisible()) await navToggle.click();
+    await primary.hover();
+    await expect(primary).toHaveCSS("color", "rgb(255, 255, 255)");
+    if (await navToggle.isVisible()) await navToggle.click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
+test("landing guidance keeps readable type and unclipped reference labels", async ({ page }, testInfo) => {
+  await page.goto("/docs/index.html");
+  for (const value of ["light", "dark"]) {
+    await setTheme(page, value);
+    const secondary = page.locator(".home-page .hero-label, .hero-actions .button, .hero-preview figcaption, .task-type, .task-link strong, .feature-output, .flow-step span, .flow-step strong, .flow-step small, .info-band strong, .reference-list a, .reference-list span:last-child, .footer-inner, .footer-links a");
+    const prose = page.locator("main p");
+    const sizes = (nodes) => nodes.map((node) => Number.parseFloat(getComputedStyle(node).fontSize));
+    expect(Math.min(...await secondary.evaluateAll(sizes))).toBeGreaterThanOrEqual(14);
+    expect(Math.min(...await prose.evaluateAll(sizes))).toBeGreaterThanOrEqual(16);
+    // Measure the workflow text itself; its decorative ::after arrows cross the cell boundary.
+    expect(await page.locator(".reference-list a, .flow-step > *, .hero-preview figcaption, .info-band").evaluateAll(
+      (nodes) => nodes.filter((node) => node.scrollWidth > node.clientWidth + 1).map((node) => node.textContent),
+    )).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.locator("#workflow").screenshot({ path: testInfo.outputPath(`readable-workflow-${value}.png`) });
+    await page.locator("#reference").screenshot({ path: testInfo.outputPath(`readable-reference-${value}.png`) });
+    await page.getByRole("combobox", { name: "Search documentation" }).fill("network");
+    await expect(page.locator(".docs-search-result").first()).toBeVisible();
+    const searchSizes = await page.locator(".docs-search-status, .docs-search-result-heading strong, .docs-search-result-heading span, .docs-search-result p, .docs-search-hints, .docs-search-hints kbd").evaluateAll(sizes);
+    expect(searchSizes.length).toBeGreaterThan(0);
+    expect(Math.min(...searchSizes)).toBeGreaterThanOrEqual(14);
+    await page.getByRole("combobox", { name: "Search documentation" }).press("Escape");
+    await page.getByRole("combobox", { name: "Search documentation" }).fill("");
+  }
+});
 
 test("docs keep every primary tab and highlight the current page after navigation", async ({ page }, testInfo) => {
   const tabs = ["Overview", "Terminology", "Architecture", "API", "Changelog", "GitHub", "Download & Use"];

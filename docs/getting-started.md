@@ -7,7 +7,7 @@ The recommended way to run A.T.O.M is Docker Compose. For the visual, task-based
 - Docker Desktop or Docker Engine with Compose
 - Git and [Git LFS](https://git-lfs.com/)
 - Internet access during the first build and for the default OpenStreetMap basemap
-- For source development: Go 1.26.9 and Node.js 24 or newer
+- For source development: Go 1.26.10 and Node.js 24 or newer
 
 ## Get the Complete Repository
 
@@ -98,7 +98,7 @@ The adapter is available only to the Compose service network and runs as a non-r
 1. Use the project selector in the command bar to rename the default project or create a new one.
 2. Configure a plan and save a named scenario after each meaningful analysis.
 3. Reopen scenarios from the project menu; stale results are labeled when inputs or runtime metadata no longer match.
-4. Export a `.atom-project.json` file to move the full project to another browser or keep an external archive.
+4. Export a bounded `.atom-project.json` file to transfer retained project inputs, Scenario/Version evidence and provenance. Download generated Reports separately; the separate Run History database, coverage surfaces and view/Undo state are not included. See [what survives where](report-guide.html#what-survives-where).
 
 The five most recently used scenarios retain complete map layers. Older scenarios keep settings and summaries and may require a rerun.
 
@@ -107,6 +107,8 @@ The five most recently used scenarios retain complete map layers. Older scenario
 Compare a small urban baseline with a bounded azimuth recommendation: configure Cells → evaluate → inspect propagation/interference → optimize → compare/explain → preserve/export. The sections below follow that loop. Measured real-world propagation accuracy is not yet established; use the result to compare declared assumptions, not to approve a deployment.
 
 Before starting, see [Cell, sector, site, and tower record terminology](terminology.html) to distinguish planning Cells and dataset records from verified physical sites.
+
+For a fully specified example, follow the [two-Cell planning walkthrough](planning-walkthrough.html): import a fixed public-pack project, evaluate the baseline, inspect a recorded azimuth recommendation and overlap trade-off, then preserve the chosen Version, project and reports.
 
 ### Build A Cell Inventory
 
@@ -192,6 +194,10 @@ When the server has `ATOM_DATASETS_ROOT` configured, **Data** lists installed ch
 - Select a tower, gap, path, interference sample, candidate, or measurement residual to open the persistent Inspector.
 - Use **Data** to review dataset provenance, runtime/model versions, measurement evidence, RF assumptions, and exclusions.
 - Use **Report** to export Markdown or a printable PDF report from the current plan state.
+
+### Read a planning report
+
+Use the [report reader guide](report-guide.html) to interpret the decision summary, metric units and populations, grouped RF profiles, map sampling, source provenance and historical evidence boundaries. It also documents UTC naming and the reference A4 PDF print settings.
 
 ## Troubleshooting
 

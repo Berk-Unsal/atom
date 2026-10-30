@@ -1,5 +1,5 @@
-import { downloadFilename } from "./downloadNames.js";
-import { reportLimitations, renderHtmlReport, renderMarkdownReport } from "./reportExport.js";
+import { downloadFilename, reportFilename } from "./downloadNames.js";
+import { bindReportPresentation, reportLimitations, renderHtmlReport, renderMarkdownReport } from "./reportExport.js";
 import { sha256Hex } from "./sha256.js";
 import { createZip, readZip } from "./zipWriter.js";
 
@@ -26,44 +26,55 @@ export function reviewPackageRefusal({ source = null, planDirty = false, hasDraf
  * Builds the package bytes. `naming` is { project, scenario, version }; `source` is the Report source lineage
  * ({ scenario_name, version_label, scenario_revision_id, runs }).
  */
-export async function buildReviewPackage({ report, projectFileText, naming = {}, source = {}, appMeta = null, generatedAt = new Date() } = {}) {
+export async function buildReviewPackage({ report, projectFileText, naming = {}, source = {}, appMeta = null, generatedAt = report?.generatedAt ?? new Date() } = {}) {
   const date = generatedAt instanceof Date ? generatedAt : new Date(generatedAt);
-  const name = (kind, extension) => downloadFilename({ ...naming, date, kind, extension });
+  const reportSource = { ...report?.sourceContext, ...source,
+    project_name: naming.project ?? source.project_name ?? report?.sourceContext?.project_name ?? report?.project?.name,
+    scenario_name: naming.scenario ?? source.scenario_name ?? report?.sourceContext?.scenario_name ?? report?.view?.scenarioName,
+    version: naming.version ?? source.version ?? report?.sourceContext?.version,
+    version_label: naming.version ? `Version ${naming.version}` : source.version_label ?? report?.sourceContext?.version_label,
+    run_ids: source.run_ids ?? source.runs?.map((run) => run.run_id) ?? report?.domainBinding?.run_ids ?? [], source_kind: report?.domainBinding?.source_kind ?? "scenario_revision" };
+  const prepared = bindReportPresentation(report, { generatedAt: date, generatorMeta: appMeta, sourceContext: reportSource,
+    domainBinding: { ...report?.domainBinding, project_id: source.project_id ?? report?.domainBinding?.project_id ?? null,
+      scenario_id: source.scenario_id ?? report?.domainBinding?.scenario_id ?? null, scenario_revision_id: source.scenario_revision_id ?? report?.domainBinding?.scenario_revision_id ?? null,
+      run_ids: reportSource.run_ids, source_kind: reportSource.source_kind } });
+  const resolvedNaming = { project: prepared.view.identity.projectName, scenario: prepared.view.identity.scenarioName, version: prepared.view.identity.version };
+  const name = (kind, extension) => reportFilename({ ...resolvedNaming, date, mode: prepared.view.identity.mode, kind, extension });
   const encoder = new TextEncoder();
   const contents = [
-    { name: name("report", "html"), text: renderHtmlReport(report) },
-    { name: name("report", "md"), text: renderMarkdownReport(report) },
-    { name: name(null, "atom-project.json"), text: projectFileText },
-    ...(report?.mapSvg ? [{ name: name("map", "svg"), text: report.mapSvg }] : []),
+    { name: name("report", "html"), text: renderHtmlReport(prepared, { filename: name("report", "html") }) },
+    { name: name("report", "md"), text: renderMarkdownReport(prepared, { assetLinks: { html: name("report", "html"), map: prepared.mapSvg ? name("map", "svg") : null } }) },
+    { name: downloadFilename({ ...resolvedNaming, date, extension: "atom-project.json" }), text: projectFileText },
+    ...(prepared.mapSvg ? [{ name: name("map", "svg"), text: prepared.mapSvg }] : []),
   ].map((file) => ({ name: file.name, bytes: encoder.encode(file.text ?? "") }));
 
   const files = [];
   for (const file of contents) {
     files.push({ name: file.name, media_type: mediaType(file.name), bytes: file.bytes.length, sha256: await sha256Hex(file.bytes) });
   }
-  const binding = report?.domainBinding ?? {};
-  const dataset = appMeta?.dataset ?? null;
+  const binding = prepared.domainBinding ?? {};
+  const dataset = report?.appMeta?.dataset ?? null;
   const manifest = {
     schema: REVIEW_PACKAGE_SCHEMA,
     generated_at: date.toISOString(),
     generated_locally: true,
     rf_requests: 0,
     lineage: {
-      project: naming.project ?? null,
-      scenario: source.scenario_name ?? naming.scenario ?? null,
-      version: source.version_label ?? null,
-      scenario_revision_id: source.scenario_revision_id ?? null,
-      runs: (source.runs ?? []).map((run) => ({ run_id: run.run_id, run_type: run.run_type, created_at: run.created_at ?? null })),
+      project: resolvedNaming.project,
+      scenario: resolvedNaming.scenario,
+      version: prepared.view.identity.versionLabel,
+      scenario_revision_id: binding.scenario_revision_id ?? null,
+      runs: reportSource.run_ids.map((id) => (reportSource.runs ?? []).find((run) => String(run.run_id) === String(id)) ?? { run_id: id }).map((run) => ({ run_id: run.run_id, run_type: run.run_type, created_at: run.created_at ?? null })),
     },
     identity: {
       dataset: dataset ? { id: dataset.id ?? null, version: dataset.version ?? null, sha256: dataset.sha256 ?? {} } : null,
       dataset_references: binding.dataset_references ?? [],
-      model_version: appMeta?.model_version ?? null,
-      application_version: appMeta?.application_version ?? null,
+      model_version: report?.appMeta?.model_version ?? null,
+      application_version: report?.appMeta?.application_version ?? null,
       scenario_fingerprint: binding.scenario_fingerprint ?? null,
     },
     files,
-    limitations: reportLimitations(report),
+    limitations: reportLimitations(prepared),
   };
   const manifestBytes = encoder.encode(`${JSON.stringify(manifest, null, 2)}\n`);
   const bytes = createZip([...contents, { name: "manifest.json", bytes: manifestBytes }], { modifiedAt: date });

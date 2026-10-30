@@ -1,0 +1,388 @@
+// D01 (#148) Electron workflow qualification: drives the real app (committed
+// frontend, real sidecar and dataset) through the product flows with real
+// input, then exercises native Save/Open dialogs through the OS.
+//
+// Usage: node workflows.mjs <run-name>
+// Env:   ATOM_SPIKE_DIALOG_DRIVER = macos | xdotool | mutter | (unset: dialogs not run)
+//        ATOM_SPIKE_ELECTRON_ARGS = extra Chromium switches
+import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+import { _electron as electron } from "playwright-core";
+
+const run = promisify(execFile);
+const here = dirname(fileURLToPath(import.meta.url));
+const root = resolve(here, "../../..");
+const evidence = resolve(here, "build/evidence");
+const downloads = resolve(here, "build/downloads");
+const reports = resolve(here, "build/reports");
+for (const dir of [evidence, reports]) mkdirSync(dir, { recursive: true });
+rmSync(downloads, { recursive: true, force: true });
+const runName = process.argv[2] || "workflows";
+const driver = process.env.ATOM_SPIKE_DIALOG_DRIVER || "";
+const TURKISH = "Çankaya İş Ağı Şebeke Öğrenim Üssü";
+const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
+const within = (promise, ms, label) => Promise.race([promise, sleep(ms).then(() => { throw new Error(`${label} timed out after ${ms} ms`); })]);
+
+const { ELECTRON_RUN_AS_NODE: _ignored, ...inherited } = process.env;
+const app = await electron.launch({ chromiumSandbox: true,
+  executablePath: process.env.ATOM_SPIKE_ELECTRON || (await import("electron")).default,
+  args: [here, ...(process.env.ATOM_SPIKE_ELECTRON_ARGS || "").split(" ").filter(Boolean)],
+  env: {
+    ...inherited,
+    ATOM_SPIKE_DIST: process.env.ATOM_SPIKE_DIST || resolve(root, "frontend-react/dist"),
+    ATOM_SPIKE_SIDECAR: resolve(here, "build/atom-api"),
+    ATOM_SPIKE_DATASET_DIR: resolve(root, "data-pipeline"),
+    ATOM_SPIKE_PROFILE: resolve(here, `build/profile-${runName}`),
+    ATOM_SPIKE_DOWNLOADS: downloads,
+    ATOM_SPIKE_NO_EXTERNAL: "1",
+  },
+  timeout: 60_000,
+});
+const page = await app.firstWindow();
+const pageErrors = [];
+const consoleErrors = [];
+page.on("pageerror", (error) => pageErrors.push(String(error.message).slice(0, 300)));
+page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(`${message.text().slice(0, 200)} @ ${message.location()?.url || "unknown"}`); });
+const spikeState = () => app.evaluate(() => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(global.__atomSpike).filter(([, v]) => typeof v !== "function")))));
+
+const result = { run: runName, platform: (await spikeState()).platform, steps: [] };
+async function step(name, fn, { critical = true } = {}) {
+  const started = Date.now();
+  try {
+    const detail = await fn();
+    result.steps.push({ name, ok: true, ms: Date.now() - started, detail: detail ?? null });
+    console.log(`PASS ${name} (${Date.now() - started} ms)`);
+  } catch (error) {
+    result.steps.push({ name, ok: false, critical, ms: Date.now() - started, error: String(error.message).split("\n")[0].slice(0, 400) });
+    console.log(`FAIL ${name} (${Date.now() - started} ms) — ${result.steps.at(-1).error}`);
+    await page.screenshot({ path: resolve(evidence, `${runName}-failed-${name.replace(/\W+/g, "-")}.png`) }).catch(() => {});
+  }
+}
+const button = (name, exact = true) => page.getByRole("button", { name, exact });
+const ready = (timeout = 120_000) => page.locator(".run-state", { hasText: "Ready" }).waitFor({ timeout });
+async function selectTool(stage, label, tool) {
+  await button(`${label} workspace`).click();
+  await page.locator(`#stage-tool-${stage}-${tool}`).click();
+}
+async function waitDownload(match, timeout = 30_000) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    const found = (await within(spikeState(), 10_000, "main-process state")).downloads.find((d) => match.test(d.filename) && d.state === "completed");
+    if (found) return found;
+    await sleep(200);
+  }
+  throw new Error(`download ${match} did not complete`);
+}
+
+await step("startup to plannable", async () => {
+  await page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Run Sector" && !b.disabled), null, { timeout: 120_000 });
+  return { sidecar: (await spikeState()).sidecar };
+});
+
+await step("rename project with Turkish characters", async () => {
+  await page.getByRole("button", { name: /^Project menu/ }).click();
+  const menu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await menu.getByRole("textbox", { name: "Project name" }).fill(TURKISH);
+  await menu.getByRole("button", { name: "Save project name" }).click();
+  await page.getByRole("button", { name: new RegExp(`^Project menu, ${TURKISH}`) }).waitFor({ timeout: 10_000 });
+  await page.keyboard.press("Escape");
+  if (await menu.isVisible()) await page.getByRole("button", { name: /^Project menu/ }).click();
+});
+
+await step("Run Sector, Signal surface and rays", async () => {
+  await button("Run Sector").click();
+  await ready();
+  const signal = button("Signal layer");
+  await signal.click();
+  await page.waitForFunction(() => document.querySelector('[aria-label="Signal layer"]')?.getAttribute("data-surface-state") === "ready", null, { timeout: 120_000 });
+  await page.locator(".leaflet-image-layer").first().waitFor({ timeout: 30_000 });
+  const rays = button("Propagation rays layer");
+  await rays.click();
+  return { rays_pressed: await rays.getAttribute("aria-pressed"), image_layers: await page.locator(".leaflet-image-layer").count() };
+});
+
+let selected = 0;
+await step("select Cells on the map and Evaluate Network", async () => {
+  await page.getByRole("button", { name: /^Network mode,/ }).click();
+  const interaction = button("Select cells");
+  if (await interaction.isVisible()) {
+    await interaction.click();
+  } else {
+    const trigger = page.getByRole("button", { name: /^Map interaction:/ });
+    if (await trigger.getAttribute("aria-expanded") !== "true") await trigger.click();
+    await page.locator(".map-interaction-popover").getByRole("button", { name: "Select cells", exact: true }).click();
+  }
+  const map = page.locator(".leaflet-container");
+  const box = await map.boundingBox();
+  await button("Draw selection area").click();
+  const left = Math.min(box.width - 240, Math.max(460, box.width * 0.4));
+  for (const position of [{ x: left, y: 150 }, { x: box.width - 100, y: 150 }, { x: box.width - 100, y: Math.max(270, box.height - 180) }, { x: left, y: Math.max(270, box.height - 180) }]) {
+    await map.click({ force: true, position });
+  }
+  await button("Finish").click();
+  const label = await page.getByRole("button", { name: /^Network mode, \d+ selected/ }).getAttribute("aria-label") || await page.getByRole("button", { name: /^Network mode, \d+ selected/ }).innerText();
+  selected = Number(/(\d+) selected/.exec(label)?.[1] || 0);
+  if (selected < 2) throw new Error(`only ${selected} Cells selected`);
+  await button("Evaluate Network").click();
+  await ready();
+  return { selected_cells: selected, markers: await page.locator(".tower-order-badge").count() };
+});
+
+await step("Results drawer shows the network card", async () => {
+  await selectTool("review", "Review", "results");
+  await page.locator(".network-card").first().waitFor({ timeout: 15_000 });
+});
+
+await step("Interference analysis", async () => {
+  await selectTool("analyze", "Analyze", "interference");
+  await button("Analyze Interference").click();
+  await page.waitForFunction(() => { const b = [...document.querySelectorAll("button")].find((x) => x.textContent.trim() === "Analyze Interference"); return b && !b.disabled; }, null, { timeout: 120_000 });
+  return { alerts: await page.getByRole("alert").allInnerTexts() };
+});
+
+await step("Optimize Network and inspect Pareto solutions", async () => {
+  await selectTool("simulate", "Simulate", "propagation");
+  await button("Optimize Network").click();
+  await ready(240_000);
+  await selectTool("review", "Review", "results");
+  const solutions = page.getByRole("tab", { name: "Solutions", exact: true });
+  await ((await solutions.count()) ? solutions : page.getByRole("tab", { name: /Candidates/ }).first()).click();
+  await page.locator(".pareto-explorer").waitFor({ timeout: 15_000 });
+  const inspect = page.getByRole("button", { name: /Inspect Pareto solution 2/i });
+  if (await inspect.count()) await inspect.first().click();
+  await page.screenshot({ path: resolve(evidence, `${runName}-pareto.png`) });
+  return { pareto_rows: await page.locator(".pareto-cell-row").count(), solutions: await page.getByRole("button", { name: /Inspect Pareto solution/i }).count() };
+});
+
+await step("every workspace drawer opens", async () => {
+  const stages = [["plan", "Plan", ["setup", "inventory", "scenarios"]], ["simulate", "Simulate", ["propagation", "experiments", "surfaces"]],
+    ["analyze", "Analyze", ["interference", "validation", "building-entry", "core"]], ["review", "Review", ["results", "history", "data", "report"]]];
+  const opened = [];
+  for (const [stage, label, tools] of stages) {
+    for (const tool of tools) {
+      await button(`${label} workspace`).click();
+      const choice = page.locator(`#stage-tool-${stage}-${tool}`);
+      if (await choice.isDisabled()) { opened.push(`${stage}/${tool}:disabled`); continue; }
+      await choice.click();
+      await button("Close tool drawer").waitFor({ timeout: 10_000 });
+      opened.push(`${stage}/${tool}:open`);
+    }
+    await page.screenshot({ path: resolve(evidence, `${runName}-drawers-${stage}.png`) });
+  }
+  return { opened };
+});
+
+await step("keyboard reaches the primary RF action", async () => {
+  await page.keyboard.press("Escape");
+  await page.locator("body").click({ position: { x: 3, y: 3 } }).catch(() => {});
+  for (let presses = 1; presses <= 60; presses += 1) {
+    await page.keyboard.press("Tab");
+    const focused = await page.evaluate(() => document.activeElement?.textContent?.trim());
+    if (["Run Sector", "Evaluate Network"].includes(focused)) return { tab_presses: presses, focused };
+  }
+  throw new Error("primary RF action not reached with Tab");
+});
+
+let projectBytes = null;
+await step("project Save Version and Export download", async () => {
+  await page.getByRole("button", { name: /^Project menu/ }).click();
+  const menu = page.getByRole("dialog", { name: "Project and scenarios" });
+  await menu.getByRole("button", { name: "Save Version" }).click();
+  await menu.getByRole("status").filter({ hasText: "Version saved" }).waitFor({ timeout: 10_000 });
+  await menu.getByRole("button", { name: "Export" }).click();
+  const download = await waitDownload(/\.atom-project\.json$/);
+  projectBytes = readFileSync(download.path);
+  await page.getByRole("button", { name: /^Project menu/ }).click();
+  return { filename: download.filename, bytes: projectBytes.length, contains_turkish: projectBytes.toString("utf8").includes(TURKISH) };
+});
+
+await step("report HTML artifact and Markdown download", async () => {
+  await selectTool("review", "Review", "report");
+  await button("PDF / Print").click();
+  // The committed print path opens a popup, which the navigation lock denies.
+  await sleep(1500);
+  const alerts = await page.getByRole("alert").allInnerTexts();
+  await page.getByRole("button", { name: /^Download / }).first().click();
+  const html = await waitDownload(/\.html$/);
+  copyFileSync(html.path, resolve(reports, "app-report.html"));
+  await button("Markdown").click();
+  const markdown = await waitDownload(/\.md$/);
+  const text = readFileSync(html.path, "utf8");
+  return { html: html.filename, html_bytes: text.length, html_contains_turkish: text.includes(TURKISH), markdown: markdown.filename, popup_print_alert: alerts };
+});
+
+const dialogTrace = [];
+async function driveDialog(kind, title, target, settled = () => false) {
+  await sleep(1500);
+  if (driver === "macos") {
+    // The panel runs in a separate system service, so System Events sees the
+    // sheet but none of its controls. Wait for the remote panel, then press
+    // Return until the sheet closes.
+    const waitSheet = ["repeat 40 times", "if exists sheet 1 of window 1 then exit repeat", "delay 0.25", "end repeat", "delay 1.5"];
+    const confirm = ["set tries to 0", "repeat 4 times", "if not (exists sheet 1 of window 1) then exit repeat", "set tries to tries + 1", "keystroke return", "delay 1.5", "end repeat"];
+    const lines = kind === "save"
+      ? ['tell application "System Events" to tell process "Electron"', "set frontmost to true", ...waitSheet,
+        'set sheetSeen to (exists sheet 1 of window 1) as text', ...confirm,
+        'return "sheet=" & sheetSeen & " returns=" & tries & " closed=" & ((not (exists sheet 1 of window 1)) as text)', "end tell"]
+      : [`set the clipboard to ${JSON.stringify(target)}`, 'tell application "System Events" to tell process "Electron"', "set frontmost to true", ...waitSheet,
+        'set panelSeen to (exists sheet 1 of window 1) as text', 'keystroke "g" using {command down, shift down}', "delay 1.5",
+        'keystroke "a" using {command down}', 'keystroke "v" using {command down}', "delay 1", "keystroke return", "delay 2", ...confirm,
+        'return "panel=" & panelSeen & " returns=" & tries & " closed=" & ((not (exists sheet 1 of window 1)) as text)', "end tell"];
+    const { stdout } = await run("osascript", lines.flatMap((line) => ["-e", line]), { timeout: 40_000 });
+    dialogTrace.push(`${kind}: ${stdout.trim() || "ok"}`);
+  } else if (driver === "xdotool") {
+    // Mutter 46 draws X11 decorations in a separate mutter-x11-frames client
+    // whose frame window carries the same title; pick the dialog window that
+    // Electron's main process owns.
+    const { stdout } = await run("xdotool", ["search", "--sync", "--onlyvisible", "--name", title], { timeout: 20_000 });
+    const ids = stdout.trim().split("\n").filter(Boolean);
+    const mainPid = String(app.process().pid);
+    let id = ids.at(-1);
+    for (const candidate of ids) {
+      const pid = await run("xdotool", ["getwindowpid", candidate]).then((r) => r.stdout.trim(), () => "");
+      if (pid === mainPid) id = candidate;
+    }
+    await run("xdotool", ["windowactivate", "--sync", id], { timeout: 10_000 }).catch(() => {});
+    await run("xdotool", ["windowfocus", "--sync", id], { timeout: 10_000 }).catch(() => {});
+    await sleep(800);
+    const mnemonic = kind === "save" ? "alt+s" : "alt+o";
+    const attempts = [];
+    const attempt = async (label, action) => {
+      if (settled()) return;
+      await action();
+      await sleep(1500);
+      attempts.push(`${label}:${settled() ? "closed" : "open"}`);
+    };
+    // Return is unreliable in Electron's GTK dialogs (Save has no default
+    // response; Open closes as cancelled), so press the button mnemonic first.
+    await attempt(mnemonic, () => run("xdotool", ["key", "--clearmodifiers", mnemonic]));
+    await attempt("click-button", async () => {
+      // Save/Open sits at the bottom-right of the GTK dialog's client area.
+      const geometry = Object.fromEntries((await run("xdotool", ["getwindowgeometry", "--shell", id])).stdout.trim().split("\n").map((line) => line.split("=")));
+      const x = Number(geometry.X) + Number(geometry.WIDTH) - 50;
+      const y = Number(geometry.Y) + Number(geometry.HEIGHT) - 23;
+      await run("xdotool", ["mousemove", "--sync", String(x), String(y), "click", "1"]);
+    });
+    if (kind === "open") {
+      await attempt("location-bar", async () => {
+        await run("xdotool", ["key", "--clearmodifiers", "ctrl+l"]);
+        await run("xdotool", ["type", "--delay", "15", target]);
+        await sleep(300);
+        await run("xdotool", ["key", "--clearmodifiers", "alt+o"]);
+      });
+    }
+    if (!settled()) {
+      await run("xdotool", ["key", "--clearmodifiers", "End"]);
+      await sleep(500);
+      await run("import", ["-window", "root", resolve(evidence, `${runName}-x11-${kind}-dialog.png`)]).catch(() => {});
+    }
+    dialogTrace.push(`${kind}: candidates=${ids.length} chosen=${id} ${attempts.join(" ")}`);
+  } else if (driver === "mutter") {
+    if (kind === "save") {
+      // Does Mutter's injected keyboard reach the Electron surface at all?
+      dialogTrace.push(`pre-check: ${mutterInputCheck}`);
+    }
+    const keys = (...steps) => run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), ...steps], { timeout: 30_000 })
+      .then((r) => r.stdout.trim(), (error) => `${error.stdout || ""}${error.stderr || ""}`.trim().split("\n").slice(-2).join(" "));
+    await sleep(1500);
+    const sent = [];
+    // Give the dialog keyboard focus with a pointer click on its centre (the
+    // empty file list), then press the button mnemonic.
+    for (const steps of [["move:720,450", "click", kind === "save" ? "combo:Alt_L+s" : "combo:Alt_L+o"]]) {
+      if (settled()) break;
+      sent.push(`${steps.join(",")} -> ${await keys(...steps)}`);
+      await sleep(2000);
+    }
+    if (kind === "open" && !settled()) {
+      sent.push(await keys("combo:Control_L+l", `text:${target}`, "combo:Alt_L+o"));
+      await sleep(2000);
+    }
+    dialogTrace.push(`${kind}: mutter remote desktop ${sent.join(" / ")} settled=${settled()}`);
+  }
+}
+
+async function dialogDriverAvailable() {
+  if (driver !== "macos") return ["xdotool", "mutter"].includes(driver);
+  // Without Accessibility for the calling app, System Events cannot press keys
+  // and the sheet would stay open; check first instead of hanging.
+  try {
+    const { stdout } = await run("osascript", ["-e", "with timeout of 10 seconds", "-e", 'tell application "System Events" to get UI elements enabled', "-e", "end timeout"], { timeout: 20_000 });
+    return stdout.trim() === "true";
+  } catch { return false; }
+}
+
+let mutterInputCheck = "not run";
+if (driver === "mutter") {
+  await step("Mutter keyboard input reaches the app", async () => {
+    await page.getByRole("button", { name: /^Project menu/ }).click();
+    const field = page.getByRole("dialog", { name: "Project and scenarios" }).getByRole("textbox", { name: "Project name" });
+    await field.click();
+    await page.keyboard.press("End");
+    const before = await field.inputValue();
+    const box = await field.boundingBox();
+    const sent = await run("python3", [resolve(root, "scripts/desktop-spike/mutter-keys.py"), `move:${Math.round(box.x + box.width - 8)},${Math.round(box.y + box.height / 2)}`, "click", "key:End", "text:Z"], { timeout: 30_000 }).then((r) => r.stdout.trim(), (e) => `${e.stdout || ""}${e.stderr || ""}`.trim());
+    await sleep(800);
+    const after = await field.inputValue();
+    await page.keyboard.press("Escape");
+    mutterInputCheck = `arrived=${after === `${before}Z`} sent=${sent.slice(0, 80)}`;
+    if (after !== `${before}Z`) throw new Error(`injected key did not arrive (${mutterInputCheck})`);
+    await page.getByRole("button", { name: /^Project menu/ }).click().catch(() => {});
+    return { arrived: true };
+  }, { critical: false });
+}
+
+await step("native Save and Open dialogs", async () => {
+  if (!driver) throw new Error("no dialog driver for this platform");
+  if (!(await dialogDriverAvailable())) throw new Error(`${driver} dialog driver unavailable (Accessibility/UI scripting not permitted)`);
+  if (!projectBytes) throw new Error("no exported project bytes");
+  const folder = resolve(here, "build/dialog", "Çankaya Ağ Planı klasörü with a deliberately long directory name", "İkinci düzey — uzun yol testi için ek klasör adı");
+  rmSync(resolve(here, "build/dialog"), { recursive: true, force: true });
+  mkdirSync(folder, { recursive: true });
+  const target = resolve(folder, `${TURKISH} ${Date.now()}.atom-project.json`);
+  const save = app.evaluate((_e, [b64, file]) => global.__atomSpike.saveWithDialog(b64, file, "A.T.O.M Save Project"), [projectBytes.toString("base64"), target]);
+  let saveSettled = false;
+  save.then(() => { saveSettled = true; }, () => { saveSettled = true; });
+  await within(Promise.all([save, driveDialog("save", "A.T.O.M Save Project", target, () => saveSettled)]), 60_000, "Save dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
+  const saved = await save;
+  if (saved.canceled || !existsSync(saved.filePath)) throw new Error("Save dialog did not write the file");
+  // GTK preselects a file given as the default path; macOS panels only take a folder.
+  const openDefault = process.platform === "linux" ? saved.filePath : folder;
+  const open = app.evaluate((_e, start) => global.__atomSpike.openWithDialog(start, "A.T.O.M Open Project"), openDefault);
+  let openSettled = false;
+  open.then(() => { openSettled = true; }, () => { openSettled = true; });
+  await within(Promise.all([open, driveDialog("open", "A.T.O.M Open Project", saved.filePath, () => openSettled)]), 60_000, "Open dialog").catch((error) => { throw new Error(`${error.message}; driver: ${dialogTrace.join(" | ") || "no output"}`); });
+  const opened = await open;
+  if (opened.canceled) throw new Error(`Open dialog was cancelled; driver: ${dialogTrace.join(" | ")}`);
+  const [savedStat, openedStat] = [statSync(saved.filePath), statSync(opened.filePath)];
+  if (savedStat.ino !== openedStat.ino || savedStat.dev !== openedStat.dev) throw new Error(`Open dialog returned a different file: ${opened.filePath}`);
+  const roundTrip = Buffer.from(opened.base64, "base64");
+  if (sha256(roundTrip) !== sha256(projectBytes)) throw new Error("opened bytes differ from saved bytes");
+  // macOS panels may hand back decomposed (NFD) Unicode or resolved symlinks;
+  // D07 must compare paths by identity, not by string.
+  return { saved_path_chars: saved.filePath.length, opened_identical_string: opened.filePath === saved.filePath,
+    opened_same_after_nfc: opened.filePath.normalize("NFC") === saved.filePath.normalize("NFC"),
+    opened_same_realpath_nfc: realpathSync(opened.filePath).normalize("NFC") === realpathSync(saved.filePath).normalize("NFC"), opened_same_file_identity: true,
+    saved_path: saved.filePath, opened_path: opened.filePath, driver_trace: dialogTrace, sha256: sha256(roundTrip), bytes: roundTrip.length };
+});
+
+await step("no uncaught page errors", async () => {
+  if (pageErrors.length) throw new Error(pageErrors.join(" | "));
+  return { console_errors: consoleErrors.slice(0, 20) };
+});
+
+const state = await Promise.race([spikeState(), sleep(10_000).then(() => ({ blockedNavigations: [], downloads: [] }))]);
+result.blocked_navigations = state.blockedNavigations;
+result.downloads = state.downloads.map(({ filename, state: downloadState }) => ({ filename, state: downloadState }));
+// A dialog left open by a failed driver can block quit; destroy the windows
+// and bound the close so evidence is always written.
+await Promise.race([app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().forEach((w) => w.destroy())), sleep(5_000)]).catch(() => {});
+await Promise.race([app.close(), sleep(20_000)]).catch(() => {});
+try { app.process().kill("SIGKILL"); } catch { /* already exited */ }
+result.critical_failures = result.steps.filter((s) => !s.ok && s.critical !== false).map((s) => s.name);
+writeFileSync(resolve(evidence, `${runName}.json`), JSON.stringify(result, null, 2));
+process.exitCode = result.critical_failures.length ? 1 : 0;

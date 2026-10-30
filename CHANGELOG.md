@@ -4,8 +4,28 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-10-27
+
 ### Added
 
+- Add a reproducible two-Cell Ankara planning walkthrough with a dataset-bound portable project, exact RF inputs, recorded baseline/recommendation/overlap trade-off and an API reproduction script; document separate Version, project and report preservation.
+
+### Fixed
+
+- Increase documentation landing-page guidance to 16px prose and 14px secondary text, and stack reference descriptions so long labels wrap without clipping.
+- Replace the documentation landing previews with a matched light/dark pair from the real two-Cell Ankara workflow, with source, dataset, request and image provenance.
+- Clarify report source identity, retained downloads, regeneration and project evidence limits; correct walkthrough propagation reach to normalized score units.
+- Reconcile the maintained roadmap with delivered features and explicit blockers, list all fourteen workspace tools, and separate the current API contract from deferred ideas and application release versions.
+- Update transitive frontend development dependencies undici to 7.30.1 and zod to 4.6.7 to clear the high-severity advisories reported by the CI security audit.
+- Make contribution guidance discoverable from the README and root CONTRIBUTING.md; repair Git LFS and Go/Vite setup, split-server readiness, Vitest/Playwright and Go checks, pinned documentation tooling, public links and the VERSION-based release workflow.
+
+## [0.13.0] - 2026-10-22
+
+### Added
+
+- Add an opt-in desktop API sidecar control protocol: the host supplies inherited control pipes, the sidecar binds to loopback, reports lifecycle/readiness events, authenticates each request with a per-launch token and exact host/origin, and drains cleanly when the host closes the pipe. Default web, Docker, and CLI modes are unchanged; this is sidecar support, not a packaged desktop application.
+- Add a Figma-authored ATOM signal-path icon with scalable SVG, transparent and monochrome marks, a small-size favicon, PNG exports, and Windows ICO/macOS ICNS assets. Refresh the app, README and documentation icon and provide a reproducible export and validation script.
+- Redesign generated Markdown and printable reports around one semantic model: a decision summary with evaluation completeness, explicit KPI units and populations, deterministic interpretation, numbered collision-aware maps sampled to 300 RF segments, grouped common/reference RF profiles with per-Cell deviations, separated source/generator provenance and an engineering appendix. Add UTC timestamps and shared report filename stems, preserve retained artifact bytes and historical unknowns, document reading/print settings, and verify real A4 PDFs and accessibility. RF, optimization, score and persistence contracts are unchanged.
 - Show where two compatible network plans differ: Results → Compare offers Show where they differ for saved network Versions, the current network plan, or an optimization's baseline and solutions on the current dataset and model. A new `POST /api/compare-network` endpoint evaluates both plans (one protected RF request) and returns demand buildings newly served or lost and buildings whose overlap changed, with counts that reconcile exactly with the aggregate KPI deltas and a bounded building list. The map layer has a labeled legend, and reports include the counts and a static map.
 - Place and manage co-located multi-sector Cells as one site group: Inventory → Place site adds N Cells (default 0/120/240°, editable) at one map point that move together. Each remains an ordinary Cell in every request (sector azimuths are its default azimuth); editing one member changes only that Cell unless you apply its RF profile to the site, and Ungroup site restores independent Cells. Projects round-trip the optional `siteGroupId`/`sectorAzimuthDeg` fields without a file version change, and older files import unchanged.
 - Export a local review package for the current saved Version from Review → Report: one `.zip` with the HTML and Markdown reports, the project file, the report map and a `manifest.json` (file SHA-256 hashes, dataset and model identity, Version/Run lineage, limitations). It is generated in the browser with no RF request, checks its own manifest before downloading, follows the shareable filename rule, and refuses unsaved drafts with guidance to save a Version.
@@ -22,6 +42,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Build with Go 1.26.10 to include the fix for GO-2026-6809 in `crypto/x509`, which `govulncheck` reports for Go 1.26.9.
+- Update the frontend build tooling to Vite 6.4.5 and Vitest 4.1.12 for the `launch-editor` command-injection and mock-registration advisories reported by `npm audit`.
 - Restore result context after a reload: the newest retained Run that computed exactly the restored plan (canonical request, dataset and model version, the same rule as applying a draft Pareto alternative) is shown as HISTORICAL with its summary, and a working draft offers Restore map layers as the only RF request. Saving a Version right after a matching run records that Run as its source in Version metadata, Results explains when no Run applies, live network evaluations no longer borrow an earlier optimization Run, and the command bar never shows Ready with UNAVAILABLE.
 - Give CSV Measurement Validation its own section in Review → Data instead of a collapsed Research disclosure, and rename the Analyze → RF Diagnostics campaign tool to Research campaign evidence so no two tools share the measurement-validation name. Boundary copy, the six-Cell limit and the explicit apply confirmation are unchanged.
 - Distinguish a planning-mode switch from an input change: switching Single ↔ Network without changing inputs shows a neutral OTHER MODE state naming the Result's mode instead of STALE, while any input change, and any identity or fingerprint mismatch, still shows STALE. Run labels lead with type · Cells · headline metric · time in the command bar, Results and Run history, with the Run ID kept in details. The header, Results and Scenarios share one Version-state wording ("No saved Version", "Version N", "Version N · Unsaved changes"). New Scenarios are named from the plan mode ("Sector plan N", "Network plan N"); existing names never change.
@@ -360,7 +382,9 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths.
 - Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing.
 
-[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.12.3...HEAD
+[Unreleased]: https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD
+[0.13.1]: https://github.com/Berk-Unsal/atom/compare/v0.13.0...v0.13.1
+[0.13.0]: https://github.com/Berk-Unsal/atom/compare/v0.12.3...v0.13.0
 [0.12.3]: https://github.com/Berk-Unsal/atom/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/Berk-Unsal/atom/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/Berk-Unsal/atom/compare/v0.12.0...v0.12.1

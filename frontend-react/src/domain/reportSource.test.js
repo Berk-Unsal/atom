@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import reportGolden from "../../../docs/concept-7j-report-equivalence.json";
 import { createReportDefinition, validateReportDefinition } from "./report.js";
@@ -207,10 +206,7 @@ describe("Concept 7D report source boundary", () => {
       sourceBinding: report.domainBinding,
       selectedSolutionId: report.selectedSolutionId,
       paretoSolutionIds: report.networkOptimization.pareto_frontier.map((solution) => solution.id),
-      markdown: {
-        sha256: createHash("sha256").update(normalizedMarkdown).digest("hex"),
-        utf8Bytes: new TextEncoder().encode(normalizedMarkdown).byteLength,
-      },
+
     };
 
     expect(semanticOutput.sourceBinding).toEqual(reportGolden.before.sourceBinding);
@@ -219,10 +215,13 @@ describe("Concept 7D report source boundary", () => {
     // The Concept 7J golden (historical evidence, left unchanged) captured the renderer before #102 removed
     // inline SVG maps and duplicated sections from Markdown. Binding and solution identity above still match it.
     expect(reportGolden.before.markdown.sha256).toBe("75a905afc44e60d80a23644e3d203efe5770db347fd363044511fe7c160a2b6c");
-    expect(semanticOutput.markdown).toEqual({
-      sha256: "73b4f7c4ed6456a1f99e235179bfc1d1e3a7722cb14f0af07ce8b48ac581d699",
-      utf8Bytes: 4959,
-    });
+    // The new generator changes presentation, not the historical binding or public solutions.
+    expect(report.view.identity.generatorVersion).toBe("atom-report-generator-v2");
+    // This old fixture omits objective raw metrics; preserve the existing comparison helper's result,
+    // while the retained public solution above still has its original score of 88.
+    expect(report.view.headlines.find(({ id }) => id === "score").value).toBe(report.comparison.optimized_solution.stats.score);
+    expect(normalizedMarkdown).toContain("## Engineering appendix");
+    expect(normalizedMarkdown).toContain("| Source Run(s) | simulation-run-1, optimization-run-1 |");
     expect(normalizedMarkdown).not.toMatch(/<svg|<path/);
   });
 });

@@ -30,6 +30,9 @@ def negated(sentence, start):
 
 
 PROHIBITED = [
+    ('uncommitted API future promise', r'\bfuture versions will\b'),
+    ('unbounded portable-project promise', r'\b(?:move|export|transfer).{0,45}\b(?:full|complete) projects?\b|\bexternal archive\b'),
+    ('reach score mislabeled as distance', r'summed usable ray reach\s*\(m\)|\bm of summed ray reach\b'),
     ('stale normal network maximum6', r'(?:network.{0,100}|(?:select|choose).{0,30})\b(?:two|2)\s*(?:to|[-–])\s*(?:six|6)\b'),
     ('Measurement Validation scope inflated to8', r'measurement(?: validation)?\b.{0,65}(?:accepts?|maximum|max|up to|one to)\s*(?:eight|8)\b'),
     ('unsupported vendor antenna validation', r'\bvalidat\w*\s+(?:vendor\s+)?antenna\s+(?:hardware|performance)'),

@@ -85,33 +85,19 @@ setup, testing expectations, and contribution workflow for A.T.O.M." />
     <aside class="page-toc reference-toc" aria-label="Contributing page contents">
       <strong>On this page</strong>
       <ul>
-      <li><a href="#how-to-contribute" id="toc-how-to-contribute">How to
-      Contribute</a></li>
-      <li><a href="#contributing-code"
-      id="toc-contributing-code">Contributing Code</a></li>
-      <li><a href="#documentation-contributions"
-      id="toc-documentation-contributions">Documentation
-      Contributions</a></li>
-      <li><a href="#priority-areas-for-contributions"
-      id="toc-priority-areas-for-contributions">Priority Areas for
-      Contributions</a></li>
-      <li><a href="#project-structure"
-      id="toc-project-structure">Project Structure</a></li>
-      <li><a href="#deployment--release-process"
-      id="toc-deployment--release-process">Deployment &amp; Release
-      Process</a></li>
-      <li><a href="#communication"
-      id="toc-communication">Communication</a></li>
-      <li><a href="#contributor-recognition"
-      id="toc-contributor-recognition">Contributor Recognition</a></li>
-      <li><a href="#development-tools"
-      id="toc-development-tools">Development Tools</a></li>
-      <li><a href="#financial-contributions"
-      id="toc-financial-contributions">Financial Contributions</a></li>
-      <li><a href="#getting-help" id="toc-getting-help">Getting
-      Help</a></li>
-      <li><a href="#checklist-for-prs"
-      id="toc-checklist-for-prs">Checklist for PRs</a></li>
+      <li><a href="#choose-a-small-change"
+      id="toc-choose-a-small-change">Choose a small change</a></li>
+      <li><a href="#repository-map-and-ownership-boundaries"
+      id="toc-repository-map-and-ownership-boundaries">Repository map
+      and ownership boundaries</a></li>
+      <li><a href="#get-a-complete-checkout"
+      id="toc-get-a-complete-checkout">Get a complete checkout</a></li>
+      <li><a href="#choose-focused-checks-then-full-validation"
+      id="toc-choose-focused-checks-then-full-validation">Choose focused
+      checks, then full validation</a></li>
+      <li><a href="#pull-requests-and-releases"
+      id="toc-pull-requests-and-releases">Pull requests and
+      releases</a></li>
       </ul>
     </aside>
 
@@ -128,457 +114,336 @@ expectations, and contribution workflow for A.T.O.M.</p>
       </header>
 
       <div class="prose">
-<p>A.T.O.M is an open-source project, and we welcome contributions from
-the community!</p>
-<h2 id="how-to-contribute">How to Contribute</h2>
-<h3 id="reporting-bugs">Reporting Bugs</h3>
-<p>Found a bug? Please report it!</p>
+<p>Start with an existing <a
+href="https://github.com/Berk-Unsal/atom/issues">GitHub issue</a>, or
+use the repository's bug and feature issue forms to describe a
+reproducible problem. Issues are the public discussion route. Check the
+issue's priority, prerequisites and acceptance criteria before starting;
+see the product roadmap and desktop roadmap for context, and the live
+issue for current status.</p>
+<p>This is the maintained contribution guide. The root <a
+href="https://github.com/Berk-Unsal/atom/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>
+and <a
+href="https://github.com/Berk-Unsal/atom/blob/main/README.md">README</a>
+point here. Repository-specific coding instructions are in <a
+href="https://github.com/Berk-Unsal/atom/blob/main/AGENTS.md">AGENTS.md</a>.</p>
+<h2 id="choose-a-small-change">Choose a small change</h2>
 <ol type="1">
-<li><strong>Check existing issues</strong> first: <a
-href="https://github.com/Berk-Unsal/atom/issues">GitHub Issues</a></li>
-<li><strong>Create new issue</strong> if not already reported</li>
-<li><strong>Include</strong>:
-<ul>
-<li>OS and Docker version</li>
-<li>Steps to reproduce</li>
-<li>Expected vs actual behavior</li>
-<li>Error logs/screenshots</li>
-</ul></li>
+<li>Identify the issue's observable outcome and the files responsible
+for it. Confirm that required evidence or upstream work is
+available.</li>
+<li>Create a branch, for example
+<code>git switch -c fix/issue-82-contribution-guide</code>.</li>
+<li>Reproduce a bug with a focused regression test, make the smallest
+coherent fix, and run the affected tests first.</li>
+<li>Run the applicable full checks below, update documentation and add
+user-visible changes under <strong>Unreleased</strong> in <a
+href="https://github.com/Berk-Unsal/atom/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</li>
+<li>Open a PR using the repository template. Explain the impact, link
+the issue, list actual validation commands/results, and include
+screenshots for UI changes. Mention any unrun check and its reason.</li>
 </ol>
-<p><strong>Example bug report</strong>:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bug: Simulation returns 500 error</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">### Environment</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Docker version: 24.0.0</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>OS: macOS 14.0</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">### Steps to Reproduce</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Run <span class="in">`docker run -p 8080:8080 atom-simulator`</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>POST to <span class="in">`/api/simulate`</span> with an out-of-range payload</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Receive 500 error</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">### Expected</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Graceful validation error that explains which request field is invalid</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### Actual</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>500 Internal Server Error with no error message</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">### Logs</span></span></code></pre></div>
-<p>Server error: index out of bounds</p>
-<pre><code></code></pre>
-<h3 id="suggesting-features">Suggesting Features</h3>
-<p>Want to suggest an improvement?</p>
-<ol type="1">
-<li><strong>Check existing proposals</strong>: <a
-href="https://github.com/Berk-Unsal/atom/discussions">Discussions</a></li>
-<li><strong>Start a discussion</strong> or open an issue labeled
-<code>enhancement</code></li>
-<li><strong>Describe</strong>:
-<ul>
-<li>What problem it solves</li>
-<li>Why it's valuable</li>
-<li>Rough implementation approach (optional)</li>
-</ul></li>
-</ol>
-<p><strong>Example feature request</strong>:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Feature: Support for terrain elevation models</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">### Problem</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>RF propagation is affected by hills and valleys, but A.T.O.M currently ignores terrain.</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">### Proposal</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Add support for GeoTIFF elevation data</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Apply path loss adjustment based on elevation difference</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Include elevation visualization on map</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### Benefits</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>More accurate coverage prediction in mountainous regions</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Better antenna placement decisions</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### Implementation hint</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use open-source GDAL library for GeoTIFF reading</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Modify FSPL calculation in raytracer/geometry.go</span></code></pre></div>
-<hr />
-<h2 id="contributing-code">Contributing Code</h2>
-<h3 id="setup-development-environment">Setup Development
-Environment</h3>
-<p><strong>Backend</strong>:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Go 1.26.9+</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> mod download</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run .</span></code></pre></div>
-<p><strong>Frontend</strong>:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install Node.js 24+</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
-<p><strong>Python tooling</strong>:</p>
-<p>Python dependencies are split into exactly pinned direct inputs and
-fully resolved, SHA-256-hashed lockfiles. Install the locks without
-allowing source distributions or dependency re-resolution:</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--require-hashes</span> <span class="at">--only-binary</span><span class="op">=</span>:all: <span class="at">-r</span> data-pipeline/Requirements.txt</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--require-hashes</span> <span class="at">--only-binary</span><span class="op">=</span>:all: <span class="at">-r</span> docs/requirements.txt</span></code></pre></div>
-<p>After deliberately changing either <code>.in</code> file, install
-<code>uv==0.12.0</code> and regenerate the corresponding lock using the
-command recorded at the top of that file. Commit the input and generated
-lock together. CI verifies exact pins and hashes and installs both
-lockfiles.</p>
-<p><strong>Both together</strong>:</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 1</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go <span class="kw">&amp;&amp;</span> <span class="ex">go</span> run .</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 2</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> run dev</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Open http://localhost:5173</span></span></code></pre></div>
-<h3 id="making-changes">Making Changes</h3>
-<h4 id="code-style">Code Style</h4>
-<p>Follow standard Go and JavaScript conventions:</p>
-<p><strong>Go</strong>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Use camelCase for functions/variables</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> calculatePathLoss<span class="op">(</span>distance <span class="dt">float64</span><span class="op">)</span> <span class="dt">float64</span> <span class="op">{</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Clear, concise comments</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">20</span> <span class="op">*</span> math<span class="op">.</span>Log10<span class="op">(</span>distance<span class="op">)</span> <span class="op">-</span> <span class="fl">27.55</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>JavaScript</strong>:</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Use arrow functions, const/let</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> calculateSignalStrength <span class="op">=</span> (rxPower) <span class="kw">=&gt;</span> {</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> rxPower <span class="op">&gt;</span> <span class="op">-</span><span class="dv">70</span> <span class="op">?</span> <span class="st">&quot;excellent&quot;</span> <span class="op">:</span> <span class="st">&quot;poor&quot;</span><span class="op">;</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
-<h4 id="git-workflow">Git Workflow</h4>
-<ol type="1">
-<li><strong>Fork</strong> repository</li>
-<li><strong>Create feature branch</strong>:
-<code>git checkout -b feature/new-feature</code></li>
-<li><strong>Make changes</strong> (keep commits small and focused)</li>
-<li><strong>Test</strong> locally</li>
-<li><strong>Push</strong> to your fork</li>
-<li><strong>Create Pull Request</strong> with description</li>
-</ol>
-<p><strong>Commit messages</strong> (conventional format):</p>
-<pre><code>feat: add terrain elevation support
-fix: correct FSPL calculation for 6G
-docs: update API documentation
-test: add raytracing unit tests
-refactor: simplify optimization algorithm</code></pre>
-<h3 id="testing">Testing</h3>
-<h4 id="go-backend-tests">Go Backend Tests</h4>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> vet ./...</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">govulncheck</span> ./...</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-race</span> ./...</span></code></pre></div>
-<p><strong>Add tests</strong> for new features:</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> TestCalculatePathLoss<span class="op">(</span>t <span class="op">*</span>testing<span class="op">.</span>T<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    distance <span class="op">:=</span> <span class="fl">1000.0</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    frequency <span class="op">:=</span> <span class="st">&quot;5G&quot;</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    result <span class="op">:=</span> CalculatePathLoss<span class="op">(</span>distance<span class="op">,</span> frequency<span class="op">)</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 5G at 1 km should be ~84 dB</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">:=</span> <span class="fl">84.0</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> math<span class="op">.</span>Abs<span class="op">(</span>result <span class="op">-</span> expected<span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1.0</span> <span class="op">{</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        t<span class="op">.</span>Fatalf<span class="op">(</span><span class="st">&quot;Expected %f, got %f&quot;</span><span class="op">,</span> expected<span class="op">,</span> result<span class="op">)</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<h4 id="react-frontend-tests">React Frontend Tests</h4>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test</span></code></pre></div>
-<p><strong>Add tests</strong> using Jest/React Testing Library:</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test</span>(<span class="st">&#39;Azimuth slider updates coverage&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">render</span>(<span class="op">&lt;</span>ControlPanel <span class="op">/&gt;</span>)<span class="op">;</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> slider <span class="op">=</span> <span class="bu">screen</span><span class="op">.</span><span class="fu">getByRole</span>(<span class="st">&#39;slider&#39;</span><span class="op">,</span> {<span class="dt">name</span><span class="op">:</span> <span class="ss">/azimuth/i</span>})<span class="op">;</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  fireEvent<span class="op">.</span><span class="fu">change</span>(slider<span class="op">,</span> {<span class="dt">target</span><span class="op">:</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">90</span>}})<span class="op">;</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect</span>(slider<span class="op">.</span><span class="at">value</span>)<span class="op">.</span><span class="fu">toBe</span>(<span class="st">&#39;90&#39;</span>)<span class="op">;</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
-<h3 id="code-review-checklist">Code Review Checklist</h3>
-<p>Before submitting PR, verify:</p>
-<ul>
-<li>✅ Code follows project style</li>
-<li>✅ Backend vulnerability scan passes:
-<code>govulncheck ./...</code></li>
-<li>✅ Tests pass: <code>go test -race ./...</code></li>
-<li>✅ No lint errors: <code>golint ./...</code></li>
-<li>✅ Comments explain "why", not "what"</li>
-<li>✅ Commit messages are clear</li>
-<li>✅ Documentation updated if needed</li>
-<li>✅ No breaking changes (or documented)</li>
-</ul>
-<hr />
-<h2 id="documentation-contributions">Documentation Contributions</h2>
-<h3 id="improving-docs">Improving Docs</h3>
-<p>Found a typo or unclear section? Help us improve!</p>
-<ol type="1">
-<li><strong>Edit markdown or HTML files</strong> in the
-<code>docs/</code> folder</li>
-<li><strong>Verify rendering</strong>: Run
-<code>python3 -m http.server 9000 --directory docs</code></li>
-<li><strong>Submit PR</strong> with changes</li>
-</ol>
-<h3 id="adding-examples">Adding Examples</h3>
-<p><strong>Backend example</strong> (Go):</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode go"><code class="sourceCode go"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In backend-go/examples/</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;fmt&quot;</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    raytracer <span class="st">&quot;./raytracer&quot;</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Example: Calculate path loss for 5G at 1 km</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">:=</span> raytracer<span class="op">.</span>CalculatePathLoss<span class="op">(</span><span class="dv">1000</span><span class="op">,</span> <span class="st">&quot;5G&quot;</span><span class="op">)</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;Path loss: %.2f dB</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> loss<span class="op">)</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p><strong>Frontend example</strong> (React):</p>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// In frontend-react/examples/</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { useSimulation } <span class="im">from</span> <span class="st">&#39;../hooks/useSimulation&#39;</span><span class="op">;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">function</span> <span class="fu">SimpleVisualization</span>() {</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> { simulate } <span class="op">=</span> <span class="fu">useSimulation</span>()<span class="op">;</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> handleSimulate <span class="op">=</span> <span class="kw">async</span> () <span class="kw">=&gt;</span> {</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> result <span class="op">=</span> <span class="cf">await</span> <span class="fu">simulate</span>({</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">tower_lon</span><span class="op">:</span> <span class="fl">32.8541</span><span class="op">,</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">tower_lat</span><span class="op">:</span> <span class="fl">39.9208</span><span class="op">,</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">rays</span><span class="op">:</span> <span class="dv">120</span><span class="op">,</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">radius_m</span><span class="op">:</span> <span class="dv">400</span><span class="op">,</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">frequency_ghz</span><span class="op">:</span> <span class="dv">28</span><span class="op">,</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">tx_power_dbm</span><span class="op">:</span> <span class="dv">30</span><span class="op">,</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">azimuth</span><span class="op">:</span> <span class="dv">45</span><span class="op">,</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">beam_width</span><span class="op">:</span> <span class="dv">120</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Coverage:&#39;</span><span class="op">,</span> result)<span class="op">;</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="op">&lt;</span>button onClick<span class="op">=</span>{handleSimulate}<span class="op">&gt;</span>Simulate<span class="op">&lt;/</span>button<span class="op">&gt;;</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<hr />
-<h2 id="priority-areas-for-contributions">Priority Areas for
-Contributions</h2>
-<h3 id="high-priority">High Priority</h3>
-<ul>
-<li>🔴 <strong>Terrain elevation support</strong>: Add GeoTIFF
-support</li>
-<li>🔴 <strong>Multipath modeling</strong>: Include reflections</li>
-<li>🔴 <strong>Performance optimization</strong>: Faster ray
-intersection testing</li>
-<li>🔴 <strong>Documentation</strong>: More examples and tutorials</li>
-</ul>
-<h3 id="medium-priority">Medium Priority</h3>
-<ul>
-<li>🟡 <strong>Custom frequency bands</strong>: User-defined
-frequencies</li>
-<li>🟡 <strong>Batch optimization</strong>: Multi-site optimization</li>
-<li>🟡 <strong>Export formats</strong>: Support more GIS formats</li>
-<li>🟡 <strong>Visualization enhancements</strong>: 3D map view</li>
-</ul>
-<h3 id="low-priority">Low Priority</h3>
-<ul>
-<li>🟢 <strong>UI polish</strong>: Theme improvements, responsive
-design</li>
-<li>🟢 <strong>Internationalization</strong>: Support other
-languages</li>
-<li>🟢 <strong>Mobile app</strong>: React Native version</li>
-<li>🟢 <strong>Advanced analytics</strong>: Statistical analysis
-tools</li>
-</ul>
-<hr />
-<h2 id="project-structure">Project Structure</h2>
-<pre><code>urban-ray-tracer/
-├── backend-go/          # Go backend (API, raytracing)
-│   ├── main.go
-│   ├── raytracer/       # RF propagation, spatial index, optimization
-│   └── go.mod
-├── frontend-react/      # React frontend (UI, visualization)
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   └── utils/       # Helpers (API calls, geometry)
-│   └── package.json
-├── data-pipeline/       # Data processing scripts
-│   ├── extract_ankara.py
-│   ├── fetch_buildings.py
-│   ├── export_ankara_buildings.py
-│   └── export_tower_geojson.py
-└── docs/                # Static GitHub Pages documentation
-    ├── index.html
-    ├── changelog.html   # Generated from the root CHANGELOG.md
-    └── ...</code></pre>
-<h3 id="key-files-to-know">Key Files to Know</h3>
+<p>For an initial contribution, prefer bounded documentation, pure
+helpers or a clearly scoped workflow repair. RF equations, observation
+semantics, dataset provenance, optimizer objectives, request budgets,
+portable-project contracts and desktop security need maintainer review.
+A synthetic test or a successful run does not establish measured RF
+accuracy. Read <a href="./modeling-limits.html">modeling limits</a>
+before proposing RF changes; external evidence gates remain in
+force.</p>
+<h2 id="repository-map-and-ownership-boundaries">Repository map and
+ownership boundaries</h2>
 <table>
 <thead>
 <tr>
-<th>File</th>
-<th>Purpose</th>
+<th>Location</th>
+<th>Responsibility</th>
+<th>Useful starting point</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>backend-go/main.go</code></td>
-<td>API server entry point</td>
+<td><code>backend-go/</code></td>
+<td>Gin routes, validation, jobs, dataset runtime and HTTP
+contracts</td>
+<td><code>main.go</code>, <code>server_lifecycle.go</code> and their
+tests</td>
 </tr>
 <tr>
-<td><code>backend-go/raytracer/geometry.go</code></td>
-<td>RF physics calculations</td>
+<td><code>backend-go/raytracer/</code></td>
+<td>Deterministic RF, geometry, spatial index and optimization</td>
+<td>Focused implementation and table-driven tests</td>
 </tr>
 <tr>
-<td><code>backend-go/raytracer/building_index.go</code></td>
-<td>R-Tree spatial index</td>
+<td><code>frontend-react/src/components/</code></td>
+<td>React UI and interaction</td>
+<td>Component plus <code>*.test.jsx</code></td>
 </tr>
 <tr>
-<td><code>frontend-react/src/components/MapCanvas.jsx</code></td>
-<td>Leaflet map viewer</td>
+<td><code>frontend-react/src/hooks/</code></td>
+<td>Workspace state and workflow orchestration</td>
+<td>Relevant hook and workflow tests</td>
 </tr>
 <tr>
-<td><code>frontend-react/src/utils/networkTech.js</code></td>
-<td>Frequency-specific constants</td>
+<td><code>frontend-react/src/utils/</code></td>
+<td>Pure helpers and <code>*.test.js</code></td>
+<td><code>projectStore.js</code> and
+<code>projectFileReliability.test.js</code> for portable files</td>
 </tr>
 <tr>
-<td><code>Dockerfile</code></td>
-<td>Multi-stage build configuration</td>
+<td><code>core-lab-adapter/</code></td>
+<td>Optional 5G-only Core Lab adapter</td>
+<td>Separate Go module and tests</td>
+</tr>
+<tr>
+<td><code>data-pipeline/</code></td>
+<td>Dataset manifest, LFS data, pack generation and QA</td>
+<td>Validate a pack before changing data assumptions</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>Markdown sources, generated reference HTML, search index and
+validators</td>
+<td>Edit the source and rebuild generated pages</td>
+</tr>
+<tr>
+<td><code>examples/</code></td>
+<td>Importable portable projects and public fixtures</td>
+<td>Keep legacy input-only files compatible</td>
+</tr>
+<tr>
+<td><code>desktop/spike/</code></td>
+<td>Disposable qualification probes</td>
+<td>Evidence for desktop gates, not a production shell</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="deployment--release-process">Deployment &amp; Release
-Process</h2>
-<h3 id="local-testing">Local Testing</h3>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build and test locally</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> atom-simulator .</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-p</span> 8080:8080 atom-simulator</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run tests</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go <span class="kw">&amp;&amp;</span> <span class="ex">go</span> test ./...</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../frontend-react <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> test</span></code></pre></div>
-<h3 id="creating-a-release">Creating a Release</h3>
-<ol type="1">
-<li><strong>Update version</strong>: Edit version string in
-<code>main.go</code></li>
-<li><strong>Update CHANGELOG</strong>: Document changes</li>
-<li><strong>Create Git tag</strong>: <code>git tag v1.1.0</code></li>
-<li><strong>Push tag</strong>: <code>git push origin v1.1.0</code></li>
-<li><strong>Build release</strong>:
-<code>docker build -t atom-simulator:1.1.0 .</code></li>
-<li><strong>Push to registry</strong>:
-<code>docker push your-registry/atom-simulator:1.1.0</code></li>
-</ol>
-<hr />
-<h2 id="communication">Communication</h2>
-<h3 id="where-to-ask-questions">Where to Ask Questions</h3>
-<ul>
-<li><strong>GitHub Issues</strong>: Bug reports, feature requests</li>
-<li><strong>GitHub Discussions</strong>: Questions, brainstorming</li>
-<li><strong>Email</strong>: <a
-href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></li>
-<li><strong>LinkedIn</strong>: <a
-href="https://linkedin.com/in/berkunsaltr">Berk Ünsal</a></li>
-</ul>
-<h3 id="code-of-conduct">Code of Conduct</h3>
-<p>We're committed to providing a welcoming and inspiring community for
-all. Please read our Code of Conduct (or establish community
-guidelines).</p>
-<p><strong>TL;DR</strong>: Be respectful, inclusive, and
-constructive.</p>
-<hr />
-<h2 id="contributor-recognition">Contributor Recognition</h2>
-<p>All contributors will be:</p>
-<ul>
-<li>✅ Added to CONTRIBUTORS.md</li>
-<li>✅ Credited in release notes</li>
-<li>✅ Mentioned in documentation</li>
-<li>✅ Eligible for maintainer status (after consistent
-contributions)</li>
-</ul>
-<hr />
-<h2 id="development-tools">Development Tools</h2>
-<h3 id="recommended-extensions">Recommended Extensions</h3>
-<p><strong>VS Code</strong>:</p>
-<ul>
-<li>Go (golang.go)</li>
-<li>ES7+ React/Redux/React-Native snippets</li>
-<li>Docker</li>
-<li>GitLens</li>
-<li>Prettier</li>
-</ul>
-<h3 id="useful-commands">Useful Commands</h3>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Go formatting and linting</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> fmt ./...</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> vet ./...</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="ex">golint</span> ./...</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Go benchmarking</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test <span class="at">-bench</span><span class="op">=</span>. <span class="at">-benchmem</span> ./...</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># React development</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run preview</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run lint</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Docker cleanup</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> system prune <span class="at">-a</span></span></code></pre></div>
-<hr />
-<h2 id="financial-contributions">Financial Contributions</h2>
-<p>If you'd like to support A.T.O.M financially:</p>
-<ul>
-<li>⭐ Star the repository (recognition counts!)</li>
-<li>🔗 Share with others in your network</li>
-<li>💼 Consider consulting: <a
-href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></li>
-<li>🤝 Contribute code or documentation (priceless!)</li>
-</ul>
-<hr />
-<h2 id="getting-help">Getting Help</h2>
-<p><strong>Stuck? Need guidance?</strong></p>
-<ol type="1">
-<li>Check <a href="./faq.html">FAQ</a></li>
-<li>Search existing <a
-href="https://github.com/Berk-Unsal/atom/issues">GitHub Issues</a></li>
-<li>Review <a href="./architecture.html">Architecture</a> for system
-overview</li>
-<li>Ask in GitHub Discussions</li>
-<li>Reach out to maintainers</li>
-</ol>
-<hr />
-<h2 id="checklist-for-prs">Checklist for PRs</h2>
-<p>Before submitting:</p>
-<ul class="task-list">
-<li><label><input type="checkbox" />I've read <a
-href="./contributing.html">CONTRIBUTING.md</a></label></li>
-<li><label><input type="checkbox" />I've tested my changes
-locally</label></li>
-<li><label><input type="checkbox" />I've added/updated
-documentation</label></li>
-<li><label><input type="checkbox" />I've added tests for new
-features</label></li>
-<li><label><input type="checkbox" />My code follows project style
-guidelines</label></li>
-<li><label><input type="checkbox" />I've verified no breaking
-changes</label></li>
-<li><label><input type="checkbox" />I've updated the
-CHANGELOG</label></li>
-</ul>
-<hr />
-<p>Thank you for contributing to A.T.O.M! Together, we're building the
-future of RF simulation. 🚀</p>
-<hr />
-<p><strong>Questions?</strong> Open an issue or email <a
-href="mailto:info@berkunsal.com"><span>info@berkunsal.com</span></a></p>
+<p>Keep API input validation at routes and preserve cancellation
+contexts. Use <code>gofmt</code> for Go, exported PascalCase names where
+appropriate, PascalCase component filenames, <code>use</code>-prefixed
+hooks and camelCase helpers. Prefer focused modules and pure utilities
+to expanding <code>App.jsx</code>. Preserve deterministic ordering and
+the existing 4G/5G/6G availability contract.</p>
+<h2 id="get-a-complete-checkout">Get a complete checkout</h2>
+<p>Install Git and Git LFS before cloning. Docker Engine with Compose or
+Docker Desktop is sufficient to run the full app; source development
+also needs Node.js <strong>24 or newer</strong> and the Go version
+declared in <a
+href="https://github.com/Berk-Unsal/atom/blob/main/backend-go/go.mod">backend-go/go.mod</a>
+and <a
+href="https://github.com/Berk-Unsal/atom/blob/main/core-lab-adapter/go.mod">core-lab-adapter/go.mod</a>.
+CI reads those module files. Documentation and data tooling use Python
+<strong>3.12</strong> in CI.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs install</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/Berk-Unsal/atom.git</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> atom</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> lfs pull</span></code></pre></div>
+<p>The Ankara building GeoJSON is about 111 MiB. A small file starting
+with <code>version https://git-lfs.github.com/spec/v1</code> is a
+pointer, not a usable dataset. Fetch its LFS object before building or
+validating the pack. Do not regenerate the dataset to work around a
+missing LFS download.</p>
+<h3 id="run-the-full-app-with-docker">Run the full app with Docker</h3>
+<p>From the repository root:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span> atom</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--fail</span> http://localhost:8080/readyz</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose logs <span class="at">-f</span> atom</span></code></pre></div>
+<p>Wait for <code>/readyz</code> to return success, then open
+<code>http://localhost:8080</code>. Readiness covers dataset and
+frontend assets; <code>/healthz</code> only checks liveness. Use
+<code>docker compose down</code> from the root to stop the app. Internet
+access is needed for the initial build and online basemap tiles. The
+optional Core Lab profile is documented in <a
+href="download.html#core-lab">Download and Use</a>.</p>
+<h3 id="develop-with-go-and-vite">Develop with Go and Vite</h3>
+<p>Run these in separate terminals, each starting at the repository
+root:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 1: existing Go HTTP API</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> backend-go</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> mod download</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run .</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 2: shared React frontend</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> frontend-react</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> ci</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<p>Open <code>http://localhost:5173</code>. Vite proxies API traffic to
+port 8080. Check <code>http://localhost:8080/healthz</code> and
+<code>http://localhost:8080/api/meta</code> for the API/dataset, and
+verify that Vite serves the UI. In this split workflow
+<code>/readyz</code> can report missing frontend assets until
+<code>npm run build</code> creates <code>frontend-react/dist</code>; it
+is the combined-server readiness check, not a prerequisite for Vite HMR.
+A dataset error still needs fixing. Stop a competing Compose instance
+before reusing port 8080.</p>
+<p>Validate the public pack from <code>backend-go</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> run ./cmd/validate-dataset ../data-pipeline</span></code></pre></div>
+<h3 id="set-up-documentation-and-python-tools">Set up documentation and
+Python tools</h3>
+<p>From the repository root, use a Python 3.12 virtual environment.
+Install the hash-pinned documentation lock without source builds or
+dependency re-resolution:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3.12</span> <span class="at">-m</span> venv .venv</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> .venv/bin/activate</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--require-hashes</span> <span class="at">--only-binary</span><span class="op">=</span>:all: <span class="at">-r</span> docs/requirements.txt</span></code></pre></div>
+<p>Install <strong>Pandoc 3.10 exactly</strong>, the version required by
+<code>docs/build-reference-pages.sh</code> and the documentation
+workflows. Confirm <code>pandoc --version</code> before building; a
+newer version can change committed HTML. The build script rejects
+another version.</p>
+<p>Only data-pipeline work needs the separate scientific/geospatial
+Python environment:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">--require-hashes</span> <span class="at">--only-binary</span><span class="op">=</span>:all: <span class="at">-r</span> data-pipeline/Requirements.txt</span></code></pre></div>
+<p>Direct dependency inputs are in the matching <code>.in</code> files.
+For an intentional dependency update, use <code>uv==0.12.0</code> and
+the lock-generation command recorded at the top of the relevant
+lockfile; commit the input and lock together. Do not edit hashes by
+hand.</p>
+<h2 id="choose-focused-checks-then-full-validation">Choose focused
+checks, then full validation</h2>
+<p>Run the narrow regression test while editing. These examples use real
+existing tests and files:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From frontend-react: portable-project helpers</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> test <span class="at">--</span> src/utils/projectFileReliability.test.js</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># From backend-go: HTTP server lifecycle</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">go</span> test . <span class="at">-run</span> TestServeHTTPServerDrainsInflightRequestOnShutdown <span class="at">-count</span><span class="op">=</span>1</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># From the repository root: documentation builder tests</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> unittest discover <span class="at">-s</span> docs <span class="at">-p</span> <span class="st">&#39;build_reference_pages_test.py&#39;</span></span></code></pre></div>
+<p>Use the appropriate rows before opening a PR. Commands in a row run
+in the stated directory; a UI bug needs an interaction regression and
+relevant responsive browser checks. Frontend tests use
+<strong>Vitest</strong> with React Testing Library; browser workflows
+use <strong>Playwright</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Change surface</th>
+<th>Directory</th>
+<th>Full checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React/UI/helpers</td>
+<td><code>frontend-react</code></td>
+<td><code>npm run lint</code>, <code>npm test</code>,
+<code>npm run build</code>, <code>npm run audit:security</code></td>
+</tr>
+<tr>
+<td>Browser workflows</td>
+<td><code>frontend-react</code></td>
+<td><code>npx playwright install --with-deps chromium</code>, then
+<code>npm run test:e2e</code></td>
+</tr>
+<tr>
+<td>Go API/RF</td>
+<td><code>backend-go</code></td>
+<td><code>go vet ./...</code>, <code>go test -race ./...</code>,
+<code>go run ./cmd/validate-dataset ../data-pipeline</code></td>
+</tr>
+<tr>
+<td>Core Lab</td>
+<td><code>core-lab-adapter</code></td>
+<td><code>go vet ./...</code>, <code>go test -race ./...</code></td>
+</tr>
+<tr>
+<td>Go vulnerability checks</td>
+<td>Each affected Go module</td>
+<td><code>go install golang.org/x/vuln/cmd/govulncheck@v1.6.0</code>,
+then <code>govulncheck ./...</code> (ensure Go's bin directory is on
+PATH)</td>
+</tr>
+<tr>
+<td>Python data tooling</td>
+<td>Repository root</td>
+<td>Install the data lock, import
+<code>geopandas, numpy, osmnx, pandas, shapely</code>, then
+<code>python -m compileall -q -x '/\.venv/' data-pipeline</code></td>
+</tr>
+<tr>
+<td>Documentation</td>
+<td>Repository root</td>
+<td>Run the documentation commands below</td>
+</tr>
+<tr>
+<td>Version/policy/dependency metadata</td>
+<td>Repository root</td>
+<td>Run the consistency commands below</td>
+</tr>
+</tbody>
+</table>
+<p>The default Playwright suite uses its configured local Vite server
+and mocked API workflows. Real-backend qualification is separate; see <a
+href="https://github.com/Berk-Unsal/atom/blob/main/frontend-react/playwright.config.js">frontend-react/playwright.config.js</a>
+and the <code>ATOM_REAL_E2E</code> tests. Default browser tests do not
+establish real-pack RF parity or native desktop compatibility.</p>
+<h3 id="documentation-checks">Documentation checks</h3>
+<p>Edit Markdown sources rather than generated reference HTML. The build
+mapping is in <a
+href="build-reference-pages.sh">docs/build-reference-pages.sh</a>. From
+the root, with the documentation environment active and Pandoc 3.10 on
+PATH:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sh</span> docs/build-reference-pages.sh</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">--check</span> docs/assets/docs.js</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> <span class="at">--check</span> docs/assets/docs-theme.js</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> unittest discover <span class="at">-s</span> docs <span class="at">-p</span> <span class="st">&#39;*_test.py&#39;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> docs/validate_claims.py</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> docs/validate_docs.py</span></code></pre></div>
+<p>Commit the changed generated HTML,
+<code>docs/search-index.json</code> and any generated theme asset
+alongside source changes. Rebuilding a second time should leave those
+outputs unchanged. Preview locally with
+<code>python3 -m http.server 9000 --directory docs</code> and open
+<code>http://localhost:9000</code>. Link/asset and strict OpenAPI
+validation run in <code>validate_docs.py</code>.</p>
+<h3 id="consistency-checks">Consistency checks</h3>
+<p>From the repository root:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/versioning.py check</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/check_runtime_versions.py</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/check_supply_chain.py</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/check_workflow_action_pins.py</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> unittest scripts/check_supply_chain_test.py scripts/check_workflow_action_pins_test.py</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/generate_policy.py <span class="at">--check</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> unittest scripts/generate_policy_test.py</span></code></pre></div>
+<p><a
+href="https://github.com/Berk-Unsal/atom/blob/main/.github/workflows/quality.yml">Quality
+CI</a> is the full source of required gates, including dependency review
+and production container/SBOM vulnerability scans. Use it to check
+current pins and additional checks for the changed surface. Passing a
+focused test alone does not replace the affected CI jobs.</p>
+<h2 id="pull-requests-and-releases">Pull requests and releases</h2>
+<p>Use concise imperative Conventional Commit-style subjects such as
+<code>fix: preserve per-cell network azimuths</code> or
+<code>docs: clarify model limits</code>. Keep a PR scoped to a
+reviewable outcome. Include a regression for every bug fix and describe
+any change to compatibility or scientific assumptions explicitly.</p>
+<p><a
+href="https://github.com/Berk-Unsal/atom/blob/main/VERSION">VERSION</a>
+is canonical. Normal contributor PRs record user-visible changes under
+<strong>Unreleased</strong>; they do not edit <code>main.go</code>
+version strings or publish tags. Maintainers prepare a release through
+<a
+href="https://github.com/Berk-Unsal/atom/blob/main/scripts/versioning.py">scripts/versioning.py</a>,
+update the release metadata/changelog together, check consistency, and
+create the matching <code>vX.Y.Z</code> tag. CI then publishes the
+configured images and release notes. See <a
+href="https://github.com/Berk-Unsal/atom/blob/main/.github/workflows/release.yml">release.yml</a>
+for the release workflow.</p>
+<p>For questions, proposals and blockers, use <a
+href="https://github.com/Berk-Unsal/atom/issues">GitHub Issues</a>.
+Share only public-safe logs and fixtures; omit private route recordings,
+credentials and operator data.</p>
       </div>
     </article>
   </main>

@@ -1,0 +1,2294 @@
+{
+  "schema_version": 1,
+  "kind": "atom.desktop-roadmap.design",
+  "audit_date": "2026-10-21",
+  "repository": "Berk-Unsal/atom",
+  "architecture_document": "docs/desktop-architecture-design-plan.md",
+  "status": "planning_complete_issues_created",
+  "baseline": {
+    "status": " M CHANGELOG.md\n M docs/build-reference-pages.sh\n M docs/changelog.html\n M docs/concept-7d-report-artifacts.html\n M docs/concept-7d-report-artifacts.md\n M docs/faq.html\n M docs/faq.md\n M docs/features.html\n M docs/features.md\n M docs/getting-started.md\n M docs/search-index.json\n M frontend-react/e2e/workspace.spec.js\n M frontend-react/package-lock.json\n M frontend-react/package.json\n M frontend-react/src/App.jsx\n M frontend-react/src/App.workflow.test.jsx\n M frontend-react/src/components/ReportArtifactsPanel.jsx\n M frontend-react/src/domain/report.js\n M frontend-react/src/domain/reportSource.test.js\n M frontend-react/src/hooks/useReportWorkflow.js\n M frontend-react/src/hooks/useReportWorkflow.test.jsx\n M frontend-react/src/utils/downloadNames.js\n M frontend-react/src/utils/downloadNames.test.js\n M frontend-react/src/utils/interferenceReport.js\n M frontend-react/src/utils/reportArtifact.js\n M frontend-react/src/utils/reportArtifact.test.js\n M frontend-react/src/utils/reportArtifactDownload.js\n M frontend-react/src/utils/reportExport.js\n M frontend-react/src/utils/reportExport.test.js\n M frontend-react/src/utils/reportFormatting.js\n M frontend-react/src/utils/reportFormatting.test.js\n M frontend-react/src/utils/reviewPackage.js\n M frontend-react/src/utils/reviewPackage.test.js\n?? docs/report-guide.html\n?? docs/report-guide.md\n?? docs/report-presentation/\n?? frontend-react/e2e/report.spec.js\n?? frontend-react/src/test/fixtures/\n?? frontend-react/src/utils/reportArtifactDownload.test.js\n?? frontend-react/src/utils/reportHtml.js\n?? frontend-react/src/utils/reportMap.js\n?? frontend-react/src/utils/reportMap.test.js\n?? frontend-react/src/utils/reportMarkdown.js\n?? frontend-react/src/utils/reportModel.js\n?? frontend-react/src/utils/reportModel.test.js\n?? frontend-react/src/utils/reportRFConfiguration.js\n?? frontend-react/src/utils/reportRFConfiguration.test.js\n",
+    "branch": "main",
+    "head": "b22b0937e8295d25587f7157368a70ec58a71077",
+    "version": "0.12.3",
+    "describe": "v0.12.3-33-gb22b093",
+    "preexisting_file_sha256": {
+      "docs/report-guide.html": "91db342dfc4673b1f3e2da0b879fb19daa42f8bce029dd151c6a175880d24573",
+      "docs/report-guide.md": "e2e9b14e57daf307d8293a8309ddc5daaaa4181f025b75363d16662fbdaf56fe",
+      "docs/report-presentation/DESIGN.md": "10a4328ce0134f94dfb4b7d065263bfdf29bf3466744f264e1c2d637bb75c5a6",
+      "frontend-react/e2e/report.spec.js": "3cc28c2583c975ee414164b4d82dcd77dafe322096cac836cfc00078b4bd9b77",
+      "frontend-react/src/test/fixtures/reportFixtures.js": "d01918c22de6f0a086e90d79f3fcd99179aaa57d9263e4b24c4ce8889a28ca92",
+      "frontend-react/src/utils/reportArtifactDownload.test.js": "4a6994044fad9cb291f187dbef937edce50ef1c4b11d83c4b2ce267eec650ece",
+      "frontend-react/src/utils/reportHtml.js": "f0952e941934a36b85cb535e24433e043bfabaf4baefdfddadc92edb044fd751",
+      "frontend-react/src/utils/reportMap.js": "514ba1f1b35a8c8ebc95cd16df56ddf578aae2818b8c58fd588f070709e2eb30",
+      "frontend-react/src/utils/reportMap.test.js": "94b0662ba9688ca86d97e79ea8dbe2f2fefd9454eff067a93dd1012a0994b13f",
+      "frontend-react/src/utils/reportMarkdown.js": "7a0e8a5f54736c6dd37baf7b64c92e2d5bb927cee8aec3964b8c363d6ce5e7f0",
+      "frontend-react/src/utils/reportModel.js": "5b7c6dde332d5ef1f03e6eff5f46288781bafe5904d6573f78c09658c84fca0b",
+      "frontend-react/src/utils/reportModel.test.js": "0fae7fc31fed4f736f1a1c286d0e87845b1591990f3195b3ae383470c4fc5a7c",
+      "frontend-react/src/utils/reportRFConfiguration.js": "ffd76f3e164c1247cd7820ecf905a066708d0766fb4ab569ea0229911e059010",
+      "frontend-react/src/utils/reportRFConfiguration.test.js": "3cc7658cf08c6029116bc270fe5dadb05b933cc309eace4312d79f15f33d979f",
+      "CHANGELOG.md": "fb80251eb082089e56787e5f6840686e32e79721ef552018ce971cac685db1f4",
+      "docs/build-reference-pages.sh": "c856346fb0a803b0c3f001727cf9840e908468296ceb312085b75d3fb052fb76",
+      "docs/changelog.html": "ef6b360a25ca2f0cae65750cbf8c0bb3c22de471247e5e393c5b6b7bc652d9cf",
+      "docs/concept-7d-report-artifacts.html": "5312859606dc48495f9865903a4eff8b64e29ad36fe6cf2863bc7e596ec797ad",
+      "docs/concept-7d-report-artifacts.md": "0ae60f929d84f5c04871387f70472a714b92faddef4dd39c2bf40a5289924b86",
+      "docs/faq.html": "d1a2b340ae7e91605c53497aae55cf101109e1fe01cc5a9a46376cc2442a2bdd",
+      "docs/faq.md": "bec89d1effeeff3401fcf227226b0df3dcb156bb48e4c0056f81aedfee2b86fe",
+      "docs/features.html": "074c3fa6955aef38d39daa623ee55f996a3bc0b8dc882f3d7c2fa908c94b021f",
+      "docs/features.md": "cc030dfcb20dc4206113a584d40c9a606ec5167a6b8564bd36e53e20509619e1",
+      "docs/getting-started.md": "ff5a56fd5d1aa6e6ab8dd8964411d857f9c49c50edf6690eaf320779ab03d5ad",
+      "docs/search-index.json": "6eb725c3868f1c5bc06d7c138a8982f54e320b751a2748d473b494a7445e4d6e",
+      "frontend-react/e2e/workspace.spec.js": "383551d4216a164cc4d0daef63aec49727381ac138dc25bf9fd51dac7c98ce57",
+      "frontend-react/package-lock.json": "02d7dcc59a8424f60472b1a79cf4a62a7096596b5bb45dfcd522cdb430cebffe",
+      "frontend-react/package.json": "6f9f7053417e66ea6985dd84df5ffac583ce3bae2caa0c4bb495f5ec099c00d8",
+      "frontend-react/src/App.jsx": "4092bc21070159acae01c0ac65b82c65f1856265cad209c0c174bf73615cc3d9",
+      "frontend-react/src/App.workflow.test.jsx": "798c9261dce729ec6dd0f82c581178d512a684ef1953c38e31b7a7cd82899a69",
+      "frontend-react/src/components/ReportArtifactsPanel.jsx": "09104e7a0bef7045271cfda3f71de23d3ea0d4bcd81eedc182703af83da32ace",
+      "frontend-react/src/domain/report.js": "1fd2812c5092f7cae10c0b635f49da673912b770784fc7d7f90fcd596b079d58",
+      "frontend-react/src/domain/reportSource.test.js": "8470d58c533ddb1721c72f1066b9a46330a9311e3fa1f3d8b86ec4150c1cd914",
+      "frontend-react/src/hooks/useReportWorkflow.js": "742ba75163baef3ae583e949691995cbb62dfabfb7b41125ec8a710f8a59f7f6",
+      "frontend-react/src/hooks/useReportWorkflow.test.jsx": "040cbcb8ecaa9743eb47a35643fe1b38877c89597c656b00bdf895dd6db905ea",
+      "frontend-react/src/utils/downloadNames.js": "25865aab78cac45c12d95533ff7dfa40927d562f01b8cbde76d72c20d8b20cd3",
+      "frontend-react/src/utils/downloadNames.test.js": "c96d08f8d356b9e5854e2930c5fbfcca05bc3d4f2f16360930ec97b3507995ba",
+      "frontend-react/src/utils/interferenceReport.js": "120a9071488ffc7e021e9c263b8ed75fa08b669ce90d6145e129663661999f40",
+      "frontend-react/src/utils/reportArtifact.js": "10dc83c47f92cd4808a3c7e42de70a68080faca7ee12b938f62fdde08d6916c4",
+      "frontend-react/src/utils/reportArtifact.test.js": "0ccd03a7cb754f93109607c3cb93ab46251933c0648f75403ea1c857dca1d902",
+      "frontend-react/src/utils/reportArtifactDownload.js": "93b68f93bf19eeee96d8bbecf5f7f8b57731945ee479ff3382b9c2dc3e7b37bf",
+      "frontend-react/src/utils/reportExport.js": "545244aeeaa4c25815a258e5c2a30f5e0b8f5e55b058bf640021e9d2812446e3",
+      "frontend-react/src/utils/reportExport.test.js": "1b4da8c59024e67bc0716915202667bb7729a1ae055558b1e92262b4d778fac2",
+      "frontend-react/src/utils/reportFormatting.js": "8c11429360ab245adff00ca8443d4346d8f988e86249716d81fc0ea96e7b0e93",
+      "frontend-react/src/utils/reportFormatting.test.js": "4eee3b95ad5b49a70579441dc7254d9ec4beb07c479ed2d5064965e18de94654",
+      "frontend-react/src/utils/reviewPackage.js": "8285d969880a42bd4d8e64502caeb70589e00cf636c25e214c531781e28485e9",
+      "frontend-react/src/utils/reviewPackage.test.js": "02a590f68b06df2c577711cddd82ef284e92835f2d16beeb3aef79ff010291c9"
+    },
+    "github_audit": {
+      "issues_total": 66,
+      "issues_open": 9,
+      "prs_total": 80,
+      "prs_open": 17,
+      "desktop_roadmap_duplicates": 0,
+      "unrelated_open_issue_numbers": [
+        78,
+        79,
+        81,
+        82,
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "related_closed_issue_numbers": [
+        77,
+        102,
+        106,
+        111,
+        115
+      ],
+      "related_pr_numbers": [
+        63,
+        95,
+        121
+      ],
+      "dependency_prs": [
+        52,
+        144,
+        146
+      ]
+    },
+    "baseline_validation": {
+      "versioning": "pass",
+      "documentation_classification": "pre-existing missing report-guide.md/.html and report-presentation DESIGN.md/.impeccable/design.json",
+      "documentation_validation": "system Python lacks PyYAML; retry in isolated environment"
+    }
+  },
+  "decision": {
+    "recommended": "Electron + existing React/Vite + bundled Go HTTP sidecar (--desktop-control)",
+    "acceptance": "accepted_by_maintainer_2026-10-22_after_d01_macos_spike",
+    "native_bindings": "typed host capabilities only; domain/RF stays HTTP",
+    "port": "child binds and retains 127.0.0.1:0; private control announcement",
+    "frontend_origin": "stable framework-owned origin with allowlisted host API routing",
+    "credentials": "host-only random 256-bit token per child generation; private pipe",
+    "process_model": "single-user host supervises bundled existing Go executable",
+    "auto_update": "deferred; manual upgrades preserve user data",
+    "file_associations": "deferred; retain existing portable project format",
+    "rejected": "Wails v2.17.0: no supported top-level navigation enforcement on macOS or Linux"
+  },
+  "platforms": {
+    "macos": {
+      "proposed_minimum": "14",
+      "architectures": [
+        "arm64",
+        "x86_64"
+      ],
+      "artifacts": [
+        "architecture-specific .app",
+        ".dmg"
+      ],
+      "qualification": "native evidence required for every advertised architecture"
+    },
+    "linux": {
+      "distribution": "Ubuntu 24.04 LTS",
+      "desktop": "GNOME",
+      "architectures": [
+        "x86_64"
+      ],
+      "sessions": [
+        "X11",
+        "Wayland"
+      ],
+      "primary_package": ".deb",
+      "runtime": "Wails v2 GTK3 + WebKit2GTK 4.1; webkit2_41 build tag",
+      "AppImage": "optional feasibility only"
+    },
+    "windows": {
+      "scope": "LATER",
+      "blocks_mvp": false
+    }
+  },
+  "gates": [
+    {
+      "id": "G1",
+      "name": "Framework",
+      "status": "passed_electron_accepted_2026-10-22",
+      "issues": [
+        "D01"
+      ]
+    },
+    {
+      "id": "G2",
+      "name": "WebView compatibility",
+      "status": "electron_qualified_macos_arm64_intel_ubuntu_x11_wayland_pending_manual_wayland_dialog_and_maintainer_acceptance",
+      "issues": [
+        "D01",
+        "D11"
+      ]
+    },
+    {
+      "id": "G3",
+      "name": "Runtime and security",
+      "status": "not_implemented",
+      "issues": [
+        "D03",
+        "D04",
+        "D10",
+        "D11"
+      ]
+    },
+    {
+      "id": "G4",
+      "name": "Developer experience",
+      "status": "not_implemented",
+      "issues": [
+        "D05",
+        "D11"
+      ]
+    },
+    {
+      "id": "G5",
+      "name": "Filesystem and data integrity",
+      "status": "not_implemented",
+      "issues": [
+        "D06",
+        "D07",
+        "D08",
+        "D09",
+        "D11"
+      ]
+    },
+    {
+      "id": "G6",
+      "name": "Clean-machine distribution",
+      "status": "not_implemented",
+      "issues": [
+        "D12",
+        "D13",
+        "D14",
+        "D15"
+      ]
+    }
+  ],
+  "mvp": [
+    "native macOS/Linux launch with no Docker/Node/Go/Git/terminal setup",
+    "same React UI and Go HTTP/RF semantics",
+    "approved bundled default planning data",
+    "Run Sector and 8-Cell network evaluation/optimization",
+    "existing technology availability and stale-result behavior",
+    "durable workspace/history/report stores",
+    "native portable project Open/Save/Save As/Export",
+    "validated dataset directory copy/reference flow",
+    "native report/review export and readable print/PDF",
+    "diagnostics and complete child cleanup",
+    "fast Vite HMR and additive tests"
+  ],
+  "non_goals": [
+    "application implementation in this planning task",
+    "Windows MVP",
+    "auto-updater",
+    "offline basemap distribution",
+    "cloud sync",
+    "multi-window",
+    "plugins",
+    "tray/agent/global shortcuts",
+    "native UI rewrite",
+    "RF/product semantics changes",
+    "new project/dataset format",
+    "public release before all gates"
+  ],
+  "open_questions": [
+    "Wails v2 stable origin, profile durability, Vite HMR/proxy and cancellation on actual engines",
+    "supported native navigation enforcement and isolated print/PDF APIs",
+    "maintainer-approved default data redistribution basis",
+    "production basemap provider/authentication configuration",
+    "native automation approach and Intel/macOS support qualification",
+    "measured startup/memory/rendering/package costs",
+    "release signing credential availability"
+  ],
+  "tracker": {
+    "title": "Desktop application roadmap: macOS and Linux",
+    "labels": [
+      "area: desktop",
+      "priority: P2",
+      "type: chore"
+    ],
+    "github": {
+      "number": 147,
+      "url": "https://github.com/Berk-Unsal/atom/issues/147",
+      "state": "OPEN"
+    },
+    "duplicate_check": {
+      "query": "repo:Berk-Unsal/atom is:issue \"Desktop application roadmap\" in:title",
+      "results_before_creation": []
+    }
+  },
+  "issues": [
+    {
+      "id": "D01",
+      "title": "Desktop: validate Wails WebView compatibility and finalize the shell decision",
+      "group": "FOUNDATION",
+      "priority": "P1",
+      "depends_on": [],
+      "release_required": true,
+      "gate_ids": [
+        "G1",
+        "G2"
+      ],
+      "context": "FOUNDATION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "A.T.O.M is qualified primarily in Chromium. Native WebKit, current Vite routing, durable browser storage, navigation enforcement and HTML/PDF printing are not qualified. Selecting a shell without those checks risks a product fork.",
+      "scope": [
+        "Build a disposable proof of concept around the current React/Vite frontend and real Go API on WKWebView and WebKitGTK; compare against a fixed Chromium baseline.",
+        "Start with pinned stable Wails v2 (current documentation v2.17.0). Record exact versions; v3 is beta and is not an automatic workaround.",
+        "Exercise development HMR and release-like assets, stable application origin/profile, relative JSON/Blob HTTP routes and cancellation, native print feasibility and navigation/bridge isolation.",
+        "Publish the findings, measured costs, declared OS/architecture matrix and accepted architecture decision. Switch to Electron with the same sidecar if the gate fails."
+      ],
+      "acceptance_criteria": [
+        "Both native targets cover startup, Leaflet/tiles, markers/rays/polygons, canvas/SVG, themes, Results, Pareto, drawers and keyboard focus, plus Run Sector, 8-Cell evaluation/optimization and existing 4G/5G/6G availability.",
+        "Project workspace, run history and retained report bytes survive relaunch and a changed sidecar port; report HTML/PDF is readable with complete quantities/lineage and native Open/Save is demonstrated.",
+        "PASS requires all critical flows and navigation/auth/storage/print checks, HMR p95 <=1s over 20 warmed edits, supported APIs, and no product or framework fork.",
+        "ACCEPTABLE WITH FIXES allows at most three bounded presentation/accessibility defects totaling <=3 engineer-days, with regression scope, closed and rerun before accepting Gate 2.",
+        "SWITCH TO ELECTRON on an unresolved critical failure on either OS, Vite downgrade/fork requirement, unsafe navigation, lost storage, unusable print/PDF, or HMR >2s after one bounded investigation. Do not maintain separate shells per OS.",
+        "Record OS/hardware/toolchain/engine/commit/pack hashes, native automation feasibility, startup/memory/package estimates, and framework choice. Playwright WebKit alone does not satisfy this gate."
+      ],
+      "non_goals": [
+        "No production shell rollout, broad native UI, RF changes, API-to-binding migration, Vite/React upgrade, full installer pipeline or release claim."
+      ],
+      "evidence": [
+        {
+          "path": "frontend-react/vite.config.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/vite.config.js"
+        },
+        {
+          "path": "frontend-react/playwright.config.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/playwright.config.js"
+        },
+        {
+          "path": "frontend-react/src/components/MapCanvas.jsx",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/components/MapCanvas.jsx"
+        },
+        {
+          "path": "frontend-react/src/utils/projectStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/projectStore.js"
+        },
+        {
+          "path": "frontend-react/src/repository/artifactStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/repository/artifactStore.js"
+        },
+        {
+          "path": "backend-go/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/main.go"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 3-5 engineer-days, plus native test access",
+        "risk": "High: framework and platform compatibility blocker",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P1",
+        "type: research",
+        "area: frontend",
+        "area: backend"
+      ],
+      "duplicate_terms": "desktop WebView",
+      "status": "qualification_evidence_recorded_issue_open",
+      "github": {
+        "number": 148,
+        "url": "https://github.com/Berk-Unsal/atom/issues/148",
+        "state": "OPEN",
+        "verified_body_sha256": "660c70214be7655e2d12567c9afec571da8ed2756a0626f365322cd7f97d22d4"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "external_references": [
+        "https://v2.wails.io/docs/guides/dynamic-assets/",
+        "https://v2.wails.io/docs/reference/project-config/",
+        "https://v3.wails.io/blog/wails-v3-beta/",
+        "https://www.electronjs.org/docs/latest/tutorial/automated-testing"
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop WebView in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": []
+    },
+    {
+      "id": "D02",
+      "title": "Desktop: establish the thin shell and shared platform capability adapter",
+      "group": "FOUNDATION",
+      "priority": "P2",
+      "depends_on": [
+        "D01"
+      ],
+      "release_required": true,
+      "gate_ids": [],
+      "context": "FOUNDATION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "There is no native delivery entry point. Copying screens or moving Go domain calls into bindings would create independent web and desktop products.",
+      "scope": [
+        "Create a desktop/ host module using the shell accepted by D01; keep native dependencies out of backend-go headless builds.",
+        "Point shell configuration at ../frontend-react and stage existing dist assets only as build output. Add one small src/platform capability interface with browser/native adapters.",
+        "Provide one resizable normal window, icon/title/About/VERSION, Quit, safe external-link dispatch, standard menu/keyboard hooks and bounded remembered geometry. Native file actions are completed in later issues.",
+        "Wire injectable host/process/dialog interfaces for focused tests; use no duplicate RF/report/persistence logic."
+      ],
+      "acceptance_criteria": [
+        "The current React screen launches in an unsigned local native build from the shared source; browser builds require no native runtime.",
+        "RF/API calls remain on the shared HTTP boundary. Native bindings/preload expose only typed host capabilities, not a generic filesystem or execution API.",
+        "Closing the only window quits instead of hiding a background backend; About reports the canonical product version and build identity.",
+        "No committed duplicate frontend, dist source tree, API types, domain serializer or RF implementation is added."
+      ],
+      "non_goals": [
+        "No new product navigation, tray, agent, global shortcut, multi-window system, file association or native UI rewrite."
+      ],
+      "evidence": [
+        {
+          "path": "frontend-react/src/App.jsx",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/App.jsx"
+        },
+        {
+          "path": "frontend-react/src/utils/apiClient.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/apiClient.js"
+        },
+        {
+          "path": "frontend-react/package.json",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/package.json"
+        },
+        {
+          "path": "backend-go/go.mod",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/go.mod"
+        },
+        {
+          "path": "VERSION",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/VERSION"
+        },
+        {
+          "path": "Dockerfile",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/Dockerfile"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 3-5 engineer-days",
+        "risk": "Medium: shell boundaries and build coupling",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: frontend"
+      ],
+      "duplicate_terms": "desktop shell",
+      "status": "planned",
+      "github": {
+        "number": 149,
+        "url": "https://github.com/Berk-Unsal/atom/issues/149",
+        "state": "OPEN",
+        "verified_body_sha256": "d8525529e434518fca693214b323978f056b7cc0357a3d26ea1740a71829718f"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop shell in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        148
+      ]
+    },
+    {
+      "id": "D03",
+      "title": "Desktop: supervise the bundled Go backend on a dynamic loopback endpoint",
+      "group": "FOUNDATION",
+      "priority": "P1",
+      "depends_on": [
+        "D02"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G3"
+      ],
+      "context": "FOUNDATION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "The Go server assumes environment/cwd paths and a default fixed port, publishes no actual ephemeral endpoint, and has no desktop parent-death or crash supervision. /readyz also assumes on-disk frontend assets.",
+      "scope": [
+        "Bundle the existing Go server as a child binary and add only opt-in desktop startup/control support; retain the current web/API entry point.",
+        "Have the child bind 127.0.0.1:0 once and announce its actual endpoint/PID/protocol/build/readiness over private inherited control pipes. Construct absolute resource paths and a curated environment.",
+        "Implement startup/readiness/failure states, expected-process identity checks, bounded startup timeout, child crash monitoring, explicit recovery and per-user single-instance focus behavior.",
+        "Implement parent-EOF shutdown, cancellation/drain/reaping and bounded forced termination of only the owned child; capture minimal startup stderr immediately."
+      ],
+      "acceptance_criteria": [
+        "Concurrent unrelated uses of 8080 do not affect desktop launch; no free-port probe/rebind race, LAN bind, public endpoint file or zombie child occurs.",
+        "Readiness distinguishes listener, dataset and UI. A clean Vite-only workspace works without stale dist output; public Docker/web /readyz semantics remain intact.",
+        "Missing/mismatched binary or pack, startup timeout, child crash, repeated launch, normal quit and abrupt host death have deterministic tested outcomes.",
+        "Requests/jobs cancel or drain under existing limits; shutdown uses a bounded ceiling (existing 30s maximum) and reaps the child. RF work is never silently replayed.",
+        "Restart rotates the runtime generation and rejects late results from the prior child without overwriting newer project/result state."
+      ],
+      "non_goals": [
+        "No in-process RF rewrite, generic process manager, automatic RF retry, fixed 8080 dependency or changes to RF limits."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/main.go"
+        },
+        {
+          "path": "backend-go/server_lifecycle.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/server_lifecycle.go"
+        },
+        {
+          "path": "backend-go/server_lifecycle_test.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/server_lifecycle_test.go"
+        },
+        {
+          "path": "backend-go/dataset_runtime.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/dataset_runtime.go"
+        },
+        {
+          "path": "backend-go/experiment_jobs.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/experiment_jobs.go"
+        },
+        {
+          "path": "backend-go/cmd/run-experiment/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/cmd/run-experiment/main.go"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "L: approximately 5-8 engineer-days",
+        "risk": "High: cancellation, orphan prevention and state safety",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P1",
+        "type: enhancement",
+        "area: backend"
+      ],
+      "duplicate_terms": "desktop backend lifecycle",
+      "status": "planned",
+      "github": {
+        "number": 150,
+        "url": "https://github.com/Berk-Unsal/atom/issues/150",
+        "state": "OPEN",
+        "verified_body_sha256": "5cfdb65f418aefe391c0162f77fea14d3ab6e49bf825cd4530ff06e8a493c4a1"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop backend lifecycle in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        149
+      ]
+    },
+    {
+      "id": "D04",
+      "title": "Desktop: secure stable-origin API routing and native capabilities",
+      "group": "FOUNDATION",
+      "priority": "P1",
+      "depends_on": [
+        "D03"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G3"
+      ],
+      "context": "FOUNDATION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Loopback is reachable by other local users and webpages. Current web CORS and optional API keys do not authenticate the complete desktop surface, and serving UI from a random port would change IndexedDB origin.",
+      "scope": [
+        "Implement the D01-proven stable application origin and allowlisted asset/API router; the host privately discovers and updates the dynamic sidecar target.",
+        "Generate a 256-bit random token per child generation, deliver it through a private pipe and inject it only in the host/server-side dev proxy. Cover all desktop API/status/meta paths, including JSON and Blob calls.",
+        "Validate Host/exact Origin where present, preserve auth even when Origin is absent, restrict proxy paths and destinations, apply production CSP to host-served HTML and isolate dev HMR permissions.",
+        "Enforce native top-level/new-window/redirect/drag navigation restrictions, safe external HTTPS links, permission denial, and typed dialog-approved file capabilities. Isolate report HTML from the main native bridge."
+      ],
+      "acceptance_criteria": [
+        "Foreign webpages, wrong/missing tokens, other-user clients, rebinding Host values, unexpected origins, invalid proxy destinations and prior-generation requests fail without credentials or project leakage.",
+        "Credentials never enter URL, argv, VITE variables, renderer storage, logs or public temp files. CORS is not treated as authorization.",
+        "All actual-engine navigation vectors and imported/stored HTML tests demonstrate that untrusted content cannot invoke native authority; click interception alone is insufficient.",
+        "Production CSP permits required local/Wails/Leaflet behavior and approved tiles without broad unsafe script or wildcard network allowances. Dev-only WebSocket access is absent from release.",
+        "Browser/Docker/API semantics remain supported; coordinate with existing open PR #63 without changing or merging it in this work."
+      ],
+      "non_goals": [
+        "No account system, TLS/PKI for private loopback, public API exposure, arbitrary file/exec binding or framework security fork."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/security_headers.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/security_headers.go"
+        },
+        {
+          "path": "backend-go/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/main.go"
+        },
+        {
+          "path": "backend-go/dataset_runtime.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/dataset_runtime.go"
+        },
+        {
+          "path": "frontend-react/src/utils/apiClient.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/apiClient.js"
+        },
+        {
+          "path": "frontend-react/src/components/WorkspaceChrome.jsx",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/components/WorkspaceChrome.jsx"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "L: approximately 4-7 engineer-days",
+        "risk": "High: local authorization and privileged WebView boundary",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P1",
+        "type: enhancement",
+        "area: backend",
+        "area: frontend"
+      ],
+      "duplicate_terms": "desktop security",
+      "status": "planned",
+      "github": {
+        "number": 151,
+        "url": "https://github.com/Berk-Unsal/atom/issues/151",
+        "state": "OPEN",
+        "verified_body_sha256": "99fe10674081432c27baaf300cb5e0f050cff3db2c34b1929de8827eaab34783"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [
+        63
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop security in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        150
+      ]
+    },
+    {
+      "id": "D05",
+      "title": "Desktop: preserve Vite HMR and safe Go rebuilds in the development loop",
+      "group": "FOUNDATION",
+      "priority": "P2",
+      "depends_on": [
+        "D04"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G4"
+      ],
+      "context": "FOUNDATION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Current Vite proxies hard-code localhost:8080, and Wails shell watching alone will not supervise rebuilds of a separately bundled sibling Go server. Full installer builds would destroy iteration speed.",
+      "scope": [
+        "Add proposed scripts/desktop-dev.sh, desktop-build.sh and desktop-test.sh with clear dev/local-build/package modes; keep current web/Docker commands.",
+        "Use the existing frontend directory and the D01-proven Vite external dev server/API proxy/HMR configuration, all desktop dev listeners on loopback with server-only credentials.",
+        "Watch backend-go/raytracer and compile the replacement sidecar before swapping; reconnect through the stable host route and runtime generation. Watch shell sources separately for Wails rebuild/relaunch.",
+        "Document prerequisite setup, first build versus warm edits, failed-compilation recovery, isolated dev profiles and command cleanup."
+      ],
+      "acceptance_criteria": [
+        "20 representative warmed JSX/CSS edits have edit-to-visible p95 <=1s with no Go rebuild or package generation.",
+        "A small Go backend edit rebuilds/reconnects within the initial <=5s warm guidance; a shell edit within <=10s; actual measurements and reference hardware are recorded.",
+        "Failed Go compilation preserves the last good child, successful replacement cancels stale work safely, and Ctrl-C/relaunch leaves no extra processes.",
+        "A clean clone can run desktop dev without existing dist, signing credentials, DMG/AppImage/deb production or a second React app.",
+        "Existing npm/Vitest/Playwright and Go commands, browser Vite development and docker compose up --build -d atom remain usable independently."
+      ],
+      "non_goals": [
+        "No mandatory root Makefile, frontend major upgrade, installer-per-edit workflow or new product transport."
+      ],
+      "evidence": [
+        {
+          "path": "frontend-react/vite.config.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/vite.config.js"
+        },
+        {
+          "path": "frontend-react/package.json",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/package.json"
+        },
+        {
+          "path": "frontend-react/playwright.config.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/playwright.config.js"
+        },
+        {
+          "path": "docker-compose.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/docker-compose.yml"
+        },
+        {
+          "path": "Dockerfile",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/Dockerfile"
+        },
+        {
+          "path": "scripts/check_runtime_versions.py",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/scripts/check_runtime_versions.py"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 3-5 engineer-days",
+        "risk": "Medium: HMR routing and process restart coordination",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: frontend",
+        "area: backend"
+      ],
+      "duplicate_terms": "desktop HMR",
+      "status": "planned",
+      "github": {
+        "number": 152,
+        "url": "https://github.com/Berk-Unsal/atom/issues/152",
+        "state": "OPEN",
+        "verified_body_sha256": "7c87c985224000356475a17e4a74cc474882488f75ae230072acb576c97c3f76"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop HMR in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        151
+      ]
+    },
+    {
+      "id": "D06",
+      "title": "Desktop: use native data directories and durable WebView storage",
+      "group": "MVP",
+      "priority": "P2",
+      "depends_on": [
+        "D04"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G5"
+      ],
+      "context": "MVP work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Current data discovery depends on cwd/container layout, and projects/history/report bytes use separate origin-scoped browser stores. Ephemeral origins, profile resets or cache cleanup could lose desktop work.",
+      "scope": [
+        "Resolve native per-user data/config/cache/log/state/runtime paths; use macOS Application Support/Caches/Logs and Linux XDG defaults with private permissions.",
+        "Configure and verify a durable release WebView profile/stable origin for all current stores; isolate dev/test profiles and preserve store/domain schemas.",
+        "Add a small settings/dataset-registry/recent-file association store without replacing domain persistence. Treat installed bundles as read-only.",
+        "Handle missing/unwritable paths, interrupted settings writes, disk/quota failure and version upgrades with explicit recovery."
+      ],
+      "acceptance_criteria": [
+        "Workspace, run history and artifact bytes survive relaunch, sidecar port changes, application relocation and a tested upgrade using the existing IndexedDB/repository contracts.",
+        "Changing/clearing cache does not clear durable projects, reports, packs or the release profile. Browser data is never silently migrated or reset.",
+        "Relative XDG overrides are ignored; private Unix dirs/files have 0700/0600 access; Unicode/space paths and failed writes are covered.",
+        "Project/report files chosen by users stay in their chosen destinations; autosave is identified as recovery, not a portable file save.",
+        "No writes use cwd, repository paths, /app or the installed app bundle, and headless behavior remains available."
+      ],
+      "non_goals": [
+        "No SQLite migration, second project database, cloud synchronization or schema change."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/dataset_runtime.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/dataset_runtime.go"
+        },
+        {
+          "path": "frontend-react/src/utils/projectStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/projectStore.js"
+        },
+        {
+          "path": "frontend-react/src/repository/localRepository.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/repository/localRepository.js"
+        },
+        {
+          "path": "frontend-react/src/repository/runHistoryRepository.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/repository/runHistoryRepository.js"
+        },
+        {
+          "path": "frontend-react/src/repository/artifactStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/repository/artifactStore.js"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 3-5 engineer-days",
+        "risk": "High: durable data and upgrade behavior",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: persistence"
+      ],
+      "duplicate_terms": "desktop data directories",
+      "status": "planned",
+      "github": {
+        "number": 153,
+        "url": "https://github.com/Berk-Unsal/atom/issues/153",
+        "state": "OPEN",
+        "verified_body_sha256": "c1c5d3fd0db117ac9d674cc693693b54d5f9df0c26f4372fc2e519d8999e7407"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop data directories in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        151
+      ]
+    },
+    {
+      "id": "D07",
+      "title": "Desktop: add native project Open, Save, Save As and Export",
+      "group": "MVP",
+      "priority": "P2",
+      "depends_on": [
+        "D06"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G5"
+      ],
+      "context": "MVP work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Browser project downloads have no persistent user-chosen file association. A desktop Save action must not be confused with the existing Save Version planning-history command or silently expand portable-file guarantees.",
+      "scope": [
+        "Wire File/menu/keyboard and shared UI capabilities to native Open, Save, Save As and Export Project using the existing serializer/parser.",
+        "Preserve .atom-project.json schema 3 and supported 1/2 imports, 16 MiB and expanded/structural limits, lineage and stale-result behavior.",
+        "Track associated path and unsaved-to-file status per project; Save As changes association only after a successful write, while Export writes a copy.",
+        "Validate before activation, support normal cancel, atomic same-directory writes, overwrite/conflict checks, dirty-file prompts and actionable errors."
+      ],
+      "acceptance_criteria": [
+        "Existing example and supported legacy files round-trip between browser and desktop without changed planning/RF meaning.",
+        "Save writes the portable project to the associated user path and does not create a Version or run RF. Save Version retains its current behavior.",
+        "Cancelled/invalid/oversized import preserves the current workspace/results; cancelled/permission/full-disk/conflicted save preserves the last good file and association.",
+        "Menu/shortcuts use the same operation path; Unicode/space paths, externally edited files and app-close dirty state are exercised.",
+        "UI/documentation state the current portable-file boundary: independent retained run/artifact bytes are not promised to be completely embedded; review packages remain complementary."
+      ],
+      "non_goals": [
+        "No new extension/schema, automatic evidence truncation, file associations, generic filesystem binding or project persistence rewrite."
+      ],
+      "evidence": [
+        {
+          "path": "frontend-react/src/utils/projectStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/projectStore.js"
+        },
+        {
+          "path": "frontend-react/src/hooks/useProjectWorkspace.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/hooks/useProjectWorkspace.js"
+        },
+        {
+          "path": "frontend-react/src/repository/localRepository.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/repository/localRepository.js"
+        },
+        {
+          "path": "frontend-react/src/utils/projectFileRecovery.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/projectFileRecovery.js"
+        },
+        {
+          "path": "docs/project-format.md",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/docs/project-format.md"
+        },
+        {
+          "path": "examples/ankara-sample.atom-project.json",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/examples/ankara-sample.atom-project.json"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 3-5 engineer-days",
+        "risk": "High: file overwrite, compatibility and evidence preservation",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: frontend",
+        "area: persistence"
+      ],
+      "duplicate_terms": "desktop project save",
+      "status": "planned",
+      "github": {
+        "number": 154,
+        "url": "https://github.com/Berk-Unsal/atom/issues/154",
+        "state": "OPEN",
+        "verified_body_sha256": "1717b9c9269da78b3348d82fd6b6fdbd76003f3f11118a7d13b90597d732a9a6"
+      },
+      "related_existing_issues": [
+        77,
+        106
+      ],
+      "related_existing_prs": [
+        95
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop project save in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        153
+      ]
+    },
+    {
+      "id": "D08",
+      "title": "Desktop: integrate validated dataset packs and production map access",
+      "group": "MVP",
+      "priority": "P1",
+      "depends_on": [
+        "D06"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G5"
+      ],
+      "context": "MVP work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Dataset discovery assumes configured directories/Docker resources, has no user-folder registry/install flow, and production basemap access differs from localhost development. The default manifest flags redistribution terms needing review.",
+      "scope": [
+        "Add Data -> Add Dataset Pack via directory or manifest selection; reuse complete LoadDatasetPack validation and display identity/source/license/size/hash information.",
+        "Offer managed copy by default and advanced reference-in-place; stage/validate/atomically register copied declared files and store approved referenced roots in a native registry.",
+        "Preserve validated runtime switch and project dataset ID/version/hash semantics; handle duplicate identity/content, moved/unmounted references, permission/disk failures and cancellation.",
+        "Record a maintainer-approved redistribution basis for the existing default pack, or select an already-supported approved sample/default pack. Include it as read-only bundle data without a required first-run download.",
+        "Resolve actual desktop Stadia authentication or a policy-compliant visible OSM fallback, attribution, application identification, normal caching and offline tile-error behavior."
+      ],
+      "acceptance_criteria": [
+        "No terminal, environment edit or Docker volume is required to add/activate/reopen a pack; selected pack persists across app restarts.",
+        "Bad layer/manifest hashes, traversal/symlink escapes, incomplete copies, ambiguous duplicate IDs and changed reference contents are rejected without changing the active pack.",
+        "Copied packs are revalidated at staging/activation; references revalidate on load. External source files are not mutated or deleted.",
+        "Clean-machine planning works with approved bundled data; package size accounts for the current ~111 MiB building data. Redistribution/provenance evidence is recorded before public distribution.",
+        "Production tile requests work under a documented provider arrangement without spoofing localhost or embedding a private shared key; denied/offline tiles retain RF overlays and useful error handling.",
+        "No offline-area prefetch is added. OSM/Stadia policy and credential redaction are checked against current official documentation."
+      ],
+      "non_goals": [
+        "No arbitrary-city ingestion, new dataset archive/format, weakened integrity rules, RF model changes or offline basemap distribution."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/dataset_runtime.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/dataset_runtime.go"
+        },
+        {
+          "path": "backend-go/raytracer/dataset_pack.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/raytracer/dataset_pack.go"
+        },
+        {
+          "path": "backend-go/cmd/validate-dataset/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/cmd/validate-dataset/main.go"
+        },
+        {
+          "path": "data-pipeline/manifest.json",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/data-pipeline/manifest.json"
+        },
+        {
+          "path": "frontend-react/src/components/basemaps.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/components/basemaps.js"
+        },
+        {
+          "path": "frontend-react/src/components/BasemapLayer.jsx",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/components/BasemapLayer.jsx"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "L: approximately 4-7 engineer-days plus external provider/data decisions",
+        "risk": "High: dataset integrity, redistribution and network dependency blocker",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P1",
+        "type: enhancement",
+        "area: backend",
+        "area: data-pipeline",
+        "area: frontend"
+      ],
+      "duplicate_terms": "desktop dataset",
+      "status": "planned",
+      "github": {
+        "number": 155,
+        "url": "https://github.com/Berk-Unsal/atom/issues/155",
+        "state": "OPEN",
+        "verified_body_sha256": "0e5745905157ab6b622586e2c09717002f3db933c23d32014a0d3ead77642734"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "external_references": [
+        "https://docs.stadiamaps.com/authentication/",
+        "https://operations.osmfoundation.org/policies/tiles/"
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop dataset in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        153
+      ]
+    },
+    {
+      "id": "D09",
+      "title": "Desktop: export shared reports and review packages with native Save and Print",
+      "group": "MVP",
+      "priority": "P2",
+      "depends_on": [
+        "D06"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G5"
+      ],
+      "context": "MVP work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Browser Blob downloads and popup window.print are unsuitable as assumed desktop file/print integrations. Report redesign is currently uncommitted and uses Chromium-reference pagination.",
+      "scope": [
+        "Add native Save destinations for existing report Markdown/HTML/SVG where offered and the existing review ZIP; keep the shared generator and source lineage.",
+        "Preserve retained artifact bytes/filenames/timestamps/hashes on download; regeneration remains explicit and uses current generator identity.",
+        "Use the D01-proven isolated native print/PDF surface for the same shared report HTML, without main-window bindings or default network authority.",
+        "Integrate against the eventual merged report redesign, including shared presentation model, schematic SVG, long RF/config tables and before/after sections."
+      ],
+      "acceptance_criteria": [
+        "Export Report and Export Review Package use normal Save dialogs; cancel/failure preserves retained artifacts and never triggers RF or regenerates missing evidence.",
+        "Native saved Markdown/HTML/ZIP bytes match existing shared outputs for fixed fixtures; retained downloads verify their original hashes.",
+        "A4 portrait PDF/print is readable on WKWebView and WebKitGTK with complete quantities/lineage, selectable text, Turkish characters, long IDs and no clipped evidence; engine-specific page counts may differ.",
+        "Stored/imported report HTML cannot invoke native capabilities or navigate the privileged app; filenames and content are treated as untrusted.",
+        "No second report model, Chromium runtime bundled just for Wails printing, framework fork or required external browser/tool install is needed. Failure requires returning to the framework gate."
+      ],
+      "non_goals": [
+        "No new report semantics, server PDF service, scientific claims, new review format or automatic evidence trimming."
+      ],
+      "evidence": [
+        {
+          "path": "frontend-react/src/utils/reportExport.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/reportExport.js"
+        },
+        {
+          "path": "frontend-react/src/utils/reportArtifact.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/reportArtifact.js"
+        },
+        {
+          "path": "frontend-react/src/utils/reportArtifactDownload.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/reportArtifactDownload.js"
+        },
+        {
+          "path": "frontend-react/src/utils/reviewPackage.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/reviewPackage.js"
+        },
+        {
+          "path": "frontend-react/src/hooks/useReportWorkflow.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/hooks/useReportWorkflow.js"
+        },
+        {
+          "path": "frontend-react/src/repository/artifactStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/repository/artifactStore.js"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M-L: approximately 4-6 engineer-days after print feasibility passes",
+        "risk": "High: native printing and untrusted retained HTML",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: frontend",
+        "area: persistence"
+      ],
+      "duplicate_terms": "desktop report export",
+      "status": "planned",
+      "github": {
+        "number": 156,
+        "url": "https://github.com/Berk-Unsal/atom/issues/156",
+        "state": "OPEN",
+        "verified_body_sha256": "ad8acb09580dbf960542a17e51b85ae9c67adfea9d990bf14b657895a3f14899"
+      },
+      "related_existing_issues": [
+        81,
+        102,
+        115
+      ],
+      "related_existing_prs": [
+        121
+      ],
+      "working_tree_evidence": [
+        "docs/report-guide.md",
+        "frontend-react/src/utils/reportModel.js",
+        "frontend-react/src/utils/reportHtml.js",
+        "frontend-react/src/utils/reportMap.js"
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop report export in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        153
+      ]
+    },
+    {
+      "id": "D10",
+      "title": "Desktop: expose bounded logs and actionable startup diagnostics",
+      "group": "MVP",
+      "priority": "P2",
+      "depends_on": [
+        "D06"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G3",
+        "G5"
+      ],
+      "context": "MVP work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Terminal stderr is not accessible to ordinary installed-app users. Dataset/port/WebView/child failures need diagnosis without leaking project bodies, keys or full user paths.",
+      "scope": [
+        "Extend the foundation stderr capture with structured host/backend logs and separate debug/release levels in native log directories.",
+        "Add rotation (initial proposal 5 MiB x five files per component), redaction and safe temporary fallback when configured paths fail.",
+        "Provide Help -> Open Logs and actionable startup/readiness/WebView/crash states with retry and quit. Include product/build/runtime generation in support metadata.",
+        "Reuse injected error/lifecycle interfaces from foundation work; keep logs local and user-controlled."
+      ],
+      "acceptance_criteria": [
+        "Missing backend binary, unavailable port/listener, corrupt/missing dataset, unwritable dirs and child crash produce useful user-visible errors and discoverable bounded logs.",
+        "Tokens, provider keys, raw project/report/request content and sensitive absolute user paths are absent in release logs and error UI.",
+        "Rotation and permission/fallback failures are verified deterministically; Open Logs selects the actual current directory on both OS targets.",
+        "No telemetry, automatic crash upload or implicit RF retry is introduced."
+      ],
+      "non_goals": [
+        "No monitoring service, automatic support transmission, raw project dump or new error semantics in the RF product."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/main.go"
+        },
+        {
+          "path": "backend-go/dataset_runtime.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/dataset_runtime.go"
+        },
+        {
+          "path": "backend-go/server_lifecycle.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/server_lifecycle.go"
+        },
+        {
+          "path": "frontend-react/src/utils/apiRecovery.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/apiRecovery.js"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "S-M: approximately 2-3 engineer-days after interfaces settle",
+        "risk": "Medium: redaction and failure-path usability",
+        "suitability": "contributor-friendly",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "help wanted"
+      ],
+      "duplicate_terms": "desktop diagnostics",
+      "status": "planned",
+      "github": {
+        "number": 157,
+        "url": "https://github.com/Berk-Unsal/atom/issues/157",
+        "state": "OPEN",
+        "verified_body_sha256": "8cf213305778386338a855a92e848b03937b87c12f16d567a83e2752ceee907c"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop diagnostics in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        153
+      ]
+    },
+    {
+      "id": "D11",
+      "title": "Desktop: add native smoke coverage, RF parity checks and performance budgets",
+      "group": "MVP",
+      "priority": "P2",
+      "depends_on": [
+        "D05",
+        "D07",
+        "D08",
+        "D09",
+        "D10"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G2",
+        "G3",
+        "G4",
+        "G5"
+      ],
+      "context": "MVP work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Chromium browser tests do not prove native engine, dialog, packaged-path or child-process behavior. Replacing fast unit/browser tests with desktop automation would slow development.",
+      "scope": [
+        "Keep existing Vitest/Go/Chromium suites and add a small WebKit early-warning subset plus the supportable actual-engine strategy selected in D01.",
+        "Test real desktop launch/readiness/map/Run Sector/network evaluate-optimize, file operations, dataset flows, report/review export/print and process shutdown.",
+        "Add security/lifecycle fault cases and deterministic HTTP-result parity against the same standalone Go binary and pack hashes.",
+        "Record startup/idle/process-tree memory/map/HMR/package budgets with hardware and raw measurements; avoid adding all frontend workflows to native automation."
+      ],
+      "acceptance_criteria": [
+        "A small native matrix covers macOS WKWebView and Ubuntu WebKitGTK; Open/Save/Print is exercised on actual OS surfaces, with injected dialogs confined to supporting tests.",
+        "Normal quit, parent death, child crash/restart, second instance, foreign-origin access, invalid/cancelled files, bad pack hashes and late prior-generation responses have regression coverage.",
+        "Deterministic RF outputs/availability/order match web for identical inputs; no scope/cap/optimizer changes are used to meet performance targets.",
+        "Initial unmeasured guidance is evaluated: launch-to-plannable p95 <=10s cold/5s warm; child+dataset ready <=8s/4s; aggregate idle resident <=500 MiB; compressed Wails app+default pack <=250 MiB; >=30 FPS and p95 input <=100ms for the 8-Cell fixture.",
+        "Use 20 startup samples and warmed RF comparisons; standalone/desktop RF medians differ <=5% or have an evidence-backed budget revision. Report all child/WebView/helper processes and separate dataset overhead.",
+        "Existing browser/Docker workflows still pass. Release builds contain no test-only privileged probes."
+      ],
+      "non_goals": [
+        "No replacement of existing tests, exhaustive native viewport suite, fabricated benchmarks or scientific revalidation claim."
+      ],
+      "evidence": [
+        {
+          "path": "frontend-react/playwright.config.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/playwright.config.js"
+        },
+        {
+          "path": "frontend-react/e2e/workspace.spec.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/e2e/workspace.spec.js"
+        },
+        {
+          "path": "backend-go/server_lifecycle_test.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/server_lifecycle_test.go"
+        },
+        {
+          "path": "backend-go/rf_workflow_lifecycle_test.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/rf_workflow_lifecycle_test.go"
+        },
+        {
+          "path": ".github/workflows/quality.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/quality.yml"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M-L: approximately 4-7 engineer-days",
+        "risk": "Medium-high: actual-engine automation and reproducibility",
+        "suitability": "contributor-friendly",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: validation",
+        "help wanted"
+      ],
+      "duplicate_terms": "desktop smoke tests",
+      "status": "planned",
+      "github": {
+        "number": 158,
+        "url": "https://github.com/Berk-Unsal/atom/issues/158",
+        "state": "OPEN",
+        "verified_body_sha256": "7a3cdde4210473758da4d01e4d6a3911c593a51532d5fe03172193a9df19f185"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop smoke tests in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        152,
+        154,
+        155,
+        156,
+        157
+      ]
+    },
+    {
+      "id": "D12",
+      "title": "Desktop: package macOS app bundles and architecture-specific artifacts",
+      "group": "DISTRIBUTION",
+      "priority": "P2",
+      "depends_on": [
+        "D11"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G6"
+      ],
+      "context": "DISTRIBUTION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "The repository ships containers, not a self-contained native macOS app. A development-machine launch does not establish installability, resource layout or Intel/Apple Silicon support.",
+      "scope": [
+        "Build .app bundles for the spike-approved macOS floor (proposal macOS 14+) with separate arm64 and x86_64 artifacts.",
+        "Include the host, executable sidecar, shared frontend build and approved read-only default data in relocation-safe paths, with icon, bundle identifier, About/version and license metadata.",
+        "Create a public DMG packaging recipe and a clearly labeled unsigned/ad-hoc zipped app for internal CI; reserve public distribution for D13/D15.",
+        "Keep local build free of Developer ID requirements and verify native architecture behavior on clean machines."
+      ],
+      "acceptance_criteria": [
+        "Both advertised architectures open and complete the D11 smoke from a path with spaces outside the repository; resource resolution is independent of cwd.",
+        "A user needs no Node, Go, Git, Docker or terminal setup; approved default data is present and writable data stays outside the bundle.",
+        "Metadata derives from VERSION plus commit/build/arch, package checksums and measured size are recorded, and .app sidecar permissions are correct.",
+        "Cross-compilation alone is not Intel qualification. Narrow support explicitly if native test capacity is unavailable; no universal-binary claim is made."
+      ],
+      "non_goals": [
+        "No App Store submission, universal binary, file association, auto-updater or signing bypass instructions."
+      ],
+      "evidence": [
+        {
+          "path": "Dockerfile",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/Dockerfile"
+        },
+        {
+          "path": "VERSION",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/VERSION"
+        },
+        {
+          "path": "scripts/versioning.py",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/scripts/versioning.py"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/release.yml"
+        },
+        {
+          "path": "data-pipeline/manifest.json",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/data-pipeline/manifest.json"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 3-5 engineer-days",
+        "risk": "Medium: bundle relocation, architectures and metadata",
+        "suitability": "contributor-friendly",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "help wanted"
+      ],
+      "duplicate_terms": "desktop macOS packaging",
+      "status": "planned",
+      "github": {
+        "number": 159,
+        "url": "https://github.com/Berk-Unsal/atom/issues/159",
+        "state": "OPEN",
+        "verified_body_sha256": "f6fddcd5fcbf4c40ec000ebe91f1153257d5ece0f3283c1efb7d5dc407ed43ef"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop macOS packaging in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        158
+      ]
+    },
+    {
+      "id": "D13",
+      "title": "Desktop: sign and notarize public macOS artifacts",
+      "group": "DISTRIBUTION",
+      "priority": "P1",
+      "depends_on": [
+        "D12"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G6"
+      ],
+      "context": "DISTRIBUTION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Unsigned internal app artifacts do not provide the normal public macOS install experience. Nested Go binaries and release credentials require an explicit signing/notarization pipeline.",
+      "scope": [
+        "Use Developer ID Application signing, nested helper/sidecar-first order, hardened runtime and minimal reviewed entitlements.",
+        "Submit with notarytool, staple tickets, verify codesign and spctl, and document certificate/key ownership and rotation in protected release CI.",
+        "Separate local/ad-hoc builds, unsigned internal CI artifacts and public trusted DMG/app artifacts; prohibit secret use from untrusted PR builds.",
+        "Exercise actual downloaded/quarantined signed artifacts on clean supported macOS systems including offline launch with stapled tickets."
+      ],
+      "acceptance_criteria": [
+        "All nested executables and outer artifacts verify and the notarization service accepts the exact release candidate; staple validation is retained.",
+        "Clean-machine arm64 and Intel launches do not require terminal Gatekeeper bypass or development tools.",
+        "Signing credentials are protected, scoped and not printed; failed signing/notarization stops public artifact publication.",
+        "Local desktop dev/test still works without a paid signing identity; no extra entitlements are added solely to suppress unexplained failures."
+      ],
+      "non_goals": [
+        "No App Store, Windows signing, certificate purchase/assignment by this ticket, signing bypass or auto-update service."
+      ],
+      "evidence": [
+        {
+          "path": ".github/workflows/release.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/release.yml"
+        },
+        {
+          "path": ".github/workflows/quality.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/quality.yml"
+        },
+        {
+          "path": "scripts/check_workflow_action_pins.py",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/scripts/check_workflow_action_pins.py"
+        },
+        {
+          "path": "VERSION",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/VERSION"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M: approximately 2-4 engineer-days plus credential availability",
+        "risk": "High: release trust and external credential prerequisite",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P1",
+        "type: enhancement",
+        "area: ci"
+      ],
+      "duplicate_terms": "desktop notarization",
+      "status": "planned",
+      "github": {
+        "number": 160,
+        "url": "https://github.com/Berk-Unsal/atom/issues/160",
+        "state": "OPEN",
+        "verified_body_sha256": "6b9a5f22e90b1656d73f9487b1a1be0cf3a49fb6d5b3f933d5067a7dbae5b24c"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "external_references": [
+        "https://support.apple.com/en-ie/guide/security/sec3ad8e6e53/web",
+        "https://help.apple.com/xcode/mac/current/en.lproj/dev88332a81e.html"
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop notarization in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        159
+      ]
+    },
+    {
+      "id": "D14",
+      "title": "Desktop: qualify Ubuntu runtime dependencies and ship a Linux deb package",
+      "group": "DISTRIBUTION",
+      "priority": "P1",
+      "depends_on": [
+        "D11"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G6"
+      ],
+      "context": "DISTRIBUTION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "A Linux build is not a Linux support policy. Wails uses distro-provided GTK/WebKitGTK libraries and helpers; dependency mismatches can prevent launch on clean machines.",
+      "scope": [
+        "Declare Ubuntu 24.04 LTS x86_64 GNOME with current vendor updates as the initial supported environment; qualify X11 and Wayland.",
+        "Build Wails v2 with webkit2_41 and inspect actual GTK/WebKit/native helper dependencies; produce a .deb with correct runtime dependency metadata.",
+        "Include icon, desktop launcher/app metadata, executable sidecar, approved default pack, attribution/license inventory and native data paths.",
+        "Evaluate AppImage only as an optional follow-up experiment, documenting WebKit helper/resource/GLIBC/sandbox/FUSE limitations instead of asserting universal portability."
+      ],
+      "acceptance_criteria": [
+        "A fresh supported environment installs via a normal graphical package manager and runs D11 smoke without Docker, Node, Go, Git, development headers or terminal setup.",
+        "Both display sessions launch/render/dialog/print/quit correctly, and missing runtime dependencies are resolved by package metadata rather than crash-time instructions.",
+        "Install/uninstall/upgrade preserve user documents and durable data, resource paths relocate safely and executable permissions are verified.",
+        "Package size, dependency list, exact OS/engine versions and clean-machine evidence are recorded. AppImage is not required to close the .deb MVP scope.",
+        "Other distros, Linux ARM64 and alternate formats are explicitly unqualified until separately validated."
+      ],
+      "non_goals": [
+        "No universal-Linux claim, offline map distribution, extra runtime browser, RPM/Flatpak rollout or mandatory AppImage."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/go.mod",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/go.mod"
+        },
+        {
+          "path": "Dockerfile",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/Dockerfile"
+        },
+        {
+          "path": "data-pipeline/manifest.json",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/data-pipeline/manifest.json"
+        },
+        {
+          "path": ".github/workflows/quality.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/quality.yml"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/release.yml"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M-L: approximately 4-6 engineer-days",
+        "risk": "High: WebKitGTK ABI and clean-machine distribution blocker",
+        "suitability": "contributor-friendly",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P1",
+        "type: enhancement",
+        "help wanted"
+      ],
+      "duplicate_terms": "desktop Linux packaging",
+      "status": "planned",
+      "github": {
+        "number": 161,
+        "url": "https://github.com/Berk-Unsal/atom/issues/161",
+        "state": "OPEN",
+        "verified_body_sha256": "06807a4a59aa6577b87fc0737e821d279a2a13008edfb481acff7e671093144c"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "external_references": [
+        "https://v2.wails.io/docs/gettingstarted/installation/"
+      ],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop Linux packaging in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        158
+      ]
+    },
+    {
+      "id": "D15",
+      "title": "Desktop: add gated CI artifacts, unified releases and installation documentation",
+      "group": "DISTRIBUTION",
+      "priority": "P2",
+      "depends_on": [
+        "D13",
+        "D14"
+      ],
+      "release_required": true,
+      "gate_ids": [
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6"
+      ],
+      "context": "DISTRIBUTION work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Current CI qualifies browser/Go/container delivery and the tag workflow publishes GHCR/release notes only. Desktop artifacts need a native matrix and gate evidence without a separate product version.",
+      "scope": [
+        "Add pinned native CI build/smoke artifact jobs with the approved macOS architectures and Ubuntu baseline; preserve current web/Go/container checks.",
+        "Keep untrusted PR jobs credential-free. Integrate protected macOS signing/notarization and Linux packages/checksums/SBOM/license metadata into the existing VERSION/tag release surface.",
+        "Require explicit evidence for Gates 1-6, default-data redistribution and provider access before publishing public desktop assets; distinguish internal unsigned builds.",
+        "Document install/uninstall/upgrade, supported environments, native dirs/logs, default/added datasets, network requirements and desktop dev commands. Link existing general report/project guidance rather than duplicating it.",
+        "Keep manual download/update for MVP and record updater/file-association deferrals in the tracker."
+      ],
+      "acceptance_criteria": [
+        "CI exposes reproducible architecture-tagged internal artifacts and diagnostics on failure; native checks run in an actual graphical session where required.",
+        "One root VERSION and matching vX.Y.Z release/tag identify web/container, desktop and API/CLI; desktop build metadata adds commit/shell/OS/arch without a second SemVer stream.",
+        "Public release publication fails closed if a gate, signing/notarization, clean-machine qualification, data permission or provider decision is missing. Existing container publication remains supported.",
+        "A clean supported machine follows documentation to launch, use default data, run Sector/network/optimization, open/save and export a report, then quit without terminal prerequisites.",
+        "Upgrade preserves profile and user files; documented manual updates do not imply an auto-updater. No dates, milestones or release promises are introduced."
+      ],
+      "non_goals": [
+        "No public release merely from completing this roadmap, updater service, cloud sync, Windows packaging or changes to unrelated open issues."
+      ],
+      "evidence": [
+        {
+          "path": ".github/workflows/quality.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/quality.yml"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/release.yml"
+        },
+        {
+          "path": "VERSION",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/VERSION"
+        },
+        {
+          "path": "scripts/versioning.py",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/scripts/versioning.py"
+        },
+        {
+          "path": "docs/getting-started.md",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/docs/getting-started.md"
+        },
+        {
+          "path": "docs/deployment.md",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/docs/deployment.md"
+        },
+        {
+          "path": "docs/project-format.md",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/docs/project-format.md"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "M-L: approximately 4-6 engineer-days",
+        "risk": "Medium-high: release integration and support claims",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "macOS 14+ arm64/x86_64 and Ubuntu 24.04 LTS x86_64; validate proposed support in the spike",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P2",
+        "type: enhancement",
+        "area: ci",
+        "area: docs"
+      ],
+      "duplicate_terms": "desktop CI release",
+      "status": "planned",
+      "github": {
+        "number": 162,
+        "url": "https://github.com/Berk-Unsal/atom/issues/162",
+        "state": "OPEN",
+        "verified_body_sha256": "969079e979496fda00891ca54bbc8bfe3aba73a62c28b693fb8398dab7233ad4"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop CI release in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        160,
+        161
+      ]
+    },
+    {
+      "id": "D16",
+      "title": "Desktop later: investigate Windows runtime, installer and filesystem support",
+      "group": "LATER",
+      "priority": "P3",
+      "depends_on": [
+        "D15"
+      ],
+      "release_required": false,
+      "gate_ids": [],
+      "context": "LATER work package in the A.T.O.M desktop roadmap. Desktop is another delivery target for the existing React/Go product; macOS and supported Linux come first, Windows later. Audited VERSION 0.12.3, HEAD b22b0937e8295d25587f7157368a70ec58a71077. This issue is planned work, not evidence that the capability exists.",
+      "problem": "Windows is outside the first macOS/Linux MVP, but Unix-only process control, paths and packaging assumptions could make a later port unnecessarily expensive.",
+      "scope": [
+        "After the macOS/Linux release foundation is stable, audit the chosen shell for WebView2 runtime provisioning or bundled Chromium, Windows native automation and CPU architecture support.",
+        "Design per-user AppData/state/temp locations, private control channels, child cleanup, atomic replacement, case/Unicode/long/reserved paths and native dialog behavior.",
+        "Evaluate a Windows installer and code-signing/distribution requirements with clean-machine success criteria; record incremental follow-up scope.",
+        "Keep updater and existing-project-file associations as separate later decisions; never invent a replacement project format."
+      ],
+      "acceptance_criteria": [
+        "A written Windows proposal identifies runtime/bootstrap, installer/signing, path/process differences, tests and ownership needs against the accepted shared architecture.",
+        "No RF/API/project/report fork is proposed, and Windows remains absent from current support/release claims until actual native qualification.",
+        "This issue is explicitly deferred, has no date or assignee, and does not block macOS/Linux MVP release."
+      ],
+      "non_goals": [
+        "No Windows implementation in the current MVP, promised release date, universal installer, new project extension or auto-updater commitment."
+      ],
+      "evidence": [
+        {
+          "path": "backend-go/server_lifecycle.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/server_lifecycle.go"
+        },
+        {
+          "path": "backend-go/cmd/run-experiment/main.go",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/backend-go/cmd/run-experiment/main.go"
+        },
+        {
+          "path": "frontend-react/src/utils/projectStore.js",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/frontend-react/src/utils/projectStore.js"
+        },
+        {
+          "path": "VERSION",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/VERSION"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "source": "audited-head",
+          "url": "https://github.com/Berk-Unsal/atom/blob/b22b0937e8295d25587f7157368a70ec58a71077/.github/workflows/release.yml"
+        }
+      ],
+      "contributor_notes": {
+        "effort": "S-M investigation: approximately 2-3 engineer-days when prioritized",
+        "risk": "Medium: platform lifetime and filesystem differences",
+        "suitability": "maintainer-owned",
+        "platform_relevance": "Windows later; cross-platform design",
+        "assignment": null
+      },
+      "labels": [
+        "area: desktop",
+        "priority: P3",
+        "type: research"
+      ],
+      "duplicate_terms": "desktop Windows",
+      "status": "planned",
+      "github": {
+        "number": 163,
+        "url": "https://github.com/Berk-Unsal/atom/issues/163",
+        "state": "OPEN",
+        "verified_body_sha256": "ae0f13465fd8acc094882174615ee26aa008942681207abc39148e137ca69936"
+      },
+      "related_existing_issues": [],
+      "related_existing_prs": [],
+      "duplicate_check": {
+        "query": "repo:Berk-Unsal/atom is:issue desktop Windows in:title",
+        "existing_match_numbers": [],
+        "unrelated_candidates": 0
+      },
+      "dependency_issue_numbers": [
+        162
+      ]
+    }
+  ],
+  "dependency_semantics": "depends_on lists hard completion prerequisites; LATER nodes never block MVP; issue-body references are authoritative, not native GitHub blocked-by metadata",
+  "external_sources": [
+    "https://v2.wails.io/docs/introduction/",
+    "https://v2.wails.io/docs/reference/options/",
+    "https://v2.wails.io/docs/reference/project-config/",
+    "https://v2.wails.io/docs/guides/dynamic-assets/",
+    "https://v3.wails.io/blog/wails-v3-beta/",
+    "https://www.electronjs.org/docs/latest/tutorial/security",
+    "https://www.electronjs.org/docs/latest/tutorial/process-model",
+    "https://www.electronjs.org/docs/latest/tutorial/automated-testing",
+    "https://raw.githubusercontent.com/electron/electron/main/docs/api/web-contents.md",
+    "https://v2.tauri.app/concept/architecture/",
+    "https://docs.stadiamaps.com/authentication/",
+    "https://operations.osmfoundation.org/policies/tiles/",
+    "https://specifications.freedesktop.org/basedir/latest/",
+    "https://support.apple.com/en-ie/guide/security/sec3ad8e6e53/web",
+    "https://help.apple.com/xcode/mac/current/en.lproj/dev88332a81e.html"
+  ],
+  "mutations": {
+    "labels_created": [
+      "area: desktop"
+    ],
+    "issues_created": [
+      {
+        "id": "TRACKER",
+        "number": 147,
+        "url": "https://github.com/Berk-Unsal/atom/issues/147"
+      },
+      {
+        "id": "D01",
+        "number": 148,
+        "url": "https://github.com/Berk-Unsal/atom/issues/148"
+      },
+      {
+        "id": "D02",
+        "number": 149,
+        "url": "https://github.com/Berk-Unsal/atom/issues/149"
+      },
+      {
+        "id": "D03",
+        "number": 150,
+        "url": "https://github.com/Berk-Unsal/atom/issues/150"
+      },
+      {
+        "id": "D04",
+        "number": 151,
+        "url": "https://github.com/Berk-Unsal/atom/issues/151"
+      },
+      {
+        "id": "D05",
+        "number": 152,
+        "url": "https://github.com/Berk-Unsal/atom/issues/152"
+      },
+      {
+        "id": "D06",
+        "number": 153,
+        "url": "https://github.com/Berk-Unsal/atom/issues/153"
+      },
+      {
+        "id": "D07",
+        "number": 154,
+        "url": "https://github.com/Berk-Unsal/atom/issues/154"
+      },
+      {
+        "id": "D08",
+        "number": 155,
+        "url": "https://github.com/Berk-Unsal/atom/issues/155"
+      },
+      {
+        "id": "D09",
+        "number": 156,
+        "url": "https://github.com/Berk-Unsal/atom/issues/156"
+      },
+      {
+        "id": "D10",
+        "number": 157,
+        "url": "https://github.com/Berk-Unsal/atom/issues/157"
+      },
+      {
+        "id": "D11",
+        "number": 158,
+        "url": "https://github.com/Berk-Unsal/atom/issues/158"
+      },
+      {
+        "id": "D12",
+        "number": 159,
+        "url": "https://github.com/Berk-Unsal/atom/issues/159"
+      },
+      {
+        "id": "D13",
+        "number": 160,
+        "url": "https://github.com/Berk-Unsal/atom/issues/160"
+      },
+      {
+        "id": "D14",
+        "number": 161,
+        "url": "https://github.com/Berk-Unsal/atom/issues/161"
+      },
+      {
+        "id": "D15",
+        "number": 162,
+        "url": "https://github.com/Berk-Unsal/atom/issues/162"
+      },
+      {
+        "id": "D16",
+        "number": 163,
+        "url": "https://github.com/Berk-Unsal/atom/issues/163"
+      }
+    ],
+    "issues_updated": [
+      {
+        "id": "TRACKER",
+        "number": 147,
+        "reason": "replace pending issue placeholders with all created issue links and final dependency graph"
+      }
+    ],
+    "unrelated_issues_changed": [],
+    "milestones_created": [],
+    "assignees_set": [],
+    "pull_requests_created": [],
+    "merges": []
+  },
+  "verification": {
+    "issue_reads_after_creation": [
+      {
+        "id": "TRACKER",
+        "number": 147,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D01",
+        "number": 148,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D02",
+        "number": 149,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D03",
+        "number": 150,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D04",
+        "number": 151,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D05",
+        "number": 152,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D06",
+        "number": 153,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D07",
+        "number": 154,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D08",
+        "number": 155,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D09",
+        "number": 156,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D10",
+        "number": 157,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D11",
+        "number": 158,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D12",
+        "number": 159,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D13",
+        "number": 160,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D14",
+        "number": 161,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D15",
+        "number": 162,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D16",
+        "number": 163,
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      }
+    ],
+    "final_issue_reads": [
+      {
+        "id": "TRACKER",
+        "number": 147,
+        "body_sha256": "bd649526991b4122137312e6649130072ff13113774fba250f3585255d065cdb",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D01",
+        "number": 148,
+        "body_sha256": "660c70214be7655e2d12567c9afec571da8ed2756a0626f365322cd7f97d22d4",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D02",
+        "number": 149,
+        "body_sha256": "d8525529e434518fca693214b323978f056b7cc0357a3d26ea1740a71829718f",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D03",
+        "number": 150,
+        "body_sha256": "5cfdb65f418aefe391c0162f77fea14d3ab6e49bf825cd4530ff06e8a493c4a1",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D04",
+        "number": 151,
+        "body_sha256": "99fe10674081432c27baaf300cb5e0f050cff3db2c34b1929de8827eaab34783",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D05",
+        "number": 152,
+        "body_sha256": "7c87c985224000356475a17e4a74cc474882488f75ae230072acb576c97c3f76",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D06",
+        "number": 153,
+        "body_sha256": "c1c5d3fd0db117ac9d674cc693693b54d5f9df0c26f4372fc2e519d8999e7407",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D07",
+        "number": 154,
+        "body_sha256": "1717b9c9269da78b3348d82fd6b6fdbd76003f3f11118a7d13b90597d732a9a6",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D08",
+        "number": 155,
+        "body_sha256": "0e5745905157ab6b622586e2c09717002f3db933c23d32014a0d3ead77642734",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D09",
+        "number": 156,
+        "body_sha256": "ad8acb09580dbf960542a17e51b85ae9c67adfea9d990bf14b657895a3f14899",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D10",
+        "number": 157,
+        "body_sha256": "8cf213305778386338a855a92e848b03937b87c12f16d567a83e2752ceee907c",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D11",
+        "number": 158,
+        "body_sha256": "7a3cdde4210473758da4d01e4d6a3911c593a51532d5fe03172193a9df19f185",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D12",
+        "number": 159,
+        "body_sha256": "f6fddcd5fcbf4c40ec000ebe91f1153257d5ece0f3283c1efb7d5dc407ed43ef",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D13",
+        "number": 160,
+        "body_sha256": "6b9a5f22e90b1656d73f9487b1a1be0cf3a49fb6d5b3f933d5067a7dbae5b24c",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D14",
+        "number": 161,
+        "body_sha256": "06807a4a59aa6577b87fc0737e821d279a2a13008edfb481acff7e671093144c",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D15",
+        "number": 162,
+        "body_sha256": "969079e979496fda00891ca54bbc8bfe3aba73a62c28b693fb8398dab7233ad4",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      },
+      {
+        "id": "D16",
+        "number": 163,
+        "body_sha256": "ae0f13465fd8acc094882174615ee26aa008942681207abc39148e137ca69936",
+        "body_matches": true,
+        "labels_match": true,
+        "state": "OPEN",
+        "assignees": [],
+        "milestone": null
+      }
+    ],
+    "local_checks": [
+      {
+        "name": "documentation validation",
+        "command": "isolated-venv python docs/validate_docs.py",
+        "result": "passed: 59 HTML pages and 43 API paths"
+      },
+      {
+        "name": "version metadata",
+        "command": "python3 scripts/versioning.py check",
+        "result": "passed: 0.12.3"
+      },
+      {
+        "name": "whitespace",
+        "command": "git diff --check",
+        "result": "passed"
+      },
+      {
+        "name": "documentation classification baseline",
+        "command": "python3 docs/classify_docs.py",
+        "result": "pre-existing catalog drift for four report redesign files; desktop entries registered independently"
+      },
+      {
+        "name": "roadmap consistency",
+        "result": "passed: 16 unique child issues, 17 verified open issues, acyclic prerequisites, expected labels/sections and tracker links"
+      },
+      {
+        "name": "pre-existing work preservation",
+        "result": "passed: all 47 existing changed-file SHA-256 values match; only two planning files plus eight catalog lines added; no staged changes/HEAD or branch change"
+      },
+      {
+        "name": "evidence paths",
+        "result": "passed: all issue code/reference paths exist at audited HEAD"
+      },
+      {
+        "name": "new document classification",
+        "result": "passed: both are INTERNAL DESIGN; only the original four report-redesign catalog omissions remain"
+      }
+    ],
+    "notes": [
+      "All duplicate searches covered open and closed issues. Initial 66-issue/80-PR inventory inspected; no existing desktop-host roadmap found.",
+      "Created every issue through gh CLI after the connector denied mutation with 403. Repository label management is not exposed by the connector.",
+      "No change to existing unrelated issues, PRs, labels, milestones, assignees or release state."
+    ],
+    "preexisting_files_preserved": true,
+    "label_diff": {
+      "added": [
+        "area: desktop"
+      ],
+      "changed_existing": []
+    },
+    "preexisting_catalog_omissions": [
+      "docs/report-guide.html",
+      "docs/report-guide.md",
+      "docs/report-presentation/.impeccable/design.json",
+      "docs/report-presentation/DESIGN.md"
+    ],
+    "final_issue_count": 17
+  },
+  "github_write_transport": "gh CLI fallback: connector create_issue denied 403 Resource not accessible by integration",
+  "implementation_started": true,
+  "public_release_qualified": false,
+  "spike_report": "docs/desktop-spike-design-report.md",
+  "issue_148_decision_comment": "https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6334742811",
+  "qualification_branch": "spike/desktop-d01-qualification",
+  "qualification_run": "https://github.com/Berk-Unsal/atom/actions/runs/39770458447"
+}

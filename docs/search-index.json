@@ -497,7 +497,7 @@
       "page": "API Reference",
       "title": "Versioning",
       "url": "./api.html#versioning",
-      "text": "Current API Version : 1.0 Future versions will: Add webhook support for async simulations Support batch optimization requests Include terrain elevation models Add custom propagation model endpoints Breaking changes will increment major version (e.g., /v2 )."
+      "text": "The downloadable OpenAPI contract declares API contract version 1.0.0 . That identifier is separate from the application release in root VERSION and the running server's application_version in /api/meta ; it is not an upcoming release number. Current routes use /api , not a newly introduced versioned prefix. The supported asynchronous workflow is the existing batch-experiment process and job resources ( /api/processes/batch-experiment , /api/processes/batch-experiment/execution and /api/jobs/{jobID} ), within their documented limits. It is not a promise of a new batch-optimization endpoint. Webhook delivery and arbitrary custom propagation-model endpoints are not supported contracts. Terrain remains limited to the documented path-profile diagnostic; it is not silently added to canonical network calculations. New endpoints or breaking changes require a separately scoped design, implementation, compatibility review and updated contract. No webhook, terrain, custom-model or application release date is committed by this page. See the maintained roadmap for implemented, partial, blocked and deferred work."
     },
     {
       "page": "API Reference",
@@ -1143,15 +1143,39 @@
     },
     {
       "page": "Changelog",
+      "title": "0.13.1 - 2026-10-27",
+      "url": "./changelog.html#0131---2026-10-27",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
       "title": "Added",
       "url": "./changelog.html#added",
-      "text": "Show where two compatible network plans differ: Results → Compare offers Show where they differ for saved network Versions, the current network plan, or an optimization's baseline and solutions on the current dataset and model. A new POST /api/compare-network endpoint evaluates both plans (one protected RF request) and returns demand buildings newly served or lost and buildings whose overlap changed, with counts that reconcile exactly with the aggregate KPI deltas and a bounded building list. The map layer has a labeled legend, and reports include the counts and a static map. Place and manage co-located multi-sector Cells as one site group: Inventory → Place site adds N Cells (default 0/120/240°, editable) at one map point that move together. Each remains an ordinary Cell in every request (sector azimuths are its default azimuth); editing one member changes only that Cell unless you apply its RF profile to the site, and Ungroup site restores independent Cells. Projects round-trip the optional siteGroupId / sectorAzimuthDeg fields without a file version change, and older files import unchanged. Export a local review package for the current saved Version from Review → Report: one .zip with the HTML and Markdown reports, the project file, the report map and a manifest.json (file SHA-256 hashes, dataset and model identity, Version/Run lineage, limitations). It is generated in the browser with no RF request, checks its own manifest before downloading, follows the shareable filename rule, and refuses unsaved drafts with guidance to save a Version. Report network KPIs inside one drawn area of interest: with Report KPIs inside the drawn area on, Evaluate and Optimize Network add served demand, residential buildings and overlap inside the area beside the network-wide values in Results and reports. The API gains an optional aoi polygon (validated like search_polygon ) and stats.area_of_interest , a subset aggregation of the same per-building results; objectives, scores and the scenario fingerprint are unchanged. Show a dismissible first-run card before any project work exists: one sentence on what A.T.O.M does, Run the pre-selected sector, Open sample network project and a Planning glossary link. The sample opens as a new project without changing existing work and selects the two Cells nearest the pre-selected sector, so Evaluate Network is one more click. Dismissal i"
+      "text": "Add a reproducible two-Cell Ankara planning walkthrough with a dataset-bound portable project, exact RF inputs, recorded baseline/recommendation/overlap trade-off and an API reproduction script; document separate Version, project and report preservation."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
       "url": "./changelog.html#fixed",
-      "text": "Restore result context after a reload: the newest retained Run that computed exactly the restored plan (canonical request, dataset and model version, the same rule as applying a draft Pareto alternative) is shown as HISTORICAL with its summary, and a working draft offers Restore map layers as the only RF request. Saving a Version right after a matching run records that Run as its source in Version metadata, Results explains when no Run applies, live network evaluations no longer borrow an earlier optimization Run, and the command bar never shows Ready with UNAVAILABLE. Give CSV Measurement Validation its own section in Review → Data instead of a collapsed Research disclosure, and rename the Analyze → RF Diagnostics campaign tool to Research campaign evidence so no two tools share the measurement-validation name. Boundary copy, the six-Cell limit and the explicit apply confirmation are unchanged. Distinguish a planning-mode switch from an input change: switching Single ↔︎ Network without changing inputs shows a neutral OTHER MODE state naming the Result's mode instead of STALE, while any input change, and any identity or fingerprint mismatch, still shows STALE. Run labels lead with type · Cells · headline metric · time in the command bar, Results and Run history, with the Run ID kept in details. The header, Results and Scenarios share one Version-state wording (\"No saved Version\", \"Version N\", \"Version N · Unsaved changes\"). New Scenarios are named from the plan mode (\"Sector plan N\", \"Network plan N\"); existing names never change. Keep map chrome out of map work at desktop sizes: the Map key fades and stops capturing clicks while you draw an area, place a Cell or pick a path endpoint, and scrolls instead of clipping; command-bar segments truncate instead of overprinting \"RF details\"; Results tabs wrap so every tab stays visible; a drawer heading focused on open is underlined instead of boxed. Linux screenshot baselines (light/dark × 1440/1280/1024) now cover first run, Results and Solutions. Explain request failures with recovery steps: an unreachable API names its address and offers Retry for the startup loads, server errors keep their detail with retry guidance, the RF deadline (504) suggests retrying or reducing the plan, and unreadable responses are reported; out-of-range Setup values show inline errors with aria-invalid , and the invalid-profile prompt "
+      "text": "Increase documentation landing-page guidance to 16px prose and 14px secondary text, and stack reference descriptions so long labels wrap without clipping. Replace the documentation landing previews with a matched light/dark pair from the real two-Cell Ankara workflow, with source, dataset, request and image provenance. Clarify report source identity, retained downloads, regeneration and project evidence limits; correct walkthrough propagation reach to normalized score units. Reconcile the maintained roadmap with delivered features and explicit blockers, list all fourteen workspace tools, and separate the current API contract from deferred ideas and application release versions. Update transitive frontend development dependencies undici to 7.30.1 and zod to 4.6.7 to clear the high-severity advisories reported by the CI security audit. Make contribution guidance discoverable from the README and root CONTRIBUTING.md; repair Git LFS and Go/Vite setup, split-server readiness, Vitest/Playwright and Go checks, pinned documentation tooling, public links and the VERSION-based release workflow."
+    },
+    {
+      "page": "Changelog",
+      "title": "0.13.0 - 2026-10-22",
+      "url": "./changelog.html#0130---2026-10-22",
+      "text": ""
+    },
+    {
+      "page": "Changelog",
+      "title": "Added",
+      "url": "./changelog.html#added-1",
+      "text": "Add an opt-in desktop API sidecar control protocol: the host supplies inherited control pipes, the sidecar binds to loopback, reports lifecycle/readiness events, authenticates each request with a per-launch token and exact host/origin, and drains cleanly when the host closes the pipe. Default web, Docker, and CLI modes are unchanged; this is sidecar support, not a packaged desktop application. Add a Figma-authored ATOM signal-path icon with scalable SVG, transparent and monochrome marks, a small-size favicon, PNG exports, and Windows ICO/macOS ICNS assets. Refresh the app, README and documentation icon and provide a reproducible export and validation script. Redesign generated Markdown and printable reports around one semantic model: a decision summary with evaluation completeness, explicit KPI units and populations, deterministic interpretation, numbered collision-aware maps sampled to 300 RF segments, grouped common/reference RF profiles with per-Cell deviations, separated source/generator provenance and an engineering appendix. Add UTC timestamps and shared report filename stems, preserve retained artifact bytes and historical unknowns, document reading/print settings, and verify real A4 PDFs and accessibility. RF, optimization, score and persistence contracts are unchanged. Show where two compatible network plans differ: Results → Compare offers Show where they differ for saved network Versions, the current network plan, or an optimization's baseline and solutions on the current dataset and model. A new POST /api/compare-network endpoint evaluates both plans (one protected RF request) and returns demand buildings newly served or lost and buildings whose overlap changed, with counts that reconcile exactly with the aggregate KPI deltas and a bounded building list. The map layer has a labeled legend, and reports include the counts and a static map. Place and manage co-located multi-sector Cells as one site group: Inventory → Place site adds N Cells (default 0/120/240°, editable) at one map point that move together. Each remains an ordinary Cell in every request (sector azimuths are its default azimuth); editing one member changes only that Cell unless you apply its RF profile to the site, and Ungroup site restores independent Cells. Projects round-trip the optional siteGroupId / sectorAzimuthDeg fields without a file version change, and older files import u"
+    },
+    {
+      "page": "Changelog",
+      "title": "Fixed",
+      "url": "./changelog.html#fixed-1",
+      "text": "Build with Go 1.26.10 to include the fix for GO-2026-6809 in crypto/x509 , which govulncheck reports for Go 1.26.9. Update the frontend build tooling to Vite 6.4.5 and Vitest 4.1.12 for the launch-editor command-injection and mock-registration advisories reported by npm audit . Restore result context after a reload: the newest retained Run that computed exactly the restored plan (canonical request, dataset and model version, the same rule as applying a draft Pareto alternative) is shown as HISTORICAL with its summary, and a working draft offers Restore map layers as the only RF request. Saving a Version right after a matching run records that Run as its source in Version metadata, Results explains when no Run applies, live network evaluations no longer borrow an earlier optimization Run, and the command bar never shows Ready with UNAVAILABLE. Give CSV Measurement Validation its own section in Review → Data instead of a collapsed Research disclosure, and rename the Analyze → RF Diagnostics campaign tool to Research campaign evidence so no two tools share the measurement-validation name. Boundary copy, the six-Cell limit and the explicit apply confirmation are unchanged. Distinguish a planning-mode switch from an input change: switching Single ↔︎ Network without changing inputs shows a neutral OTHER MODE state naming the Result's mode instead of STALE, while any input change, and any identity or fingerprint mismatch, still shows STALE. Run labels lead with type · Cells · headline metric · time in the command bar, Results and Run history, with the Run ID kept in details. The header, Results and Scenarios share one Version-state wording (\"No saved Version\", \"Version N\", \"Version N · Unsaved changes\"). New Scenarios are named from the plan mode (\"Sector plan N\", \"Network plan N\"); existing names never change. Keep map chrome out of map work at desktop sizes: the Map key fades and stops capturing clicks while you draw an area, place a Cell or pick a path endpoint, and scrolls instead of clipping; command-bar segments truncate instead of overprinting \"RF details\"; Results tabs wrap so every tab stays visible; a drawer heading focused on open is underlined instead of boxed. Linux screenshot baselines (light/dark × 1440/1280/1024) now cover first run, Results and Solutions. Explain request failures with recovery steps: an unreachable API names its address and offers "
     },
     {
       "page": "Changelog",
@@ -1162,13 +1186,13 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-1",
+      "url": "./changelog.html#added-2",
       "text": "Add a planning glossary that distinguishes Cells, sectors, physical sites, tower records, candidate feasibility and dataset identity, linked from setup, inventory, first-use help and documentation navigation. Add a roadmap and contribution-readiness audit, structured planning issue forms, and a scoped pull-request template."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-1",
+      "url": "./changelog.html#fixed-2",
       "text": "Make generated reference pages match the pinned Pandoc output for reproducible documentation builds."
     },
     {
@@ -1180,7 +1204,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-2",
+      "url": "./changelog.html#fixed-3",
       "text": "Reconcile current product, model, accuracy, optimization and performance claims with the released planning scope; clarify independent network8/Recommendation5/Measurement6 and portable-evidence limits. Repair five malformed OpenAPI Response Objects and enforce strict OpenAPI 3.1 validation with structural regression tests. Disclose Measurement Validation's six-Cell limit before submission, prevent out-of-scope requests, and use neutral residual-bias review wording. Present known RF Retry-After delays as recovery guidance without automatic retry or changes to request accounting."
     },
     {
@@ -1204,13 +1228,13 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-3",
+      "url": "./changelog.html#fixed-4",
       "text": "Wait for imported projects to finish saving and keep narrow tool drawers within their viewport. Upgrade to Go 1.26.9 and golang.org/x/net 0.60.0 to include fixes for newly reported Go HTTP and HTTP/2 vulnerabilities."
     },
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-2",
+      "url": "./changelog.html#added-3",
       "text": "Add documentation appearance using the application palette and shared browser preference, with a sun/moon toggle, System appearance by default, and matching light and dark landing-page previews. Promote normal network selection from six to eight Cells within the qualified Ankara W1/Profile A scope; bounded verified follow-ups allow the complete28-call analysis/optimization journey. Independent Recommendation5 and Measurement Validation6 limits remain. Bounded verified RF follow-ups: retain 20 ordinary attempts per ClientIP/60s and prebook up to 8 shared verified follow-up units for network maps and Azimuth refreshes. Add one-time input-bound capabilities, finite expiry, cleanup, operational headers and legacy-server compatibility. The original implementation was validated at six Cells; the normal product cap is now eight within the separately qualified W1/Profile A scope. Document the eight-Cell request-budget/workflow policy design, comparing alternatives and specifying a bounded verified-follow-up recommendation without implementing a limiter or changing the six-Cell product cap. Record the clean successor eight-Cell qualification with verified pre-measurement real E2Es and a request-budget policy blocker; preserve the prior invalid audit, six-Cell product cap and fixed production policy. Record the audit-only eight-Cell W1 operational and request-budget re-audit while preserving the six-Cell product cap and fixed production policy. Record the independent W1 shipping-runtime reference qualification, preserving previous studies and fixed production policy. Record the conservative fixed deployment profile study for the exact Ankara six-Cell workload envelope: no reference profile certified; preserve empirical HTTP evidence, operational headroom gates and unchanged fixed production policy. Observe CPU, cgroup and memory constraints with provenance at startup; add local Auto profile diagnostics and controlled-container calibration while preserving fixed RF admission, deadlines, workers and scientific identities. Document locked estimator validation on fresh Ankara domains and unchanged models: retain the invalid-validation decision, numerical failures, HTTP evidence and sustained-load limitations; keep Auto observation-only."
     },
     {
@@ -1222,7 +1246,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-3",
+      "url": "./changelog.html#added-4",
       "text": "Promote normal selected-network planning from six to eight Cells within the frozen Ankara W1/Profile A qualification; retain independent Recommendation5 and Measurement Validation6 limits. Enable complete eight-Cell workflows with20 ordinary attempts plus8 bounded verified follow-up units, preserving concurrency2/1, deadline60s, worker1/queue16 and existing RF science and persistence guards."
     },
     {
@@ -1234,7 +1258,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-4",
+      "url": "./changelog.html#fixed-5",
       "text": "Make six-Cell result-bearing project exports importable using lossless columnar GeoJSON, retaining scientific results, Version provenance and independent imported identity mappings under bounded validation. Preserve newly saved immutable Version history when a concurrently queued autosave contains the previous Scenario, retaining the latest working draft. Persist Scenario Delete → Undo through captured callbacks and immediate reload by checking the latest workspace, restoring the active Scenario, and promptly committing writes on the reusable workspace database connection."
     },
     {
@@ -1264,7 +1288,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-5",
+      "url": "./changelog.html#fixed-6",
       "text": "Avoid retracing unchanged cells during network optimization with a bounded request-local cache of independent RF contributions; preserve the full search, scientific results, fingerprints and existing 60-second deadline. Round RF rate-limit retry timing up to the actual window expiry, add hashed-client admission-denial diagnostics, and verify the six-cell Evaluate → Interference → Re-evaluate workflow within the unchanged 20-request budget."
     },
     {
@@ -1276,13 +1300,13 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-4",
+      "url": "./changelog.html#added-5",
       "text": "Add locally persisted Light, Dark and System appearance, semantic dark shell tokens, and a native Alidade Smooth Dark basemap; preserve light rendering, RF palettes, camera, selection, result identity and explicit provider fallbacks. Include matched visual evidence and provider deployment guidance."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-6",
+      "url": "./changelog.html#fixed-7",
       "text": "Reduce RF ray stroke density in both themes without changing colors, geometry or counts; correct shared dark Interference/diagnostic action variants and deliberate disabled styling while preserving readiness and light action appearance. Allow the exact Stadia Maps tile origin in the application's image CSP so Alidade Smooth loads in Go-served and container deployments while preserving OpenStreetMap support and all other directives."
     },
     {
@@ -1300,13 +1324,13 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-5",
+      "url": "./changelog.html#added-6",
       "text": "Add sanitized real Ankara Concept 6A.1.1 ingestion, GNSS/radio QA, transmitter reconciliation, and blocked-readiness evidence without calibration or RF behavior changes."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-7",
+      "url": "./changelog.html#fixed-8",
       "text": "Update vulnerable frontend and Go module dependencies, move Go builds to 1.26.6, and refresh the Alpine 3.24 image digest to patched releases."
     },
     {
@@ -1330,13 +1354,13 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-6",
+      "url": "./changelog.html#added-7",
       "text": "Add a read-only contextual inspector for map-linked Cells, Buildings, Interference samples, and existing map entities, with exact source/freshness context and direct Inventory and Path Profile actions. Separate map Inspect and Select cells modes, preserve task state across supported panel layouts, and give area drawing, cell placement, and path endpoint selection priority over inspection. Consolidate map chrome into interaction, result visualization, View context, and Layers controls; remove duplicate map popups, clarify Network selection guidance, and keep the compact interaction, View, and Layers controls reachable on phones."
     },
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-8",
+      "url": "./changelog.html#fixed-9",
       "text": "Keep retained Interference samples inspectable when switching map interaction modes and show unavailable values when the response lacks evidence. Keep active Scenario lineage when draft and saved plan values differ only by object key order or map-only focus/ray scope."
     },
     {
@@ -1348,7 +1372,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-7",
+      "url": "./changelog.html#added-8",
       "text": "Add local-first Concept 7D report artifacts with exact ScenarioRevision/Run lineage, SHA-256 verification, separate IndexedDB retention, historical Run generation, offline download, regeneration, corruption handling, and explicit cleanup/quota behavior. Add local-first Concept 7E Scenario UX with explicit immutable Versions, draft/Save version semantics, Scenario switching, input diffs, branch and duplicate lineage, optimization application choices, friendly Run/Report navigation, and safe input-first comparison. Add Concept 7G result freshness and source lineage across the workspace, Results, Run History, Reports, map legend, and optimization actions, with explicit stale/history safety, draft-source clarity, and accessible state labels. Add Concept 7H RF configuration progressive disclosure, keeping Planning visible while grouping specialist and reference controls under Advanced and Research / reference without changing RF behavior or saved inputs."
     },
     {
@@ -1360,7 +1384,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-8",
+      "url": "./changelog.html#added-9",
       "text": "Add opt-in deterministic_pareto_archive_search_v1 for bounded priority-independent Pareto candidate discovery, exact evaluated-state archiving, post-discovery priority reranking, deterministic discovery/ranking fingerprints, and Concept 5C audit artifacts; legacy and Concept 5B search policies remain available. Add opt-in deterministic_multistart_coordinate_v1 network search with until-stable coordinate descent, deterministic starts, request-scoped memoization, evaluated-state archive/Pareto metadata, explicit budgets, and Concept 5B audit artifacts while preserving the legacy default. Add Concept 4F.3A.5 diagnostic terrain-clearance primitive with radio-minus-terrain endpoint/sign/no-data/datum/interpolation contracts, NASADEM/FABDEM 432-path regression artifacts, and no canonical RF coupling. Add Concept 4F.1 deterministic height-aware urban_short_range centerline obstruction with explicit OSM/levels/fallback provenance, conservative unknown-height NLOS, terrain-status metadata, multipart logical-building handling, shared ray/surface/interference/optimizer/building-entry integration, canonical audit evidence, and API/docs contracts. Add Concept 4F.2 p526-single-edge-v1 diffraction diagnostics with independent P.526-16 reference fixtures, known-height obstruction ledgers, deterministic roof-edge selection, canonical UMa comparison, Fresnel separation, restrained Path Profile UI, and no network/optimizer/surface/interference/building-entry coupling. Add Concept 4F.3A spatial-evidence foundations with explicit DTM/DSM and vertical-datum semantics, windowed GeoTIFF sampling, terrain path evidence, robust building-base/roof ledgers, source-independent external-height matching, conflict/precedence policies, deterministic fingerprints, Ankara readiness artifacts, diagnostic-only inspector routes, and no canonical RF coupling. Add Concept 4F.3A.1 bounded Ankara external-height acquisition and matching pilot with exact Microsoft GlobalMLBuildingFootprints tile selection, raw checksums, input QA, normalized sidecar output, deterministic STRtree matching, source-agreement audits, diagnostic impact, reproducibility, and an honest NO-GO for numeric promotion when the active tiles contain no positive heights. Add Concept 4F.3A.2 diagnostic-only GlobalBuildingAtlas GBA.Height Ankara acquisition with official index/tile checksums, CC BY-NC license gate, windowed raster sa"
     },
     {
@@ -1372,7 +1396,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-9",
+      "url": "./changelog.html#added-10",
       "text": "Add Concept 4E building-entry analysis for deterministic 2.6/28 GHz service estimates immediately inside representative facades, with standard-derived low/high O2I scenarios, material-data auditing, one batched API request, RF-aware caching, and restrained Analyze/report surfaces."
     },
     {
@@ -1384,7 +1408,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-9",
+      "url": "./changelog.html#fixed-10",
       "text": "Keep six-cell network selections unique, visible, and capped across map, area, restore, recommendation, and undo flows. Restore automatic GitHub Pages deployment from the current static documentation so changelog updates on main reach the published site."
     },
     {
@@ -1396,7 +1420,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-10",
+      "url": "./changelog.html#added-11",
       "text": "Add a unified map key, visible local-save status, and recoverable deletion controls."
     },
     {
@@ -1408,7 +1432,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-10",
+      "url": "./changelog.html#fixed-11",
       "text": "Keep drawer headers and tool tabs fixed while long tool bodies scroll, preventing active-tab borders from being clipped by the content boundary. Keep every workspace destination reachable in a single mobile navigation row without pushing tools below the viewport. Pin documentation generation to Pandoc 3.10 so CI reproduces the committed reference pages exactly. Copy every Core Lab adapter Go source into the container build so lifecycle helpers are linked into the release image."
     },
     {
@@ -1420,7 +1444,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-11",
+      "url": "./changelog.html#added-12",
       "text": "Add an inspectable 2.5D point-to-point path profiler with optional COG/GeoTIFF terrain, building heights, LOS/Fresnel classification, single knife-edge diffraction, material-aware penetration, environmental sensitivity terms, uncertainty ranges, and an interactive vertical cross section. Add asynchronous batch experiment matrices with cancellation, deterministic dataset/model fingerprints, bounded caching, a headless CLI, progress UI, scenario tables, and Pareto evidence. Add configurable network objectives, weights, hard constraints, feasibility evidence, and non-dominated azimuth solutions while keeping unsupported tilt, power, candidate-site, cost, fiber, and permitting inputs explicit. Add spatially blocked five-fold calibration validation, spatial-diversity rejection, per-cell/per-band and distance/obstruction residual summaries, robust outlier flags, uncertainty quantiles, confidence intervals, and campaign provenance/expiration support. Add regular-grid analytical coverage surfaces, marching-square isolines, opacity and display-threshold controls, plus GeoTIFF, contour GeoJSON, and CSV exports. Add OGC API Features-style, viewport-bounded building queries with pagination and GeoJSON/CSV representations so clients need not transfer the full building dataset. Add a persistent cell Inventory workspace with manual map placement, dragging, duplication, deletion, bounded CSV/GeoJSON import, search, validation, and independent per-cell RF profiles across propagation, network, interference, recommendation, measurement, and report workflows. Add Dataset Pack Studio for arbitrary-region source inspection, geometry repair, reprojection/cropping, schema-v2 manifests, hashes, provenance/licenses/confidence, QA evidence, and optional terrain, clutter, building-height, and material layers. Add a local installed-dataset catalog and atomic manifest-ID switching that retains the active immutable pack on validation failure, with optional administration-key protection."
     },
     {
@@ -1444,7 +1468,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-11",
+      "url": "./changelog.html#fixed-12",
       "text": "Keep focused-drawer actions in normal layout flow so the propagation optimizer cannot overlap the vertical path-profile panel."
     },
     {
@@ -1462,7 +1486,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-12",
+      "url": "./changelog.html#fixed-13",
       "text": "Serialize browser workspace commits, arbitrate IndexedDB and fallback copies by persistence revision, and reserve local storage for failed primary writes instead of duplicating every payload. Store recommendation details once in the canonical response array and reference them from GeoJSON features by stable feature ID, including compaction of legacy scenario artifacts. Generate backend, Core Lab adapter, and frontend scenario/RF policy bindings from one canonical source, and share one tower input type across RF endpoints."
     },
     {
@@ -1474,7 +1498,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-13",
+      "url": "./changelog.html#fixed-14",
       "text": "Compute sector propagation and coverage gaps from one shared ray-profile pass instead of launching duplicate frontend requests. Remove the tracked OSMnx response cache and exclude regenerated pipeline caches from Git and Docker build contexts. Protect expensive RF routes with per-client concurrency and request budgets, optional API-key authentication, computation deadlines, and deep-loop cancellation."
     },
     {
@@ -1486,7 +1510,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-12",
+      "url": "./changelog.html#added-13",
       "text": "Add keyboard-accessible full-site search to the static documentation website. Publish the canonical project changelog as a searchable documentation page."
     },
     {
@@ -1498,7 +1522,7 @@
     {
       "page": "Changelog",
       "title": "Fixed",
-      "url": "./changelog.html#fixed-14",
+      "url": "./changelog.html#fixed-15",
       "text": "Bound Core Lab cluster identifiers and scenario bodies to prevent topology, session, and event fan-out exhaustion. Bound RF tower identifiers to prevent small measurement and interference requests from amplifying into multi-gigabyte JSON responses. Persist the saved scenario a user opens, and detach the draft from that baseline when its planning inputs change. Prevent stale map layers from being stored with changed inputs or input-only recommendation scenarios. Assign new nested scenario IDs when projects are duplicated or imported so cache entries cannot collide. Restore the local-storage backup when IndexedDB is available but does not contain a workspace record. Mirror successful workspace saves to local storage so the fallback does not silently age behind IndexedDB. Compare dataset hash maps independently of JSON object key order. Score candidate recommendations from the active optimized per-cell azimuths instead of reverting to the global baseline azimuth. Invalidate old RF and residual layers when applying a measurement-derived calibration offset. Include dataset hashes in calibration compatibility checks so changed dataset content invalidates an old profile. Preserve per-cell azimuths through network evaluation, optimization, saved scenarios, and recommendation application. Align the Markdown documentation entry point with the maintained static docs hub, current version, and model limitations."
     },
     {
@@ -1516,7 +1540,7 @@
     {
       "page": "Changelog",
       "title": "Added",
-      "url": "./changelog.html#added-13",
+      "url": "./changelog.html#added-14",
       "text": "Deterministic sector, network, optimization, interference, recommendation, and measurement-validation workflows. Focused map workspace with projects, saved scenarios, comparison, reports, dataset metadata, and optional 5G Core communication paths. Go API resource controls, validated dataset packs, OpenAPI documentation, responsive browser tests, and multi-architecture container publishing."
     },
     {
@@ -3543,6 +3567,12 @@
     },
     {
       "page": "Concept 7D Local Report and Artifact Delivery",
+      "title": "Current report presentation",
+      "url": "./concept-7d-report-artifacts.html#current-report-presentation",
+      "text": "atom-report-generator-v2 renders Markdown and printable HTML from one transient semantic model and section plan. It separates the decision summary, evaluation evidence, grouped RF configuration, provenance and technical appendix. Source computation identity stays distinct from export-generation identity; exact unknown historical fields remain unknown. See the report reader guide for metric populations, map sampling, naming, UTC dates and reference print settings. This presentation revision does not change ReportDefinition, artifact, project or review-package schema versions, RF results, score semantics, source fingerprints or retention behavior. Existing artifacts keep their original bytes, names and content hashes. The later local review package implements a bounded evidence ZIP on the existing sources; the original Concept 7D scope below describes its earlier boundary."
+    },
+    {
+      "page": "Concept 7D Local Report and Artifact Delivery",
       "title": "Validation debt closure",
       "url": "./concept-7d-report-artifacts.html#validation-debt-closure",
       "text": "docs/requirements.txt already documents a hashed PyYAML 6.0.3 lock. The active system Python did not expose yaml , so python3 docs/validate_docs.py initially failed with ModuleNotFoundError . The repository policy was left unchanged. A temporary virtual environment installed the documented lock and produced: documentation valid: 36 HTML pages and 41 API paths That pre-change validation produced documentation valid: 36 HTML pages and 41 API paths . After generating the Concept 7C/7D reference pages and evidence links, the final post-change validation produced documentation valid: 38 HTML pages and 41 API paths . The temporary environment is not part of the repository."
@@ -3821,187 +3851,67 @@
       "page": "Contributing",
       "title": "Contributing",
       "url": "./contributing.html",
-      "text": "Repository structure, development setup, testing expectations, and contribution workflow for A.T.O.M. View Markdown source System architecture A.T.O.M is an open-source project, and we welcome contributions from the community!"
+      "text": "Repository structure, development setup, testing expectations, and contribution workflow for A.T.O.M. View Markdown source System architecture Start with an existing GitHub issue , or use the repository's bug and feature issue forms to describe a reproducible problem. Issues are the public discussion route. Check the issue's priority, prerequisites and acceptance criteria before starting; see the product roadmap and desktop roadmap for context, and the live issue for current status. This is the maintained contribution guide. The root CONTRIBUTING.md and README point here. Repository-specific coding instructions are in AGENTS.md ."
     },
     {
       "page": "Contributing",
-      "title": "How to Contribute",
-      "url": "./contributing.html#how-to-contribute",
-      "text": ""
+      "title": "Choose a small change",
+      "url": "./contributing.html#choose-a-small-change",
+      "text": "Identify the issue's observable outcome and the files responsible for it. Confirm that required evidence or upstream work is available. Create a branch, for example git switch -c fix/issue-82-contribution-guide . Reproduce a bug with a focused regression test, make the smallest coherent fix, and run the affected tests first. Run the applicable full checks below, update documentation and add user-visible changes under Unreleased in CHANGELOG.md . Open a PR using the repository template. Explain the impact, link the issue, list actual validation commands/results, and include screenshots for UI changes. Mention any unrun check and its reason. For an initial contribution, prefer bounded documentation, pure helpers or a clearly scoped workflow repair. RF equations, observation semantics, dataset provenance, optimizer objectives, request budgets, portable-project contracts and desktop security need maintainer review. A synthetic test or a successful run does not establish measured RF accuracy. Read modeling limits before proposing RF changes; external evidence gates remain in force."
     },
     {
       "page": "Contributing",
-      "title": "Reporting Bugs",
-      "url": "./contributing.html#reporting-bugs",
-      "text": "Found a bug? Please report it! Check existing issues first: GitHub Issues Create new issue if not already reported Include : OS and Docker version Steps to reproduce Expected vs actual behavior Error logs/screenshots Example bug report : ## Bug: Simulation returns 500 error ### Environment - Docker version: 24.0.0 - OS: macOS 14.0 ### Steps to Reproduce 1. Run `docker run -p 8080:8080 atom-simulator` 2. POST to `/api/simulate` with an out-of-range payload 3. Receive 500 error ### Expected - Graceful validation error that explains which request field is invalid ### Actual - 500 Internal Server Error with no error message ### Logs Server error: index out of bounds"
+      "title": "Repository map and ownership boundaries",
+      "url": "./contributing.html#repository-map-and-ownership-boundaries",
+      "text": "Location Responsibility Useful starting point backend-go/ Gin routes, validation, jobs, dataset runtime and HTTP contracts main.go , server_lifecycle.go and their tests backend-go/raytracer/ Deterministic RF, geometry, spatial index and optimization Focused implementation and table-driven tests frontend-react/src/components/ React UI and interaction Component plus *.test.jsx frontend-react/src/hooks/ Workspace state and workflow orchestration Relevant hook and workflow tests frontend-react/src/utils/ Pure helpers and *.test.js projectStore.js and projectFileReliability.test.js for portable files core-lab-adapter/ Optional 5G-only Core Lab adapter Separate Go module and tests data-pipeline/ Dataset manifest, LFS data, pack generation and QA Validate a pack before changing data assumptions docs/ Markdown sources, generated reference HTML, search index and validators Edit the source and rebuild generated pages examples/ Importable portable projects and public fixtures Keep legacy input-only files compatible desktop/spike/ Disposable qualification probes Evidence for desktop gates, not a production shell Keep API input validation at routes and preserve cancellation contexts. Use gofmt for Go, exported PascalCase names where appropriate, PascalCase component filenames, use -prefixed hooks and camelCase helpers. Prefer focused modules and pure utilities to expanding App.jsx . Preserve deterministic ordering and the existing 4G/5G/6G availability contract."
     },
     {
       "page": "Contributing",
-      "title": "Suggesting Features",
-      "url": "./contributing.html#suggesting-features",
-      "text": "Want to suggest an improvement? Check existing proposals : Discussions Start a discussion or open an issue labeled enhancement Describe : What problem it solves Why it's valuable Rough implementation approach (optional) Example feature request : ## Feature: Support for terrain elevation models ### Problem RF propagation is affected by hills and valleys, but A.T.O.M currently ignores terrain. ### Proposal - Add support for GeoTIFF elevation data - Apply path loss adjustment based on elevation difference - Include elevation visualization on map ### Benefits - More accurate coverage prediction in mountainous regions - Better antenna placement decisions ### Implementation hint - Use open-source GDAL library for GeoTIFF reading - Modify FSPL calculation in raytracer/geometry.go"
+      "title": "Get a complete checkout",
+      "url": "./contributing.html#get-a-complete-checkout",
+      "text": "Install Git and Git LFS before cloning. Docker Engine with Compose or Docker Desktop is sufficient to run the full app; source development also needs Node.js 24 or newer and the Go version declared in backend-go/go.mod and core-lab-adapter/go.mod . CI reads those module files. Documentation and data tooling use Python 3.12 in CI. git lfs install git clone https://github.com/Berk-Unsal/atom.git cd atom git lfs pull The Ankara building GeoJSON is about 111 MiB. A small file starting with version https://git-lfs.github.com/spec/v1 is a pointer, not a usable dataset. Fetch its LFS object before building or validating the pack. Do not regenerate the dataset to work around a missing LFS download."
     },
     {
       "page": "Contributing",
-      "title": "Contributing Code",
-      "url": "./contributing.html#contributing-code",
-      "text": ""
+      "title": "Run the full app with Docker",
+      "url": "./contributing.html#run-the-full-app-with-docker",
+      "text": "From the repository root: docker compose up --build -d atom curl --fail http://localhost:8080/readyz docker compose logs -f atom Wait for /readyz to return success, then open http://localhost:8080 . Readiness covers dataset and frontend assets; /healthz only checks liveness. Use docker compose down from the root to stop the app. Internet access is needed for the initial build and online basemap tiles. The optional Core Lab profile is documented in Download and Use ."
     },
     {
       "page": "Contributing",
-      "title": "Setup Development Environment",
-      "url": "./contributing.html#setup-development-environment",
-      "text": "Backend : # Install Go 1.26.9+ cd backend-go go mod download go run . Frontend : # Install Node.js 24+ cd frontend-react npm install npm run dev Python tooling : Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt After deliberately changing either .in file, install uv==0.12.0 and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles. Both together : # Terminal 1 cd backend-go && go run . # Terminal 2 cd frontend-react && npm run dev # Open http://localhost:5173"
+      "title": "Develop with Go and Vite",
+      "url": "./contributing.html#develop-with-go-and-vite",
+      "text": "Run these in separate terminals, each starting at the repository root: # Terminal 1: existing Go HTTP API cd backend-go go mod download go run . # Terminal 2: shared React frontend cd frontend-react npm ci npm run dev Open http://localhost:5173 . Vite proxies API traffic to port 8080. Check http://localhost:8080/healthz and http://localhost:8080/api/meta for the API/dataset, and verify that Vite serves the UI. In this split workflow /readyz can report missing frontend assets until npm run build creates frontend-react/dist ; it is the combined-server readiness check, not a prerequisite for Vite HMR. A dataset error still needs fixing. Stop a competing Compose instance before reusing port 8080. Validate the public pack from backend-go : go run ./cmd/validate-dataset ../data-pipeline"
     },
     {
       "page": "Contributing",
-      "title": "Making Changes",
-      "url": "./contributing.html#making-changes",
-      "text": "Code Style Follow standard Go and JavaScript conventions: Go : // Use camelCase for functions/variables func calculatePathLoss ( distance float64 ) float64 { // Clear, concise comments return 20 * math . Log10 ( distance ) - 27.55 } JavaScript : // Use arrow functions, const/let const calculateSignalStrength = (rxPower) => { return rxPower > - 70 ? \"excellent\" : \"poor\" ; } ; Git Workflow Fork repository Create feature branch : git checkout -b feature/new-feature Make changes (keep commits small and focused) Test locally Push to your fork Create Pull Request with description Commit messages (conventional format): feat: add terrain elevation support fix: correct FSPL calculation for 6G docs: update API documentation test: add raytracing unit tests refactor: simplify optimization algorithm"
+      "title": "Set up documentation and Python tools",
+      "url": "./contributing.html#set-up-documentation-and-python-tools",
+      "text": "From the repository root, use a Python 3.12 virtual environment. Install the hash-pinned documentation lock without source builds or dependency re-resolution: python3.12 -m venv .venv . .venv/bin/activate python -m pip install --require-hashes --only-binary = :all: -r docs/requirements.txt Install Pandoc 3.10 exactly , the version required by docs/build-reference-pages.sh and the documentation workflows. Confirm pandoc --version before building; a newer version can change committed HTML. The build script rejects another version. Only data-pipeline work needs the separate scientific/geospatial Python environment: python -m pip install --require-hashes --only-binary = :all: -r data-pipeline/Requirements.txt Direct dependency inputs are in the matching .in files. For an intentional dependency update, use uv==0.12.0 and the lock-generation command recorded at the top of the relevant lockfile; commit the input and lock together. Do not edit hashes by hand."
     },
     {
       "page": "Contributing",
-      "title": "Testing",
-      "url": "./contributing.html#testing",
-      "text": "Go Backend Tests cd backend-go go vet ./... govulncheck ./... go test -race ./... Add tests for new features: func TestCalculatePathLoss ( t * testing . T ) { distance := 1000.0 frequency := \"5G\" result := CalculatePathLoss ( distance , frequency ) // 5G at 1 km should be ~84 dB expected := 84.0 if math . Abs ( result - expected ) > 1.0 { t . Fatalf ( \"Expected %f, got %f\" , expected , result ) } } React Frontend Tests cd frontend-react npm test Add tests using Jest/React Testing Library: test ( 'Azimuth slider updates coverage' , () => { render ( < ControlPanel /> ) ; const slider = screen . getByRole ( 'slider' , { name : /azimuth/i }) ; fireEvent . change (slider , { target : { value : 90 }}) ; expect (slider . value ) . toBe ( '90' ) ; }) ;"
+      "title": "Choose focused checks, then full validation",
+      "url": "./contributing.html#choose-focused-checks-then-full-validation",
+      "text": "Run the narrow regression test while editing. These examples use real existing tests and files: # From frontend-react: portable-project helpers npm test -- src/utils/projectFileReliability.test.js # From backend-go: HTTP server lifecycle go test . -run TestServeHTTPServerDrainsInflightRequestOnShutdown -count = 1 # From the repository root: documentation builder tests python3 -m unittest discover -s docs -p 'build_reference_pages_test.py' Use the appropriate rows before opening a PR. Commands in a row run in the stated directory; a UI bug needs an interaction regression and relevant responsive browser checks. Frontend tests use Vitest with React Testing Library; browser workflows use Playwright . Change surface Directory Full checks React/UI/helpers frontend-react npm run lint , npm test , npm run build , npm run audit:security Browser workflows frontend-react npx playwright install --with-deps chromium , then npm run test:e2e Go API/RF backend-go go vet ./... , go test -race ./... , go run ./cmd/validate-dataset ../data-pipeline Core Lab core-lab-adapter go vet ./... , go test -race ./... Go vulnerability checks Each affected Go module go install golang.org/x/vuln/cmd/govulncheck@v1.6.0 , then govulncheck ./... (ensure Go's bin directory is on PATH) Python data tooling Repository root Install the data lock, import geopandas, numpy, osmnx, pandas, shapely , then python -m compileall -q -x '/\\.venv/' data-pipeline Documentation Repository root Run the documentation commands below Version/policy/dependency metadata Repository root Run the consistency commands below The default Playwright suite uses its configured local Vite server and mocked API workflows. Real-backend qualification is separate; see frontend-react/playwright.config.js and the ATOM_REAL_E2E tests. Default browser tests do not establish real-pack RF parity or native desktop compatibility."
     },
     {
       "page": "Contributing",
-      "title": "Code Review Checklist",
-      "url": "./contributing.html#code-review-checklist",
-      "text": "Before submitting PR, verify: ✅ Code follows project style ✅ Backend vulnerability scan passes: govulncheck ./... ✅ Tests pass: go test -race ./... ✅ No lint errors: golint ./... ✅ Comments explain \"why\", not \"what\" ✅ Commit messages are clear ✅ Documentation updated if needed ✅ No breaking changes (or documented)"
+      "title": "Documentation checks",
+      "url": "./contributing.html#documentation-checks",
+      "text": "Edit Markdown sources rather than generated reference HTML. The build mapping is in docs/build-reference-pages.sh . From the root, with the documentation environment active and Pandoc 3.10 on PATH: sh docs/build-reference-pages.sh node --check docs/assets/docs.js node --check docs/assets/docs-theme.js python3 -m unittest discover -s docs -p '*_test.py' python3 docs/validate_claims.py python3 docs/validate_docs.py Commit the changed generated HTML, docs/search-index.json and any generated theme asset alongside source changes. Rebuilding a second time should leave those outputs unchanged. Preview locally with python3 -m http.server 9000 --directory docs and open http://localhost:9000 . Link/asset and strict OpenAPI validation run in validate_docs.py ."
     },
     {
       "page": "Contributing",
-      "title": "Documentation Contributions",
-      "url": "./contributing.html#documentation-contributions",
-      "text": ""
+      "title": "Consistency checks",
+      "url": "./contributing.html#consistency-checks",
+      "text": "From the repository root: python3 scripts/versioning.py check python3 scripts/check_runtime_versions.py python3 scripts/check_supply_chain.py python3 scripts/check_workflow_action_pins.py python3 -m unittest scripts/check_supply_chain_test.py scripts/check_workflow_action_pins_test.py python3 scripts/generate_policy.py --check python3 -m unittest scripts/generate_policy_test.py Quality CI is the full source of required gates, including dependency review and production container/SBOM vulnerability scans. Use it to check current pins and additional checks for the changed surface. Passing a focused test alone does not replace the affected CI jobs."
     },
     {
       "page": "Contributing",
-      "title": "Improving Docs",
-      "url": "./contributing.html#improving-docs",
-      "text": "Found a typo or unclear section? Help us improve! Edit markdown or HTML files in the docs/ folder Verify rendering : Run python3 -m http.server 9000 --directory docs Submit PR with changes"
-    },
-    {
-      "page": "Contributing",
-      "title": "Adding Examples",
-      "url": "./contributing.html#adding-examples",
-      "text": "Backend example (Go): // In backend-go/examples/ package main import ( \"fmt\" raytracer \"./raytracer\" ) func main () { // Example: Calculate path loss for 5G at 1 km loss := raytracer . CalculatePathLoss ( 1000 , \"5G\" ) fmt . Printf ( \"Path loss: %.2f dB \\n \" , loss ) } Frontend example (React): // In frontend-react/examples/ import { useSimulation } from '../hooks/useSimulation' ; export function SimpleVisualization () { const { simulate } = useSimulation () ; const handleSimulate = async () => { const result = await simulate ({ tower_lon : 32.8541 , tower_lat : 39.9208 , rays : 120 , radius_m : 400 , frequency_ghz : 28 , tx_power_dbm : 30 , azimuth : 45 , beam_width : 120 }) ; console . log ( 'Coverage:' , result) ; } ; return < button onClick = {handleSimulate} > Simulate </ button >; }"
-    },
-    {
-      "page": "Contributing",
-      "title": "Priority Areas for Contributions",
-      "url": "./contributing.html#priority-areas-for-contributions",
-      "text": ""
-    },
-    {
-      "page": "Contributing",
-      "title": "High Priority",
-      "url": "./contributing.html#high-priority",
-      "text": "🔴 Terrain elevation support : Add GeoTIFF support 🔴 Multipath modeling : Include reflections 🔴 Performance optimization : Faster ray intersection testing 🔴 Documentation : More examples and tutorials"
-    },
-    {
-      "page": "Contributing",
-      "title": "Medium Priority",
-      "url": "./contributing.html#medium-priority",
-      "text": "🟡 Custom frequency bands : User-defined frequencies 🟡 Batch optimization : Multi-site optimization 🟡 Export formats : Support more GIS formats 🟡 Visualization enhancements : 3D map view"
-    },
-    {
-      "page": "Contributing",
-      "title": "Low Priority",
-      "url": "./contributing.html#low-priority",
-      "text": "🟢 UI polish : Theme improvements, responsive design 🟢 Internationalization : Support other languages 🟢 Mobile app : React Native version 🟢 Advanced analytics : Statistical analysis tools"
-    },
-    {
-      "page": "Contributing",
-      "title": "Project Structure",
-      "url": "./contributing.html#project-structure",
-      "text": "urban-ray-tracer/ ├── backend-go/ # Go backend (API, raytracing) │ ├── main.go │ ├── raytracer/ # RF propagation, spatial index, optimization │ └── go.mod ├── frontend-react/ # React frontend (UI, visualization) │ ├── src/ │ │ ├── components/ # React components │ │ └── utils/ # Helpers (API calls, geometry) │ └── package.json ├── data-pipeline/ # Data processing scripts │ ├── extract_ankara.py │ ├── fetch_buildings.py │ ├── export_ankara_buildings.py │ └── export_tower_geojson.py └── docs/ # Static GitHub Pages documentation ├── index.html ├── changelog.html # Generated from the root CHANGELOG.md └── ..."
-    },
-    {
-      "page": "Contributing",
-      "title": "Key Files to Know",
-      "url": "./contributing.html#key-files-to-know",
-      "text": "File Purpose backend-go/main.go API server entry point backend-go/raytracer/geometry.go RF physics calculations backend-go/raytracer/building_index.go R-Tree spatial index frontend-react/src/components/MapCanvas.jsx Leaflet map viewer frontend-react/src/utils/networkTech.js Frequency-specific constants Dockerfile Multi-stage build configuration"
-    },
-    {
-      "page": "Contributing",
-      "title": "Deployment & Release Process",
-      "url": "./contributing.html#deployment--release-process",
-      "text": ""
-    },
-    {
-      "page": "Contributing",
-      "title": "Local Testing",
-      "url": "./contributing.html#local-testing",
-      "text": "# Build and test locally docker build -t atom-simulator . docker run -p 8080:8080 atom-simulator # Run tests cd backend-go && go test ./... cd ../frontend-react && npm test"
-    },
-    {
-      "page": "Contributing",
-      "title": "Creating a Release",
-      "url": "./contributing.html#creating-a-release",
-      "text": "Update version : Edit version string in main.go Update CHANGELOG : Document changes Create Git tag : git tag v1.1.0 Push tag : git push origin v1.1.0 Build release : docker build -t atom-simulator:1.1.0 . Push to registry : docker push your-registry/atom-simulator:1.1.0"
-    },
-    {
-      "page": "Contributing",
-      "title": "Communication",
-      "url": "./contributing.html#communication",
-      "text": ""
-    },
-    {
-      "page": "Contributing",
-      "title": "Where to Ask Questions",
-      "url": "./contributing.html#where-to-ask-questions",
-      "text": "GitHub Issues : Bug reports, feature requests GitHub Discussions : Questions, brainstorming Email : info@berkunsal.com LinkedIn : Berk Ünsal"
-    },
-    {
-      "page": "Contributing",
-      "title": "Code of Conduct",
-      "url": "./contributing.html#code-of-conduct",
-      "text": "We're committed to providing a welcoming and inspiring community for all. Please read our Code of Conduct (or establish community guidelines). TL;DR : Be respectful, inclusive, and constructive."
-    },
-    {
-      "page": "Contributing",
-      "title": "Contributor Recognition",
-      "url": "./contributing.html#contributor-recognition",
-      "text": "All contributors will be: ✅ Added to CONTRIBUTORS.md ✅ Credited in release notes ✅ Mentioned in documentation ✅ Eligible for maintainer status (after consistent contributions)"
-    },
-    {
-      "page": "Contributing",
-      "title": "Development Tools",
-      "url": "./contributing.html#development-tools",
-      "text": ""
-    },
-    {
-      "page": "Contributing",
-      "title": "Recommended Extensions",
-      "url": "./contributing.html#recommended-extensions",
-      "text": "VS Code : Go (golang.go) ES7+ React/Redux/React-Native snippets Docker GitLens Prettier"
-    },
-    {
-      "page": "Contributing",
-      "title": "Useful Commands",
-      "url": "./contributing.html#useful-commands",
-      "text": "# Go formatting and linting go fmt ./... go vet ./... golint ./... # Go benchmarking go test -bench = . -benchmem ./... # React development npm run build npm run preview npm run lint # Docker cleanup docker system prune -a"
-    },
-    {
-      "page": "Contributing",
-      "title": "Financial Contributions",
-      "url": "./contributing.html#financial-contributions",
-      "text": "If you'd like to support A.T.O.M financially: ⭐ Star the repository (recognition counts!) 🔗 Share with others in your network 💼 Consider consulting: info@berkunsal.com 🤝 Contribute code or documentation (priceless!)"
-    },
-    {
-      "page": "Contributing",
-      "title": "Getting Help",
-      "url": "./contributing.html#getting-help",
-      "text": "Stuck? Need guidance? Check FAQ Search existing GitHub Issues Review Architecture for system overview Ask in GitHub Discussions Reach out to maintainers"
-    },
-    {
-      "page": "Contributing",
-      "title": "Checklist for PRs",
-      "url": "./contributing.html#checklist-for-prs",
-      "text": "Before submitting: I've read CONTRIBUTING.md I've tested my changes locally I've added/updated documentation I've added tests for new features My code follows project style guidelines I've verified no breaking changes I've updated the CHANGELOG Thank you for contributing to A.T.O.M! Together, we're building the future of RF simulation. 🚀 Questions? Open an issue or email info@berkunsal.com"
+      "title": "Pull requests and releases",
+      "url": "./contributing.html#pull-requests-and-releases",
+      "text": "Use concise imperative Conventional Commit-style subjects such as fix: preserve per-cell network azimuths or docs: clarify model limits . Keep a PR scoped to a reviewable outcome. Include a regression for every bug fix and describe any change to compatibility or scientific assumptions explicitly. VERSION is canonical. Normal contributor PRs record user-visible changes under Unreleased ; they do not edit main.go version strings or publish tags. Maintainers prepare a release through scripts/versioning.py , update the release metadata/changelog together, check consistency, and create the matching vX.Y.Z tag. CI then publishes the configured images and release notes. See release.yml for the release workflow. For questions, proposals and blockers, use GitHub Issues . Share only public-safe logs and fixtures; omit private route recordings, credentials and operator data."
     },
     {
       "page": "Dataset Pack Studio",
@@ -4139,7 +4049,7 @@
       "page": "Download and Use",
       "title": "Start locally, then follow the workflow you need",
       "url": "./download.html",
-      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.9 Frontend Node 24+"
+      "text": "Docker Compose is the shortest supported path. It builds the React workspace, Go service, and Ankara datasets into one local application. Source development remains available for RF-model and interface work. Start with Docker Learn the workspace View repository Recommended runtime Docker Compose Application localhost:8080 Source data Git LFS required Backend Go 1.26.10 Frontend Node 24+"
     },
     {
       "page": "Download and Use",
@@ -4199,7 +4109,7 @@
       "page": "Download and Use",
       "title": "Terminal 1: Go API",
       "url": "./download.html#development-heading",
-      "text": "Requires Go 1.26.9 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
+      "text": "Requires Go 1.26.10 and the LFS-managed data files. Copy cd backend-go go mod download go run . API and production static host: http://localhost:8080"
     },
     {
       "page": "Download and Use",
@@ -4217,7 +4127,7 @@
       "page": "Download and Use",
       "title": "Guided first-use workflows",
       "url": "./download.html#first-use-heading",
-      "text": "The map is the workspace. The command bar holds the active context and RF run action; the rail opens one focused tool at a time. Start with Setup, then move only to the analysis needed for the current question. A/B Optional first-run project Import examples/ankara-sample.atom-project.json from the project menu for a settings-first baseline, then select local cells and rerun before interpreting results. Workflow 01"
+      "text": "The map is the workspace. The command bar holds the active context and RF run action; the rail opens one focused tool at a time. Start with Setup, then move only to the analysis needed for the current question. A/B Start with a sample network Choose Open sample network project on the first-run card. It opens examples/ankara-sample.atom-project.json as a new project and selects the two Cells nearest the pre-selected sector; run Evaluate Network to see a baseline. For fixed inputs and recorded results, follow the two-Cell planning walkthrough : import its separate dataset-bound project, compare a baseline, recommendation and overlap trade-off, then preserve the chosen Version and reports. Workflow 01"
     },
     {
       "page": "Download and Use",
@@ -4229,7 +4139,7 @@
       "page": "Download and Use",
       "title": "Evaluate a cell cluster",
       "url": "./download.html#network-workflow",
-      "text": "1 Build the cluster Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order. 2 Evaluate or optimize Use Evaluate Network in the command bar, or Optimize Network from Propagation. 3 Compare evidence Open Results for score, demand reach, overlap, and optimization deltas. Per-cell rays render sequentially. Workflow 03"
+      "text": "1 Build the cluster Switch Setup to Network mode and select two to eight Cells. Numbered map badges preserve cluster order. 2 Evaluate or optimize Use Evaluate Network in the command bar, or Optimize Network from Propagation. 3 Compare evidence Open Results for score, demand reach, overlap, and optimization deltas. Optionally report KPIs inside a drawn area or map which buildings became served, lost service, or changed overlap between compatible plans. Workflow 03"
     },
     {
       "page": "Download and Use",
@@ -4247,7 +4157,7 @@
       "page": "Download and Use",
       "title": "Save and compare scenarios",
       "url": "./download.html#project-workflow",
-      "text": "1 Name the project Use the project selector in the command bar and save a scenario after each meaningful run. 2 Compare two plans Open Results and Compare, then switch the map between A and B while reviewing KPI deltas. 3 Make it portable Export the bounded .atom-project.json file for retained Scenario inputs/results and provenance. Separate Run History, generated reports, coverage surfaces and view/Undo state are excluded; download reports separately. Workflow 06"
+      "text": "1 Name the project Use the project selector in the command bar and save a scenario after each meaningful run. 2 Compare two plans Open Results and Compare to inspect the current result, optimization alternatives, or saved Versions. Switch the map between A and B while reviewing KPI and input deltas. 3 Make it portable Export the bounded .atom-project.json file for retained Scenario inputs/results and provenance. For a saved Version, Review → Report can also create one ZIP with HTML and Markdown reports, the project, map, and a SHA-256 manifest. Separate Run History and transient view/Undo state are excluded from project exports. Workflow 06"
     },
     {
       "page": "Download and Use",
@@ -5007,9 +4917,27 @@
     },
     {
       "page": "Frequently Asked Questions",
+      "title": "Why can a report show full demand service with very low ray-endpoint Rx?",
+      "url": "./faq.html#why-can-a-report-show-full-demand-service-with-very-low-ray-endpoint-rx",
+      "text": "Demand service and ray-endpoint diagnostics use different populations and thresholds. Building service tests the best modeled building Rx against its separate threshold. Rays continue until receiver sensitivity or the planning radius, so their terminal powers can be low even when many buildings are served along their paths. Obstructed ray endpoints are not unserved demand. See the report reader guide ."
+    },
+    {
+      "page": "Frequently Asked Questions",
+      "title": "Does a report score mean coverage or confidence?",
+      "url": "./faq.html#does-a-report-score-mean-coverage-or-confidence",
+      "text": "The /100 optimization score is normalized preference-weighted planning utility under the current priorities. It is not coverage percentage, measured accuracy, probability or confidence. Demand weight, residential building counts, ray-distance reach and multi-Cell overlap keep their own units and denominators. An evaluation can produce a score without running optimization; missing standalone interference does not establish radio-quality performance."
+    },
+    {
+      "page": "Frequently Asked Questions",
+      "title": "Why do historical reports omit maps or RF fields, and why can PDF page breaks differ?",
+      "url": "./faq.html#why-do-historical-reports-omit-maps-or-rf-fields-and-why-can-pdf-page-breaks-differ",
+      "text": "Historical reports use retained source evidence. Missing geometry is not reconstructed, and missing RF inputs do not inherit today's defaults. Existing retained artifacts download unchanged; regeneration uses the current generator. For the reference PDF layout, print from current Chromium in A4 portrait at default scale, with browser headers and footers off. Browser overrides can change pagination or add URLs. See report export and source details ."
+    },
+    {
+      "page": "Frequently Asked Questions",
       "title": "Where are projects stored?",
       "url": "./faq.html#where-are-projects-stored",
-      "text": "Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a versioned .atom-project.json file for backup or transfer to another browser."
+      "text": "Projects are stored in the current browser through IndexedDB. Saves are serialized, and local storage is used only when an IndexedDB write fails. If both copies exist, persistence revisions select the newest valid workspace. The server remains stateless. Export a bounded .atom-project.json file for retained inputs, Scenario/Version evidence and provenance. Download generated Reports separately; project files do not include the separate Run History database, generated Report store, coverage surfaces or view/Undo state. See what survives where ."
     },
     {
       "page": "Frequently Asked Questions",
@@ -5147,13 +5075,13 @@
       "page": "Capabilities",
       "title": "Focused Planning Workspace",
       "url": "./features.html#focused-planning-workspace",
-      "text": "Ten workflow tools in one rail: Setup, Inventory, Propagation, Experiments, Surfaces, Interference, 5G Core, Results, Data, and Report. A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible. The map remains full size while tool and Inspector drawers overlay it. Contextual layers appear only when their results exist. Towers, gaps, communication paths, interference samples, candidate sites, and measurement residuals open persistent Inspector details."
+      "text": "The workspace has 14 tools in four stages , matching the current tool rail: Stage Tools Plan Setup, Inventory, Scenarios Simulate Propagation, Experiments, Signal surface Analyze Interference, RF Diagnostics, Building entry, 5G Core Review Results, Run history, Data, Report Each stage opens one focused tool at a time. A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible. The map remains full size while tool and Inspector drawers overlay it. Contextual layers appear only when their results exist. Towers, gaps, communication paths, interference samples, candidate sites, and measurement residuals open persistent Inspector details."
     },
     {
       "page": "Capabilities",
       "title": "Projects And Scenarios",
       "url": "./features.html#projects-and-scenarios",
-      "text": "Native browser IndexedDB persistence with automatic last-workspace restoration. Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers. Rename, duplicate, delete, import, and export complete projects as versioned .atom-project.json files. Result-bearing six-Cell projects use lossless project file v3 with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload. Input changes mark saved results stale instead of presenting them as current. After a reload, the newest retained Run that computed exactly the restored plan (same request, dataset and model version) is shown as HISTORICAL with its summary; a working draft offers Restore map layers , one explicit RF run, because drafts keep inputs only. When no Run matches, Results says why. Saving a Version right after a run records that Run as the Version's source when the plan is unchanged. Where the plans differ: for two network plans on the current dataset and model (saved Versions, the current plan, or an optimization's baseline and solutions), Results → Compare can show on the map which demand buildings become newly served or lost and where overlap changes, with counts that reconcile with the aggregate KPI deltas. It runs only when you choose Show where they differ (one RF request), and reports include the counts and a static map. Compare any two states in Results → Compare: the current result, the optimization baseline and recommended solution, the inspected Pareto alternative, or any saved Version. One view shows KPI deltas from retained summaries, the input differences and an A/B map switch; states with a different dataset or model version show an incompatibility notice instead of deltas. Baseline vs Recommended stays the default after an optimization, and choosing sources never starts RF work. Promote either comparison side to the active plan without modifying the source snapshot. Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage."
+      "text": "Native browser IndexedDB persistence with automatic last-workspace restoration. Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers. Rename, duplicate, delete, import, and export bounded project evidence as versioned .atom-project.json files. Result-bearing six-Cell projects use lossless project file v3 with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload. Input changes mark saved results stale instead of presenting them as current. After a reload, the newest retained Run that computed exactly the restored plan (same request, dataset and model version) is shown as HISTORICAL with its summary; a working draft offers Restore map layers , one explicit RF run, because drafts keep inputs only. When no Run matches, Results says why. Saving a Version right after a run records that Run as the Version's source when the plan is unchanged. Where the plans differ: for two network plans on the current dataset and model (saved Versions, the current plan, or an optimization's baseline and solutions), Results → Compare can show on the map which demand buildings become newly served or lost and where overlap changes, with counts that reconcile with the aggregate KPI deltas. It runs only when you choose Show where they differ (one RF request), and reports include the counts and a static map. Compare any two states in Results → Compare: the current result, the optimization baseline and recommended solution, the inspected Pareto alternative, or any saved Version. One view shows KPI deltas from retained summaries, the input differences and an A/B map switch; states with a different dataset or model version show an incompatibility notice instead of deltas. Baseline vs Recommended stays the default after an optimization, and choosing sources never starts RF work. Promote either comparison side to the active plan without modifying the source snapshot. Project history is local to the browser. A.T.O.M does not provide accounts, shared editing, or server-side project storage."
     },
     {
       "page": "Capabilities",
@@ -5231,7 +5159,7 @@
       "page": "Capabilities",
       "title": "Reproducibility And Reports",
       "url": "./features.html#reproducibility-and-reports",
-      "text": "/api/meta exposes application version, build commit, default propagation model and catalog, the RF semantic contract, supported technology capabilities, and active dataset identity. Network responses preserve request-level defaults alongside normalized effective per-cell RF profiles. Scenarios and reports retain exact request inputs and runtime metadata. Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available. Review package (Review → Report) downloads one local .zip for the current saved Version: the HTML and Markdown reports, the project file, the report map (SVG) and manifest.json with each file's SHA-256, dataset and model identity, Version/Run lineage and the report's limitations. It is built in the browser without an RF request; unsaved drafts are refused until a Version is saved. Hashes support integrity checks, not signing. The downloadable OpenAPI 3.1 specification documents current REST routes and error envelopes. RF requests support cancellation, latest-response protection, a 1 MiB body limit, bounded workers, and 429 overload behavior."
+      "text": "/api/meta exposes application version, build commit, default propagation model and catalog, the RF semantic contract, supported technology capabilities, and active dataset identity. Network responses preserve request-level defaults alongside normalized effective per-cell RF profiles. Scenarios and reports retain exact request inputs and runtime metadata. Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available. The report reader guide explains KPI populations, source identity and PDF print settings. Review package (Review → Report) downloads one local .zip for the current saved Version: the HTML and Markdown reports, the project file, the report map (SVG) and manifest.json with each file's SHA-256, dataset and model identity, Version/Run lineage and the report's limitations. It is built in the browser without an RF request; unsaved drafts are refused until a Version is saved. Hashes support integrity checks, not signing. The downloadable OpenAPI 3.1 specification documents current REST routes and error envelopes. RF requests support cancellation, latest-response protection, a 1 MiB body limit, bounded workers, and 429 overload behavior."
     },
     {
       "page": "Capabilities",
@@ -5339,7 +5267,7 @@
       "page": "Overview",
       "title": "Compare a small urban Cell plan. Explain the recommendation.",
       "url": "./index.html#home-title",
-      "text": "A.T.O.M is a local-first deterministic urban RF planning and experimentation workspace. Configure a small Cell plan, evaluate a baseline, compare a bounded azimuth recommendation, inspect its assumptions, and export the evidence. Measured real-world propagation accuracy is not yet established. Run A.T.O.M locally Follow the first planning task Current workspace: compact command bar, focused tools, persistent map, and contextual results."
+      "text": "A.T.O.M is a local-first deterministic urban RF planning and experimentation workspace. Configure a small Cell plan, evaluate a baseline, compare a bounded azimuth recommendation, inspect its assumptions, and export the evidence. Measured real-world propagation accuracy is not yet established. Run A.T.O.M locally Follow the first planning task The same two-Cell Ankara baseline in both themes, captured from A.T.O.M 0.13.0. Planning estimates, not field measurements. Capture provenance ."
     },
     {
       "page": "Overview",
@@ -5666,6 +5594,42 @@
       "text": "Final frontend validation: npm test : 423 tests / 68 files pass (baseline 377 / 67). npm run test:e2e -- --workers=2 : 185 pass / 191 gated or skipped , including 25 new acceptance cases across responsive viewports. The separately repeated immediate-reload matrix passes 12/12 with four workers. npm run lint and npm run build : pass; existing bundle-size advisory remains. sh docs/build-reference-pages.sh : pass; Pandoc emits its existing mathml deprecation advisory. Docs validation: 47 HTML pages / 41 API paths pass ; version metadata check: 0.10.2 consistent ; git diff --check : pass. The system Python lacked PyYAML, so validation used a temporary virtual environment with the repository's pinned, hash-verified docs/requirements.txt ; no repository dependencies were changed. The first full browser run under high worker contention had a pre-existing basemap test timestamp-only autosave race and an immediate-Undo reload failure. The latter led to the explicit commit fix; the final complete two-worker run passes, including the basemap contract. No unrelated browser workflow was weakened. Test-generated historical screenshots/evidence files were restored to the starting baseline. Measured two-Version, retained-interference browser results: export generation 597.6 ms , artifact 3,195,659 bytes , JSON parse 2.8 ms , validation + reconstruction 511.0 ms , complete helper import 675.0 ms , UI import + persistence + observation 3,755.4 ms , reload + hydration 663.4 ms . Retained JS heap after explicit GC: 87,228,428 bytes before import and 118,834,740 bytes after importing the independent second project. Uncollected snapshots also remain in the evidence ledger; these are not peak-memory guarantees. Files changed for this repair: frontend-react/src/utils/projectStore.js , new projectRayColumns.js , existing store tests and new projectFileReliability.test.js . frontend-react/src/hooks/useProjectWorkspace.js and its captured-callback / barrier / failure tests. frontend-react/e2e/persistence-reliability.spec.js and compressed real-response / actual UI-export fixtures with manifest and README. scripts/persistence-reliability-audit.mjs and four baseline/measurement/timeline JSON evidence files. This audit, project-format.md , generated reference HTML, features.md / HTML, build-reference-pages.sh , regenerated search index, and CHANGELOG.md / generated changelog. Both reprod"
     },
     {
+      "page": "Two-Cell Planning Walkthrough",
+      "title": "Two-Cell Planning Walkthrough",
+      "url": "./planning-walkthrough.html",
+      "text": "A fixed Ankara baseline, azimuth recommendation, overlap trade-off and portable project/report evidence with recorded API inputs. View Markdown source System architecture Can changing only two planning Cells' azimuths serve more modeled demand without excessive duplicate service? This walkthrough records a baseline, a recommendation and an alternative with less overlap in a small Ankara area. It uses public planning inputs; measured real-world RF accuracy remains unestablished, and the result does not approve a deployment."
+    },
+    {
+      "page": "Two-Cell Planning Walkthrough",
+      "title": "Exact inputs and scope",
+      "url": "./planning-walkthrough.html#exact-inputs-and-scope",
+      "text": "Use a complete Git LFS checkout and the default ankara-open-planning@2026.07 pack from Getting Started . Download the separate two-Cell walkthrough project using the link's Save link as action, or use the file in your checkout. The legacy first-use sample remains an input-only example; its first-run UI selects nearby Cells dynamically and is not this fixed comparison. The walkthrough project contains two selected records and their complete planning RF profiles, dataset ID/version/hashes and priorities. It intentionally contains no computed results: import it and evaluate on the matching runtime. Planning record API Cell ID Longitude Latitude Baseline azimuth LTE-26380 26380 32.8279 39.9279 90° LTE-26381 26381 32.8283 39.9270 90° These are OpenCellID-derived planning records, not verified physical sites or operator-authoritative RF identities. Coordinates identify the existing public pack records, not a new measurement campaign. Demand attributes are heuristic planning weights, not measured traffic or population. The recorded run used A.T.O.M 0.13.0 , source fc0f1e489110bbd30277c3454e4db95e0ca302d6 , Go 1.26.10 on macOS arm64, and model/version urban_short_range . Exact hashes and the complete canonical request are in the recorded evidence . Buildings SHA-256 is d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc ; Cells SHA-256 is c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8 . Keep these settings fixed throughout: Input Value Technology / frequency / bandwidth 4G, 2.6 GHz, 20 MHz Model urban_short_range (3GPP UMa median outdoor planning) Rays / radius / beam 120 rays per Cell / 400 m / 120° Conducted TX power / absolute TX gain 30 dBm / 25 dBi RX gain / system and polarization losses 0 dBi / 0 dB each TX height / RX height 25 m / 1.5 m Horizontal / vertical pattern Ideal sector / flat Mechanical and electrical tilt / pattern orientation 0° each Receiver sensitivity / calibration offset Manual −115 dBm / 0 dB Demand / residential / propagation reach / reduce overlap / radio quality priorities 100 / 50 / 50 / 20 / 0 Constraints / search None / existing default coordinate search The fixture also freezes load 70%, reuse 1, channel CH-1, noise figure 7 dB and sample spacing 40 m. Radio quality is disabled in this optimization, so no SINR or throughput conclusion follows from those settings. Only azimuth changes; power, locations, "
+    },
+    {
+      "page": "Two-Cell Planning Walkthrough",
+      "title": "Evaluate and preserve the baseline",
+      "url": "./planning-walkthrough.html#evaluate-and-preserve-the-baseline",
+      "text": "Open the app at http://localhost:8080 (Docker) or http://localhost:5173 (Go + Vite). In the project menu, choose Import and select ankara-two-cell-walkthrough.atom-project.json . Import creates a separate project. Check Network mode with 2 selected . In Inventory , confirm the two records and their fixed per-Cell profiles. Do not replace them by drawing an area or opening the dynamic first-run sample. In Data , confirm the dataset/version and model. Stop if the project shows Dataset differs from this project . Replacing a pack or accepting a different model makes the numeric example inapplicable. Select Evaluate Network . Wait for Ready , then open Results . Record the baseline row below. The map rays show propagation; served buildings and overlap have their own populations and are not ray blockage percentages. Choose Save Version to preserve the evaluated baseline. In Plan → Scenarios , give it a readable baseline name. Keep it available for comparison before changing the plan."
+    },
+    {
+      "page": "Two-Cell Planning Walkthrough",
+      "title": "Optimize and inspect the trade-off",
+      "url": "./planning-walkthrough.html#optimize-and-inspect-the-trade-off",
+      "text": "Open Simulate → Propagation → Advanced analysis , check the five Optimization priorities above, and choose Optimize Network . This runs RF; changing priorities later only reranks the retained alternatives until you explicitly search again. In Results → Optimization , choose View comparison to inspect Baseline vs Recommended . The recommended azimuths are 240° / 130° in API Cell order 26380 / 26381 . Optimization loads these into the working draft; verify them before saving. Open Results → Solutions and inspect the alternative 240° / 110° , using Show all if necessary. Choose its point or row to inspect it; inspection alone does not apply it. Use the explicit apply action only if you want that plan in the draft. Compare all three on the same domain and priorities: Metric Baseline 90° / 90° Recommended 240° / 130° Alternative 240° / 110° Normalized optimization score (0–100) 40.0089 81.4048 80.6990 Served demand weight / relevant weight 115 / 305 305 / 305 305 / 305 Covered residential buildings 167 338 327 Overlapping buildings 109 4 0 Normalized propagation reach (reach-score units) 13,418.6562 14,970.5508 14,559.8919 The recommendation gains 190 demand-weight units and 171 residential buildings , while removing 105 overlapping buildings , relative to the baseline. Its score increases 41.3959 points ; that score is a weighted planning utility, not a coverage percentage or confidence level. The zero-overlap alternative keeps all 305 demand-weight units but gives up 11 residential buildings and about 410.66 normalized reach-score units relative to the recommendation. It illustrates why the highest weighted score and minimum overlap need not select the same plan. The domain contains 601 relevant residential buildings; neither result means all homes or all outdoor locations are covered. Propagation reach is distance-normalized: each ray contributes up to 100 score units, capped at the lesser of its radius and 500 m. It is not metres, geographic area, user coverage or a path length between the Cells."
+    },
+    {
+      "page": "Two-Cell Planning Walkthrough",
+      "title": "Save the chosen plan and export review evidence",
+      "url": "./planning-walkthrough.html#save-the-chosen-plan-and-export-review-evidence",
+      "text": "Choose the recommendation or explicitly apply the inspected alternative. Keep the baseline Version for comparison. Run Evaluate Network for the chosen current azimuths so the retained execution matches the exact plan you are saving, then choose Save Version . Read any stale/history notice before using a result. Use Results → Compare to select the baseline and chosen saved evidence. Confirm matching dataset and model identity before interpreting deltas. A changed radius, frequency or priority is a different comparison. Open the project menu and choose Export . Keep the .atom-project.json outside browser storage. Import it in a separate browser profile and confirm both preserved inputs/Versions. Imported IDs are remapped; provenance records the source identity. Historical results can remain readable without being a new live run, and some map layers require an explicit rerun. In Review → Report , choose Markdown to generate and download a report from the chosen saved Version, or use PDF / Print and save the print output. These files are separate from project export. Choose Review package for a local ZIP containing both HTML and Markdown reports, the project and manifest. See the report reader guide for lineage and A4 print settings. A reviewer should receive the editable project plus a readable report/review package. Check the project/scenario/Version and any source Run, dataset/model, UTC timestamp, complete RF settings and the unestablished-accuracy boundary. A project file does not include the separate Run History database, generated report store or coverage surfaces."
+    },
+    {
+      "page": "Two-Cell Planning Walkthrough",
+      "title": "Reproduce the recorded API comparison",
+      "url": "./planning-walkthrough.html#reproduce-the-recorded-api-comparison",
+      "text": "With the Go API already running on the matching pack, run from the repository root using Node 24 or newer: node scripts/reproduce-planning-walkthrough.mjs http://localhost:8080 /tmp/atom-walkthrough-evidence The script uses the same project importer and request builder as the frontend. It checks dataset hashes and model version, sends two sequential RF requests (Evaluate and Optimize), checks the recorded fingerprint and comparison, and writes request.json , meta.json , baseline.json , optimization.json and summary.json into the output directory. The recorded scenario fingerprint is network-6fe95eaddbb92e9ba9a3bf0fa5384544 . These JSON files are execution evidence, not importable portable projects or UI reports. No request is automatically retried. If the API is busy ( 429 ), wait for its Retry-After before rerunning. A changed dataset, model, fixture or result fails the comparison; keep the output and investigate instead of silently replacing the recorded values. This command verifies the API calculation; the UI steps above separately exercise preservation and reporting."
+    },
+    {
       "page": "Portable Project Format",
       "title": "Portable Project Format",
       "url": "./project-format.html",
@@ -5712,6 +5676,54 @@
       "title": "Reproduction and validation",
       "url": "./project-format.html#reproduction-and-validation",
       "text": "See the persistence reliability audit. node scripts/persistence-reliability-audit.mjs reproduces byte composition and timings from the compressed real UI export fixture. The dedicated browser workflow replays captured six-Cell backend responses through the ordinary Evaluate / Interference / Optimize / Save Version / Export / Import UI. Run it with: cd frontend-react npx playwright test e2e/persistence-reliability.spec.js --workers = 2"
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "Reading Planning Reports",
+      "url": "./report-guide.html",
+      "text": "Decision summaries, KPI units and populations, RF profiles, map evidence, source provenance and reference PDF print settings. View Markdown source System architecture Markdown and printable HTML use the same report model, quantities, interpretation and conditional sections. Start with Decision summary : it identifies the Scenario, saved Version or unsaved plan, source Runs, selected Cells, primary result and evaluation completeness. A score can exist after Evaluate Network without an optimization search. Standalone interference and the optimizer's radio-quality objective have separate status entries."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "Find the evidence in the report",
+      "url": "./report-guide.html#find-the-evidence-in-the-report",
+      "text": "Continue through the report in this order: Planning map & Cells ties stable numbered callouts to full Cell IDs and configured or recommended azimuths. Leader lines point to the true locations of co-located Cells. The schematic map shows at most 300 RF segments , sampled across Cells, with bounds from the full retained geometry. Sampling never changes KPIs. Its caption identifies the simulation source and warns when a locally reranked recommendation differs from that simulation. Markdown omits the SVG; a review package links its actual sibling map and HTML files. Network evaluation explains quantities, denominators, the evaluation domain and configured priorities. A compatible recorded baseline enables before/after comparison; an evaluated configuration alone does not create one. Pareto alternatives and marginal Cell effects appear only when retained. RF configuration & receiver assumptions records common fields once. A reference profile names how many Cells match it and lists lossless per-Cell deviations. Missing historical inputs say Not recorded instead of inheriting current defaults. Dataset, model & provenance identifies the source computation separately from the application and report generator used for this export. Dataset-wide counts and pack QA describe the pack, not the selected network domain or physical accuracy. Engineering appendix holds metric definitions, full source IDs, fingerprints, dataset hashes, receiver/model contracts and retained supporting evidence. Hashes establish identity or byte integrity, not physical validation."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "Read quantities and missing analyses",
+      "url": "./report-guide.html#read-quantities-and-missing-analyses",
+      "text": "Read the units before comparing figures: Report quantity Meaning Optimization score, /100 Normalized preference-weighted planning utility under the current priorities. It is not coverage percentage, probability, measured accuracy or confidence. Unavailable objectives are excluded from scoring. Modeled demand weight served Served weight divided by relevant weight. For example, six demand building entities can carry a total weight of 260; neither quantity is a population estimate. Residential building entities served Positive-residential building entities served out of the relevant entities whose footprints intersect the selected-Cell radius union. It is not residents or dwellings. Normalized propagation reach A ray-distance score, with up to 100 units per configured ray and distance normalization capped at the lesser of radius and 500 m. It is not meters or area coverage. Served building entities Building entities with best modeled building Rx strictly above the recorded building-service threshold; multipart footprint records can be separate entities. Multi-Cell overlap Share of served building entities served by multiple Cells. It does not establish interference performance. Ray-endpoint Rx and obstruction Terminal-ray diagnostics. Rays terminate at receiver sensitivity or the planning radius; low endpoint Rx and high building service can coexist because building service uses a different population and threshold. Network means retain the existing mean of per-Cell summaries. The interpretation uses recorded values and availability, without adding a grade. Rounded 100.0% is described as all only when the recorded numerator equals the positive denominator. Not evaluated , Not retained , Not recorded and Unavailable identify different evidence boundaries; none is a zero result. In 6G research mode, unsupported interference remains unavailable. Optimizer radio quality uses its fixed sampled domain, including no-carrier samples as denominator failures; standalone interference has its own sampled and signal-only denominators."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "Print to PDF",
+      "url": "./report-guide.html#print-to-pdf",
+      "text": "For PDF export, use A4 portrait , default scale and the report's CSS margins, and turn browser headers and footers off . Current Chromium is the reference print path: it supports the report's running identity, generation time and Page X of Y . Other browsers or user print overrides may paginate differently or omit margin-box chrome. The in-app export/reopen path waits for document fonts and images before opening print; the self-contained HTML button invokes the browser's print command directly. The report remains selectable text; browser output is not a claim of PDF/UA conformance."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "File identity and regeneration",
+      "url": "./report-guide.html#file-identity-and-regeneration",
+      "text": "New report downloads share a name such as ankara-plan-network-plan-2-v3-20261019-083612z-network-evaluation-report.html , with matching Markdown/map stems and UTC time. All displayed generation dates use YYYY-MM-DD HH:mm UTC ; legacy timestamps without a recorded zone remain unknown. Regeneration uses the current report generator, while downloading an already retained artifact preserves its original bytes, filename, timestamp and hash. A Review package collects existing saved-Version evidence locally and does not run RF or rebuild missing results."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "Check the source before sharing",
+      "url": "./report-guide.html#check-the-source-before-sharing",
+      "text": "In Review → Report , read Report source before generating anything. A saved Version identifies immutable inputs within a Scenario; a Run identifies an execution against its recorded dataset/model. Current unsaved plan is not tied to a saved Version. A historical Report describes the evidence retained when it was generated, not the currently edited plan, and Runs: None must not be filled by inference. Use Open source Version when available to inspect its inputs; opening a source does not perform RF computation. The decision summary's completeness entries distinguish an evaluated network from an optimized recommendation. A standalone interference analysis can be Not evaluated even when an optimization score exists; the optimizer's optional radio-quality objective is separate. Missing map geometry is Not retained , missing old inputs are Not recorded , and unavailable/unsupported analyses are not zero-valued results. Never use a Pareto alternative's ray map as fresh simulation evidence merely because that alternative is selected for inspection."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "Download the right evidence",
+      "url": "./report-guide.html#download-the-right-evidence",
+      "text": "Choose Markdown to generate, retain and download a Markdown Report for the current source. It is readable offline and omits inline SVG maps; it is not an editable project. Choose PDF / Print to generate retained HTML and open the browser print surface. Saving a PDF is a browser print action, not a separate stored PDF artifact. Allow the local report popup when prompted. In Reports , Download Report downloads the retained HTML or Markdown bytes in their recorded format without running RF or opening the print surface. Open a downloaded HTML file in a browser to read it offline or use its print control. Regenerate as a new Report uses the current generator and creates a new artifact; it does not overwrite historical bytes or run new RF to reconstruct missing evidence. For a saved Version, Review package downloads a local ZIP with HTML and Markdown reports, a project file, map and manifest. It refuses an unsaved draft until a Version is saved. Check the file hashes against the manifest after transfer; matching hashes establish byte integrity, not authorship, signing or physical RF accuracy. Export the project separately from the project menu when the reviewer needs editable retained inputs/Scenario evidence. See the portable-project format and worked comparison before assuming an export contains a particular result."
+    },
+    {
+      "page": "Reading Planning Reports",
+      "title": "What survives where",
+      "url": "./report-guide.html#what-survives-where",
+      "text": "Evidence Retention and transfer boundary Working draft Inputs autosave in this browser; a draft does not retain a complete live execution or all map layers. Scenario/Version and retained Scenario artifacts Portable project export carries bounded retained evidence and remaps imported local IDs with provenance. The five most recently used Scenarios retain complete map layers; older ones can need an explicit rerun. Separate Run History Its own browser-local database; it is not exported as the complete Run History database in a project file. Embedded Run metadata in a retained Scenario does not change this boundary. Generated Reports Separate artifact storage. Download the desired bytes or a review package outside browser storage; project export does not include the generated Report store. Coverage surfaces and view/Undo state Not a portable project backup. A transient surface may need regeneration from compatible retained inputs. Browser site-data deletion, quota failures or explicit deletion can remove local evidence. A .atom-project.json file is not a full-browser archive. Existing encoded/decoded size and complexity limits still apply: if an export/import is refused, current evidence remains in this browser; download a readable Report and follow the recovery guidance, rather than assuming a partial project was saved."
     },
     {
       "page": "RF Request Budget Audit",

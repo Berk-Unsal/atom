@@ -12,6 +12,9 @@ class ClaimBoundaryRegressionTests(unittest.TestCase):
 
     def test_high_risk_positive_assertions_fail(self):
         examples = [
+            'Future versions will add webhook support.',
+            'Export a file to move the full project or keep an external archive.',
+            '| Summed usable ray reach (m) | 13,418.6562 |',
             'Network evaluation supports two to six selected cells.',
             'Select two to six towers.',
             'The default deadline is 60 seconds, six selected Cells and one worker.',

@@ -4,7 +4,16 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 
 ## Focused Planning Workspace
 
-- Ten workflow tools in one rail: Setup, Inventory, Propagation, Experiments, Surfaces, Interference, 5G Core, Results, Data, and Report.
+The workspace has **14 tools in four stages**, matching the current tool rail:
+
+| Stage | Tools |
+| --- | --- |
+| Plan | Setup, Inventory, Scenarios |
+| Simulate | Propagation, Experiments, Signal surface |
+| Analyze | Interference, RF Diagnostics, Building entry, 5G Core |
+| Review | Results, Run history, Data, Report |
+
+- Each stage opens one focused tool at a time.
 - A compact command bar keeps the current project, cell context, technology, RF summary, and primary run action visible.
 - The map remains full size while tool and Inspector drawers overlay it.
 - Contextual layers appear only when their results exist.
@@ -14,7 +23,7 @@ A.T.O.M is a local-first, deterministic RF planning workspace for comparing urba
 
 - Native browser IndexedDB persistence with automatic last-workspace restoration.
 - Named scenarios preserve exact inputs, selected cells, RF settings, result summaries, model metadata, and recent GeoJSON layers.
-- Rename, duplicate, delete, import, and export complete projects as versioned `.atom-project.json` files.
+- Rename, duplicate, delete, import, and export bounded project evidence as versioned `.atom-project.json` files.
 - Result-bearing six-Cell projects use [lossless project file v3](project-format.md) with bounded import and preserved Version provenance; valid v1/v2 files remain readable. Scenario Undo restores the same saved identity durably across reload.
 - Input changes mark saved results stale instead of presenting them as current.
 - After a reload, the newest retained Run that computed exactly the restored plan (same request, dataset and model version) is shown as HISTORICAL with its summary; a working draft offers **Restore map layers**, one explicit RF run, because drafts keep inputs only. When no Run matches, Results says why. Saving a Version right after a run records that Run as the Version's source when the plan is unchanged.
@@ -170,7 +179,7 @@ It is a planning overlay, not an LTE/EPC model or a complete bundled Open5GS dep
 - `/api/meta` exposes application version, build commit, default propagation model and catalog, the RF semantic contract, supported technology capabilities, and active dataset identity.
 - Network responses preserve request-level defaults alongside normalized effective per-cell RF profiles.
 - Scenarios and reports retain exact request inputs and runtime metadata.
-- Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available.
+- Markdown and printable PDF reports include RF assumptions, radio quality, communication paths, calibration evidence, recommendations, and scenario comparison where available. The [report reader guide](report-guide.html) explains KPI populations, source identity and PDF print settings.
 - **Review package** (Review → Report) downloads one local `.zip` for the current saved Version: the HTML and Markdown reports, the project file, the report map (SVG) and `manifest.json` with each file's SHA-256, dataset and model identity, Version/Run lineage and the report's limitations. It is built in the browser without an RF request; unsaved drafts are refused until a Version is saved. Hashes support integrity checks, not signing.
 - The downloadable OpenAPI 3.1 specification documents current REST routes and error envelopes.
 - RF requests support cancellation, latest-response protection, a 1 MiB body limit, bounded workers, and `429` overload behavior.

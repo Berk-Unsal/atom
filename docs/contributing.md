@@ -1,478 +1,172 @@
 # Contributing
 
-A.T.O.M is an open-source project, and we welcome contributions from the community!
+Start with an existing [GitHub issue](https://github.com/Berk-Unsal/atom/issues), or use the repository's bug and feature issue forms to describe a reproducible problem. Issues are the public discussion route. Check the issue's priority, prerequisites and acceptance criteria before starting; see the [product roadmap](product-roadmap-post-audit.md) and [desktop roadmap](desktop-architecture-design-plan.md) for context, and the live issue for current status.
 
-## How to Contribute
+This is the maintained contribution guide. The root [CONTRIBUTING.md](https://github.com/Berk-Unsal/atom/blob/main/CONTRIBUTING.md) and [README](https://github.com/Berk-Unsal/atom/blob/main/README.md) point here. Repository-specific coding instructions are in [AGENTS.md](https://github.com/Berk-Unsal/atom/blob/main/AGENTS.md).
 
-### Reporting Bugs
+## Choose a small change
 
-Found a bug? Please report it!
+1. Identify the issue's observable outcome and the files responsible for it. Confirm that required evidence or upstream work is available.
+2. Create a branch, for example `git switch -c fix/issue-82-contribution-guide`.
+3. Reproduce a bug with a focused regression test, make the smallest coherent fix, and run the affected tests first.
+4. Run the applicable full checks below, update documentation and add user-visible changes under **Unreleased** in [CHANGELOG.md](https://github.com/Berk-Unsal/atom/blob/main/CHANGELOG.md).
+5. Open a PR using the repository template. Explain the impact, link the issue, list actual validation commands/results, and include screenshots for UI changes. Mention any unrun check and its reason.
 
-1. **Check existing issues** first: [GitHub Issues](https://github.com/Berk-Unsal/atom/issues)
-2. **Create new issue** if not already reported
-3. **Include**:
-   - OS and Docker version
-   - Steps to reproduce
-   - Expected vs actual behavior
-   - Error logs/screenshots
+For an initial contribution, prefer bounded documentation, pure helpers or a clearly scoped workflow repair. RF equations, observation semantics, dataset provenance, optimizer objectives, request budgets, portable-project contracts and desktop security need maintainer review. A synthetic test or a successful run does not establish measured RF accuracy. Read [modeling limits](modeling-limits.md) before proposing RF changes; external evidence gates remain in force.
 
-**Example bug report**:
+## Repository map and ownership boundaries
 
-```markdown
-## Bug: Simulation returns 500 error
+| Location | Responsibility | Useful starting point |
+| --- | --- | --- |
+| `backend-go/` | Gin routes, validation, jobs, dataset runtime and HTTP contracts | `main.go`, `server_lifecycle.go` and their tests |
+| `backend-go/raytracer/` | Deterministic RF, geometry, spatial index and optimization | Focused implementation and table-driven tests |
+| `frontend-react/src/components/` | React UI and interaction | Component plus `*.test.jsx` |
+| `frontend-react/src/hooks/` | Workspace state and workflow orchestration | Relevant hook and workflow tests |
+| `frontend-react/src/utils/` | Pure helpers and `*.test.js` | `projectStore.js` and `projectFileReliability.test.js` for portable files |
+| `core-lab-adapter/` | Optional 5G-only Core Lab adapter | Separate Go module and tests |
+| `data-pipeline/` | Dataset manifest, LFS data, pack generation and QA | Validate a pack before changing data assumptions |
+| `docs/` | Markdown sources, generated reference HTML, search index and validators | Edit the source and rebuild generated pages |
+| `examples/` | Importable portable projects and public fixtures | Keep legacy input-only files compatible |
+| `desktop/spike/` | Disposable qualification probes | Evidence for desktop gates, not a production shell |
 
-### Environment
-- Docker version: 24.0.0
-- OS: macOS 14.0
+Keep API input validation at routes and preserve cancellation contexts. Use `gofmt` for Go, exported PascalCase names where appropriate, PascalCase component filenames, `use`-prefixed hooks and camelCase helpers. Prefer focused modules and pure utilities to expanding `App.jsx`. Preserve deterministic ordering and the existing 4G/5G/6G availability contract.
 
-### Steps to Reproduce
-1. Run `docker run -p 8080:8080 atom-simulator`
-2. POST to `/api/simulate` with an out-of-range payload
-3. Receive 500 error
+## Get a complete checkout
 
-### Expected
-- Graceful validation error that explains which request field is invalid
-
-### Actual
-- 500 Internal Server Error with no error message
-
-### Logs
-```
-Server error: index out of bounds
-```
-```
-
-### Suggesting Features
-
-Want to suggest an improvement?
-
-1. **Check existing proposals**: [Discussions](https://github.com/Berk-Unsal/atom/discussions)
-2. **Start a discussion** or open an issue labeled `enhancement`
-3. **Describe**:
-   - What problem it solves
-   - Why it's valuable
-   - Rough implementation approach (optional)
-
-**Example feature request**:
-
-```markdown
-## Feature: Support for terrain elevation models
-
-### Problem
-RF propagation is affected by hills and valleys, but A.T.O.M currently ignores terrain.
-
-### Proposal
-- Add support for GeoTIFF elevation data
-- Apply path loss adjustment based on elevation difference
-- Include elevation visualization on map
-
-### Benefits
-- More accurate coverage prediction in mountainous regions
-- Better antenna placement decisions
-
-### Implementation hint
-- Use open-source GDAL library for GeoTIFF reading
-- Modify FSPL calculation in raytracer/geometry.go
-```
-
----
-
-## Contributing Code
-
-### Setup Development Environment
-
-**Backend**:
+Install Git and Git LFS before cloning. Docker Engine with Compose or Docker Desktop is sufficient to run the full app; source development also needs Node.js **24 or newer** and the Go version declared in [backend-go/go.mod](https://github.com/Berk-Unsal/atom/blob/main/backend-go/go.mod) and [core-lab-adapter/go.mod](https://github.com/Berk-Unsal/atom/blob/main/core-lab-adapter/go.mod). CI reads those module files. Documentation and data tooling use Python **3.12** in CI.
 
 ```bash
-# Install Go 1.26.9+
+git lfs install
+git clone https://github.com/Berk-Unsal/atom.git
+cd atom
+git lfs pull
+```
+
+The Ankara building GeoJSON is about 111 MiB. A small file starting with `version https://git-lfs.github.com/spec/v1` is a pointer, not a usable dataset. Fetch its LFS object before building or validating the pack. Do not regenerate the dataset to work around a missing LFS download.
+
+### Run the full app with Docker
+
+From the repository root:
+
+```bash
+docker compose up --build -d atom
+curl --fail http://localhost:8080/readyz
+docker compose logs -f atom
+```
+
+Wait for `/readyz` to return success, then open `http://localhost:8080`. Readiness covers dataset and frontend assets; `/healthz` only checks liveness. Use `docker compose down` from the root to stop the app. Internet access is needed for the initial build and online basemap tiles. The optional Core Lab profile is documented in [Download and Use](download.html#core-lab).
+
+### Develop with Go and Vite
+
+Run these in separate terminals, each starting at the repository root:
+
+```bash
+# Terminal 1: existing Go HTTP API
 cd backend-go
 go mod download
 go run .
 ```
 
-**Frontend**:
-
 ```bash
-# Install Node.js 24+
+# Terminal 2: shared React frontend
 cd frontend-react
-npm install
+npm ci
 npm run dev
 ```
 
-**Python tooling**:
+Open `http://localhost:5173`. Vite proxies API traffic to port 8080. Check `http://localhost:8080/healthz` and `http://localhost:8080/api/meta` for the API/dataset, and verify that Vite serves the UI. In this split workflow `/readyz` can report missing frontend assets until `npm run build` creates `frontend-react/dist`; it is the combined-server readiness check, not a prerequisite for Vite HMR. A dataset error still needs fixing. Stop a competing Compose instance before reusing port 8080.
 
-Python dependencies are split into exactly pinned direct inputs and fully resolved, SHA-256-hashed lockfiles. Install the locks without allowing source distributions or dependency re-resolution:
+Validate the public pack from `backend-go`:
 
 ```bash
-python -m pip install --require-hashes --only-binary=:all: -r data-pipeline/Requirements.txt
+go run ./cmd/validate-dataset ../data-pipeline
+```
+
+### Set up documentation and Python tools
+
+From the repository root, use a Python 3.12 virtual environment. Install the hash-pinned documentation lock without source builds or dependency re-resolution:
+
+```bash
+python3.12 -m venv .venv
+. .venv/bin/activate
 python -m pip install --require-hashes --only-binary=:all: -r docs/requirements.txt
 ```
 
-After deliberately changing either `.in` file, install `uv==0.12.0` and regenerate the corresponding lock using the command recorded at the top of that file. Commit the input and generated lock together. CI verifies exact pins and hashes and installs both lockfiles.
+Install **Pandoc 3.10 exactly**, the version required by `docs/build-reference-pages.sh` and the documentation workflows. Confirm `pandoc --version` before building; a newer version can change committed HTML. The build script rejects another version.
 
-**Both together**:
-
-```bash
-# Terminal 1
-cd backend-go && go run .
-
-# Terminal 2
-cd frontend-react && npm run dev
-
-# Open http://localhost:5173
-```
-
-### Making Changes
-
-#### Code Style
-
-Follow standard Go and JavaScript conventions:
-
-**Go**:
-```go
-// Use camelCase for functions/variables
-func calculatePathLoss(distance float64) float64 {
-    // Clear, concise comments
-    return 20 * math.Log10(distance) - 27.55
-}
-```
-
-**JavaScript**:
-```javascript
-// Use arrow functions, const/let
-const calculateSignalStrength = (rxPower) => {
-  return rxPower > -70 ? "excellent" : "poor";
-};
-```
-
-#### Git Workflow
-
-1. **Fork** repository
-2. **Create feature branch**: `git checkout -b feature/new-feature`
-3. **Make changes** (keep commits small and focused)
-4. **Test** locally
-5. **Push** to your fork
-6. **Create Pull Request** with description
-
-**Commit messages** (conventional format):
-
-```
-feat: add terrain elevation support
-fix: correct FSPL calculation for 6G
-docs: update API documentation
-test: add raytracing unit tests
-refactor: simplify optimization algorithm
-```
-
-### Testing
-
-#### Go Backend Tests
+Only data-pipeline work needs the separate scientific/geospatial Python environment:
 
 ```bash
-cd backend-go
-go vet ./...
-govulncheck ./...
-go test -race ./...
+python -m pip install --require-hashes --only-binary=:all: -r data-pipeline/Requirements.txt
 ```
 
-**Add tests** for new features:
+Direct dependency inputs are in the matching `.in` files. For an intentional dependency update, use `uv==0.12.0` and the lock-generation command recorded at the top of the relevant lockfile; commit the input and lock together. Do not edit hashes by hand.
 
-```go
-func TestCalculatePathLoss(t *testing.T) {
-    distance := 1000.0
-    frequency := "5G"
-    
-    result := CalculatePathLoss(distance, frequency)
-    
-    // 5G at 1 km should be ~84 dB
-    expected := 84.0
-    if math.Abs(result - expected) > 1.0 {
-        t.Fatalf("Expected %f, got %f", expected, result)
-    }
-}
-```
+## Choose focused checks, then full validation
 
-#### React Frontend Tests
+Run the narrow regression test while editing. These examples use real existing tests and files:
 
 ```bash
-cd frontend-react
-npm test
+# From frontend-react: portable-project helpers
+npm test -- src/utils/projectFileReliability.test.js
+
+# From backend-go: HTTP server lifecycle
+go test . -run TestServeHTTPServerDrainsInflightRequestOnShutdown -count=1
+
+# From the repository root: documentation builder tests
+python3 -m unittest discover -s docs -p 'build_reference_pages_test.py'
 ```
 
-**Add tests** using Jest/React Testing Library:
+Use the appropriate rows before opening a PR. Commands in a row run in the stated directory; a UI bug needs an interaction regression and relevant responsive browser checks. Frontend tests use **Vitest** with React Testing Library; browser workflows use **Playwright**.
 
-```javascript
-test('Azimuth slider updates coverage', () => {
-  render(<ControlPanel />);
-  const slider = screen.getByRole('slider', {name: /azimuth/i});
-  
-  fireEvent.change(slider, {target: {value: 90}});
-  
-  expect(slider.value).toBe('90');
-});
-```
+| Change surface | Directory | Full checks |
+| --- | --- | --- |
+| React/UI/helpers | `frontend-react` | `npm run lint`, `npm test`, `npm run build`, `npm run audit:security` |
+| Browser workflows | `frontend-react` | `npx playwright install --with-deps chromium`, then `npm run test:e2e` |
+| Go API/RF | `backend-go` | `go vet ./...`, `go test -race ./...`, `go run ./cmd/validate-dataset ../data-pipeline` |
+| Core Lab | `core-lab-adapter` | `go vet ./...`, `go test -race ./...` |
+| Go vulnerability checks | Each affected Go module | `go install golang.org/x/vuln/cmd/govulncheck@v1.6.0`, then `govulncheck ./...` (ensure Go's bin directory is on PATH) |
+| Python data tooling | Repository root | Install the data lock, import `geopandas, numpy, osmnx, pandas, shapely`, then `python -m compileall -q -x '/\.venv/' data-pipeline` |
+| Documentation | Repository root | Run the documentation commands below |
+| Version/policy/dependency metadata | Repository root | Run the consistency commands below |
 
-### Code Review Checklist
+The default Playwright suite uses its configured local Vite server and mocked API workflows. Real-backend qualification is separate; see [frontend-react/playwright.config.js](https://github.com/Berk-Unsal/atom/blob/main/frontend-react/playwright.config.js) and the `ATOM_REAL_E2E` tests. Default browser tests do not establish real-pack RF parity or native desktop compatibility.
 
-Before submitting PR, verify:
+### Documentation checks
 
-- ✅ Code follows project style
-- ✅ Backend vulnerability scan passes: `govulncheck ./...`
-- ✅ Tests pass: `go test -race ./...`
-- ✅ No lint errors: `golint ./...`
-- ✅ Comments explain "why", not "what"
-- ✅ Commit messages are clear
-- ✅ Documentation updated if needed
-- ✅ No breaking changes (or documented)
-
----
-
-## Documentation Contributions
-
-### Improving Docs
-
-Found a typo or unclear section? Help us improve!
-
-1. **Edit markdown or HTML files** in the `docs/` folder
-2. **Verify rendering**: Run `python3 -m http.server 9000 --directory docs`
-3. **Submit PR** with changes
-
-### Adding Examples
-
-**Backend example** (Go):
-
-```go
-// In backend-go/examples/
-package main
-
-import (
-    "fmt"
-    raytracer "./raytracer"
-)
-
-func main() {
-    // Example: Calculate path loss for 5G at 1 km
-    loss := raytracer.CalculatePathLoss(1000, "5G")
-    fmt.Printf("Path loss: %.2f dB\n", loss)
-}
-```
-
-**Frontend example** (React):
-
-```javascript
-// In frontend-react/examples/
-import { useSimulation } from '../hooks/useSimulation';
-
-export function SimpleVisualization() {
-  const { simulate } = useSimulation();
-  
-  const handleSimulate = async () => {
-    const result = await simulate({
-      tower_lon: 32.8541,
-      tower_lat: 39.9208,
-      rays: 120,
-      radius_m: 400,
-      frequency_ghz: 28,
-      tx_power_dbm: 30,
-      azimuth: 45,
-      beam_width: 120
-    });
-    console.log('Coverage:', result);
-  };
-  
-  return <button onClick={handleSimulate}>Simulate</button>;
-}
-```
-
----
-
-## Priority Areas for Contributions
-
-### High Priority
-
-- 🔴 **Terrain elevation support**: Add GeoTIFF support
-- 🔴 **Multipath modeling**: Include reflections
-- 🔴 **Performance optimization**: Faster ray intersection testing
-- 🔴 **Documentation**: More examples and tutorials
-
-### Medium Priority
-
-- 🟡 **Custom frequency bands**: User-defined frequencies
-- 🟡 **Batch optimization**: Multi-site optimization
-- 🟡 **Export formats**: Support more GIS formats
-- 🟡 **Visualization enhancements**: 3D map view
-
-### Low Priority
-
-- 🟢 **UI polish**: Theme improvements, responsive design
-- 🟢 **Internationalization**: Support other languages
-- 🟢 **Mobile app**: React Native version
-- 🟢 **Advanced analytics**: Statistical analysis tools
-
----
-
-## Project Structure
-
-```
-urban-ray-tracer/
-├── backend-go/          # Go backend (API, raytracing)
-│   ├── main.go
-│   ├── raytracer/       # RF propagation, spatial index, optimization
-│   └── go.mod
-├── frontend-react/      # React frontend (UI, visualization)
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   └── utils/       # Helpers (API calls, geometry)
-│   └── package.json
-├── data-pipeline/       # Data processing scripts
-│   ├── extract_ankara.py
-│   ├── fetch_buildings.py
-│   ├── export_ankara_buildings.py
-│   └── export_tower_geojson.py
-└── docs/                # Static GitHub Pages documentation
-    ├── index.html
-    ├── changelog.html   # Generated from the root CHANGELOG.md
-    └── ...
-```
-
-### Key Files to Know
-
-| File | Purpose |
-|------|---------|
-| `backend-go/main.go` | API server entry point |
-| `backend-go/raytracer/geometry.go` | RF physics calculations |
-| `backend-go/raytracer/building_index.go` | R-Tree spatial index |
-| `frontend-react/src/components/MapCanvas.jsx` | Leaflet map viewer |
-| `frontend-react/src/utils/networkTech.js` | Frequency-specific constants |
-| `Dockerfile` | Multi-stage build configuration |
-
----
-
-## Deployment & Release Process
-
-### Local Testing
+Edit Markdown sources rather than generated reference HTML. The build mapping is in [docs/build-reference-pages.sh](build-reference-pages.sh). From the root, with the documentation environment active and Pandoc 3.10 on PATH:
 
 ```bash
-# Build and test locally
-docker build -t atom-simulator .
-docker run -p 8080:8080 atom-simulator
-
-# Run tests
-cd backend-go && go test ./...
-cd ../frontend-react && npm test
+sh docs/build-reference-pages.sh
+node --check docs/assets/docs.js
+node --check docs/assets/docs-theme.js
+python3 -m unittest discover -s docs -p '*_test.py'
+python3 docs/validate_claims.py
+python3 docs/validate_docs.py
 ```
 
-### Creating a Release
+Commit the changed generated HTML, `docs/search-index.json` and any generated theme asset alongside source changes. Rebuilding a second time should leave those outputs unchanged. Preview locally with `python3 -m http.server 9000 --directory docs` and open `http://localhost:9000`. Link/asset and strict OpenAPI validation run in `validate_docs.py`.
 
-1. **Update version**: Edit version string in `main.go`
-2. **Update CHANGELOG**: Document changes
-3. **Create Git tag**: `git tag v1.1.0`
-4. **Push tag**: `git push origin v1.1.0`
-5. **Build release**: `docker build -t atom-simulator:1.1.0 .`
-6. **Push to registry**: `docker push your-registry/atom-simulator:1.1.0`
+### Consistency checks
 
----
-
-## Communication
-
-### Where to Ask Questions
-
-- **GitHub Issues**: Bug reports, feature requests
-- **GitHub Discussions**: Questions, brainstorming
-- **Email**: [info@berkunsal.com](mailto:info@berkunsal.com)
-- **LinkedIn**: [Berk Ünsal](https://linkedin.com/in/berkunsaltr)
-
-### Code of Conduct
-
-We're committed to providing a welcoming and inspiring community for all. Please read our [Code of Conduct](CODE_OF_CONDUCT.md) (or establish community guidelines).
-
-**TL;DR**: Be respectful, inclusive, and constructive.
-
----
-
-## Contributor Recognition
-
-All contributors will be:
-
-- ✅ Added to [CONTRIBUTORS.md](CONTRIBUTORS.md)
-- ✅ Credited in release notes
-- ✅ Mentioned in documentation
-- ✅ Eligible for maintainer status (after consistent contributions)
-
----
-
-## Development Tools
-
-### Recommended Extensions
-
-**VS Code**:
-- Go (golang.go)
-- ES7+ React/Redux/React-Native snippets
-- Docker
-- GitLens
-- Prettier
-
-### Useful Commands
+From the repository root:
 
 ```bash
-# Go formatting and linting
-go fmt ./...
-go vet ./...
-golint ./...
-
-# Go benchmarking
-go test -bench=. -benchmem ./...
-
-# React development
-npm run build
-npm run preview
-npm run lint
-
-# Docker cleanup
-docker system prune -a
+python3 scripts/versioning.py check
+python3 scripts/check_runtime_versions.py
+python3 scripts/check_supply_chain.py
+python3 scripts/check_workflow_action_pins.py
+python3 -m unittest scripts/check_supply_chain_test.py scripts/check_workflow_action_pins_test.py
+python3 scripts/generate_policy.py --check
+python3 -m unittest scripts/generate_policy_test.py
 ```
 
----
+[Quality CI](https://github.com/Berk-Unsal/atom/blob/main/.github/workflows/quality.yml) is the full source of required gates, including dependency review and production container/SBOM vulnerability scans. Use it to check current pins and additional checks for the changed surface. Passing a focused test alone does not replace the affected CI jobs.
 
-## Financial Contributions
+## Pull requests and releases
 
-If you'd like to support A.T.O.M financially:
+Use concise imperative Conventional Commit-style subjects such as `fix: preserve per-cell network azimuths` or `docs: clarify model limits`. Keep a PR scoped to a reviewable outcome. Include a regression for every bug fix and describe any change to compatibility or scientific assumptions explicitly.
 
-- ⭐ Star the repository (recognition counts!)
-- 🔗 Share with others in your network
-- 💼 Consider consulting: [info@berkunsal.com](mailto:info@berkunsal.com)
-- 🤝 Contribute code or documentation (priceless!)
+[VERSION](https://github.com/Berk-Unsal/atom/blob/main/VERSION) is canonical. Normal contributor PRs record user-visible changes under **Unreleased**; they do not edit `main.go` version strings or publish tags. Maintainers prepare a release through [scripts/versioning.py](https://github.com/Berk-Unsal/atom/blob/main/scripts/versioning.py), update the release metadata/changelog together, check consistency, and create the matching `vX.Y.Z` tag. CI then publishes the configured images and release notes. See [release.yml](https://github.com/Berk-Unsal/atom/blob/main/.github/workflows/release.yml) for the release workflow.
 
----
-
-## Getting Help
-
-**Stuck? Need guidance?**
-
-1. Check [FAQ](faq.md)
-2. Search existing [GitHub Issues](https://github.com/Berk-Unsal/atom/issues)
-3. Review [Architecture](architecture.md) for system overview
-4. Ask in GitHub Discussions
-5. Reach out to maintainers
-
----
-
-## Checklist for PRs
-
-Before submitting:
-
-- [ ] I've read [CONTRIBUTING.md](CONTRIBUTING.md)
-- [ ] I've tested my changes locally
-- [ ] I've added/updated documentation
-- [ ] I've added tests for new features
-- [ ] My code follows project style guidelines
-- [ ] I've verified no breaking changes
-- [ ] I've updated the CHANGELOG
-
----
-
-Thank you for contributing to A.T.O.M! Together, we're building the future of RF simulation. 🚀
-
----
-
-**Questions?** Open an issue or email [info@berkunsal.com](mailto:info@berkunsal.com)
+For questions, proposals and blockers, use [GitHub Issues](https://github.com/Berk-Unsal/atom/issues). Share only public-safe logs and fixtures; omit private route recordings, credentials and operator data.

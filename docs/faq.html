@@ -186,13 +186,49 @@ planning. Interference analysis, measurement validation,
 recommendations, and 5G Core language are intentionally unavailable
 where their assumptions are unsupported.</p>
 <h2 id="projects-and-results">Projects And Results</h2>
+<h3
+id="why-can-a-report-show-full-demand-service-with-very-low-ray-endpoint-rx">Why
+can a report show full demand service with very low ray-endpoint
+Rx?</h3>
+<p>Demand service and ray-endpoint diagnostics use different populations
+and thresholds. Building service tests the best modeled building Rx
+against its separate threshold. Rays continue until receiver sensitivity
+or the planning radius, so their terminal powers can be low even when
+many buildings are served along their paths. Obstructed ray endpoints
+are not unserved demand. See the <a href="report-guide.html">report
+reader guide</a>.</p>
+<h3 id="does-a-report-score-mean-coverage-or-confidence">Does a report
+score mean coverage or confidence?</h3>
+<p>The <code>/100</code> optimization score is normalized
+preference-weighted planning utility under the current priorities. It is
+not coverage percentage, measured accuracy, probability or confidence.
+Demand weight, residential building counts, ray-distance reach and
+multi-Cell overlap keep their own units and denominators. An evaluation
+can produce a score without running optimization; missing standalone
+interference does not establish radio-quality performance.</p>
+<h3
+id="why-do-historical-reports-omit-maps-or-rf-fields-and-why-can-pdf-page-breaks-differ">Why
+do historical reports omit maps or RF fields, and why can PDF page
+breaks differ?</h3>
+<p>Historical reports use retained source evidence. Missing geometry is
+not reconstructed, and missing RF inputs do not inherit today's
+defaults. Existing retained artifacts download unchanged; regeneration
+uses the current generator. For the reference PDF layout, print from
+current Chromium in A4 portrait at default scale, with browser headers
+and footers off. Browser overrides can change pagination or add URLs.
+See <a href="report-guide.html">report export and source
+details</a>.</p>
 <h3 id="where-are-projects-stored">Where are projects stored?</h3>
 <p>Projects are stored in the current browser through IndexedDB. Saves
 are serialized, and local storage is used only when an IndexedDB write
 fails. If both copies exist, persistence revisions select the newest
-valid workspace. The server remains stateless. Export a versioned
-<code>.atom-project.json</code> file for backup or transfer to another
-browser.</p>
+valid workspace. The server remains stateless. Export a bounded
+<code>.atom-project.json</code> file for retained inputs,
+Scenario/Version evidence and provenance. Download generated Reports
+separately; project files do not include the separate Run History
+database, generated Report store, coverage surfaces or view/Undo state.
+See <a href="report-guide.html#what-survives-where">what survives
+where</a>.</p>
 <h3 id="why-is-a-saved-result-marked-stale">Why is a saved result marked
 stale?</h3>
 <p>The saved inputs, dataset, model, or calibration profile no longer

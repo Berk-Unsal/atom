@@ -80,6 +80,10 @@ build_page dataset-pack-studio.md dataset-pack-studio.html "Dataset Pack Studio"
   "Inspect, repair, reproject, package, validate, install, and safely switch arbitrary-region A.T.O.M dataset packs."
 build_page faq.md faq.html "Frequently Asked Questions" "Help and troubleshooting" \
   "Answers for setup, RF interpretation, performance, data, API access, and common operating problems."
+build_page report-guide.md report-guide.html "Reading Planning Reports" "Report reader guide" \
+  "Decision summaries, KPI units and populations, RF profiles, map evidence, source provenance and reference PDF print settings."
+build_page planning-walkthrough.md planning-walkthrough.html "Two-Cell Planning Walkthrough" "Reproducible example" \
+  "A fixed Ankara baseline, azimuth recommendation, overlap trade-off and portable project/report evidence with recorded API inputs."
 build_page terminology.md terminology.html "Cell, Sector, Site, and Tower Record" "Planning glossary" \
   "Definitions that distinguish planning Cells, directional sectors, physical sites, tower dataset records, and candidate feasibility." false false true
 build_page contributing.md contributing.html "Contributing" "Contributor guide" \

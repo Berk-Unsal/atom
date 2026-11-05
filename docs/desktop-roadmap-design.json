@@ -157,7 +157,7 @@
     {
       "id": "G2",
       "name": "WebView compatibility",
-      "status": "electron_qualified_macos_arm64_intel_ubuntu_x11_wayland_pending_manual_wayland_dialog_and_maintainer_acceptance",
+      "status": "d01_passed_maintainer_accepted_2026-11-05_d11_regression_pending",
       "issues": [
         "D01",
         "D11"
@@ -338,11 +338,11 @@
         "area: backend"
       ],
       "duplicate_terms": "desktop WebView",
-      "status": "qualification_evidence_recorded_issue_open",
+      "status": "completed_gate_2_accepted_2026-11-05",
       "github": {
         "number": 148,
         "url": "https://github.com/Berk-Unsal/atom/issues/148",
-        "state": "OPEN",
+        "state": "CLOSED",
         "verified_body_sha256": "660c70214be7655e2d12567c9afec571da8ed2756a0626f365322cd7f97d22d4"
       },
       "related_existing_issues": [],
@@ -2290,5 +2290,7 @@
   "spike_report": "docs/desktop-spike-design-report.md",
   "issue_148_decision_comment": "https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6334742811",
   "qualification_branch": "spike/desktop-d01-qualification",
-  "qualification_run": "https://github.com/Berk-Unsal/atom/actions/runs/39770458447"
+  "qualification_run": "https://github.com/Berk-Unsal/atom/actions/runs/39770458447",
+  "gate_2_acceptance_comment": "https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6666037247",
+  "native_dialog_qualification_run": "https://github.com/Berk-Unsal/atom/actions/runs/42083148224"
 }

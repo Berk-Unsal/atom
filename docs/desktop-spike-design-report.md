@@ -1,6 +1,6 @@
 # A.T.O.M desktop D01 spike and Electron qualification
 
-Status: **D01 (#148) qualification evidence recorded on macOS (arm64 and Intel) and Ubuntu 24.04 x86_64 (X11 and Wayland).** Gate 1 **passed: Electron accepted by the maintainer on 2026-10-22.** The missing native Wayland dialog check is demonstrated in the [2026-11-05 follow-up](#native-dialog-follow-up-2026-11-05). Gate 2 awaits maintainer acceptance; see [Gate 2 assessment](#gate-2-assessment). No downstream desktop issue (#149 onward) has started.
+Status: **D01 (#148) complete. Gate 2 accepted by the maintainer on 2026-11-05** after the [native-dialog follow-up](#native-dialog-follow-up-2026-11-05) and clean implementation checks; see the [acceptance record](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6666037247). Gate 1 selected Electron on 2026-10-22. Qualification covers macOS arm64/Intel and Ubuntu 24.04 x86_64 X11/Wayland within the evidence boundaries below. No downstream desktop implementation has started; the existing #149 is now unblocked.
 Original run date: 2026-10-22; native-dialog follow-up: 2026-11-05 (Europe/Istanbul). Plan: [desktop-architecture-design-plan.md](desktop-architecture-design-plan.md).
 
 ## Outcome
@@ -123,7 +123,7 @@ The remaining limits are environmental, not defects:
 - The follow-up qualifies the real GTK desktop portal on both native backends. A different portal backend, a full GNOME Shell session and GPU hardware remain outside this cloud-runner evidence; installed-runtime qualification belongs to D14.
 - No clean-machine install was tested; that is D12–D14.
 
-Recommendation: review the completed native-dialog evidence for Gate 2 acceptance and record the remaining limits in D11 and D14. The missing Save/Open assertion no longer requires a manual check within this qualification scope. Acceptance remains a maintainer decision; this test change does not record it on the maintainer's behalf.
+**Accepted on 2026-11-05.** The maintainer approved Gate 2 conditional on no unresolved implementation issues. Before recording acceptance, PR #182 was checked at `8e7e5a6`: all 12 checks passed, it was mergeable, and no review findings or unresolved threads were reported. The [acceptance record](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6666037247) closes #148 and unblocks the existing #149. The remaining limits and memory-budget review stay with D11/D14; this is D01 qualification acceptance, not public desktop release qualification.
 
 ## Native dialog follow-up: 2026-11-05
 

@@ -32,6 +32,11 @@ cleanup() {
     sudo apparmor_parser -R "$profile_file" || true
     sudo rm -f "$profile_file"
   fi
+  # The real document portal mounts a FUSE filesystem in our private runtime
+  # directory. Unmount it before deleting that directory; do not traverse it.
+  if mountpoint -q "$XDG_RUNTIME_DIR/doc"; then
+    fusermount3 -u "$XDG_RUNTIME_DIR/doc"
+  fi
   rm -rf "$XDG_RUNTIME_DIR"
 }
 trap cleanup EXIT

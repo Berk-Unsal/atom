@@ -5,6 +5,12 @@ on:
   push:
     branches: [codex/wayland-dialog-qualification]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: Qualification scope
+        type: choice
+        options: [dialogs, full]
+        default: full
 
 permissions:
   contents: read
@@ -18,6 +24,8 @@ jobs:
     name: Ubuntu 24.04 native dialogs (${{ matrix.session }})
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      ATOM_SPIKE_SUITE: ${{ inputs.suite || 'dialogs' }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,16 +46,22 @@ jobs:
         run: |
           (cd frontend-react && npm ci --no-audit --no-fund && npm run build)
           (cd desktop/spike/electron && npm ci --no-audit --no-fund && node node_modules/electron/install.js)
+      - name: Install reference Chromium for the full qualification
+        if: env.ATOM_SPIKE_SUITE == 'full'
+        working-directory: desktop/spike/electron
+        run: npx playwright-core install --with-deps chromium
       - name: Install native session and accessibility packages
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            mutter dbus-x11 xvfb python3-pyatspi libatk-adaptor apparmor-utils \
+            mutter dbus-x11 xvfb python3-pyatspi libatk-adaptor apparmor-utils lsof xdg-desktop-portal xdg-desktop-portal-gtk \
             libgtk-3-0t64 libnss3 libasound2t64 libgbm1 libxss1 libxshmfence1 libxkbcommon0 libatk-bridge2.0-0t64 libcups2t64
       - name: Record platform
         run: scripts/desktop-spike/linux-environment.sh native-dialogs
       - name: Test real Save, Open and Cancel
-        run: scripts/desktop-spike/dialog-session.sh ${{ matrix.session }}
+        env:
+          ATOM_SPIKE_SESSION: ${{ matrix.session }}
+        run: scripts/desktop-spike/dialog-session.sh "$ATOM_SPIKE_SESSION" "$ATOM_SPIKE_SUITE"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

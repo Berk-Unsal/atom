@@ -53,6 +53,7 @@ page.on("console", (message) => { if (message.type() === "error") consoleErrors.
 const spikeState = () => app.evaluate(() => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(global.__atomSpike).filter(([, v]) => typeof v !== "function")))));
 
 const result = { run: runName, scope: dialogsOnly ? "native-dialogs-only" : "full-workflows", dialog_driver: driver,
+  dialog_process: process.env.ATOM_SPIKE_DIALOG_PID ? Number(process.env.ATOM_SPIKE_DIALOG_PID) : app.process().pid,
   gtk_backend: process.env.GDK_BACKEND || null,
   versions: await app.evaluate(() => ({ electron: process.versions.electron, chromium: process.versions.chrome })),
   platform: (await spikeState()).platform, steps: [] };
@@ -295,7 +296,7 @@ async function driveDialog(kind, title, target, settled = () => false) {
     const log = resolve(evidence, `${runName}-${title.replace(/\W+/g, "-")}-atspi.log`);
     try {
       const { stdout, stderr } = await run("/usr/bin/python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"),
-        "--pid", String(app.process().pid), "--title", title, "--action", kind], { timeout: 35_000 });
+        "--pid", String(result.dialog_process), "--title", title, "--action", kind, "--target", target], { timeout: 35_000 });
       writeFileSync(log, `${stdout}${stderr}`);
       dialogTrace.push(`${kind}: ${stdout.trim()}`);
     } catch (error) {

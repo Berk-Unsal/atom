@@ -31,11 +31,13 @@ def main():
     parser.add_argument("--pid", type=int, required=True)
     parser.add_argument("--title", required=True)
     parser.add_argument("--action", choices=["save", "open", "cancel"], required=True)
+    parser.add_argument("--target", required=True)
     args = parser.parse_args()
     deadline = time.monotonic() + 25
     last_tree = []
     applications = []
     context = GLib.MainContext.default()
+    path_entered = False
     while time.monotonic() < deadline:
         while context.pending():
             context.iteration(False)
@@ -52,6 +54,18 @@ def main():
                     last_tree.append({"role": node.getRoleName(), "name": node.name})
                     if node.name != args.title:
                         continue
+                    if args.action == "open" and not path_entered:
+                        entries = [entry for entry in descendants(node)
+                                   if entry.getRole() == pyatspi.ROLE_TEXT
+                                   and entry.getState().contains(pyatspi.STATE_EDITABLE)
+                                   and entry.getState().contains(pyatspi.STATE_SHOWING)]
+                        if len(entries) != 1:
+                            continue
+                        entries[0].queryEditableText().setTextContents(args.target)
+                        entries[0].queryComponent().grabFocus()
+                        path_entered = True
+                        # Let GTK validate the entered filename before clicking Open.
+                        break
                     for button in descendants(node):
                         if button.getRole() != pyatspi.ROLE_PUSH_BUTTON:
                             continue

@@ -1,0 +1,57 @@
+name: Desktop native dialogs
+
+# Evidence for #148. This exercises actual GTK dialogs on both native backends.
+on:
+  push:
+    branches: [codex/wayland-dialog-qualification]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-dialogs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-dialogs:
+    name: Ubuntu 24.04 native dialogs (${{ matrix.session }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        session: [x11, wayland]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          lfs: true
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: backend-go/go.mod
+          cache: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Build shared frontend and install pinned Electron
+        run: |
+          (cd frontend-react && npm ci --no-audit --no-fund && npm run build)
+          (cd desktop/spike/electron && npm ci --no-audit --no-fund && node node_modules/electron/install.js)
+      - name: Install native session and accessibility packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            mutter dbus-x11 xvfb python3-pyatspi libatk-adaptor apparmor-utils \
+            libgtk-3-0t64 libnss3 libasound2t64 libgbm1 libxss1 libxshmfence1 libxkbcommon0 libatk-bridge2.0-0t64 libcups2t64
+      - name: Record platform
+        run: scripts/desktop-spike/linux-environment.sh native-dialogs
+      - name: Test real Save, Open and Cancel
+        run: scripts/desktop-spike/dialog-session.sh ${{ matrix.session }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: native-dialogs-ubuntu-24.04-${{ matrix.session }}
+          path: desktop/spike/electron/build/evidence
+          retention-days: 90
+          if-no-files-found: error

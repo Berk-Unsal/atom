@@ -40,7 +40,6 @@ trap 'exit 143' TERM
 unset ELECTRON_RUN_AS_NODE NO_AT_BRIDGE
 export GTK_MODULES=atk-bridge ATOM_SPIKE_DIALOG_DRIVER=atspi
 gsettings set org.gnome.desktop.interface toolkit-accessibility true
-gsettings set org.gtk.Settings.FileChooser location-mode filename-entry
 if [ "$session" = wayland ]; then
   unset DISPLAY
   export GDK_BACKEND=wayland WAYLAND_DISPLAY=wayland-atom

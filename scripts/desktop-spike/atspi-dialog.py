@@ -6,6 +6,7 @@ No file chooser response, Electron API, or filesystem operation is mocked.
 """
 import argparse
 import json
+from pathlib import Path
 import time
 
 import pyatspi
@@ -37,7 +38,7 @@ def main():
     last_tree = []
     applications = []
     context = GLib.MainContext.default()
-    path_entered = False
+    file_selected = False
     while time.monotonic() < deadline:
         while context.pending():
             context.iteration(False)
@@ -54,18 +55,22 @@ def main():
                     last_tree.append({"role": node.getRoleName(), "name": node.name})
                     if node.name != args.title:
                         continue
-                    if args.action == "open" and not path_entered:
-                        entries = [entry for entry in descendants(node)
-                                   if entry.getRole() == pyatspi.ROLE_TEXT
-                                   and entry.getState().contains(pyatspi.STATE_EDITABLE)
-                                   and entry.getState().contains(pyatspi.STATE_SHOWING)]
-                        if len(entries) != 1:
+                    if args.action == "open" and not file_selected:
+                        for files in descendants(node):
+                            if files.name != "Files" or files.getRole() not in [pyatspi.ROLE_TABLE, pyatspi.ROLE_TREE_TABLE]:
+                                continue
+                            table = files.queryTable()
+                            for row in range(min(table.nRows, 1000)):
+                                cell = table.getAccessibleAt(row, 0)
+                                if not any(child.name == Path(args.target).name for child in descendants(cell)):
+                                    continue
+                                if not table.addRowSelection(row) or not table.isRowSelected(row):
+                                    raise RuntimeError("native chooser refused file selection")
+                                file_selected = True
+                                print(json.dumps({"selected_file": Path(args.target).name, "row": row}))
+                                break
+                        if not file_selected:
                             continue
-                        entries[0].queryEditableText().setTextContents(args.target)
-                        entries[0].queryComponent().grabFocus()
-                        path_entered = True
-                        # Let GTK validate the entered filename before clicking Open.
-                        break
                     for button in descendants(node):
                         if button.getRole() != pyatspi.ROLE_PUSH_BUTTON:
                             continue

@@ -9,6 +9,7 @@ import json
 import time
 
 import pyatspi
+from gi.repository import GLib
 
 
 def descendants(root, limit=512):
@@ -16,6 +17,8 @@ def descendants(root, limit=512):
     while queue and limit:
         node = queue.pop(0)
         limit -= 1
+        if node is None:
+            continue
         yield node
         try:
             queue.extend(node)
@@ -32,7 +35,10 @@ def main():
     deadline = time.monotonic() + 25
     last_tree = []
     applications = []
+    context = GLib.MainContext.default()
     while time.monotonic() < deadline:
+        while context.pending():
+            context.iteration(False)
         applications = []
         for app in pyatspi.Registry.getDesktop(0):
             try:
@@ -40,6 +46,7 @@ def main():
                 applications.append({"pid": pid, "name": app.name})
                 if pid != args.pid:
                     continue
+                app.clear_cache()
                 last_tree = []
                 for node in descendants(app):
                     last_tree.append({"role": node.getRoleName(), "name": node.name})

@@ -4,6 +4,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ## [Unreleased]
 
+### Added
+
+- Add reproducible Ubuntu X11/Wayland native project-dialog qualification through the real GTK desktop portal, including Turkish paths, file identity and byte checks, and Save/Open cancellation.
+
 ## [0.13.1] - 2026-10-27
 
 ### Added

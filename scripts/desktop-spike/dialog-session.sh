@@ -29,8 +29,8 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
-unset ELECTRON_RUN_AS_NODE
-export GTK_MODULES=atk-bridge NO_AT_BRIDGE=0 ATOM_SPIKE_DIALOG_DRIVER=atspi
+unset ELECTRON_RUN_AS_NODE NO_AT_BRIDGE
+export GTK_MODULES=atk-bridge ATOM_SPIKE_DIALOG_DRIVER=atspi
 gsettings set org.gnome.desktop.interface toolkit-accessibility true
 if [ "$session" = wayland ]; then
   unset DISPLAY

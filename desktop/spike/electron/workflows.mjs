@@ -52,7 +52,10 @@ page.on("pageerror", (error) => pageErrors.push(String(error.message).slice(0, 3
 page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(`${message.text().slice(0, 200)} @ ${message.location()?.url || "unknown"}`); });
 const spikeState = () => app.evaluate(() => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(global.__atomSpike).filter(([, v]) => typeof v !== "function")))));
 
-const result = { run: runName, platform: (await spikeState()).platform, steps: [] };
+const result = { run: runName, scope: dialogsOnly ? "native-dialogs-only" : "full-workflows", dialog_driver: driver,
+  gtk_backend: process.env.GDK_BACKEND || null,
+  versions: await app.evaluate(() => ({ electron: process.versions.electron, chromium: process.versions.chrome })),
+  platform: (await spikeState()).platform, steps: [] };
 async function step(name, fn, { critical = true } = {}) {
   if (dialogsOnly && !dialogSteps.has(name)) {
     result.steps.push({ name, skipped: true });
@@ -289,9 +292,16 @@ async function driveDialog(kind, title, target, settled = () => false) {
     }
     dialogTrace.push(`${kind}: candidates=${ids.length} chosen=${id} ${attempts.join(" ")}`);
   } else if (driver === "atspi") {
-    const { stdout } = await run("/usr/bin/python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"),
-      "--pid", String(app.process().pid), "--title", title, "--action", kind], { timeout: 35_000 });
-    dialogTrace.push(`${kind}: ${stdout.trim()}`);
+    const log = resolve(evidence, `${runName}-${title.replace(/\W+/g, "-")}-atspi.log`);
+    try {
+      const { stdout, stderr } = await run("/usr/bin/python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"),
+        "--pid", String(app.process().pid), "--title", title, "--action", kind], { timeout: 35_000 });
+      writeFileSync(log, `${stdout}${stderr}`);
+      dialogTrace.push(`${kind}: ${stdout.trim()}`);
+    } catch (error) {
+      writeFileSync(log, `${error.stdout || ""}${error.stderr || ""}`);
+      throw new Error(`AT-SPI ${kind} failed; see ${log}`);
+    }
   } else if (driver === "mutter") {
     if (kind === "save") {
       // Does Mutter's injected keyboard reach the Electron surface at all?
@@ -387,6 +397,7 @@ await step("native Save and Open dialogs", async () => {
   return { saved_path_chars: saved.filePath.length, opened_identical_string: opened.filePath === saved.filePath,
     opened_same_after_nfc: opened.filePath.normalize("NFC") === saved.filePath.normalize("NFC"),
     opened_same_realpath_nfc: realpathSync(opened.filePath).normalize("NFC") === realpathSync(saved.filePath).normalize("NFC"), opened_same_file_identity: true,
+    cancellation_verified: driver === "atspi",
     saved_path: saved.filePath, opened_path: opened.filePath, driver_trace: dialogTrace, sha256: sha256(roundTrip), bytes: roundTrip.length };
 });
 

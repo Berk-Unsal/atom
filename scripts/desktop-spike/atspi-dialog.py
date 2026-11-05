@@ -31,10 +31,14 @@ def main():
     args = parser.parse_args()
     deadline = time.monotonic() + 25
     last_tree = []
+    applications = []
     while time.monotonic() < deadline:
+        applications = []
         for app in pyatspi.Registry.getDesktop(0):
             try:
-                if app.get_process_id() != args.pid:
+                pid = app.get_process_id()
+                applications.append({"pid": pid, "name": app.name})
+                if pid != args.pid:
                     continue
                 last_tree = []
                 for node in descendants(app):
@@ -54,14 +58,15 @@ def main():
                             name = action.getName(index)
                             if name not in ["click", "press", "activate"]:
                                 continue
+                            label = button.name
                             if not action.doAction(index):
                                 raise RuntimeError("native button refused its action")
-                            print(json.dumps({"pid": args.pid, "dialog": args.title, "button": button.name, "action": name}))
+                            print(json.dumps({"pid": args.pid, "dialog": args.title, "button": label, "action": name}))
                             return
             except (RuntimeError, AttributeError) as error:
                 last_tree.append({"error": str(error)})
         time.sleep(0.2)
-    raise RuntimeError(f"native {args.action} button unavailable: {json.dumps(last_tree[-80:])}")
+    raise RuntimeError(f"native {args.action} button unavailable: apps={json.dumps(applications)} tree={json.dumps(last_tree[-80:])}")
 
 
 if __name__ == "__main__":

@@ -34,6 +34,8 @@ def main():
     parser.add_argument("--action", choices=["save", "open", "cancel"], required=True)
     parser.add_argument("--target", required=True)
     args = parser.parse_args()
+    # GTK's single-file portal chooser calls its accept button "Select".
+    labels = {"save": {"save"}, "open": {"open", "select"}, "cancel": {"cancel"}}[args.action]
     deadline = time.monotonic() + 25
     last_tree = []
     applications = []
@@ -76,7 +78,7 @@ def main():
                     for button in descendants(node):
                         if button.getRole() != pyatspi.ROLE_PUSH_BUTTON:
                             continue
-                        if button.name.replace("_", "").casefold() != args.action:
+                        if button.name.replace("_", "").casefold() not in labels:
                             continue
                         state = button.getState()
                         if not all(state.contains(s) for s in [pyatspi.STATE_SHOWING, pyatspi.STATE_ENABLED, pyatspi.STATE_SENSITIVE]):
@@ -94,7 +96,8 @@ def main():
             except (RuntimeError, AttributeError) as error:
                 last_tree.append({"error": str(error)})
         time.sleep(0.2)
-    raise RuntimeError(f"native {args.action} button unavailable: apps={json.dumps(applications)} tree={json.dumps(last_tree[-80:])}")
+    buttons = [node for node in last_tree if node.get("role") == "push button"]
+    raise RuntimeError(f"native {args.action} button unavailable: apps={json.dumps(applications)} buttons={json.dumps(buttons)} tree={json.dumps(last_tree[-80:])}")
 
 
 if __name__ == "__main__":

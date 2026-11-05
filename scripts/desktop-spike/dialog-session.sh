@@ -52,12 +52,21 @@ if [ "$session" = wayland ]; then
   export ATOM_SPIKE_ELECTRON_ARGS=--ozone-platform=wayland
   mutter --wayland --headless --no-x11 --virtual-monitor 1440x900 --wayland-display "$WAYLAND_DISPLAY" >"$OUT/mutter.log" 2>&1 &
   compositor_pid=$!
-  for attempt in $(seq 1 50); do
+  # Cold compositor setup on hosted runners can exceed ten seconds.
+  # This bounds compositor setup, separately from measured application launch.
+  for attempt in $(seq 1 300); do
     [ ! -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ] || break
-    kill -0 "$compositor_pid"
+    if ! kill -0 "$compositor_pid" 2>/dev/null; then
+      cat "$OUT/mutter.log" >&2
+      exit 1
+    fi
     sleep 0.2
   done
-  test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
+  if [ ! -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
+    echo "Wayland compositor did not publish its socket within 60 seconds" >&2
+    cat "$OUT/mutter.log" >&2
+    exit 1
+  fi
 else
   unset WAYLAND_DISPLAY ATOM_SPIKE_ELECTRON_ARGS
   export GDK_BACKEND=x11 DISPLAY=:99

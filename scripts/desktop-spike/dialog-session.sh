@@ -39,6 +39,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 unset ELECTRON_RUN_AS_NODE NO_AT_BRIDGE
 export GTK_MODULES=atk-bridge ATOM_SPIKE_DIALOG_DRIVER=atspi
+export LANG=C.UTF-8 LC_ALL=C.UTF-8
 gsettings set org.gnome.desktop.interface toolkit-accessibility true
 if [ "$session" = wayland ]; then
   unset DISPLAY

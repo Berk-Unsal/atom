@@ -64,7 +64,9 @@ def main():
                                 cell = table.getAccessibleAt(row, 0)
                                 if not any(child.name == Path(args.target).name for child in descendants(cell)):
                                     continue
-                                if not table.addRowSelection(row) or not table.isRowSelected(row):
+                                if not table.isRowSelected(row):
+                                    table.addRowSelection(row)
+                                if not table.isRowSelected(row):
                                     raise RuntimeError("native chooser refused file selection")
                                 file_selected = True
                                 print(json.dumps({"selected_file": Path(args.target).name, "row": row}))

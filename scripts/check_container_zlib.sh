@@ -10,7 +10,7 @@ docker run --rm --entrypoint /bin/sh "$1" -ec '
     echo "zlib is absent; CVE-2026-85091 does not apply"
     exit 0
   fi
-  package=$(apk info -v zlib)
+  package=$(apk info -e -v zlib)
   version=${package#zlib-}
   test -n "$version"
   comparison=$(apk version -t "$version" 1.3.2-r1)

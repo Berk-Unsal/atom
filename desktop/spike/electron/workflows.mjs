@@ -3,7 +3,7 @@
 // input, then exercises native Save/Open dialogs through the OS.
 //
 // Usage: node workflows.mjs <run-name>
-// Env:   ATOM_SPIKE_DIALOG_DRIVER = macos | xdotool | mutter | (unset: dialogs not run)
+// Env:   ATOM_SPIKE_DIALOG_DRIVER = macos | xdotool | atspi | mutter | (unset: dialogs not run)
 //        ATOM_SPIKE_ELECTRON_ARGS = extra Chromium switches
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -23,6 +23,8 @@ for (const dir of [evidence, reports]) mkdirSync(dir, { recursive: true });
 rmSync(downloads, { recursive: true, force: true });
 const runName = process.argv[2] || "workflows";
 const driver = process.env.ATOM_SPIKE_DIALOG_DRIVER || "";
+const dialogsOnly = process.argv.includes("--dialogs-only");
+const dialogSteps = new Set(["startup to plannable", "rename project with Turkish characters", "project Save Version and Export download", "native Save and Open dialogs", "no uncaught page errors"]);
 const TURKISH = "Çankaya İş Ağı Şebeke Öğrenim Üssü";
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
@@ -50,8 +52,16 @@ page.on("pageerror", (error) => pageErrors.push(String(error.message).slice(0, 3
 page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(`${message.text().slice(0, 200)} @ ${message.location()?.url || "unknown"}`); });
 const spikeState = () => app.evaluate(() => JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(global.__atomSpike).filter(([, v]) => typeof v !== "function")))));
 
-const result = { run: runName, platform: (await spikeState()).platform, steps: [] };
+const result = { run: runName, scope: dialogsOnly ? "native-dialogs-only" : "full-workflows", dialog_driver: driver,
+  dialog_process: process.env.ATOM_SPIKE_DIALOG_PID ? Number(process.env.ATOM_SPIKE_DIALOG_PID) : app.process().pid,
+  gtk_backend: process.env.GDK_BACKEND || null,
+  versions: await app.evaluate(() => ({ electron: process.versions.electron, chromium: process.versions.chrome })),
+  platform: (await spikeState()).platform, steps: [] };
 async function step(name, fn, { critical = true } = {}) {
+  if (dialogsOnly && !dialogSteps.has(name)) {
+    result.steps.push({ name, skipped: true });
+    return;
+  }
   const started = Date.now();
   try {
     const detail = await fn();
@@ -282,6 +292,17 @@ async function driveDialog(kind, title, target, settled = () => false) {
       await run("import", ["-window", "root", resolve(evidence, `${runName}-x11-${kind}-dialog.png`)]).catch(() => {});
     }
     dialogTrace.push(`${kind}: candidates=${ids.length} chosen=${id} ${attempts.join(" ")}`);
+  } else if (driver === "atspi") {
+    const log = resolve(evidence, `${runName}-${title.replace(/\W+/g, "-")}-atspi.log`);
+    try {
+      const { stdout, stderr } = await run("/usr/bin/python3", [resolve(root, "scripts/desktop-spike/atspi-dialog.py"),
+        "--pid", String(result.dialog_process), "--title", title, "--action", kind, "--target", target], { timeout: 35_000 });
+      writeFileSync(log, `${stdout}${stderr}`);
+      dialogTrace.push(`${kind}: ${stdout.trim()}`);
+    } catch (error) {
+      writeFileSync(log, `${error.stdout || ""}${error.stderr || ""}`);
+      throw new Error(`AT-SPI ${kind} failed; see ${log}`);
+    }
   } else if (driver === "mutter") {
     if (kind === "save") {
       // Does Mutter's injected keyboard reach the Electron surface at all?
@@ -307,7 +328,7 @@ async function driveDialog(kind, title, target, settled = () => false) {
 }
 
 async function dialogDriverAvailable() {
-  if (driver !== "macos") return ["xdotool", "mutter"].includes(driver);
+  if (driver !== "macos") return ["xdotool", "atspi", "mutter"].includes(driver);
   // Without Accessibility for the calling app, System Events cannot press keys
   // and the sheet would stay open; check first instead of hanging.
   try {
@@ -362,11 +383,22 @@ await step("native Save and Open dialogs", async () => {
   if (savedStat.ino !== openedStat.ino || savedStat.dev !== openedStat.dev) throw new Error(`Open dialog returned a different file: ${opened.filePath}`);
   const roundTrip = Buffer.from(opened.base64, "base64");
   if (sha256(roundTrip) !== sha256(projectBytes)) throw new Error("opened bytes differ from saved bytes");
+  if (driver === "atspi") {
+    const cancelledPath = resolve(folder, "cancelled.atom-project.json");
+    const cancelSave = app.evaluate((_e, [b64, file]) => global.__atomSpike.saveWithDialog(b64, file, "A.T.O.M Cancel Save"), [projectBytes.toString("base64"), cancelledPath]);
+    await within(Promise.all([cancelSave, driveDialog("cancel", "A.T.O.M Cancel Save", cancelledPath)]), 45_000, "Cancel Save dialog");
+    if (!(await cancelSave).canceled || existsSync(cancelledPath)) throw new Error("cancelled Save wrote a file");
+    const cancelOpen = app.evaluate((_e, file) => global.__atomSpike.openWithDialog(file, "A.T.O.M Cancel Open"), saved.filePath);
+    await within(Promise.all([cancelOpen, driveDialog("cancel", "A.T.O.M Cancel Open", saved.filePath)]), 45_000, "Cancel Open dialog");
+    if (!(await cancelOpen).canceled) throw new Error("cancelled Open returned a file");
+    if (sha256(readFileSync(saved.filePath)) !== sha256(projectBytes)) throw new Error("cancellation changed saved bytes");
+  }
   // macOS panels may hand back decomposed (NFD) Unicode or resolved symlinks;
   // D07 must compare paths by identity, not by string.
   return { saved_path_chars: saved.filePath.length, opened_identical_string: opened.filePath === saved.filePath,
     opened_same_after_nfc: opened.filePath.normalize("NFC") === saved.filePath.normalize("NFC"),
     opened_same_realpath_nfc: realpathSync(opened.filePath).normalize("NFC") === realpathSync(saved.filePath).normalize("NFC"), opened_same_file_identity: true,
+    cancellation_verified: driver === "atspi",
     saved_path: saved.filePath, opened_path: opened.filePath, driver_trace: dialogTrace, sha256: sha256(roundTrip), bytes: roundTrip.length };
 });
 
@@ -383,6 +415,6 @@ result.downloads = state.downloads.map(({ filename, state: downloadState }) => (
 await Promise.race([app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().forEach((w) => w.destroy())), sleep(5_000)]).catch(() => {});
 await Promise.race([app.close(), sleep(20_000)]).catch(() => {});
 try { app.process().kill("SIGKILL"); } catch { /* already exited */ }
-result.critical_failures = result.steps.filter((s) => !s.ok && s.critical !== false).map((s) => s.name);
+result.critical_failures = result.steps.filter((s) => !s.skipped && !s.ok && s.critical !== false).map((s) => s.name);
 writeFileSync(resolve(evidence, `${runName}.json`), JSON.stringify(result, null, 2));
 process.exitCode = result.critical_failures.length ? 1 : 0;

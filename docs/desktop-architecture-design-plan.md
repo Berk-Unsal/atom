@@ -3,7 +3,7 @@
 Status: proposed architecture; implementation and release gates are **not passed**.
 Audit date: 2026-10-21 (Europe/Istanbul). Scope: planning and GitHub roadmap creation only.
 
-> **Gate 1 decision (2026-10-22): Electron is the accepted desktop shell**, with the existing React build and the existing Go API as a bundled `--desktop-control` sidecar. The maintainer accepted it after the D01 macOS spike showed that Wails v2.17.0 cannot enforce top-level navigation with supported APIs: clicking the map attribution link replaces the app. The original Wails analysis below is kept as the record of the proposal. Where it conflicts with this decision, Model C (Electron + HTTP sidecar) applies, including its sandbox/contextIsolation/IPC-validation requirements. D01 qualification ran on macOS arm64 and Intel and on Ubuntu 24.04 x86_64 under X11 and Wayland. Every check passed except one: the native file dialog on Wayland could not be automated in headless Mutter. Gate 2 awaits maintainer acceptance after a manual Wayland Save/Open check. Downstream issues (#149 onward) have not started. Evidence: [desktop-spike-design-report.md](desktop-spike-design-report.md); [#148 comment](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6334742811).
+> **Gate 1 decision (2026-10-22): Electron is the accepted desktop shell**, with the existing React build and the existing Go API as a bundled `--desktop-control` sidecar. The maintainer accepted it after the D01 macOS spike showed that Wails v2.17.0 cannot enforce top-level navigation with supported APIs: clicking the map attribution link replaces the app. The original Wails analysis below is kept as the record of the proposal. Where it conflicts with this decision, Model C (Electron + HTTP sidecar) applies, including its sandbox/contextIsolation/IPC-validation requirements. **D01 Gate 2 was accepted on 2026-11-05** after real GTK portal Save/Open/cancellation checks passed on X11 and Wayland and the implementation checks were clean. The existing #149 is unblocked; downstream implementation has not started. Qualification scope and remaining D11/D14 limits: [desktop-spike-design-report.md](desktop-spike-design-report.md). Decisions: [Gate 1](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6334742811), [Gate 2 acceptance](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6666037247).
 
 ## Decision
 
@@ -259,8 +259,8 @@ Out of MVP: Windows, auto-updater, offline basemap distribution, cloud sync/acco
 
 | Gate | Evidence needed | Current state |
 | --- | --- | --- |
-| 1 Framework | Maintainer records Wails recommendation or evidence-based Electron switch, exact major/toolchain and support floor | Recommendation recorded; final acceptance pending spike |
-| 2 WebView compatibility | Both native engines pass the spike matrix, print/security/stable-store/HMR included; bounded defects closed | Not run |
+| 1 Framework | Maintainer records Wails recommendation or evidence-based Electron switch, exact major/toolchain and support floor | Electron accepted 2026-10-22 |
+| 2 WebView compatibility | Both native engines pass the spike matrix, print/security/stable-store/HMR included; bounded defects closed | D01 accepted 2026-11-05 within recorded scope; D11 regression qualification remains required |
 | 3 Runtime | Dynamic listener, expected-version handshake, readiness, crashes/restarts, parent death, instance lock and clean stop demonstrated | Not implemented |
 | 4 Developer experience | Measured HMR/backend/shell loops meet targets without packaging; clean web/Docker paths still pass | Not implemented |
 | 5 Filesystem | Native projects, durable stores, complete pack integrity, exports/print and recovery work without Docker paths | Not implemented |

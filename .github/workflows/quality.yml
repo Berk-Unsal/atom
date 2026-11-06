@@ -172,6 +172,8 @@ jobs:
             COMMIT=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Check production zlib security floor
+        run: sh scripts/check_container_zlib.sh atom:ci
       - name: Generate SPDX SBOM
         uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
         with:
@@ -199,6 +201,8 @@ jobs:
           tags: atom-core-lab-adapter:ci
           cache-from: type=gha,scope=core-lab-adapter
           cache-to: type=gha,mode=max,scope=core-lab-adapter
+      - name: Check Core Lab adapter zlib security floor
+        run: sh scripts/check_container_zlib.sh atom-core-lab-adapter:ci
       - name: Generate Core Lab adapter SPDX SBOM
         uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
         with:

@@ -8,6 +8,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 - Add reproducible Ubuntu X11/Wayland native project-dialog qualification through the real GTK desktop portal, including Turkish paths, file identity and byte checks, and Save/Open cancellation.
 
+### Fixed
+
+- Refresh both production Alpine image pins to 3.24.4 with zlib 1.3.2-r1 for CVE-2026-85091, and check the built images' zlib security floor in CI.
+
 ## [0.13.1] - 2026-10-27
 
 ### Added

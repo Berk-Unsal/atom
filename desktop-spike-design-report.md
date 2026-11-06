@@ -1,7 +1,7 @@
 # A.T.O.M desktop D01 spike and Electron qualification
 
-Status: **D01 (#148) qualification evidence recorded on macOS (arm64 and Intel) and Ubuntu 24.04 x86_64 (X11 and Wayland).** Gate 1 **passed: Electron accepted by the maintainer on 2026-10-22.** Gate 2 awaits maintainer acceptance; see [Gate 2 assessment](#gate-2-assessment). No downstream desktop issue (#149 onward) has started.
-Run date: 2026-10-22 (Europe/Istanbul). Plan: [desktop-architecture-design-plan.md](desktop-architecture-design-plan.md).
+Status: **D01 (#148) complete. Gate 2 accepted by the maintainer on 2026-11-05** after the [native-dialog follow-up](#native-dialog-follow-up-2026-11-05) and clean implementation checks; see the [acceptance record](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6666037247). Gate 1 selected Electron on 2026-10-22. Qualification covers macOS arm64/Intel and Ubuntu 24.04 x86_64 X11/Wayland within the evidence boundaries below. No downstream desktop implementation has started; the existing #149 is now unblocked.
+Original run date: 2026-10-22; native-dialog follow-up: 2026-11-05 (Europe/Istanbul). Plan: [desktop-architecture-design-plan.md](desktop-architecture-design-plan.md).
 
 ## Outcome
 
@@ -43,7 +43,7 @@ These machines are not the plan's reference machine, so timings show behaviour a
 | IndexedDB across relaunch with a new port | pass | pass | pass | pass |
 | Report print/PDF against the A4 Chromium reference | 9 = 9 pages, 0 words missing | 9 = 9, 0 missing | 9 = 9, 0 missing | 9 = 9, 0 missing |
 | Project export, HTML and Markdown report downloads | pass | pass | pass | pass |
-| Native Save then Open, long Turkish path, same bytes and file identity | pass | pass | pass (Alt+S / Alt+O) | **not demonstrated**: headless Mutter did not deliver injected input |
+| Native Save then Open, long Turkish path, same bytes and file identity | pass | pass | pass (Alt+S / Alt+O); portal follow-up below | originally not demonstrated; **pass via the GTK portal in the follow-up below** |
 | Second launch focuses the first window, no second sidecar | 0.18 s | 0.74 s | 0.17 s | 0.18 s |
 | Sidecar SIGKILL → API 502, no RF replay | pass | pass | pass | pass |
 | Missing or immediately exiting sidecar → window stays usable, 503 | pass | pass | pass | pass |
@@ -114,20 +114,57 @@ The PASS conditions were evaluated as follows:
 
 - **Critical workflows, navigation, auth, storage and print** pass on both OS families, in X11 and Wayland, on both macOS architectures.
 - **HMR p95 is at most 1 s** everywhere.
-- **Only supported APIs were used:** Electron, Playwright's Electron automation, and Mutter's RemoteDesktop API for Wayland input.
+- **Only supported APIs were used:** Electron, Playwright's Electron automation, and GTK's AT-SPI interface for the native portal follow-up. The original Mutter input-injection attempt did not qualify the dialogs.
 - **There is no product or framework fork.**
 
 The remaining limits are environmental, not defects:
 
 - Linux ran under GNOME Mutter on cloud VMs without a GPU and without a full gnome-shell session.
-- The native Save/Open dialog was demonstrated on Ubuntu X11, not on Ubuntu Wayland. The headless compositor accepted Mutter RemoteDesktop sessions but delivered no injected keyboard or pointer input, even to a focused text field. A one-time manual Save/Open on a GNOME Wayland desktop closes this gap.
+- The follow-up qualifies the real GTK desktop portal on both native backends. A different portal backend, a full GNOME Shell session and GPU hardware remain outside this cloud-runner evidence; installed-runtime qualification belongs to D14.
 - No clean-machine install was tested; that is D12–D14.
 
-Recommendation: accept Gate 2 for Electron after the one manual Wayland Save/Open check, and record the remaining limits in D11 and D14. That acceptance is a maintainer decision.
+**Accepted on 2026-11-05.** The maintainer approved Gate 2 conditional on no unresolved implementation issues. Before recording acceptance, PR #182 was checked at `8e7e5a6`: all 12 checks passed, it was mergeable, and no review findings or unresolved threads were reported. The [acceptance record](https://github.com/Berk-Unsal/atom/issues/148#issuecomment-6666037247) closes #148 and unblocks the existing #149. The remaining limits and memory-budget review stay with D11/D14; this is D01 qualification acceptance, not public desktop release qualification.
+
+## Native dialog follow-up: 2026-11-05
+
+The earlier failure was an automation gap. Mutter accepted RemoteDesktop calls but did not deliver their input to the chooser. AT-SPI inspection of Chromium's in-process GTK chooser also cannot establish the result: [Chromium explicitly disables GTK's ATK bridge during initialization](https://chromium.googlesource.com/chromium/src/+/152.0.7977.130/ui/gtk/gtk_ui.cc#338).
+
+The new runner starts a real `xdg-desktop-portal` and `xdg-desktop-portal-gtk` in a private D-Bus/Mutter session. Electron discovers that supported portal normally. An AT-SPI driver restricted to the owned GTK portal process operates the native Save, Select and Cancel controls. It checks the selected exported filename explicitly; GTK's single-file portal labels its accept button **Select**. No dialog response, file read/write, portal service or RF output is mocked.
+
+Both Ubuntu 24.04 x86_64 backends demonstrate:
+
+- Export a real project with a Turkish name from the shared React application and real Go sidecar.
+- Save through the native chooser into nested directories with Turkish characters and a long filename.
+- Select that file through the native Open chooser; compare device/inode identity and SHA-256 with the original exported bytes.
+- Cancel Save without creating a file; cancel Open without returning a file or altering the previously saved bytes.
+- Keep the Chromium renderer sandbox enabled. Wayland uses `GDK_BACKEND=wayland`, `--ozone-platform=wayland`, Mutter `--no-x11`, and no `DISPLAY`.
+
+The session uses a private configuration/runtime directory, a binary-specific AppArmor user-namespace profile and explicit cleanup of the document portal's private FUSE mount. It does not change the machine-wide user-namespace restriction. The original macOS evidence remains the 2026-10-22 qualification; this follow-up adds Linux evidence rather than claiming a new macOS run.
+
+The [full follow-up validation run](https://github.com/Berk-Unsal/atom/actions/runs/42080840639) passed on both backends at commit `e884c1e` (shared product version 0.13.1, Electron 44.7.0 / Chromium 152.0.7977.130, Mutter 46.2, FileChooser portal version 3). The retained outputs were also inspected for the assertions below; a green process exit alone is insufficient for the observational probes. [PR #182](https://github.com/Berk-Unsal/atom/pull/182) retains the harness changes.
+
+| Follow-up check | Ubuntu X11 | Ubuntu Wayland |
+| --- | --- | --- |
+| All 13 workflow steps, including 8-Cell Evaluate/Optimize and native dialogs | pass | pass |
+| Native project bytes saved and reopened | 4,053,710 | 4,053,722 |
+| Native same device/inode and SHA-256 as its own exported source | pass | pass |
+| Path length, including Turkish directories and filename | 244 characters | 244 characters |
+| Cancel Save creates no file; Cancel Open returns no file; existing bytes unchanged | pass | pass |
+| A4 Electron PDF versus Chromium reference | 15 = 15 pages; 0 missing reference words; tagged; Turkish preserved | same |
+| HMR p95 CSS / JS module, 20 warmed samples each | 25 / 6 ms; no full reload | 19 / 5 ms; no full reload |
+| JSON, Blob, abort, 36-entry availability matrix, navigation restrictions | pass | pass |
+| IndexedDB marker survives new sidecar ports; second launch owns one sidecar | pass | pass |
+| Child crash → 502; missing/exiting child → usable window and 503; parent death removes listener | pass | pass |
+| Native session cleanup, including the private document-portal FUSE mount | pass | pass |
+
+The project hashes are `9a5f915e608a0119a30ef99e1f3354ba89f77d1141c5f9a264155e5ad9eb9817` (X11) and `8a38f4060ec22cf9661d2c763159ca4223a63047513c07be98a0b4ede2082ce5` (Wayland). Independent exports contain different timestamps/identities; each native round trip is compared with its own original bytes, not with the other machine's export. Total idle PSS was 1,233 / 1,292 MiB, still above the old 500 MiB proposal; D11's budget review remains necessary. These hosted machines do not qualify reference-hardware timing or memory budgets.
+
+The workflow uploads the platform, portal version, native action trace, file identity/hash results and full-suite outputs for 90 days. `--dialogs-only` results explicitly mark all omitted RF/report/lifecycle/HMR steps as skipped, so they cannot be mistaken for a full qualification.
 
 ## Reproduce
 
 - macOS, local: `ATOM_SPIKE_DIALOG_DRIVER=macos scripts/desktop-spike/qualify-electron.sh` after building `frontend-react`.
-- Linux: `scripts/desktop-spike/linux-session.sh x11|wayland`.
-- CI: push to `spike/desktop-d01-qualification`.
+- Linux native dialogs: `scripts/desktop-spike/dialog-session.sh wayland dialogs` (or `x11`). Install the pinned frontend/Electron dependencies and the Ubuntu packages listed in `.github/workflows/desktop-native-dialogs.yml` first; the script needs `sudo` for the temporary AppArmor profile.
+- Full Linux suite: `scripts/desktop-spike/dialog-session.sh wayland full` (or `x11`), with the pinned Playwright Chromium reference installed as in the workflow.
+- CI: the **Desktop native dialogs** workflow, with `suite=dialogs|full`; full is the default for manual runs. The original `spike/desktop-d01-qualification` branch and `linux-session.sh` remain historical harnesses using the earlier raw input drivers.
 - Wails probe: `scripts/desktop-spike/build-wails.sh --probe` (working tree only).

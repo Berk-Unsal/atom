@@ -25,9 +25,10 @@ try {
   assert.equal(info.rendererSandboxed, true);
   assert.equal(info.commit, JSON.parse(await fs.readFile(path.join(root, "build/resources/build-info.json"), "utf8")).commit);
   const bridge = await page.evaluate(() => ({ keys: Object.keys(window.atomDesktop).sort(), node: typeof window.require, process: typeof window.process }));
-  assert.deepEqual(bridge, { keys: ["getInfo", "openExternal", "protocol"], node: "undefined", process: "undefined" });
+  assert.deepEqual(bridge, { keys: ["getInfo", "getRuntime", "onRuntimeChange", "openExternal", "protocol"], node: "undefined", process: "undefined" });
   const status = await page.evaluate(async () => {
-    const response = await fetch("/readyz", { headers: { "x-atom-client": "1" } });
+    const runtime = await window.atomDesktop.getRuntime();
+    const response = await fetch("/readyz", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": runtime.generation } });
     return { status: response.status, body: await response.json() };
   });
   assert.equal(status.status, 200, JSON.stringify(status));
@@ -57,6 +58,24 @@ try {
   await page.getByRole("button", { name: "Review workspace", exact: true }).click();
   await page.locator("#stage-tool-review-results").click();
   await page.locator(".network-card").first().waitFor({ state: "visible", timeout: 15_000 });
+  const previousRuntime = await page.evaluate(() => window.atomDesktop.getRuntime());
+  assert.deepEqual(previousRuntime.readiness, { listener: true, dataset: true, ui: true });
+  const retainedResult = await page.locator(".network-card").first().innerText();
+  await application.evaluate(async ({ Menu, dialog }) => {
+    dialog.showMessageBox = async () => ({ response: 1 });
+    Menu.getApplicationMenu().getMenuItemById("atom-restart-service").click();
+    await new Promise((resolve) => setImmediate(resolve));
+  });
+  assert.equal((await page.evaluate(() => window.atomDesktop.getRuntime())).generation, previousRuntime.generation);
+  await application.evaluate(({ Menu, dialog }) => {
+    dialog.showMessageBox = async () => ({ response: 0 });
+    Menu.getApplicationMenu().getMenuItemById("atom-restart-service").click();
+  });
+  await page.waitForFunction(async (old) => { const runtime = await window.atomDesktop.getRuntime(); return runtime.state === "ready" && runtime.generation !== old; }, previousRuntime.generation, { timeout: 60_000 });
+  assert.equal(await page.locator(".network-card").first().innerText(), retainedResult);
+  assert.equal(await page.evaluate(async (old) => (await fetch("/api/meta", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": old } })).status, previousRuntime.generation), 409);
+  await page.getByRole("button", { name: "Evaluate Network", exact: true }).click();
+  await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
   await assert.rejects(page.evaluate(() => window.atomDesktop.openExternal("file:///etc/passwd")), /HTTPS/);
   await application.evaluate(({ shell }) => {
     globalThis.__externalLinks = [];
@@ -104,7 +123,7 @@ try {
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close());
   await Promise.race([closed, new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error("Closing the only window did not quit")), 35_000); timer.unref(); })]);
   assert.throws(() => process.kill(sidecarPID, 0), { code: "ESRCH" });
-  const evidence = { result: "PASS", info, status: status.status, sector: { url: sector.url(), status: sector.status() }, networkWorkflow: "ready with Results", menu, renderer: bridge, rendererSandbox: metrics, linuxSandbox, sidecarReaped: true };
+  const evidence = { result: "PASS", info, status: status.status, sector: { url: sector.url(), status: sector.status() }, networkWorkflow: "ready with Results", explicitRecovery: "cancel preserved generation; restart rotated generation and preserved Results; stale request rejected; new evaluation ready", menu, renderer: bridge, rendererSandbox: metrics, linuxSandbox, sidecarReaped: true };
   await fs.writeFile(path.join(root, "test-results/smoke.json"), JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));
 } finally {

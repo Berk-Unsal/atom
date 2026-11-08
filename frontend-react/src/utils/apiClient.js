@@ -8,23 +8,35 @@ export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;
 const INVALID_JSON = Symbol("invalid-json");
 const MAX_ERROR_TEXT_BYTES = 4096;
 
-export async function requestJSON(path, {
+async function withRuntime(signal, operation) {
+  if (platform.kind !== "desktop") return operation(null);
+  const runtime = await platform.beginRequest(signal);
+  try { return await operation(runtime); }
+  catch (error) { runtime.assertCurrent(); throw error; }
+  finally { runtime.close(); }
+}
+
+export function requestJSON(path, options = {}) {
+  return withRuntime(options.signal, (runtime) => requestJSONForRuntime(path, options, runtime));
+}
+
+async function requestJSONForRuntime(path, {
   fallbackMessage = "Request failed",
   method = "GET",
   payload,
   signal,
   headers,
   onResponse,
-} = {}) {
+} = {}, runtime) {
   let response;
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       cache: "no-store",
       method,
       headers: headers || payload !== undefined || platform.kind === "desktop"
-        ? { ...(platform.kind === "desktop" ? { "X-Atom-Client": "1" } : {}), ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
+        ? { ...(runtime ? { "X-Atom-Client": "1", "X-Atom-Runtime-Generation": runtime.generation } : {}), ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
       body: payload === undefined ? undefined : JSON.stringify(payload),
-      signal,
+      signal: runtime?.signal || signal,
     });
   } catch (fetchError) {
     // Browsers reject fetch with TypeError for network failures; anything else (aborts included) passes through.
@@ -34,10 +46,12 @@ export async function requestJSON(path, {
     unreachable.cause = fetchError;
     throw unreachable;
   }
+  runtime?.validateResponse(response);
   if (response.ok && onResponse) {
     try { onResponse(response.headers); } catch (error) { await response.body?.cancel?.(); throw error; }
   }
   const responsePayload = await readResponsePayload(response);
+  await runtime?.finish();
   if (responsePayload === INVALID_JSON) {
     const invalid = new Error(response.ok ? invalidResponseMessage(apiOrigin(API_BASE_URL)) : serverFailureMessage(fallbackMessage, response.status));
     invalid.code = response.ok ? "invalid_response" : "server_error";
@@ -76,20 +90,27 @@ export function getJSON(path, fallbackMessage, signal) {
 }
 
 export async function postBlob(path, payload, fallbackMessage = "Export failed", signal) {
+  return withRuntime(signal, (runtime) => postBlobForRuntime(path, payload, fallbackMessage, signal, runtime));
+}
+
+async function postBlobForRuntime(path, payload, fallbackMessage, signal, runtime) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
     method: "POST",
-    headers: { ...(platform.kind === "desktop" ? { "X-Atom-Client": "1" } : {}), "Content-Type": "application/json" },
+    headers: { ...(runtime ? { "X-Atom-Client": "1", "X-Atom-Runtime-Generation": runtime.generation } : {}), "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-    signal,
+    signal: runtime?.signal || signal,
   });
+  runtime?.validateResponse(response);
   if (!response.ok) {
     const message = await readBoundedText(response, MAX_ERROR_TEXT_BYTES, true);
+    await runtime?.finish();
     throw new Error(message || fallbackMessage);
   }
   const declaredLength = Number(response.headers.get("Content-Length"));
   if (Number.isFinite(declaredLength) && declaredLength > MAX_BLOB_RESPONSE_BYTES) throw oversizedResponseError(MAX_BLOB_RESPONSE_BYTES);
   const blob = await response.blob();
+  await runtime?.finish();
   if (blob.size > MAX_BLOB_RESPONSE_BYTES) throw oversizedResponseError(MAX_BLOB_RESPONSE_BYTES);
   return blob;
 }

@@ -7,8 +7,10 @@ const { Sidecar } = require("./lib/sidecar.cjs");
 const { createRouter } = require("./lib/router.cjs");
 const { APP_ORIGIN, assertMainFrame, externalURL, lockNavigation } = require("./lib/policy.cjs");
 const { readGeometry, writeGeometry } = require("./lib/window-state.cjs");
+const { createRecoveryAction } = require("./lib/recovery.cjs");
 
-const resources = app.isPackaged ? process.resourcesPath : path.join(__dirname, "build/resources");
+const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
+const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
 app.setName("A.T.O.M");
 app.enableSandbox();
 protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, codeCache: true } }]);
@@ -35,7 +37,7 @@ async function launch() {
   session.defaultSession.setPermissionCheckHandler(() => false);
   backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: path.join(resources, "data-pipeline"),
     distDir: path.join(resources, "dist"), version: info.version, commit: info.commit });
-  protocol.handle("app", createRouter({ distDir: path.join(resources, "dist"), sidecar: backend }));
+  protocol.handle("app", createRouter({ distDir: path.join(resources, "dist"), sidecar: backend, devServer }));
   const icon = nativeImage.createFromPath(path.join(resources, "atom.png"));
   if (app.dock) app.dock.setIcon(icon);
   window = new BrowserWindow({ ...geometry, minWidth: Math.min(800, geometry.width), minHeight: Math.min(600, geometry.height),
@@ -46,7 +48,12 @@ async function launch() {
   window.on("page-title-updated", (event) => { event.preventDefault(); });
   window.once("ready-to-show", () => window.show());
   window.on("close", () => { writeGeometry(geometryFile, window.getNormalBounds()); });
-  window.on("closed", () => { window = null; app.quit(); });
+  window.on("closed", () => { backend.setUIReady(false); window = null; app.quit(); });
+  window.webContents.on("render-process-gone", () => backend.setUIReady(false));
+  backend.on("status", (status) => {
+    if (window && !window.isDestroyed()) window.webContents.send("atom:runtime-status", status);
+  });
+  ipcMain.handle("atom:runtime", (event) => { assertMainFrame(event, window); return backend.snapshot(); });
   ipcMain.handle("atom:info", (event) => {
     assertMainFrame(event, window);
     return { kind: "desktop", version: info.version, commit: info.commit, platform: process.platform, arch: process.arch,
@@ -58,6 +65,7 @@ async function launch() {
     if (!safe) throw new Error("Only HTTPS links are supported");
     await openExternal(safe);
   });
+  const recover = createRecoveryAction({ backend, getWindow: () => window, showMessageBox: (...args) => dialog.showMessageBox(...args) });
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     ...(process.platform === "darwin" ? [{ label: "A.T.O.M", submenu: [{ label: "About A.T.O.M", click: () => app.showAboutPanel() }, { type: "separator" }, { role: "hide" }, { role: "hideOthers" }, { role: "unhide" }, { type: "separator" }, { role: "quit" }] }] : []),
     { label: "File", submenu: [{ role: "quit" }] },
@@ -65,12 +73,14 @@ async function launch() {
     { label: "View", submenu: [{ role: "resetZoom" }, { role: "zoomIn" }, { role: "zoomOut" }, { type: "separator" }, { role: "togglefullscreen" }] },
     { role: "windowMenu" },
     { role: "help", submenu: [{ label: "A.T.O.M documentation", click: () => void openExternal("https://berk-unsal.github.io/atom/") },
+      { id: "atom-restart-service", label: "Restart planning service…", click: () => { void recover().catch(() => {}); } },
       ...(process.platform === "darwin" ? [] : [{ label: "About A.T.O.M", click: () => app.showAboutPanel() }])] },
   ]));
   // Start readiness before the renderer's early fetches; errors leave the UI
   // available with a bounded failure response instead of an exception dialog.
   backend.start().catch(() => {});
   await window.loadURL(`${APP_ORIGIN}/`);
+  if (window && !window.isDestroyed() && !quitting) backend.setUIReady(true);
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -92,6 +102,7 @@ if (!app.requestSingleInstanceLock()) {
     backend.stop().finally(() => { stopped = true; app.quit(); });
   });
   app.whenReady().then(launch).catch(async () => {
+    if (quitting) return;
     await dialog.showMessageBox({ type: "error", title: "A.T.O.M could not start", message: "Local desktop resources are missing or invalid.",
       detail: "Run npm run build in desktop, then start the application again. Existing projects are preserved." });
     app.quit();

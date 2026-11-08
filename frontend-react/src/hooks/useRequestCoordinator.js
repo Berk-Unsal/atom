@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { platform } from "../platform/index.js";
 
-export default function useRequestCoordinator() {
+export default function useRequestCoordinator(runtime = platform) {
   const channelsRef = useRef(new Map());
   const sequenceRef = useRef(0);
 
@@ -13,6 +14,9 @@ export default function useRequestCoordinator() {
   const begin = useCallback((channel) => {
     cancel(channel);
     const controller = new AbortController();
+    // Bind before any Run-history await, so an interrupted user action cannot
+    // silently start its first/next HTTP request on a replacement backend.
+    runtime.bindOperation(controller.signal);
     const request = {
       channel,
       controller,
@@ -30,7 +34,7 @@ export default function useRequestCoordinator() {
         }
       },
     };
-  }, [cancel]);
+  }, [cancel, runtime]);
 
   useEffect(() => () => {
     channelsRef.current.forEach(({ controller }) => controller.abort());

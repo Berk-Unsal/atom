@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   buildRunExecutionContext,
   captureOptimizationRun,
@@ -7,6 +7,7 @@ import {
 } from "../domain/runCapture.js";
 import { createOptimizationRun, createSimulationRun, transitionRun } from "../domain/run.js";
 import { datasetReference } from "../utils/projectStore.js";
+import { platform } from "../platform/index.js";
 
 /**
  * Owns durable Run capture and the association from a successful live Run to
@@ -19,11 +20,15 @@ export default function useRunExecution({
   appMeta,
   runHistory,
   settings,
+  runtime = platform,
 } = {}) {
   const { saveRun, updateRunLifecycle } = runHistory;
   const [currentResultRun, setCurrentResultRun] = useState(null);
   const [runHistoryWarning, setRunHistoryWarning] = useState("");
   const latestOptimizationRunRef = useRef(null);
+  const scopesRef = useRef(new Map());
+  const sequenceRef = useRef(0);
+  useEffect(() => { sequenceRef.current++; }, [activeProject?.id, activeScenario?.id]);
 
   const persistRun = useCallback(async (run) => {
     const saved = await saveRun(run);
@@ -36,6 +41,7 @@ export default function useRunExecution({
   }, [saveRun]);
 
   const beginRun = useCallback(async ({ request: requestPayload, runType, optimizerContract = null } = {}) => {
+    const scope = { sequence: ++sequenceRef.current, isCurrent: runtime.captureOperation() };
     const rfContract = {
       model_version: appMeta?.model_version ?? null,
       receiver: {
@@ -71,8 +77,9 @@ export default function useRunExecution({
     await persistRun(queued);
     const running = transitionRun(queued, "running");
     await persistRun(running);
+    scopesRef.current.set(running.run_id, scope);
     return { context, running };
-  }, [activeProject, activeScenario, appMeta, persistRun, settings]);
+  }, [activeProject, activeScenario, appMeta, persistRun, runtime, settings]);
 
   const finishRun = useCallback(async ({
     details = null,
@@ -106,8 +113,13 @@ export default function useRunExecution({
         warnings,
       });
     await persistRun(finalRun);
-    if (finalRun.run_type === "optimization") latestOptimizationRunRef.current = finalRun;
-    if (finalRun.status === "succeeded" && ["simulation", "optimization"].includes(finalRun.run_type)) {
+    const scope = scopesRef.current.get(finalRun.run_id);
+    scopesRef.current.delete(finalRun.run_id);
+    // Retain the truthful historical Run, but never associate an old database
+    // completion with a newer action/workspace or replacement desktop runtime.
+    const current = scope && scope.sequence === sequenceRef.current && scope.isCurrent();
+    if (current && finalRun.run_type === "optimization") latestOptimizationRunRef.current = finalRun;
+    if (current && finalRun.status === "succeeded" && ["simulation", "optimization"].includes(finalRun.run_type)) {
       setCurrentResultRun(finalRun);
     }
     return finalRun;

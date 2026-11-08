@@ -16,15 +16,18 @@ input.on("data", (chunk) => {
       continue;
     }
     if (scenario === "timeout") continue;
-    const send = (event, extra) => output.write(JSON.stringify({ event, protocol: 1, generation: command.generation, ...extra }) + "\n");
+    const send = (event, extra) => output.write(JSON.stringify({ event, protocol: 1, generation: scenario === "foreign-generation" ? "wrong" : command.generation, ...extra }) + "\n");
     if (scenario === "invalid-json") { output.write("bad\n"); continue; }
     if (scenario === "oversized") { output.write("x".repeat(20_000)); continue; }
     if (scenario === "ready-first") { send("ready"); continue; }
     send("listening", { address: scenario === "foreign-address" ? "0.0.0.0:8080" : "127.0.0.1:54321",
       pid: scenario === "foreign-pid" ? process.pid + 1 : process.pid,
-      application_version: scenario === "wrong-version" ? "bad" : "test", build_commit: "test" });
+      application_version: scenario === "wrong-version" ? "bad" : "test", build_commit: scenario === "wrong-commit" ? "bad" : "test" });
     send("dataset", { dataset: { ready: scenario !== "missing-dataset" } });
     send("ready");
+    if (scenario === "late-invalid") setTimeout(() => output.write(JSON.stringify({ event: "ready", protocol: 2, generation: command.generation }) + "\n"), 30);
+    if (scenario === "closed-channel") setTimeout(() => output.end(), 30);
+    if (scenario === "stderr") process.stderr.write("x".repeat(9000) + command.token);
   }
 });
 input.on("end", () => { if (scenario !== "ignore-shutdown") process.exit(0); });

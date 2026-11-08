@@ -2,6 +2,7 @@
 
 const APP_ORIGIN = "app://atom";
 const API_HEADER = "x-atom-client";
+const GENERATION_HEADER = "x-atom-runtime-generation";
 const RELEASE_CSP = "default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; form-action 'none'; img-src 'self' data: https://tile.openstreetmap.org https://tiles.stadiamaps.com; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:";
 
 function isAppURL(raw) {
@@ -49,4 +50,4 @@ function assertMainFrame(event, window) {
   }
 }
 
-module.exports = { APP_ORIGIN, API_HEADER, RELEASE_CSP, isAppURL, externalURL, lockNavigation, assertMainFrame };
+module.exports = { APP_ORIGIN, API_HEADER, GENERATION_HEADER, RELEASE_CSP, isAppURL, externalURL, lockNavigation, assertMainFrame };

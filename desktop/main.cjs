@@ -99,6 +99,9 @@ if (!app.requestSingleInstanceLock()) {
   app.on("second-instance", () => {
     if (!window) return;
     if (window.isMinimized()) window.restore();
+    // A second launch is an explicit request to activate the existing app.
+    // Showing a window alone does not activate a hidden macOS application.
+    if (process.platform === "darwin") { app.show(); app.focus({ steal: true }); }
     window.show(); window.focus();
   });
   app.on("web-contents-created", (_event, contents) => lockNavigation(contents, (url) => {

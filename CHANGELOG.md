@@ -14,6 +14,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Activate the existing macOS application on an explicit second launch, including restoring a hidden or minimized window.
 - Dispose native runtime subscriptions when their frontend module is hot-replaced, aborting old work without retrying RF actions.
 - Keep RF workflow cleanup bound to its original desktop runtime, so a retired capability never reaches a replacement service.
 - Preserve the newer workspace/result association when an older Run-history write completes after a desktop restart or newer action; retain its truthful historical Run.

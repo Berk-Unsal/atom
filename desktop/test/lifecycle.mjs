@@ -74,9 +74,15 @@ try {
   childPID = apiPID(nativeProcess.pid); assert.ok(childPID);
 
   await application.evaluate(({ app }) => { globalThis.__secondLaunches = 0; app.on("second-instance", () => { globalThis.__secondLaunches++; }); });
+  await application.evaluate(({ app, BrowserWindow }) => {
+    BrowserWindow.getAllWindows()[0].minimize();
+    if (process.platform === "darwin") app.hide();
+  });
   const second = spawn(require("electron"), [root], { env, stdio: "ignore" });
   assert.equal(await exited(second), 0);
   assert.equal(await application.evaluate(() => globalThis.__secondLaunches), 1);
+  const focusDeadline = Date.now() + 5000;
+  while (!await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].isFocused()) && Date.now() < focusDeadline) await sleep(25);
   assert.deepEqual(await application.evaluate(({ BrowserWindow }) => {
     const windows = BrowserWindow.getAllWindows();
     return { count: windows.length, visible: windows[0].isVisible(), minimized: windows[0].isMinimized(), focused: windows[0].isFocused() };

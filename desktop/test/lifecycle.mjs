@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import net from "node:net";
-import { spawn, execFileSync } from "node:child_process";
+import { spawn, fork, execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -29,13 +29,18 @@ const exited = (child, timeout = 10_000) => new Promise((resolve, reject) => {
 });
 let application; let nativeProcess; let childPID; let vite;
 try {
-  vite = spawn(process.execPath, [path.join(root, "../frontend-react/node_modules/vite/bin/vite.js"), "--host", "127.0.0.1", "--port", "5173", "--strictPort"],
-    { cwd: path.join(root, "../frontend-react"), env: { ...process.env, ATOM_DESKTOP_DEV: "1" }, stdio: ["ignore", "pipe", "pipe"] });
+  vite = fork(path.join(root, "test/fixtures/vite-server.mjs"), [],
+    { cwd: path.join(root, "../frontend-react"), env: { ...process.env, ATOM_DESKTOP_DEV: "1" }, stdio: ["ignore", "pipe", "pipe", "ipc"] });
   await new Promise((resolve, reject) => {
     let output = "";
-    const timer = setTimeout(() => reject(new Error("Owned Vite server did not start")), 15_000);
-    vite.stdout.on("data", (chunk) => { output = (output + chunk.toString()).slice(-4096); if (output.includes("http://127.0.0.1:5173")) { clearTimeout(timer); resolve(); } });
+    const timer = setTimeout(() => reject(new Error(`Owned Vite server did not start: ${output}`)), 15_000);
+    vite.stdout.on("data", (chunk) => { output = (output + chunk.toString()).slice(-4096); });
     vite.stderr.on("data", (chunk) => { output = (output + chunk.toString()).slice(-4096); });
+    vite.once("message", (message) => {
+      clearTimeout(timer);
+      if (message.event === "ready" && message.address === "127.0.0.1" && message.port === 5173) resolve();
+      else reject(new Error("Unexpected Vite listener identity"));
+    });
     vite.once("exit", () => { clearTimeout(timer); reject(new Error(`Owned Vite server exited: ${output}`)); });
     vite.once("error", (error) => { clearTimeout(timer); reject(error); });
   });

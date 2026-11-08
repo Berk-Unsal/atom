@@ -13,10 +13,13 @@ const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: profile };
 delete env.ELECTRON_RUN_AS_NODE;
 let application;
 let nativeProcess;
+let page;
+const requests = [];
 try {
   application = await electron.launch({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
   nativeProcess = application.process();
-  const page = await application.firstWindow();
+  page = await application.firstWindow();
+  page.on("response", (response) => { if (new URL(response.url()).pathname.startsWith("/api/")) { requests.push({ path: new URL(response.url()).pathname, status: response.status() }); if (requests.length > 100) requests.shift(); } });
   await page.waitForLoadState("domcontentloaded");
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   const info = await page.evaluate(() => window.atomDesktop.getInfo());
@@ -74,7 +77,9 @@ try {
   await page.waitForFunction(async (old) => { const runtime = await window.atomDesktop.getRuntime(); return runtime.state === "ready" && runtime.generation !== old; }, previousRuntime.generation, { timeout: 60_000 });
   assert.equal(await page.locator(".network-card").first().innerText(), retainedResult);
   assert.equal(await page.evaluate(async (old) => (await fetch("/api/meta", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": old } })).status, previousRuntime.generation), 409);
+  const reevaluated = page.waitForResponse((response) => response.url().endsWith("/api/evaluate-network") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Evaluate Network", exact: true }).click();
+  assert.equal((await reevaluated).status(), 200);
   await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
   await assert.rejects(page.evaluate(() => window.atomDesktop.openExternal("file:///etc/passwd")), /HTTPS/);
   await application.evaluate(({ shell }) => {
@@ -126,6 +131,15 @@ try {
   const evidence = { result: "PASS", info, status: status.status, sector: { url: sector.url(), status: sector.status() }, networkWorkflow: "ready with Results", explicitRecovery: "cancel preserved generation; restart rotated generation and preserved Results; stale request rejected; new evaluation ready", menu, renderer: bridge, rendererSandbox: metrics, linuxSandbox, sidecarReaped: true };
   await fs.writeFile(path.join(root, "test-results/smoke.json"), JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));
+} catch (error) {
+  await fs.mkdir(path.join(root, "test-results"), { recursive: true });
+  await page?.screenshot({ path: path.join(root, "test-results/failed-smoke.png") }).catch(() => {});
+  const state = await page?.evaluate(async () => ({ runtime: await window.atomDesktop?.getRuntime(), runState: document.querySelector(".run-state")?.textContent,
+    alerts: [...document.querySelectorAll('[role="alert"]')].map((element) => element.textContent) })).catch(() => null);
+  const failure = { message: error.message, state, requests };
+  await fs.writeFile(path.join(root, "test-results/failed-smoke.json"), JSON.stringify(failure, null, 2));
+  console.error(JSON.stringify(failure, null, 2));
+  throw error;
 } finally {
   if (application && nativeProcess?.exitCode === null && nativeProcess?.signalCode === null) await application.close();
   await fs.rm(profile, { recursive: true, force: true });

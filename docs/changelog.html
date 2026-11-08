@@ -155,6 +155,10 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li>Restrict desktop API routing to explicit methods, paths and
+authenticated loopback targets; isolate report HTML in a temporary
+session without scripts, network or native authority, and add
+real-engine hostile-content tests.</li>
 <li>Add explicit desktop planning-service recovery with separate
 API/dataset/UI readiness, per-action runtime generation guards,
 late-result protection and native tests for Vite-only startup, repeated
@@ -170,6 +174,8 @@ paths, file identity and byte checks, and Save/Open cancellation.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Keep RF workflow cleanup bound to its original desktop runtime, so a
+retired capability never reaches a replacement service.</li>
 <li>Preserve the newer workspace/result association when an older
 Run-history write completes after a desktop restart or newer action;
 retain its truthful historical Run.</li>

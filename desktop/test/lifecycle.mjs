@@ -55,6 +55,22 @@ try {
   await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
   const first = await page.evaluate(() => window.atomDesktop.getRuntime());
   assert.deepEqual(first.readiness, { listener: true, dataset: true, ui: true });
+  const storedReport = await page.evaluate(async () => {
+    const { LocalArtifactStore } = await import("/src/repository/artifactStore.js");
+    const { createGeneratedReportArtifact } = await import("/src/domain/report.js");
+    const { openStoredHtmlReport } = await import("/src/utils/reportArtifactDownload.js");
+    const store = new LocalArtifactStore();
+    const html = '<!doctype html><script>opener.atomDesktop.openExternal("https://evil.invalid/");opener.__reportExecuted=true</script><iframe src="app://atom/"></iframe>';
+    const metadata = await store.putArtifact(createGeneratedReportArtifact({ artifact_id: "native-hostile-html", report_id: "native-security-fixture", format: "html" }), html);
+    const retained = await store.getArtifact(metadata.artifact_id);
+    let error;
+    try { openStoredHtmlReport(retained.metadata, retained.bytes); } catch (failure) { error = failure.message; }
+    return { error, sameBytes: new TextDecoder().decode(retained.bytes) === html, hash: retained.metadata.content_hash, executed: Boolean(globalThis.__reportExecuted) };
+  });
+  assert.match(storedReport.error, /report window was blocked/);
+  assert.equal(storedReport.sameBytes, true); assert.equal(storedReport.executed, false);
+  assert.match(storedReport.hash, /^[a-f0-9]{64}$/);
+  assert.equal(await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().length), 1);
   childPID = apiPID(nativeProcess.pid); assert.ok(childPID);
 
   await application.evaluate(({ app }) => { globalThis.__secondLaunches = 0; app.on("second-instance", () => { globalThis.__secondLaunches++; }); });
@@ -104,7 +120,7 @@ try {
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close());
   await exited(nativeProcess, 35_000);
   const evidence = { result: "PASS", cleanViteWithoutDist: true, repeatedLaunchFocusedExistingHost: true, crashRequiredExplicitRecovery: true,
-    generationRotated: true, sameProfileRelaunchAfterHostDeath: true, missingSidecarKeptUsableWindow: true, abruptHostDeath: { childExited: true, listenerClosed: true, milliseconds: deathMs } };
+    generationRotated: true, storedHtmlHadNoWindowOrNativeAuthority: true, sameProfileRelaunchAfterHostDeath: true, missingSidecarKeptUsableWindow: true, abruptHostDeath: { childExited: true, listenerClosed: true, milliseconds: deathMs } };
   await fs.writeFile(path.join(root, "test-results/lifecycle.json"), JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));
 } finally {

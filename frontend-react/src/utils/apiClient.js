@@ -2,22 +2,22 @@ import { rfRecoveryMessage } from "./rfRecoveryMessage.js";
 import { apiOrigin, apiUnreachableMessage, invalidResponseMessage, serverFailureMessage, timeoutFailureMessage } from "./apiRecovery.js";
 import { platform } from "../platform/index.js";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+export const API_BASE_URL = platform.kind === "desktop" ? "" : import.meta.env.VITE_API_BASE_URL ?? "";
 export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;
 export const MAX_BLOB_RESPONSE_BYTES = 64 * 1024 * 1024;
 const INVALID_JSON = Symbol("invalid-json");
 const MAX_ERROR_TEXT_BYTES = 4096;
 
-async function withRuntime(signal, operation) {
+async function withRuntime(signal, operation, operationSignal = signal) {
   if (platform.kind !== "desktop") return operation(null);
-  const runtime = await platform.beginRequest(signal);
+  const runtime = await platform.beginRequest(signal, operationSignal);
   try { return await operation(runtime); }
   catch (error) { runtime.cancel(); runtime.assertCurrent(); throw error; }
   finally { runtime.close(); }
 }
 
 export function requestJSON(path, options = {}) {
-  return withRuntime(options.signal, (runtime) => requestJSONForRuntime(path, options, runtime));
+  return withRuntime(options.signal, (runtime) => requestJSONForRuntime(path, options, runtime), options.operationSignal);
 }
 
 async function requestJSONForRuntime(path, {

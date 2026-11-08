@@ -1,9 +1,26 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-afterEach(() => { vi.unstubAllGlobals(); vi.resetModules(); });
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.resetModules(); });
 
 describe("native shared HTTP client", () => {
+  it("never sends an old RF capability to a replacement runtime during cleanup", async () => {
+    const first = "a".repeat(32); const second = "b".repeat(32);
+    let status = { sequence: 1, state: "ready", generation: first };
+    vi.stubGlobal("atomDesktop", { protocol: 1, getInfo: vi.fn(), openExternal: vi.fn(), getRuntime: async () => status, onRuntimeChange: vi.fn() });
+    const fetch = vi.fn(async () => new Response("{}", { headers: { "content-type": "application/json", "X-Atom-Runtime-Generation": first,
+      "RF-Workflow-ID": "c".repeat(32), "RF-Workflow-Remaining": "1", "RF-Workflow-Expires": "60", "RF-Budget-Policy": "bounded-followups-v1" } }));
+    vi.stubGlobal("fetch", fetch);
+    const { createRFWorkflow } = await import("../utils/rfWorkflow.js");
+    const action = new AbortController();
+    const workflow = createRFWorkflow({ rf_budget_policy: "bounded-followups-v1" }, action.signal);
+    await workflow.root("/api/evaluate-network", {}, "failed", 1);
+    status = { sequence: 2, state: "ready", generation: second };
+    await workflow.close();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][1].headers["X-Atom-Runtime-Generation"]).toBe(first);
+  });
   it("marks JSON and Blob requests without changing the RF workflow headers or payload", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", "https://unrelated.invalid");
     const generation = "a".repeat(32);
     vi.stubGlobal("atomDesktop", { protocol: 1, getInfo: vi.fn(), openExternal: vi.fn(), getRuntime: async () => ({ sequence: 1, state: "ready", generation }), onRuntimeChange: vi.fn() });
     const fetch = vi.fn(async (_url, options) => ({
@@ -17,7 +34,8 @@ describe("native shared HTTP client", () => {
     await getJSON("/api/meta");
     await postJSON("/api/evaluate-network", { cells: [] }, "failed", undefined, { headers: { "RF-Workflow": "network-maps-v1" } });
     await postBlob("/api/export", { format: "geojson" });
-    for (const [, options] of fetch.mock.calls) {
+    for (const [url, options] of fetch.mock.calls) {
+      expect(url.startsWith("/api/")).toBe(true);
       expect(options.headers["X-Atom-Client"]).toBe("1");
       expect(options.headers["X-Atom-Desktop-Token"]).toBeUndefined();
       expect(options.headers["X-Atom-Runtime-Generation"]).toBe(generation);

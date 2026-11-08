@@ -5,15 +5,17 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { Sidecar } = require("./lib/sidecar.cjs");
 const { createRouter } = require("./lib/router.cjs");
-const { APP_ORIGIN, assertMainFrame, externalURL, lockNavigation } = require("./lib/policy.cjs");
+const { APP_ORIGIN, assertMainFrame, allowRendererRequest, isTrustedDocument, externalURL, lockNavigation } = require("./lib/policy.cjs");
 const { readGeometry, writeGeometry } = require("./lib/window-state.cjs");
 const { createRecoveryAction } = require("./lib/recovery.cjs");
+const { REPORT_SCHEME } = require("./lib/report-surface.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
 app.setName("A.T.O.M");
 app.enableSandbox();
-protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, codeCache: true } }]);
+protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, codeCache: true } },
+  { scheme: REPORT_SCHEME, privileges: { standard: true, secure: true, stream: true } }]);
 // Local builds get a separate profile and lock; never reuse browser/release data.
 if (!app.isPackaged) app.setPath("userData", process.env.ATOM_DESKTOP_TEST_PROFILE
   ? path.resolve(process.env.ATOM_DESKTOP_TEST_PROFILE) : path.join(app.getPath("appData"), "A.T.O.M-local"));
@@ -35,6 +37,9 @@ async function launch() {
   const geometry = readGeometry(geometryFile, [screen.getPrimaryDisplay(), ...screen.getAllDisplays().filter((d) => d.id !== screen.getPrimaryDisplay().id)]);
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+    callback({ cancel: !allowRendererRequest(details, window?.webContents, devServer) });
+  });
   backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: path.join(resources, "data-pipeline"),
     distDir: path.join(resources, "dist"), version: info.version, commit: info.commit });
   protocol.handle("app", createRouter({ distDir: path.join(resources, "dist"), sidecar: backend, devServer }));
@@ -91,7 +96,9 @@ if (!app.requestSingleInstanceLock()) {
     if (window.isMinimized()) window.restore();
     window.show(); window.focus();
   });
-  app.on("web-contents-created", (_event, contents) => lockNavigation(contents, openExternal));
+  app.on("web-contents-created", (_event, contents) => lockNavigation(contents, (url) => {
+    if (window && !window.isDestroyed() && contents === window.webContents && isTrustedDocument(contents.getURL())) void openExternal(url);
+  }));
   app.on("window-all-closed", () => app.quit());
   app.on("activate", () => { if (window) window.show(); });
   app.on("before-quit", (event) => {

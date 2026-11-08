@@ -5,6 +5,7 @@ export function supportsRFWorkflow(meta) { return meta?.rf_budget_policy === RF_
 
 // One action owns one capability. It never enters project/scientific state.
 export function createRFWorkflow(meta, signal) {
+  signal ??= new AbortController().signal;
   const enabled = supportsRFWorkflow(meta);
   let id = null;
   let count = 0;
@@ -16,7 +17,7 @@ export function createRFWorkflow(meta, signal) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
     try {
-      await requestJSON("/api/rf-workflows", { method: "DELETE", headers: { "RF-Workflow-ID": id }, signal: controller.signal });
+      await requestJSON("/api/rf-workflows", { method: "DELETE", headers: { "RF-Workflow-ID": id }, signal: controller.signal, operationSignal: signal });
     } catch { /* Server expiry is the correctness fallback; never retry RF. */ }
     finally { clearTimeout(timeout); }
   };

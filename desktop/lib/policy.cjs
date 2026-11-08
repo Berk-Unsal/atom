@@ -13,12 +13,32 @@ function isAppURL(raw) {
   } catch { return false; }
 }
 
+function isTrustedDocument(raw) {
+  if (!isAppURL(raw)) return false;
+  const url = new URL(raw);
+  return ["/", "/index.html"].includes(url.pathname) && !url.search;
+}
+
 function externalURL(raw) {
   if (typeof raw !== "string" || raw.length > 8192) return null;
   try {
     const url = new URL(raw);
     return url.protocol === "https:" && !url.username && !url.password ? url.href : null;
   } catch { return null; }
+}
+
+function allowRendererRequest(details, contents, devServer = "") {
+  if (!contents || contents.isDestroyed() || details.webContentsId !== contents.id) return false;
+  if (details.resourceType === "mainFrame") return isTrustedDocument(details.url);
+  if (["subFrame", "object"].includes(details.resourceType) || !isTrustedDocument(contents.getURL())) return false;
+  if (!details.frame || details.frame !== contents.mainFrame) return false;
+  if (isAppURL(details.url)) return true;
+  try {
+    const url = new URL(details.url);
+    if (details.resourceType === "image" && ["https://tile.openstreetmap.org", "https://tiles.stadiamaps.com"].includes(url.origin) && !url.username && !url.password) return true;
+    if (["image", "font"].includes(details.resourceType) && url.protocol === "data:") return true;
+    return devServer === "http://127.0.0.1:5173" && details.resourceType === "webSocket" && url.origin === "ws://127.0.0.1:5173";
+  } catch { return false; }
 }
 
 function lockNavigation(contents, openExternal) {
@@ -45,9 +65,9 @@ function lockNavigation(contents, openExternal) {
 
 function assertMainFrame(event, window) {
   if (!window || window.isDestroyed() || event.sender !== window.webContents ||
-      event.senderFrame !== window.webContents.mainFrame || !isAppURL(event.senderFrame.url)) {
+      event.senderFrame !== window.webContents.mainFrame || !isTrustedDocument(event.senderFrame.url)) {
     throw new Error("Native capability unavailable in this frame");
   }
 }
 
-module.exports = { APP_ORIGIN, API_HEADER, GENERATION_HEADER, RELEASE_CSP, isAppURL, externalURL, lockNavigation, assertMainFrame };
+module.exports = { APP_ORIGIN, API_HEADER, GENERATION_HEADER, RELEASE_CSP, isAppURL, isTrustedDocument, allowRendererRequest, externalURL, lockNavigation, assertMainFrame };

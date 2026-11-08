@@ -51,10 +51,10 @@ export function createRuntimeGuard(bridge) {
       const binding = captureBinding();
       return () => binding.ready && status?.generation === binding.generation && ACTIVE_STATES.has(status.state);
     },
-    async begin(signal) {
-      const existing = signal && operations.get(signal);
+    async begin(signal, operationSignal = signal) {
+      const existing = operationSignal && operations.get(operationSignal);
       const binding = existing || captureBinding();
-      if (signal && !existing) operations.set(signal, binding);
+      if (operationSignal && !existing) operations.set(operationSignal, binding);
       await binding.pending;
       if (binding.error) throw binding.error;
       if (existing) await refresh();

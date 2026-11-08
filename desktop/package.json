@@ -11,7 +11,7 @@
     "build": "node scripts/build.cjs",
     "test": "node --test test/*.test.cjs",
     "test:runtime": "node --test test/runtime.integration.cjs",
-    "test:native": "node test/smoke.mjs && node test/lifecycle.mjs"
+    "test:native": "node test/smoke.mjs && node test/lifecycle.mjs && node test/security.mjs"
   },
   "devDependencies": {
     "electron": "44.10.2",

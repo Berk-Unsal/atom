@@ -3,10 +3,13 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { APP_ORIGIN, API_HEADER, GENERATION_HEADER, RELEASE_CSP, isAppURL } = require("./policy.cjs");
+const { allowedAPIPath, validPrivateTarget } = require("./routes.cjs");
 
 const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon", ".woff2": "font/woff2", ".txt": "text/plain", ".webmanifest": "application/manifest+json" };
 const isAPIPath = (pathname) => pathname.startsWith("/api/") || ["/healthz", "/readyz"].includes(pathname);
-const errorResponse = (status, error, generation) => Response.json({ error }, { status, headers: generation ? { [GENERATION_HEADER]: generation } : {} });
+const errorResponse = (status, error, generation) => Response.json({ error }, { status, headers: {
+  "cache-control": "no-store", "x-content-type-options": "nosniff", ...(generation ? { [GENERATION_HEADER]: generation } : {}),
+} });
 
 function createRouter({ distDir, sidecar, fetchAPI = fetch, devServer = "", fetchUI = fetch }) {
   if (devServer && devServer !== "http://127.0.0.1:5173") throw new Error("Desktop development UI must use the fixed loopback Vite origin");
@@ -18,12 +21,14 @@ function createRouter({ distDir, sidecar, fetchAPI = fetch, devServer = "", fetc
       const site = request.headers.get("sec-fetch-site");
       if ((origin && origin !== APP_ORIGIN) || (site && !["same-origin", "none"].includes(site)) ||
           request.headers.get(API_HEADER) !== "1") return errorResponse(403, "Desktop request rejected");
+      if (!allowedAPIPath(request.method, url.pathname)) return errorResponse(404, "Desktop API route unavailable");
       const generation = request.headers.get(GENERATION_HEADER);
       const status = sidecar.snapshot();
       if (!generation || generation !== status.generation || ["restarting", "stopping", "stopped"].includes(status.state)) return errorResponse(409, "Planning service changed; run the action again", status.generation);
       let target;
       try { target = await sidecar.ready(); } catch { return errorResponse(503, "Planning service unavailable; use Help → Restart planning service, or rebuild the local resources", generation); }
       if (target.generation !== generation || sidecar.current !== target) return errorResponse(409, "Planning service changed; run the action again", target.generation);
+      if (!validPrivateTarget(target, generation)) return errorResponse(502, "Desktop API destination rejected", generation);
       const controller = new AbortController();
       const abort = () => controller.abort();
       request.signal.addEventListener("abort", abort, { once: true });
@@ -78,6 +83,7 @@ function createRouter({ distDir, sidecar, fetchAPI = fetch, devServer = "", fetc
     try {
       const pathname = decodeURIComponent(url.pathname);
       if (pathname.includes("\0") || pathname.includes("\\")) return errorResponse(400, "Invalid asset path");
+      if (!["/", "/index.html"].includes(pathname) && !/^\/(assets|icon)\/.+\.(js|css|json|svg|png|ico|woff2|txt|webmanifest)$/.test(pathname)) return errorResponse(404, "Asset not found");
       const root = await fs.realpath(distDir);
       const relative = pathname === "/" ? "/index.html" : pathname;
       const file = await fs.realpath(path.resolve(root, `.${relative}`));

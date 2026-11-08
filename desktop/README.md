@@ -37,13 +37,13 @@ React's `src/platform/index.js` selects browser or native capabilities. The
 sandboxed preload exposes typed `getInfo()`, `openExternal(httpsURL)` and read-only
 runtime snapshots/change notifications through an exact-main-frame checked
 bridge. Runtime snapshots separate listener, dataset and loaded-renderer
-readiness without exposing the PID, port, token, paths or stderr. File/report actions remain disabled until
+readiness without exposing the PID, port, token, paths or stderr. Native file/report integrations remain gated by
 their dedicated issues. Native dependencies remain outside the headless Go and
 browser build graphs. API calls continue through the shared HTTP client and a
 stable `app://atom` route; host-only per-launch credentials travel to the owned
 dynamic-loopback child over inherited pipes. A non-secret client header prevents
 passive asset requests from becoming API calls. Imported report HTML never gets
-native capabilities; isolated native report handling is #156.
+native capabilities. The host-only isolated report surface uses a separate temporary session, disabled scripts, no preload/opener/network and a bounded in-memory HTML route; #156 will connect user-approved Save/Print/PDF actions to it. See [the security boundary](SECURITY.md).
 
 Choose **Help → Restart planning service…** for explicit recovery after a crash
 or when restarting an active service. Cancel leaves the current process alone.
@@ -97,7 +97,7 @@ profiles/resources. Native dialog confirmation is stubbed for menu automation;
 actual file dialogs remain #154 qualification.
 
 These checks do not qualify production packaging, RF accuracy, native file/print
-actions or the full #151 security matrix. Follow
+actions. The security suite adds hostile origins, main/subframe navigation, popups, redirects, Chromium drag events, imported project text, stored report bytes and the isolated report surface; CI also requests the private API as another OS user without a token. Follow
 `docs/active-issues-goal-plan.md` for the remaining issue acceptance gates.
 
 Known external dependency: the shared Stadia map tiles show authentication-error

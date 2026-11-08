@@ -22,7 +22,7 @@ export function createPlatform(bridge) {
     capabilities: Object.freeze({ nativeProjectFiles: false, nativeReports: false }),
     getInfo: () => bridge.getInfo(),
     openExternal: (url) => bridge.openExternal(url),
-    beginRequest: (signal) => runtime.begin(signal),
+    beginRequest: (signal, operationSignal) => runtime.begin(signal, operationSignal),
     bindOperation: (signal) => runtime.bindOperation(signal),
     captureOperation: () => runtime.captureOperation(),
   });

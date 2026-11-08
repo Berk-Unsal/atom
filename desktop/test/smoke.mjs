@@ -96,9 +96,10 @@ try {
   // Observe the real sidecar PID before closing the only normal window.
   const parentPID = nativeProcess.pid;
   const childLine = execFileSync("ps", ["-ax", "-o", "pid=,ppid=,comm="], { encoding: "utf8" }).split("\n")
-    .find((line) => { const match = /^\s*(\d+)\s+(\d+)\s+(.+)$/.exec(line); return match && +match[2] === parentPID && match[3].endsWith("/atom-api"); });
+    .find((line) => { const match = /^\s*(\d+)\s+(\d+)\s+(.+)$/.exec(line); return match && +match[2] === parentPID && path.basename(match[3]) === "atom-api"; });
   assert.ok(childLine, "The real API must be an owned child of Electron");
   const sidecarPID = +childLine.trim().split(/\s+/)[0];
+  if (process.platform === "linux") assert.equal(await fs.realpath(`/proc/${sidecarPID}/exe`), await fs.realpath(path.join(root, "build/resources/atom-api")));
   const closed = new Promise((resolve) => nativeProcess.once("exit", resolve));
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close());
   await Promise.race([closed, new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error("Closing the only window did not quit")), 35_000); timer.unref(); })]);

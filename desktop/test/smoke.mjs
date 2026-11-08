@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
+import { waitForRuntime } from "./runtime-wait.mjs";
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(import.meta.dirname, "..");
@@ -84,7 +85,7 @@ try {
     dialog.showMessageBox = async () => ({ response: 0 });
     Menu.getApplicationMenu().getMenuItemById("atom-restart-service").click();
   });
-  await page.waitForFunction(async (old) => { const runtime = await window.atomDesktop.getRuntime(); return runtime.state === "ready" && runtime.generation !== old; }, previousRuntime.generation, { timeout: 60_000 });
+  await waitForRuntime(page, (runtime) => runtime.state === "ready" && runtime.generation !== previousRuntime.generation, 60_000);
   assert.equal(await page.locator(".network-card").first().innerText(), retainedResult);
   assert.equal(await page.evaluate(async (old) => (await fetch("/api/meta", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": old } })).status, previousRuntime.generation), 409);
   const reevaluated = page.waitForResponse((response) => response.url().endsWith("/api/evaluate-network") && response.request().method() === "POST");

@@ -6,6 +6,7 @@ import path from "node:path";
 import net from "node:net";
 import { spawn, fork, execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
+import { waitForRuntime } from "./runtime-wait.mjs";
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(import.meta.dirname, "..");
@@ -68,11 +69,11 @@ try {
   assert.equal((await page.evaluate(() => window.atomDesktop.getRuntime())).generation, first.generation);
 
   process.kill(childPID, "SIGKILL");
-  await page.waitForFunction(async () => (await window.atomDesktop.getRuntime()).state === "failed", null, { timeout: 10_000 });
+  await waitForRuntime(page, (runtime) => runtime.state === "failed", 10_000);
   assert.equal(await page.evaluate(async () => { try { await (await import("/src/utils/apiClient.js")).getJSON("/api/meta"); return "unexpected success"; } catch (error) { return error.code; } }), "runtime_changed");
   assert.equal(apiPID(nativeProcess.pid), null);
   await application.evaluate(({ Menu, dialog }) => { dialog.showMessageBox = async () => ({ response: 0 }); Menu.getApplicationMenu().getMenuItemById("atom-restart-service").click(); });
-  await page.waitForFunction(async (old) => { const runtime = await window.atomDesktop.getRuntime(); return runtime.state === "ready" && runtime.generation !== old; }, first.generation, { timeout: 60_000 });
+  await waitForRuntime(page, (runtime) => runtime.state === "ready" && runtime.generation !== first.generation, 60_000);
   assert.ok(await page.evaluate(async () => (await (await import("/src/utils/apiClient.js")).getJSON("/api/meta")).application_version));
   childPID = apiPID(nativeProcess.pid); assert.ok(childPID);
   const listeners = execFileSync("lsof", ["-nP", "-a", "-p", String(childPID), "-iTCP", "-sTCP:LISTEN"], { encoding: "utf8" });
@@ -94,7 +95,7 @@ try {
   nativeProcess = application.process();
   const failedPage = await application.firstWindow();
   await failedPage.waitForFunction(() => Boolean(window.atomDesktop?.getRuntime), null, { timeout: 30_000 });
-  await failedPage.waitForFunction(async () => (await window.atomDesktop.getRuntime()).state === "failed", null, { timeout: 10_000 });
+  await waitForRuntime(failedPage, (runtime) => runtime.state === "failed", 10_000);
   assert.match((await failedPage.evaluate(() => window.atomDesktop.getRuntime())).error, /ENOENT/);
   assert.equal((await failedPage.evaluate(() => window.atomDesktop.getInfo())).kind, "desktop");
   await failedPage.getByText("A.T.O.M", { exact: true }).first().waitFor({ timeout: 30_000 });

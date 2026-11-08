@@ -22,6 +22,7 @@ try {
   const info = await page.evaluate(() => window.atomDesktop.getInfo());
   assert.equal(info.version, (await fs.readFile(path.join(root, "../VERSION"), "utf8")).trim());
   assert.equal(info.shell, "electron");
+  assert.equal(info.rendererSandboxed, true);
   assert.equal(info.commit, JSON.parse(await fs.readFile(path.join(root, "build/resources/build-info.json"), "utf8")).commit);
   const bridge = await page.evaluate(() => ({ keys: Object.keys(window.atomDesktop).sort(), node: typeof window.require, process: typeof window.process }));
   assert.deepEqual(bridge, { keys: ["getInfo", "openExternal", "protocol"], node: "undefined", process: "undefined" });
@@ -80,7 +81,18 @@ try {
   await page.waitForTimeout(250);
   assert.equal(page.url(), "app://atom/");
   const metrics = await application.evaluate(({ app }) => app.getAppMetrics().filter((metric) => metric.type === "Tab").map((metric) => ({ sandboxed: metric.sandboxed })));
-  assert.ok(metrics.length > 0 && metrics.every((metric) => metric.sandboxed));
+  // ProcessMetric.sandboxed is macOS/Windows-only. The sandboxed preload's
+  // process.sandboxed flag above is supported on both targets. On Linux also
+  // assert actual renderer kernel enforcement, never substitute --no-sandbox.
+  assert.ok(metrics.length > 0);
+  for (const metric of metrics) if (typeof metric.sandboxed === "boolean") assert.equal(metric.sandboxed, true);
+  let linuxSandbox;
+  if (process.platform === "linux") {
+    const rendererPID = await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.getOSProcessId());
+    const processStatus = await fs.readFile(`/proc/${rendererPID}/status`, "utf8");
+    linuxSandbox = { noNewPrivileges: Number(/^NoNewPrivs:\s*(\d+)$/m.exec(processStatus)?.[1]), seccomp: Number(/^Seccomp:\s*(\d+)$/m.exec(processStatus)?.[1]) };
+    assert.deepEqual(linuxSandbox, { noNewPrivileges: 1, seccomp: 2 });
+  }
   // Observe the real sidecar PID before closing the only normal window.
   const parentPID = nativeProcess.pid;
   const childLine = execFileSync("ps", ["-ax", "-o", "pid=,ppid=,comm="], { encoding: "utf8" }).split("\n")
@@ -91,7 +103,7 @@ try {
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close());
   await Promise.race([closed, new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error("Closing the only window did not quit")), 35_000); timer.unref(); })]);
   assert.throws(() => process.kill(sidecarPID, 0), { code: "ESRCH" });
-  const evidence = { result: "PASS", info, status: status.status, sector: { url: sector.url(), status: sector.status() }, networkWorkflow: "ready with Results", menu, renderer: bridge, rendererSandbox: metrics, sidecarReaped: true };
+  const evidence = { result: "PASS", info, status: status.status, sector: { url: sector.url(), status: sector.status() }, networkWorkflow: "ready with Results", menu, renderer: bridge, rendererSandbox: metrics, linuxSandbox, sidecarReaped: true };
   await fs.writeFile(path.join(root, "test-results/smoke.json"), JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));
 } finally {

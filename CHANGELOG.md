@@ -6,10 +6,12 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add a thin local Electron host for the shared React/Go application with a sandboxed capability bridge, canonical-version About, native menus, bounded remembered window geometry and an owned API sidecar. Local builds are unsigned development artifacts; desktop distribution remains gated.
 - Add reproducible Ubuntu X11/Wayland native project-dialog qualification through the real GTK desktop portal, including Turkish paths, file identity and byte checks, and Save/Open cancellation.
 
 ### Fixed
 
+- Update the backend's `golang.org/x/net` to 0.62.0 and its required crypto/text dependencies to clear the container scan's CVE-2026-78661 HTML-parser denial-of-service finding.
 - Refresh both production Alpine image pins to 3.24.4 with zlib 1.3.2-r1 for CVE-2026-85091, and check the built images' zlib security floor in CI.
 
 ## [0.13.1] - 2026-10-27

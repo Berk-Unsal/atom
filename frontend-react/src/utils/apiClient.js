@@ -1,5 +1,6 @@
 import { rfRecoveryMessage } from "./rfRecoveryMessage.js";
 import { apiOrigin, apiUnreachableMessage, invalidResponseMessage, serverFailureMessage, timeoutFailureMessage } from "./apiRecovery.js";
+import { platform } from "../platform/index.js";
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 export const MAX_JSON_RESPONSE_BYTES = 32 * 1024 * 1024;
@@ -20,7 +21,8 @@ export async function requestJSON(path, {
     response = await fetch(`${API_BASE_URL}${path}`, {
       cache: "no-store",
       method,
-      headers: headers || payload !== undefined ? { ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
+      headers: headers || payload !== undefined || platform.kind === "desktop"
+        ? { ...(platform.kind === "desktop" ? { "X-Atom-Client": "1" } : {}), ...(payload === undefined ? {} : { "Content-Type": "application/json" }), ...headers } : undefined,
       body: payload === undefined ? undefined : JSON.stringify(payload),
       signal,
     });
@@ -77,7 +79,7 @@ export async function postBlob(path, payload, fallbackMessage = "Export failed",
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { ...(platform.kind === "desktop" ? { "X-Atom-Client": "1" } : {}), "Content-Type": "application/json" },
     body: JSON.stringify(payload),
     signal,
   });

@@ -1,0 +1,19 @@
+{
+  "name": "atom-desktop",
+  "private": true,
+  "description": "Thin desktop host for the shared A.T.O.M React and Go product.",
+  "main": "main.cjs",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node scripts/start.cjs",
+    "build": "node scripts/build.cjs",
+    "test": "node --test test/*.test.cjs",
+    "test:native": "node test/smoke.mjs"
+  },
+  "devDependencies": {
+    "electron": "44.10.2",
+    "playwright-core": "1.61.1"
+  }
+}

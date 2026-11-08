@@ -40,7 +40,9 @@ describe("desktop runtime leases", () => {
     const guard = createRuntimeGuard({ getRuntime: () => new Promise((resolve) => { reply = resolve; }), onRuntimeChange: (callback) => { notify = callback; } });
     const pending = guard.begin();
     notify(ready(2, nextGeneration)); reply(ready());
-    const lease = await pending;
+    await expect(pending).rejects.toMatchObject({ code: "runtime_changed" });
+    const fresh = guard.begin(); reply(ready(2, nextGeneration));
+    const lease = await fresh;
     expect(lease.generation).toBe(nextGeneration);
     lease.close();
   });
@@ -57,11 +59,23 @@ describe("desktop runtime leases", () => {
 
   it("keeps a multi-request user action bound even between HTTP calls", async () => {
     const host = runtime(); const first = await host.guard.begin(); first.close();
+    expect(first.signal.aborted).toBe(false);
     const action = new AbortController(); host.guard.bindOperation(action.signal);
     const valid = host.guard.captureOperation();
+    await vi.waitFor(() => expect(valid()).toBe(true));
     host.change(ready(2, nextGeneration));
     expect(valid()).toBe(false);
     await expect(host.guard.begin(action.signal)).rejects.toMatchObject({ code: "runtime_changed" });
     expect((await host.guard.begin(new AbortController().signal)).generation).toBe(nextGeneration);
+  });
+
+  it("accepts a fresh action after recovery even if every change notification was delayed", async () => {
+    const host = runtime(); const boot = await host.guard.begin(); boot.close();
+    const old = new AbortController(); host.guard.bindOperation(old.signal);
+    await host.guard.begin(old.signal);
+    host.change(ready(2, nextGeneration), false);
+    const fresh = new AbortController(); host.guard.bindOperation(fresh.signal);
+    expect((await host.guard.begin(fresh.signal)).generation).toBe(nextGeneration);
+    await expect(host.guard.begin(old.signal)).rejects.toMatchObject({ code: "runtime_changed" });
   });
 });

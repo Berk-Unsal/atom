@@ -9,7 +9,6 @@ function runtimeError() {
 /** Runtime leases never retry work. They cover body consumption, not just headers. */
 export function createRuntimeGuard(bridge) {
   let status = null;
-  let initialized;
   let subscribed = false;
   const leases = new Set();
   const operations = new WeakMap();
@@ -24,32 +23,41 @@ export function createRuntimeGuard(bridge) {
     }
   };
   const refresh = async () => {
+    if (!subscribed) {
+      if (typeof bridge.getRuntime !== "function" || typeof bridge.onRuntimeChange !== "function") throw runtimeError();
+      bridge.onRuntimeChange(apply); subscribed = true;
+    }
     let timer;
     try {
-      apply(await Promise.race([bridge.getRuntime(), new Promise((_, reject) => { timer = setTimeout(() => reject(runtimeError()), 30_000); })]));
+      const next = await Promise.race([bridge.getRuntime(), new Promise((_, reject) => { timer = setTimeout(() => reject(runtimeError()), 30_000); })]);
+      apply(next);
+      return next;
     } finally { clearTimeout(timer); }
   };
-  const initialize = () => {
-    if (!initialized) {
-      if (typeof bridge.getRuntime !== "function" || typeof bridge.onRuntimeChange !== "function") throw runtimeError();
-      if (!subscribed) { bridge.onRuntimeChange(apply); subscribed = true; }
-      initialized = refresh().catch((error) => { initialized = null; throw error; });
-    }
-    return initialized;
+  const captureBinding = () => {
+    const binding = { generation: null, ready: false };
+    // Capture the reply itself even if a newer event has already arrived. An
+    // old action cannot be moved to a newer generation by a delayed reply.
+    binding.pending = refresh().then((next) => {
+      binding.generation = next.generation;
+      binding.ready = ACTIVE_STATES.has(next.state) && /^[a-f0-9]{32}$/.test(next.generation || "");
+    }).catch((error) => { binding.error = error; });
+    return binding;
   };
   return {
-    bindOperation(signal) { if (signal && status && !operations.has(signal)) operations.set(signal, status.generation); },
+    bindOperation(signal) { if (signal && !operations.has(signal)) operations.set(signal, captureBinding()); },
     captureOperation() {
-      const generation = status?.generation;
-      return () => !generation || (status?.generation === generation && ACTIVE_STATES.has(status.state));
+      const binding = captureBinding();
+      return () => binding.ready && status?.generation === binding.generation && ACTIVE_STATES.has(status.state);
     },
     async begin(signal) {
-      await initialize();
-      if (!ACTIVE_STATES.has(status?.state) || !/^[a-f0-9]{32}$/.test(status?.generation || "")) throw runtimeError();
-      if (signal) {
-        if (operations.has(signal) && operations.get(signal) !== status.generation) throw runtimeError();
-        operations.set(signal, status.generation);
-      }
+      const existing = signal && operations.get(signal);
+      const binding = existing || captureBinding();
+      if (signal && !existing) operations.set(signal, binding);
+      await binding.pending;
+      if (binding.error) throw binding.error;
+      if (existing) await refresh();
+      if (!binding.ready || binding.generation !== status?.generation || !ACTIVE_STATES.has(status?.state)) throw runtimeError();
       const lease = { generation: status.generation, controller: new AbortController(), invalidated: false };
       leases.add(lease);
       const assertCurrent = () => { if (lease.invalidated || status.generation !== lease.generation || !ACTIVE_STATES.has(status.state)) throw runtimeError(); };
@@ -59,7 +67,8 @@ export function createRuntimeGuard(bridge) {
         assertCurrent,
         validateResponse(response) { if (response.headers.get("X-Atom-Runtime-Generation") !== lease.generation) throw runtimeError(); assertCurrent(); },
         async finish() { await refresh(); assertCurrent(); },
-        close() { leases.delete(lease); lease.controller.abort(); },
+        cancel() { lease.controller.abort(); },
+        close() { leases.delete(lease); },
       };
     },
   };

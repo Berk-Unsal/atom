@@ -21,6 +21,7 @@ describe("native shared HTTP client", () => {
       expect(options.headers["X-Atom-Client"]).toBe("1");
       expect(options.headers["X-Atom-Desktop-Token"]).toBeUndefined();
       expect(options.headers["X-Atom-Runtime-Generation"]).toBe(generation);
+      expect(options.signal.aborted).toBe(false); // Successful RF roots retain their follow-up capability.
     }
     expect(fetch.mock.calls[1][1].headers["RF-Workflow"]).toBe("network-maps-v1");
     expect(fetch.mock.calls[1][1].body).toBe('{"cells":[]}');

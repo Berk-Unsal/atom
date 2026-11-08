@@ -12,7 +12,7 @@ async function withRuntime(signal, operation) {
   if (platform.kind !== "desktop") return operation(null);
   const runtime = await platform.beginRequest(signal);
   try { return await operation(runtime); }
-  catch (error) { runtime.assertCurrent(); throw error; }
+  catch (error) { runtime.cancel(); runtime.assertCurrent(); throw error; }
   finally { runtime.close(); }
 }
 

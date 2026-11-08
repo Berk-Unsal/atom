@@ -20,6 +20,7 @@ try {
   nativeProcess = application.process();
   page = await application.firstWindow();
   page.on("response", (response) => { if (new URL(response.url()).pathname.startsWith("/api/")) { requests.push({ path: new URL(response.url()).pathname, status: response.status() }); if (requests.length > 100) requests.shift(); } });
+  page.on("requestfailed", (request) => { if (new URL(request.url()).pathname.startsWith("/api/")) requests.push({ path: new URL(request.url()).pathname, failure: request.failure()?.errorText }); });
   await page.waitForLoadState("domcontentloaded");
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   const info = await page.evaluate(() => window.atomDesktop.getInfo());
@@ -64,6 +65,15 @@ try {
   const previousRuntime = await page.evaluate(() => window.atomDesktop.getRuntime());
   assert.deepEqual(previousRuntime.readiness, { listener: true, dataset: true, ui: true });
   const retainedResult = await page.locator(".network-card").first().innerText();
+  // Capture only runtime error stacks in the test realm, never API bodies or
+  // private host fields. This locates failures before a transport request.
+  await page.evaluate(() => {
+    globalThis.__runtimeErrors = [];
+    Object.defineProperty(Error.prototype, "code", { configurable: true, set(value) {
+      Object.defineProperty(this, "code", { value, writable: true, configurable: true });
+      if (value === "runtime_changed") globalThis.__runtimeErrors.push(this.stack);
+    } });
+  });
   await application.evaluate(async ({ Menu, dialog }) => {
     dialog.showMessageBox = async () => ({ response: 1 });
     Menu.getApplicationMenu().getMenuItemById("atom-restart-service").click();
@@ -135,7 +145,7 @@ try {
   await fs.mkdir(path.join(root, "test-results"), { recursive: true });
   await page?.screenshot({ path: path.join(root, "test-results/failed-smoke.png") }).catch(() => {});
   const state = await page?.evaluate(async () => ({ runtime: await window.atomDesktop?.getRuntime(), runState: document.querySelector(".run-state")?.textContent,
-    alerts: [...document.querySelectorAll('[role="alert"]')].map((element) => element.textContent) })).catch(() => null);
+    alerts: [...document.querySelectorAll('[role="alert"]')].map((element) => element.textContent), runtimeErrors: globalThis.__runtimeErrors })).catch(() => null);
   const failure = { message: error.message, state, requests };
   await fs.writeFile(path.join(root, "test-results/failed-smoke.json"), JSON.stringify(failure, null, 2));
   console.error(JSON.stringify(failure, null, 2));

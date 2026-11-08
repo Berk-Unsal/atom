@@ -1,7 +1,8 @@
 const ACTIVE_STATES = new Set(["starting", "loading-dataset", "ready"]);
 
-function runtimeError() {
+function runtimeError(details) {
   const error = new Error("The planning service changed or stopped. Your workspace is preserved. Use Help → Restart planning service if needed, then run the action again.");
+  if (details) error.details = details;
   error.code = "runtime_changed";
   return error;
 }
@@ -57,7 +58,10 @@ export function createRuntimeGuard(bridge) {
       await binding.pending;
       if (binding.error) throw binding.error;
       if (existing) await refresh();
-      if (!binding.ready || binding.generation !== status?.generation || !ACTIVE_STATES.has(status?.state)) throw runtimeError();
+      if (!binding.ready || binding.generation !== status?.generation || !ACTIVE_STATES.has(status?.state)) throw runtimeError({
+        phase: "action_binding", bound: Boolean(existing), bindingReady: binding.ready, bindingGeneration: binding.generation,
+        generation: status?.generation, state: status?.state, sequence: status?.sequence,
+      });
       const lease = { generation: status.generation, controller: new AbortController(), invalidated: false };
       leases.add(lease);
       const assertCurrent = () => { if (lease.invalidated || status.generation !== lease.generation || !ACTIVE_STATES.has(status.state)) throw runtimeError(); };

@@ -71,7 +71,7 @@ try {
     globalThis.__runtimeErrors = [];
     Object.defineProperty(Error.prototype, "code", { configurable: true, set(value) {
       Object.defineProperty(this, "code", { value, writable: true, configurable: true });
-      if (value === "runtime_changed") globalThis.__runtimeErrors.push(this.stack);
+      if (value === "runtime_changed") globalThis.__runtimeErrors.push({ stack: this.stack, details: this.details });
     } });
   });
   await application.evaluate(async ({ Menu, dialog }) => {

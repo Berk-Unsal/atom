@@ -31,7 +31,7 @@ def classify(path):
     name = Path(path).name
     if path in CURRENT:
         return 'CURRENT PRODUCT DOC', 'Maintained product/API/task guide; published changelog sections remain historical, only Unreleased is editable.'
-    if name == 'priority-issue-plan.md':
+    if name in ('priority-issue-plan.md', 'active-issues-goal-plan.md'):
         return 'INTERNAL DESIGN', 'Dated issue triage and execution scope; not completion or release evidence.'
     if name == 'planning-walkthrough-evidence.json':
         return 'HISTORICAL AUDIT / QUALIFICATION', 'Recorded deterministic public-pack example, exact inputs and runtime scope; not measured physical accuracy.'

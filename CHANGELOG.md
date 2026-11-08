@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add a thin local Electron host for the shared React/Go application with a sandboxed capability bridge, canonical-version About, native menus, bounded remembered window geometry and an owned API sidecar. Local builds are unsigned development artifacts; desktop distribution remains gated.
 - Add reproducible Ubuntu X11/Wayland native project-dialog qualification through the real GTK desktop portal, including Turkish paths, file identity and byte checks, and Save/Open cancellation.
 
 ### Fixed

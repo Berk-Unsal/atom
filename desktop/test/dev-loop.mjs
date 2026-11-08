@@ -190,6 +190,15 @@ try {
   assert.equal(command.events.some((event) => event.event === "host-ready"), false);
   result.startup_cancellation_reaped_compiler = true;
 
+  command = launch();
+  await command.wait((event) => event.event === "go-build-start");
+  await fs.writeFile(path.join(fixture, "VERSION"), "0.13.1-development-probe\n");
+  assert.equal(await exit(command.child), 1); await noGroups(command.owned);
+  assert.match(command.output(), /VERSION changed/);
+  assert.equal(command.events.some((event) => event.event === "host-ready"), false);
+  await fs.copyFile(path.join(root, "VERSION"), path.join(fixture, "VERSION"));
+  result.version_change_during_bootstrap_stopped_cleanly = true;
+
   blocker = net.createServer((socket) => socket.end());
   await new Promise((resolve, reject) => { blocker.once("error", reject); blocker.listen(5173, "127.0.0.1", resolve); });
   command = launch(); assert.equal(await exit(command.child), 1); await noGroups(command.owned);

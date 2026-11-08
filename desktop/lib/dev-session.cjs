@@ -113,6 +113,9 @@ class DevSession extends EventEmitter {
     if (!["darwin", "linux"].includes(process.platform)) throw new Error("Desktop development currently supports macOS and Linux; Windows is deferred (#163)");
     if (+process.versions.node.split(".")[0] < 24) throw new Error("Desktop development requires Node 24 or later");
     this.version = (await fsp.readFile(path.join(this.root, "VERSION"), "utf8")).trim();
+    const versionWatcher = fs.watch(path.join(this.root, "VERSION"), () => { this.notice("fatal", { message: "VERSION changed; restart the development command for a consistent build identity" }); void this.stop(); });
+    versionWatcher.on("error", (error) => { this.notice("fatal", { message: error.message }); void this.stop(); });
+    this.watchers.push(versionWatcher);
     this.commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: this.root, encoding: "utf8" }).trim();
     await privateDirectory(this.profile);
     this.abort.signal.throwIfAborted();
@@ -157,8 +160,6 @@ class DevSession extends EventEmitter {
     for (const [kind, queue] of [["Go", this.goQueue], ["shell", this.shellQueue]]) queue.on("build-failed", ({ error }) => this.notice("build-failed", { kind, message: error.message }));
     this.watch(path.join(this.root, "backend-go"), backendSource, this.goQueue);
     this.watch(this.desktop, (file) => ["main.cjs", "preload.cjs"].includes(file) || (file.startsWith("lib/") && HOST_LIBRARIES.has(file.slice(4))), this.shellQueue);
-    const versionWatcher = fs.watch(path.join(this.root, "VERSION"), () => { this.notice("fatal", { message: "VERSION changed; restart the development command for a consistent build identity" }); void this.stop(); });
-    this.watchers.push(versionWatcher);
     await new Promise((resolve) => setImmediate(resolve)); bootstrapWatch.close();
     if (bootstrapChanged) { this.goQueue.request(); await this.goQueue.idle(); }
     this.abort.signal.throwIfAborted();

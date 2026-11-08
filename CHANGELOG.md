@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add a dist-free desktop development command with Vite HMR, build-before-swap Go watching, syntax-checked shell relaunch, private supervisor control and additive native edit-loop/cleanup qualification.
 - Restrict desktop API routing to explicit methods, paths and authenticated loopback targets; isolate report HTML in a temporary session without scripts, network or native authority, and add real-engine hostile-content tests.
 - Add explicit desktop planning-service recovery with separate API/dataset/UI readiness, per-action runtime generation guards, late-result protection and native tests for Vite-only startup, repeated launch, crash/recovery and abrupt host death.
 - Add a thin local Electron host for the shared React/Go application with a sandboxed capability bridge, canonical-version About, native menus, bounded remembered window geometry and an owned API sidecar. Local builds are unsigned development artifacts; desktop distribution remains gated.
@@ -13,6 +14,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Dispose native runtime subscriptions when their frontend module is hot-replaced, aborting old work without retrying RF actions.
 - Keep RF workflow cleanup bound to its original desktop runtime, so a retired capability never reaches a replacement service.
 - Preserve the newer workspace/result association when an older Run-history write completes after a desktop restart or newer action; retain its truthful historical Run.
 - Update the backend's `golang.org/x/net` to 0.62.0 and its required crypto/text dependencies to clear the container scan's CVE-2026-78661 HTML-parser denial-of-service finding.

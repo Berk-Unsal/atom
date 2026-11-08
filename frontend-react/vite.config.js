@@ -1,8 +1,17 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+const desktopDev = process.env.ATOM_DESKTOP_DEV === "1";
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), ...(desktopDev ? [{ name: "desktop-api-boundary", configureServer(server) {
+    server.middlewares.use((request, response, next) => {
+      const pathname = request.url?.split("?")[0];
+      if (!pathname?.startsWith("/api/") && !["/readyz", "/healthz"].includes(pathname)) return next();
+      response.writeHead(403, { "content-type": "application/json", "cache-control": "no-store" });
+      response.end(JSON.stringify({ error: "Open the native desktop application to use its planning service" }));
+    });
+  } }] : [])],
   test: {
     environment: "jsdom",
     exclude: ["e2e/**", "node_modules/**", "dist/**"],
@@ -10,8 +19,8 @@ export default defineConfig({
     setupFiles: "./src/test/setup.js",
   },
   server: {
-    ...(process.env.ATOM_DESKTOP_DEV === "1" ? { host: "127.0.0.1", strictPort: true, hmr: { host: "127.0.0.1", clientPort: 5173, protocol: "ws" } } : {}),
-    proxy: {
+    ...(desktopDev ? { host: "127.0.0.1", strictPort: true, hmr: { host: "127.0.0.1", clientPort: 5173, protocol: "ws" } } : {}),
+    proxy: desktopDev ? {} : {
       "/api": "http://localhost:8080",
       "/healthz": "http://localhost:8080",
       "/readyz": "http://localhost:8080",

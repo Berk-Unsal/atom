@@ -153,6 +153,12 @@ jobs:
       - name: Native Ubuntu X11 smoke
         if: runner.os == 'Linux'
         run: xvfb-run -a dbus-run-session -- npm run test:native --prefix desktop
+      - name: Native macOS development loop
+        if: runner.os == 'macOS'
+        run: npm run test:dev-loop --prefix desktop
+      - name: Native Ubuntu X11 development loop
+        if: runner.os == 'Linux'
+        run: xvfb-run -a dbus-run-session -- npm run test:dev-loop --prefix desktop
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

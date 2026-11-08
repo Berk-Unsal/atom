@@ -11,9 +11,12 @@ function runtimeError(details) {
 export function createRuntimeGuard(bridge) {
   let status = null;
   let subscribed = false;
+  let unsubscribe;
+  let disposed = false;
   const leases = new Set();
   const operations = new WeakMap();
   const apply = (next) => {
+    if (disposed) return;
     if (!Number.isSafeInteger(next?.sequence) || (status && next.sequence <= status.sequence)) return;
     status = next;
     for (const lease of leases) {
@@ -24,9 +27,10 @@ export function createRuntimeGuard(bridge) {
     }
   };
   const refresh = async () => {
+    if (disposed) throw runtimeError();
     if (!subscribed) {
       if (typeof bridge.getRuntime !== "function" || typeof bridge.onRuntimeChange !== "function") throw runtimeError();
-      bridge.onRuntimeChange(apply); subscribed = true;
+      unsubscribe = bridge.onRuntimeChange(apply); subscribed = true;
     }
     let timer;
     try {
@@ -46,10 +50,17 @@ export function createRuntimeGuard(bridge) {
     return binding;
   };
   return {
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      if (typeof unsubscribe === "function") unsubscribe();
+      for (const lease of leases) { lease.invalidated = true; lease.controller.abort(); }
+      leases.clear();
+    },
     bindOperation(signal) { if (signal && !operations.has(signal)) operations.set(signal, captureBinding()); },
     captureOperation() {
       const binding = captureBinding();
-      return () => binding.ready && status?.generation === binding.generation && ACTIVE_STATES.has(status.state);
+      return () => !disposed && binding.ready && status?.generation === binding.generation && ACTIVE_STATES.has(status.state);
     },
     async begin(signal, operationSignal = signal) {
       const existing = operationSignal && operations.get(operationSignal);
@@ -58,7 +69,7 @@ export function createRuntimeGuard(bridge) {
       await binding.pending;
       if (binding.error) throw binding.error;
       if (existing) await refresh();
-      if (!binding.ready || binding.generation !== status?.generation || !ACTIVE_STATES.has(status?.state)) throw runtimeError({
+      if (disposed || !binding.ready || binding.generation !== status?.generation || !ACTIVE_STATES.has(status?.state)) throw runtimeError({
         phase: "action_binding", bound: Boolean(existing), bindingReady: binding.ready, bindingGeneration: binding.generation,
         generation: status?.generation, state: status?.state, sequence: status?.sequence,
       });

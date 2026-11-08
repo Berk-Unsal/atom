@@ -54,6 +54,9 @@ try {
   for (const url of ["file:///etc/passwd", "http://127.0.0.1:8080/api/meta", "https://evil.invalid/project"]) {
     assert.equal(await page.evaluate(async (target) => { try { await fetch(target); return true; } catch { return false; } }, url), false);
   }
+  assert.equal(await page.evaluate(() => Notification.requestPermission()), "denied");
+  assert.deepEqual(await page.evaluate(() => new Promise((resolve) => navigator.geolocation.getCurrentPosition(
+    () => resolve({ allowed: true }), (error) => resolve({ allowed: false, code: error.code }), { timeout: 5000 }))), { allowed: false, code: 1 });
   // Exercise the actual project importer. HTML-shaped user text remains text;
   // it cannot become a native-capable document or execute through React.
   const project = JSON.parse(await fs.readFile(path.join(root, "../examples/ankara-sample.atom-project.json"), "utf8"));
@@ -80,6 +83,12 @@ try {
     await page.evaluate((url) => { location.href = url; return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))); }, target);
     assert.equal(page.url(), "app://atom/");
   }
+  await page.evaluate(() => {
+    const url = URL.createObjectURL(new Blob(["<h1>untrusted</h1>"], { type: "text/html" }));
+    location.href = url;
+    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => { URL.revokeObjectURL(url); resolve(); })));
+  });
+  assert.equal(page.url(), "app://atom/");
   assert.ok(await application.evaluate(() => globalThis.__blockedNavigation) >= 1);
   assert.equal(await page.evaluate(() => Boolean(globalThis.__navigationExecuted)), false);
   const cdp = await page.context().newCDPSession(page);
@@ -134,10 +143,18 @@ try {
   }), { javascript: false, node: false, sandbox: true, preload: false, persistent: false });
   await report.screenshot({ path: path.join(root, "test-results/isolated-report.png") });
   await application.evaluate(() => globalThis.__securityReport.destroy());
+  // A deliberately CSP-blocked form can leave Playwright waiting for a
+  // navigation which Chromium already denied. Exercise it after UI clicks.
+  await page.evaluate((origin) => {
+    const form = document.createElement("form"); form.action = `${origin}/form-exfiltration`; form.method = "POST";
+    document.body.append(form); form.submit();
+  }, hostileOrigin);
+  await page.waitForFunction(() => globalThis.__securityViolations.includes("form-action"));
+  assert.deepEqual(networkRequests, ["/redirect"]);
   await page.screenshot({ path: path.join(root, "test-results/security.png") });
   const evidence = { result: "PASS", productionCSP: true, untrustedFrameScriptsAndRequestsDenied: true, directNetworkDenied: true,
     importedProjectTextDidNotExecute: true, popupAndTopLevelNavigationDenied: true, foreignDocumentHadNoBridge: true,
-    rendererHadNoFilesystemOrProcessCapabilities: true, nativeRedirectAndDragNavigationDenied: true,
+    rendererHadNoFilesystemOrProcessCapabilities: true, nativePermissionsAndFormSubmissionDenied: true, nativeRedirectAndDragNavigationDenied: true,
     isolatedReportHadNoScriptsBridgeOpenerNetworkOrDurableSession: true };
   await fs.writeFile(path.join(root, "test-results/security.json"), JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));

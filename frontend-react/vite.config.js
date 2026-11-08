@@ -10,6 +10,7 @@ export default defineConfig({
     setupFiles: "./src/test/setup.js",
   },
   server: {
+    ...(process.env.ATOM_DESKTOP_DEV === "1" ? { host: "127.0.0.1", strictPort: true, hmr: { host: "127.0.0.1", clientPort: 5173, protocol: "ws" } } : {}),
     proxy: {
       "/api": "http://localhost:8080",
       "/healthz": "http://localhost:8080",

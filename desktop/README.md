@@ -34,8 +34,10 @@ unwritable settings file. `ATOM_DESKTOP_TEST_PROFILE` selects an isolated absolu
 profile for local native tests; packaged builds ignore that override.
 
 React's `src/platform/index.js` selects browser or native capabilities. The
-sandboxed preload exposes only `getInfo()` and `openExternal(httpsURL)` through
-an exact-main-frame checked bridge. File/report actions remain disabled until
+sandboxed preload exposes typed `getInfo()`, `openExternal(httpsURL)` and read-only
+runtime snapshots/change notifications through an exact-main-frame checked
+bridge. Runtime snapshots separate listener, dataset and loaded-renderer
+readiness without exposing the PID, port, token, paths or stderr. File/report actions remain disabled until
 their dedicated issues. Native dependencies remain outside the headless Go and
 browser build graphs. API calls continue through the shared HTTP client and a
 stable `app://atom` route; host-only per-launch credentials travel to the owned
@@ -43,10 +45,40 @@ dynamic-loopback child over inherited pipes. A non-secret client header prevents
 passive asset requests from becoming API calls. Imported report HTML never gets
 native capabilities; isolated native report handling is #156.
 
+Choose **Help → Restart planning service…** for explicit recovery after a crash
+or when restarting an active service. Cancel leaves the current process alone.
+Confirm cancels in-flight work, drains/reaps the owned child within the existing
+30-second ceiling and starts one replacement with a new credential and runtime
+generation. Projects and completed Results stay in the window. Calculations are
+not replayed. Closing the app wins any pending recovery and prevents a new child.
+
+The shared HTTP client binds a user action to its original generation, checks
+JSON/Blob bodies after consumption and rechecks the host before returning.
+Late data and old workflow follow-ups cannot enter a replacement runtime. A late
+Run-history database write remains historical without replacing the association
+for a newer action, workspace or runtime. Domain serializers and RF outputs are
+unchanged.
+
+For a Vite-only UI, first stage the local Go/resources using the build command
+above, then run the existing Vite source in one terminal and the host in another:
+
+```sh
+ATOM_DESKTOP_DEV=1 npm run dev --prefix frontend-react -- --host 127.0.0.1 --port 5173 --strictPort
+ATOM_DESKTOP_DEV_SERVER=http://127.0.0.1:5173 npm start --prefix desktop
+```
+
+The development router accepts only that fixed loopback origin, serves the same
+`app://atom` application and keeps API traffic on the private Go route. It works
+without a staged `dist`; packaged builds ignore the development/test resource
+overrides. The dev CSP's inline React preamble and loopback HMR socket are absent
+from the production CSP. Automatic Go rebuilds and measured edit-loop budgets
+remain #152 work.
+
 Checks:
 
 ```sh
 npm test --prefix desktop
+npm run test:runtime --prefix desktop
 npm run test:native --prefix desktop
 npm test --prefix frontend-react
 npm run lint --prefix frontend-react
@@ -55,8 +87,17 @@ npm run lint --prefix frontend-react
 The native smoke requires a graphical session and a preceding local build. It
 uses an isolated temporary profile, retains a screenshot under
 `desktop/test-results`, and checks real renderer/HTTP/host/process behavior.
-It does not qualify production packaging, RF accuracy, native file/print actions,
-the full #150 restart contract or #151 security matrix. Follow
+It covers production and Vite-only startup, real Sector/network Results,
+single-instance focus, explicit restart/cancellation, state retention, crash
+recovery, abrupt host death, same-profile relaunch and a usable missing-sidecar
+window. Runtime integration tests also reserve 8080,
+verify bad binary/pack rejection, check credential/generation/port rotation and
+parent-EOF listener cleanup. Tests use only their owned child PIDs and isolated
+profiles/resources. Native dialog confirmation is stubbed for menu automation;
+actual file dialogs remain #154 qualification.
+
+These checks do not qualify production packaging, RF accuracy, native file/print
+actions or the full #151 security matrix. Follow
 `docs/active-issues-goal-plan.md` for the remaining issue acceptance gates.
 
 Known external dependency: the shared Stadia map tiles show authentication-error

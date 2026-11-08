@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import golden from "../../../docs/concept-7j-run-snapshot-equivalence.json";
 import useRunExecution from "./useRunExecution.js";
+import { createRuntimeGuard } from "../platform/runtime.js";
 
 const appMeta = {
   model_version: "rf-model-7j-golden",
@@ -155,5 +156,62 @@ describe("useRunExecution", () => {
 
     act(() => result.current.actions.clearCurrentResult());
     expect(result.current.state.currentResultRun).toBeNull();
+  });
+
+  it("retains a late database completion as history without replacing a newer runtime's result", async () => {
+    let status = { sequence: 1, state: "ready", generation: "a".repeat(32) }; let notify;
+    const runtime = createRuntimeGuard({ getRuntime: async () => status, onRuntimeChange: (callback) => { notify = callback; } });
+    const boot = await runtime.begin(); boot.close();
+    let heldID; let release; let saving;
+    const blocked = new Promise((resolve) => { release = resolve; });
+    const entered = new Promise((resolve) => { saving = resolve; });
+    const history = createHistory({ saveRun: async (run) => { if (run.run_id === heldID && run.status === "succeeded") { saving(); await blocked; } return run; } });
+    const { result } = renderHook(() => useRunExecution({ activeProject: project, activeScenario: scenario, appMeta, runHistory: history, settings, runtime }));
+    let started; let oldCompletion; let newer;
+    await act(async () => { started = await result.current.actions.beginRun({ request: simulationRequest, runType: "simulation" }); });
+    heldID = started.running.run_id;
+    await act(async () => {
+      oldCompletion = result.current.actions.finishRun({ request: simulationRequest, result: { stats: { avg_rx_dbm: -90 } }, running: started.running });
+      await entered;
+    });
+    status = { sequence: 2, state: "ready", generation: "b".repeat(32) }; notify(status);
+    await act(async () => {
+      const next = await result.current.actions.beginRun({ request: simulationRequest, runType: "simulation" });
+      newer = await result.current.actions.finishRun({ request: simulationRequest, result: { stats: { avg_rx_dbm: -80 } }, running: next.running });
+    });
+    let historical;
+    await act(async () => { release(); historical = await oldCompletion; });
+    expect(historical.status).toBe("succeeded");
+    expect(result.current.state.currentResultRun.run_id).toBe(newer.run_id);
+    expect(result.current.state.currentResultRun.run_id).not.toBe(historical.run_id);
+  });
+
+  it("does not associate an old persisted result with a newly selected workspace", async () => {
+    let release; let saving; let heldID;
+    const blocked = new Promise((resolve) => { release = resolve; });
+    const entered = new Promise((resolve) => { saving = resolve; });
+    const history = createHistory({ saveRun: async (run) => { if (run.run_id === heldID && run.status === "succeeded") { saving(); await blocked; } return run; } });
+    const { result, rerender } = renderHook(({ activeProject }) => useRunExecution({ activeProject, activeScenario: scenario, appMeta, runHistory: history, settings }), { initialProps: { activeProject: project } });
+    let started; let finishing;
+    await act(async () => { started = await result.current.actions.beginRun({ request: simulationRequest, runType: "simulation" }); });
+    heldID = started.running.run_id;
+    await act(async () => { finishing = result.current.actions.finishRun({ request: simulationRequest, result: { stats: { avg_rx_dbm: -90 } }, running: started.running }); await entered; });
+    rerender({ activeProject: { ...project, id: "new-project" } });
+    await act(async () => { release(); await finishing; });
+    expect(result.current.state.currentResultRun).toBeNull();
+  });
+
+  it("does not let a duplicate old completion replace the latest result", async () => {
+    const history = createHistory();
+    const { result } = renderHook(() => useRunExecution({ activeProject: project, activeScenario: scenario, appMeta, runHistory: history, settings }));
+    let old; let newer;
+    await act(async () => {
+      old = await result.current.actions.beginRun({ request: simulationRequest, runType: "simulation" });
+      await result.current.actions.finishRun({ request: simulationRequest, result: { stats: { avg_rx_dbm: -90 } }, running: old.running });
+      const next = await result.current.actions.beginRun({ request: simulationRequest, runType: "simulation" });
+      newer = await result.current.actions.finishRun({ request: simulationRequest, result: { stats: { avg_rx_dbm: -80 } }, running: next.running });
+      await result.current.actions.finishRun({ request: simulationRequest, result: { stats: { avg_rx_dbm: -90 } }, running: old.running });
+    });
+    expect(result.current.state.currentResultRun.run_id).toBe(newer.run_id);
   });
 });

@@ -55,7 +55,7 @@ function launch() {
   const events = []; const owned = new Set(); let output = "";
   const record = (chunk) => { output = (output + chunk.toString()).slice(-16_384); };
   child.stdout.on("data", record); child.stderr.on("data", record);
-  child.on("message", (event) => { events.push(event); if (event.pid) owned.add(event.pid); });
+  child.on("message", (event) => { events.push({ ...event, received_at_ms: performance.now() }); if (event.pid) owned.add(event.pid); });
   return { child, events, owned, output: () => output, async wait(predicate, after = 0, timeout = 60_000) {
     const deadline = Date.now() + timeout;
     do {
@@ -141,13 +141,21 @@ try {
   assert.equal(apiPID(host.pid), originalPID);
   assert.equal((await page.evaluate(() => window.atomDesktop.getRuntime())).generation, originalRuntime.generation);
   const metaStatus = () => page.evaluate(async () => { const runtime = await window.atomDesktop.getRuntime();
-    return (await fetch("/api/meta", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": runtime.generation } })).status; });
+    const response = await fetch("/api/meta", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": runtime.generation } });
+    await response.text(); return response.status; });
   assert.equal(await metaStatus(), 200); result.failed_compile_preserved_last_good = true;
   cursor = command.events.length; const goStarted = performance.now();
   await fs.writeFile(goFile, `${originalGo}\n// Desktop development warm Go edit.\n`);
   const replaced = await command.wait((event) => event.event === "go-ready", cursor);
   result.warm_go_edit_to_ready_ms = performance.now() - goStarted;
   result.warm_go_compile_ms = command.events.slice(cursor).find((event) => event.event === "go-built")?.milliseconds;
+  const statusAt = (predicate) => command.events.slice(cursor).find((event) => event.event === "runtime-status" && predicate(event.runtime))?.received_at_ms;
+  const restartingAt = statusAt((runtime) => runtime.state === "restarting");
+  const startingAt = statusAt((runtime) => runtime.state === "starting");
+  const listenerAt = statusAt((runtime) => runtime.state === "loading-dataset" && runtime.readiness.listener);
+  const datasetAt = statusAt((runtime) => runtime.readiness.dataset);
+  result.warm_go_phases_ms = { compile: result.warm_go_compile_ms, drain: startingAt - restartingAt,
+    start_to_listener: listenerAt - startingAt, dataset_load: datasetAt - listenerAt, dataset_to_ready: replaced.received_at_ms - datasetAt };
   assert.ok(result.warm_go_edit_to_ready_ms <= 5000, "Warm Go edit exceeded 5s guidance");
   assert.notEqual(replaced.runtime.generation, originalRuntime.generation);
   assert.equal(alive(originalPID), false); assert.equal(await metaStatus(), 200);

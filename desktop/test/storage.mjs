@@ -116,6 +116,9 @@ try {
     const moved = path.join(packagedRoot, "Relocated — çığ A.T.O.M.app"); await fs.rename(bundle, moved); bundle = moved;
   } else {
     await fs.chmod(bundle, 0o755);
+    // Linux also needs write permission on the directory being moved between
+    // parents to update its '..' entry. This is a stopped installer operation.
+    await fs.chmod(resourcesIn(bundle), 0o755);
     const relocated = path.join(packagedRoot, "Relocated — çığ resources"); await fs.rename(resourcesIn(bundle), relocated); await fs.symlink(relocated, resourcesIn(bundle));
     await fs.chmod(bundle, 0o555);
   }

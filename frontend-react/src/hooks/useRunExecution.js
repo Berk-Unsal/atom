@@ -132,12 +132,19 @@ export default function useRunExecution({
       ...run,
       details: { ...(run.details ?? {}), selected_solution_id: solutionId },
     };
+    const sequence = sequenceRef.current;
     updateRunLifecycle(run.run_id, { details: nextRun.details }).then((updated) => {
-      if (updated) latestOptimizationRunRef.current = updated;
+      if (updated && sequence === sequenceRef.current && latestOptimizationRunRef.current?.run_id === run.run_id) latestOptimizationRunRef.current = updated;
     });
   }, [updateRunLifecycle]);
 
-  const clearCurrentResult = useCallback(() => setCurrentResultRun(null), []);
+  const clearCurrentResult = useCallback(() => {
+    // A cleared map/workspace must stay detached even if an older successful
+    // Run or Pareto selection is still being written to durable history.
+    sequenceRef.current++;
+    latestOptimizationRunRef.current = null;
+    setCurrentResultRun(null);
+  }, []);
   const clearRunHistoryWarning = useCallback(() => setRunHistoryWarning(""), []);
 
   return {

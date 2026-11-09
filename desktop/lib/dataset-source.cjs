@@ -54,7 +54,9 @@ async function readManifest(root) {
     const bytes = bounded.subarray(0, length);
     if (bytes.length > MAX_MANIFEST || !unchanged(opened.stat, await opened.handle.stat())) throw invalid();
     const manifest = JSON.parse(bytes.toString("utf8"));
-    if (!manifest.files || !manifest.sha256 || Object.keys(manifest.files).some((key) => !LAYERS.has(key))) throw invalid();
+    if (!manifest || ["id", "name", "version"].some((key) => typeof manifest[key] !== "string" || !manifest[key].trim()
+      || Buffer.byteLength(manifest[key].trim()) > 128)
+      || !manifest.files || !manifest.sha256 || Object.keys(manifest.files).some((key) => !LAYERS.has(key))) throw invalid();
     const names = Object.values(manifest.files);
     if (!manifest.files.towers || !manifest.files.buildings || names.length > 6 || new Set(names).size !== names.length
       || names.some((name) => !relativeFile(name) || name === "manifest.json" || !/^[a-fA-F0-9]{64}$/.test(manifest.sha256[name] || ""))) throw invalid();

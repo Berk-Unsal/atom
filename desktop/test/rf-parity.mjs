@@ -130,8 +130,14 @@ try {
   await page.keyboard.press("Escape");
   const uiPosts = []; page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) uiPosts.push(new URL(request.url()).pathname); });
   for (const [button, endpoint] of [["Evaluate Network", "/api/evaluate-network"], ["Optimize Network", "/api/optimize-network"]]) {
-    const before = uiPosts.length; const response = page.waitForResponse((response) => response.url() === `app://atom${endpoint}` && response.request().method() === "POST", { timeout: 90_000 });
-    await page.getByRole("button", { name: button, exact: true }).click(); assert.equal((await response).status(), 200);
+    await page.getByRole("button", { name: "Simulate workspace", exact: true }).click();
+    await page.locator("#stage-tool-simulate-propagation").click();
+    const before = uiPosts.length;
+    const [response] = await Promise.all([
+      page.waitForResponse((response) => response.url() === `app://atom${endpoint}` && response.request().method() === "POST", { timeout: 90_000 }),
+      page.getByRole("button", { name: button, exact: true }).click(),
+    ]);
+    assert.equal(response.status(), 200);
     await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
     assert.deepEqual(uiPosts.slice(before), [endpoint, ...Array(8).fill("/api/simulate")]); result.ui[button] = true;
   }
@@ -167,7 +173,12 @@ try {
   result.result = Object.values(result.budgets).every(Boolean) ? "PASS" : "BUDGET_REVIEW_REQUIRED";
   const owned = (await processTree(application.process().pid)).processes.map((row) => row.pid);
   await application.evaluate(({ app }) => app.quit()); await application.close(); application = null; await assertExited(owned);
-} catch (error) { result.result = "FAIL"; result.failure = error.message; throw error; }
+} catch (error) {
+  result.result = "FAIL"; result.failure = error.message;
+  await page?.screenshot({ path: path.join(evidence, "qualification-failed.png") }).catch(() => {});
+  result.failure_notices = await page?.locator('[role="alert"], .run-state').allTextContents().catch(() => []);
+  throw error;
+}
 finally {
   await checkpoint(); if (application) await application.close().catch(() => {});
   if (standalone && standalone.exitCode === null && standalone.signalCode === null) {

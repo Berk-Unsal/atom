@@ -20,6 +20,9 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Keep a cleared dataset result detached when older Run/Pareto history writes finish, while retaining the original historical Run.
+- Reject malformed bundled dataset identities before publishing native recovery metadata, retaining explicit valid-pack recovery.
+
 - Reuse temporary building-feature decode storage during dataset loading while preserving every footprint, tag, ID and coordinate; reduce allocation pressure without changing RF scope or precision.
 
 - Use the attributed OSM Standard fallback with an identifying User-Agent and normal HTTP cache on desktop; keep denied/offline feedback and Retry usable without hiding the map key. Unconfigured Stadia access remains available only to existing browser deployments.

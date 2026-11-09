@@ -150,6 +150,23 @@ test("missing bundled metadata leaves explicit native recovery available", async
   assert.equal(settings.value.datasets.length, 1);
   assert.equal((await readManifest(settings.value.datasets[0].path)).manifest.id, "reference");
 });
+test("corrupt bundled identity cannot reach native recovery UI or approved roots", async (t) => {
+  const { registry, settings } = await fixture(t);
+  const file = path.join(registry.bundledRoot, "manifest.json");
+  const original = JSON.parse(await fs.readFile(file, "utf8"));
+  const saved = JSON.stringify(settings.value);
+  for (const key of ["id", "name", "version"]) for (const value of [null, {}, [], 42, true, " ", "x".repeat(129)]) {
+    await fs.writeFile(file, JSON.stringify({ ...original, [key]: value }));
+    await registry.initialize();
+    assert.match(registry.status().warning || "", /Bundled dataset/);
+    assert.deepEqual(registry.status().datasets, []);
+    assert.deepEqual(JSON.parse(await fs.readFile(registry.registryFile, "utf8")).entries, []);
+    assert.equal(JSON.stringify(settings.value), saved);
+  }
+  const selected = await registry.choose("directory");
+  await registry.install({ ticket: selected.ticket, mode: "reference" });
+  assert.equal(settings.value.datasets[0].id, "reference");
+});
 test("corrupt startup selection cannot silently substitute the bundled pack or rewrite settings", async (t) => {
   const { registry, settings } = await fixture(t);
   for (const activeDataset of [false, 0, null, "", "   ", "x".repeat(129)]) {

@@ -16,6 +16,10 @@ func writeDesktopRegistry(t *testing.T, roots ...string) string {
 	t.Helper()
 	registry := desktopDatasetRegistry{Schema: 1}
 	for _, root := range roots {
+		root, err := filepath.EvalSymlinks(root)
+		if err != nil {
+			t.Fatal(err)
+		}
 		manifest, _, _, err := raytracer.ReadDatasetManifest(root)
 		if err != nil {
 			t.Fatal(err)
@@ -32,6 +36,32 @@ func writeDesktopRegistry(t *testing.T, roots ...string) string {
 		t.Fatal(err)
 	}
 	return file
+}
+
+func TestDesktopDatasetRejectsSameContentRootSymlinkReplacement(t *testing.T) {
+	root := writeInstalledDatasetFixture(t, t.TempDir(), "pack", "pack")
+	registry := writeDesktopRegistry(t, root)
+	pack, err := loadDesktopRuntimeDataset(registry, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	runtime := newDatasetRuntime(pack, nil, "")
+	runtime.desktopRegistry = registry
+	if err := os.Rename(root, root+"-moved"); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(root+"-moved", root); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := loadDesktopRuntimeDataset(registry, root); err == nil {
+		t.Fatal("startup followed a replaced approved root")
+	}
+	if _, err := runtime.Switch("pack"); err == nil {
+		t.Fatal("activation followed a replaced approved root")
+	}
+	if runtime.Current() != pack {
+		t.Fatal("rejected root changed active snapshot")
+	}
 }
 
 func TestDesktopDatasetApprovedReferencesAndAtomicFailure(t *testing.T) {

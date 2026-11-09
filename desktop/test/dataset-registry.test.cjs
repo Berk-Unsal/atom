@@ -45,7 +45,7 @@ test("managed copy contains only declared bytes; registry and selection survive 
   const selected = await registry.choose("directory");
   assert.equal(selected.manifest.sources[0], "test source"); assert.ok(selected.bytes > before.length);
   assert.deepEqual(await registry.install({ ticket: selected.ticket, mode: "managed" }), { registered: true, id: "reference", mode: "managed" });
-  const entry = settings.value.datasets[0]; assert.equal(path.dirname(entry.path), packsRoot);
+  const entry = settings.value.datasets[0]; assert.equal(path.dirname(entry.path), await fs.realpath(packsRoot));
   assert.equal((await fs.stat(entry.path)).mode & 0o777, 0o700);
   assert.equal((await fs.stat(path.join(entry.path, "layers/towers.geojson"))).mode & 0o777, 0o600);
   await assert.rejects(fs.stat(path.join(entry.path, "unrelated-secret.txt")), { code: "ENOENT" });
@@ -175,4 +175,13 @@ test("legacy metadata survives unchanged without becoming an approved root; expl
   assert.equal(settings.value.datasets.find((entry) => entry.id === "reference").manifest_sha256, selected.manifest_sha256);
   assert.deepEqual(settings.value.datasets.find((entry) => entry.id === "unavailable-metadata"), { id: "unavailable-metadata", path: "/not-mounted" });
   await registry.activateID("reference"); assert.deepEqual(calls, ["reference"]);
+});
+test("an approved root replaced by a same-content symlink cannot redirect activation", async (t) => {
+  const { registry, source, calls } = await fixture(t);
+  const selected = await registry.choose("directory"); await registry.install({ ticket: selected.ticket, mode: "reference" });
+  await registry.activateID("reference");
+  const moved = source + "-same-content";
+  await fs.rename(source, moved); await fs.symlink(moved, source);
+  await assert.rejects(registry.activateID("reference"), { code: "dataset_unavailable" });
+  assert.deepEqual(calls, ["reference"]);
 });

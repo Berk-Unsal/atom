@@ -76,9 +76,14 @@ func desktopDatasetCandidates(file string) (map[string]datasetCandidate, []strin
 			continue
 		}
 		seen[entry.ID] = true
+		approvedRoot, resolveErr := filepath.EvalSymlinks(entry.Root)
+		if resolveErr != nil || approvedRoot != filepath.Clean(entry.Root) {
+			warnings = append(warnings, "a registered dataset root moved or became a symlink; locate it explicitly")
+			continue
+		}
 		manifest, _, realRoot, err := raytracer.ReadDatasetManifest(entry.Root)
 		hash, hashErr := datasetManifestDigest(entry.Root)
-		if err != nil || hashErr != nil || manifest.ID != entry.ID || hash != entry.ManifestSHA256 {
+		if err != nil || hashErr != nil || realRoot != approvedRoot || manifest.ID != entry.ID || hash != entry.ManifestSHA256 {
 			warnings = append(warnings, "a registered dataset is missing or changed; use Data to locate or add it explicitly")
 			continue
 		}

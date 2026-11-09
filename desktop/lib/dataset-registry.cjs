@@ -29,6 +29,7 @@ class DatasetRegistry {
     atomicWriteJSON(this.registryFile, { schema: 1, entries: entries.map((entry) => ({ id: entry.id, root: entry.path, manifest_sha256: entry.manifest_sha256 })) });
   }
   async initialize() {
+    this.packsRoot = await io.realpath(this.packsRoot);
     try {
       this.bundledRoot = await io.realpath(this.bundledRoot);
       const bundled = await readManifest(this.bundledRoot);
@@ -149,7 +150,11 @@ class DatasetRegistry {
       const entry = this.entries().find((entry) => entry.id === id);
       if (!entry) throw invalid();
       let inspected;
-      try { inspected = await this.inspect(entry.path, { executable: this.executable, signal }); }
+      try {
+        const root = await sourceRoot(entry.path);
+        if (root !== entry.path) throw invalid();
+        inspected = await this.inspect(root, { executable: this.executable, signal });
+      }
       catch (error) {
         if (error.code === "dataset_canceled") throw error;
         throw new DatasetError("dataset_unavailable", "This registered pack is missing, changed, or unreadable. Mount its drive or use Add Dataset Pack to locate the same manifest and register it again. The active pack was preserved.");

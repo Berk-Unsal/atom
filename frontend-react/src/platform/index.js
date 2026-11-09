@@ -19,6 +19,7 @@ export function createPlatform(bridge) {
   const runtime = createRuntimeGuard(bridge);
   const nativeFiles = ["openProjectFile", "acceptProjectOpen", "discardProjectOpen", "saveProjectFile", "setProjectFileState", "getProjectFileState", "onProjectCommand", "finishProjectCommand"]
     .every((name) => typeof bridge[name] === "function");
+  const nativeReports = ["saveReportFile", "outputReport"].every((name) => typeof bridge[name] === "function");
   const fileCall = async (method, ...args) => {
     const response = await bridge[method](...args);
     if (response?.ok === true) return response.value;
@@ -28,7 +29,8 @@ export function createPlatform(bridge) {
   };
   return Object.freeze({
     kind: "desktop",
-    capabilities: Object.freeze({ nativeProjectFiles: nativeFiles, nativeReports: false }),
+    capabilities: Object.freeze({ nativeProjectFiles: nativeFiles, nativeReports }),
+    reports: nativeReports ? Object.freeze({ save: (request) => fileCall("saveReportFile", request), output: (request) => fileCall("outputReport", request) }) : null,
     projectFiles: nativeFiles ? Object.freeze({
       open: () => fileCall("openProjectFile"),
       accept: (request) => fileCall("acceptProjectOpen", request),

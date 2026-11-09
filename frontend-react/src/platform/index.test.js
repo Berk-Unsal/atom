@@ -2,6 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 import { createPlatform } from "./index.js";
 
 describe("shared platform boundary", () => {
+  it("enables report authority only through both typed operations and propagates their bounded errors", async () => {
+    const bridge = { protocol: 1, getInfo: async () => ({}), openExternal: vi.fn(), saveReportFile: vi.fn(async () => ({ ok: true, value: { canceled: true } })), outputReport: vi.fn(async () => ({ ok: false, error: { code: "report_integrity", message: "Hash mismatch" } })) };
+    const native = createPlatform(bridge);
+    expect(native.capabilities.nativeReports).toBe(true);
+    await expect(native.reports.save({ format: "zip" })).resolves.toEqual({ canceled: true });
+    await expect(native.reports.output({ mode: "pdf" })).rejects.toMatchObject({ code: "report_integrity", message: "Hash mismatch" });
+    expect(createPlatform({ ...bridge, outputReport: undefined }).capabilities.nativeReports).toBe(false);
+    expect(createPlatform().capabilities.nativeReports).toBe(false); native.dispose();
+  });
   it("enables native files only with the complete typed contract and preserves actionable errors", async () => {
     const methods = ["openProjectFile", "acceptProjectOpen", "discardProjectOpen", "saveProjectFile", "setProjectFileState", "getProjectFileState", "finishProjectCommand"];
     const bridge = { protocol: 1, getInfo: async () => ({}), openExternal: vi.fn(), onProjectCommand: vi.fn(() => () => {}) };

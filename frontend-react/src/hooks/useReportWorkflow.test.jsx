@@ -10,6 +10,8 @@ const reportModules = vi.hoisted(() => ({
   downloadReportBytes: vi.fn(),
   openStoredHtmlReport: vi.fn(),
 }));
+const nativeCapabilities = vi.hoisted(() => ({ nativeReports: false }));
+vi.mock("../platform/index.js", () => ({ platform: { capabilities: nativeCapabilities } }));
 
 vi.mock("../utils/reportExport.js", () => ({
   buildPlanningReport: reportModules.buildPlanningReport,
@@ -28,10 +30,44 @@ vi.mock("../utils/reportArtifactDownload.js", () => ({
 import useReportWorkflow from "./useReportWorkflow.js";
 
 afterEach(() => {
+  nativeCapabilities.nativeReports = false;
   vi.clearAllMocks();
 });
 
 describe("useReportWorkflow", () => {
+  it.each(["markdown", "html"])("a native %s output failure never regenerates or opens a second destination", async (format) => {
+    nativeCapabilities.nativeReports = true;
+    const report = { domainBinding: { project_id: "project-1" }, view: { title: "Captured source" } };
+    const metadata = { artifact_id: "retained-original", format }; const bytes = new Uint8Array([1, 2, 3]);
+    reportModules.buildPlanningReport.mockReturnValue(report); reportModules.buildReportArtifactOutput.mockReturnValue({ artifact: metadata, bytes });
+    const download = format === "markdown" ? reportModules.downloadReportBytes : reportModules.openStoredHtmlReport;
+    download.mockRejectedValueOnce(new Error("Destination full"));
+    const error = vi.fn(); const saveArtifact = vi.fn(async () => metadata);
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: { id: "project-1" }, currentReportInputs: {},
+      planningMode: "single", saveReportDefinition: vi.fn(async () => ({})), saveArtifact, setApplicationError: error }));
+    await act(async () => result.current.actions[format === "markdown" ? "exportCurrentMarkdown" : "exportCurrentHtml"]());
+    expect(error).toHaveBeenCalledWith("Destination full"); expect(reportModules.buildPlanningReport).toHaveBeenCalledOnce();
+    expect(saveArtifact).toHaveBeenCalledOnce(); expect(download).toHaveBeenCalledOnce();
+    expect(reportModules.downloadMarkdownReport).not.toHaveBeenCalled(); expect(reportModules.openPdfReport).not.toHaveBeenCalled();
+  });
+  it("native Print uses captured HTML bytes after failed retention without re-rendering the report", async () => {
+    nativeCapabilities.nativeReports = true;
+    reportModules.buildPlanningReport.mockReturnValue({ domainBinding: { project_id: "project-1" }, view: { title: "Original" } });
+    const artifact = { artifact_id: "original", format: "html" }; const bytes = new Uint8Array([0xef, 0xbb, 0xbf, 1]);
+    reportModules.buildReportArtifactOutput.mockReturnValue({ artifact, bytes }); reportModules.openStoredHtmlReport.mockResolvedValueOnce({ canceled: true });
+    const error = vi.fn();
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: { id: "project-1" }, currentReportInputs: {}, planningMode: "single",
+      saveReportDefinition: vi.fn(async () => ({})), saveArtifact: vi.fn(async () => null), setApplicationError: error }));
+    await act(async () => result.current.actions.exportCurrentPrint());
+    expect(reportModules.openStoredHtmlReport).toHaveBeenCalledWith(artifact, bytes, { mode: "print" });
+    expect(reportModules.buildPlanningReport).toHaveBeenCalledOnce(); expect(reportModules.openPdfReport).not.toHaveBeenCalled(); expect(error).not.toHaveBeenCalled();
+  });
+  it("missing retained bytes stay unavailable without generating substitute evidence", async () => {
+    nativeCapabilities.nativeReports = true; const error = vi.fn();
+    const { result } = renderHook(() => useReportWorkflow({ getArtifact: vi.fn(async () => { throw new Error("Retained bytes unavailable"); }), setApplicationError: error }));
+    await act(async () => result.current.actions.downloadArtifact({ artifact_id: "missing" }));
+    expect(error).toHaveBeenCalledWith("Retained bytes unavailable"); expect(reportModules.buildPlanningReport).not.toHaveBeenCalled(); expect(reportModules.downloadReportBytes).not.toHaveBeenCalled();
+  });
   it("does not borrow an older optimization Run for the current network evaluation", () => {
     const { result } = renderHook(() => useReportWorkflow({
       activeProject: { id: "project-1", name: "Example" },

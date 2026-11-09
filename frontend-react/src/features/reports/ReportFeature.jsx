@@ -19,6 +19,8 @@ function ReportExportPanel({
   onRegenerateArtifact,
   onExportMarkdown,
   onExportPdf,
+  onPrint,
+  nativeReports = false,
   onExportReviewPackage,
   reportWarning,
   currentWorkspace,
@@ -62,8 +64,9 @@ function ReportExportPanel({
       <div className="report-actions">
         <button type="button" className="report-button primary" onClick={onExportPdf}>
           <FileText size={15} />
-          <span>PDF / Print</span>
+          <span>{nativeReports ? "Save PDF" : "PDF / Print"}</span>
         </button>
+        {nativeReports ? <button type="button" className="report-button" onClick={onPrint} disabled={!onPrint}><FileText size={15} /><span>Print</span></button> : null}
         <button type="button" className="report-button" onClick={onExportMarkdown}>
           <Download size={15} />
           <span>Markdown</span>

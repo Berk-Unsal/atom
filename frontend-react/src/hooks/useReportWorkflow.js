@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { createReportDefinition } from "../domain/report.js";
 import { namingForSource } from "../utils/downloadNames.js";
+import { platform } from "../platform/index.js";
 
 const loadReportExportModule = () => importDeferredModule(() => import("../utils/reportExport.js"));
 const loadReportArtifactModule = () => importDeferredModule(() => import("../utils/reportArtifact.js"));
@@ -104,7 +105,7 @@ export default function useReportWorkflow({
     });
   }, [currentReportSource, planningMode]);
 
-  const persistReportArtifact = useCallback(async ({ report, definition, format, download = true } = {}) => {
+  const persistReportArtifact = useCallback(async ({ report, definition, format, download = true, mode = "pdf" } = {}) => {
     const { buildReportArtifactOutput } = await loadReportArtifactModule();
     const naming = namingForSource(activeProject, definition?.scenario_id, definition?.scenario_revision_id);
     const output = buildReportArtifactOutput({ report, reportDefinition: definition, format, naming });
@@ -113,11 +114,11 @@ export default function useReportWorkflow({
       setReportWarning("Report generated, but its artifact was not retained locally. The current output is still available for download.");
       if (download && format === "markdown") {
         const { downloadReportBytes } = await loadReportArtifactDownloadModule();
-        downloadReportBytes(output.artifact, output.bytes);
+        await downloadReportBytes(output.artifact, output.bytes);
       }
       if (download && format === "html") {
-        const { openPdfReport } = await loadReportExportModule();
-        openPdfReport(output.report ?? report);
+        const { openStoredHtmlReport } = await loadReportArtifactDownloadModule();
+        await openStoredHtmlReport(output.artifact, output.bytes, { mode });
       }
       return null;
     }
@@ -125,11 +126,11 @@ export default function useReportWorkflow({
     onArtifactSelected(saved.artifact_id);
     if (download && format === "markdown") {
       const { downloadReportBytes } = await loadReportArtifactDownloadModule();
-      downloadReportBytes(saved, output.bytes);
+      await downloadReportBytes(saved, output.bytes);
     }
     if (download && format === "html") {
       const { openStoredHtmlReport } = await loadReportArtifactDownloadModule();
-      openStoredHtmlReport(saved, output.bytes);
+      await openStoredHtmlReport(saved, output.bytes, { mode });
     }
     return saved;
   }, [activeProject, onArtifactSelected, saveArtifact]);
@@ -145,34 +146,36 @@ export default function useReportWorkflow({
         setReportWarning("Report tools could not be loaded. Reload the application to retry the export.");
       } else {
         setApplicationError(exportError.message);
-        try {
+        if (!platform.capabilities.nativeReports) try {
           const report = await createPlanningReport();
           const { downloadMarkdownReport } = await loadReportExportModule();
-          downloadMarkdownReport(report);
+          await downloadMarkdownReport(report);
         } catch { /* Keep the original persistence error visible. */ }
       }
     }
   }, [createCurrentReportDefinition, createPlanningReport, persistReportArtifact, saveReportDefinition, setApplicationError]);
 
-  const exportCurrentHtml = useCallback(async () => {
+  const exportCurrentHtml = useCallback(async ({ mode = "pdf" } = {}) => {
     try {
       const report = await createPlanningReport();
       const definition = createCurrentReportDefinition(report);
       await saveReportDefinition(definition);
-      await persistReportArtifact({ report, definition, format: "html" });
+      await persistReportArtifact({ report, definition, format: "html", mode });
     } catch (exportError) {
       if (isDeferredModuleLoadError(exportError)) {
         setReportWarning("Report tools could not be loaded. Reload the application to retry the export.");
       } else {
         setApplicationError(exportError.message);
-        try {
+        if (!platform.capabilities.nativeReports) try {
           const report = await createPlanningReport();
           const { openPdfReport } = await loadReportExportModule();
-          openPdfReport(report);
+          await openPdfReport(report);
         } catch { /* Keep the original persistence error visible. */ }
       }
     }
   }, [createCurrentReportDefinition, createPlanningReport, persistReportArtifact, saveReportDefinition, setApplicationError]);
+
+  const exportCurrentPrint = useCallback(() => exportCurrentHtml({ mode: "print" }), [exportCurrentHtml]);
 
   const historicalReportContext = useCallback((run) => {
     const scenario = (activeProject?.scenarios ?? []).find((candidate) => (
@@ -261,7 +264,7 @@ export default function useReportWorkflow({
       const stored = await getArtifact(artifact.artifact_id);
       if (!stored) return;
       const { downloadReportBytes } = await loadReportArtifactDownloadModule();
-      downloadReportBytes(stored.metadata, stored.bytes);
+      await downloadReportBytes(stored.metadata, stored.bytes);
     } catch (downloadError) {
       if (isDeferredModuleLoadError(downloadError)) {
         setReportWarning("Report download code could not be loaded. Reload the application and choose Download again.");
@@ -290,7 +293,7 @@ export default function useReportWorkflow({
       const reviewPackage = await buildReviewPackage({ report, projectFileText: exportProjectFile(), naming, source: currentReportSource, appMeta });
       const check = await verifyReviewPackage(reviewPackage.bytes);
       if (!check.valid) throw new Error(`The review package failed its own manifest check: ${check.problems.join("; ")}`);
-      downloadReportBytes({ filename: reviewPackage.filename, media_type: "application/zip" }, reviewPackage.bytes);
+      await downloadReportBytes({ filename: reviewPackage.filename, media_type: "application/zip" }, reviewPackage.bytes);
       setReportWarning("");
       return reviewPackage;
     } catch (packageError) {
@@ -316,6 +319,7 @@ export default function useReportWorkflow({
       deleteArtifact: deleteArtifactWithConfirmation,
       downloadArtifact,
       exportCurrentHtml,
+      exportCurrentPrint,
       exportCurrentMarkdown,
       exportReviewPackage,
       generateHistoricalReport,

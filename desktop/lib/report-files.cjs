@@ -58,7 +58,8 @@ class ReportFiles {
       try {
         surface = await this.createSurface(html);
         const operation = request.mode === "pdf"
-          ? surface.webContents.printToPDF({ pageSize: "A4", landscape: false, printBackground: true, preferCSSPageSize: false, displayHeaderFooter: false })
+          ? surface.webContents.printToPDF({ pageSize: "A4", landscape: false, printBackground: true, preferCSSPageSize: false, displayHeaderFooter: false,
+            generateTaggedPDF: true, generateDocumentOutline: true })
           : new Promise((resolve, reject) => {
             surface.once("closed", () => resolve({ canceled: true }));
             surface.show();

@@ -1,6 +1,6 @@
 # Local desktop host
 
-This is the local Electron host developed through #149–#152. It launches the existing
+This is the local Electron host developed through #149–#153 and #157. It launches the existing
 `frontend-react` build and `backend-go` API. The D01 qualification selected
 Electron 44.7.0; this host pins 44.10.2 to include the
 [compromised-certificate mitigation](https://github.com/advisories/GHSA-jr5w-w6x2-84p9).
@@ -111,6 +111,8 @@ Command modes:
 | `scripts/desktop-test.sh --runtime` | Real-Go transport/lifecycle cases after a local build. |
 | `scripts/desktop-test.sh --native` | Production/Vite/security engine checks after a local build. |
 | `scripts/desktop-test.sh --dev-loop` | Isolated-source development-loop qualification and timing; no staged dist. |
+| `scripts/desktop-test.sh --storage` | Real unpacked-app persistence/recovery qualification. |
+| `scripts/desktop-test.sh --diagnostics` | Real native crash, log fallback and redacted startup recovery checks. |
 
 Packaging is a separate #159/#161 work package; none of these commands produces
 or publishes an installer. Web `npm run dev`, Go tests and Docker commands remain
@@ -233,3 +235,44 @@ registry/recent associations and packs, and verifies private permissions.
 macOS relocates the entire `.app`; Ubuntu relocates Resources while retaining
 the exact AppArmor-qualified executable path. Installer, signing, arbitrary
 Linux executable relocation and clean-machine qualification remain #159–#162.
+
+
+## Local logs and diagnostics
+
+Help → Open Logs opens the actual current native log directory in the system
+file manager. Logs remain local; the application never uploads support data.
+Host and backend lifecycle records are separate JSONL files (`host.log` and
+`backend.log`), each capped at 5 MiB with at most five files per component
+(active plus `.1.log` through `.4.log`). Rotation preserves newest records.
+Directories are private 0700 and files 0600; symlinks, hardlinks, shared modes
+and nonregular files are rejected without repairing or overwriting them.
+
+If the configured log directory cannot be used, the logger makes one private
+`atom-support-logs-*` directory in the OS temporary directory. Open Logs selects
+that fallback, even if logging switches after launch. It is retained for manual
+inspection; the OS may clean it later. A second sink failure disables logging
+without stopping the planning service. Open Logs reports unavailable logging
+or file-manager failure with bounded repair guidance. No domain workspace is
+placed in the fallback and no profile is reset.
+
+Records include UTC time, level, product version, build commit, platform,
+architecture, runtime generation and allowlisted readiness/failure codes. They
+exclude raw stderr/stdout, stack traces, absolute user paths, URLs, credentials
+and project/report/request bodies. Packaged builds use info/error events;
+unpackaged source builds additionally record a debug stderr byte-count summary
+on child close. Debug never enables raw content capture. This deliberately
+prioritizes predictable disclosure over arbitrary terminal-message detail.
+Native startup errors also show fixed reason codes and repair guidance rather
+than raw filesystem exceptions. User-selected file display paths remain part
+of the dedicated project-file UX, not diagnostic records.
+
+Startup failure offers Open Logs, Retry and Quit. Retry explicitly relaunches
+the app after repair. A crashed renderer offers Reload Workspace, Open Logs or
+Quit; reload restores recovery autosave, so unsaved in-memory edits may be lost.
+A child crash retains the existing Help → Restart planning service recovery.
+None of these actions automatically repeats a calculation. Log permission,
+rotation, full-disk/quota and fallback failures have deterministic unit tests.
+`--diagnostics` also exercises real child/renderer crashes, an actual unwritable
+log directory, missing executable, invalid dataset and startup resource failure
+in disposable native profiles. Native dialog choices and the file-manager call
+are automated; OS file-manager UI and installed support remain separate gates.

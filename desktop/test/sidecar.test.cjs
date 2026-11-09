@@ -6,10 +6,20 @@ const path = require("node:path");
 const os = require("node:os");
 const { Sidecar } = require("../lib/sidecar.cjs");
 
-function fixture(scenario) {
+function fixture(scenario, options = {}) {
   return new Sidecar({ executable: process.execPath, datasetDir: os.tmpdir(), distDir: os.tmpdir(), version: "test", commit: "test", timeout: 1000, shutdownTimeout: 500,
-    spawnProcess: (executable, _args, options) => spawn(executable, [path.join(__dirname, "fixtures/sidecar.cjs"), scenario], options) });
+    spawnProcess: (executable, _args, options) => spawn(executable, [path.join(__dirname, "fixtures/sidecar.cjs"), scenario], options), ...options });
 }
+
+test("structured lifecycle diagnostics omit stderr text and cannot disrupt owned cleanup", async () => {
+  const rows = []; const backend = fixture("stderr", { diagnostics: (event, fields) => rows.push({ event, ...fields }) });
+  const child = await backend.start(); await backend.stop();
+  assert.ok(rows.some((row) => row.state === "ready" && row.dataset === true));
+  assert.ok(rows.some((row) => row.event === "backend-stderr" && row.bytes > 0));
+  assert.equal(JSON.stringify(rows).includes(child.token), false); assert.doesNotMatch(JSON.stringify(rows), /stderr"\s*:/);
+  const broken = fixture("ready", { diagnostics: () => { throw new Error("log disk failure"); } });
+  await broken.start(); await broken.stop(); assert.equal(broken.owned.closed, true);
+});
 
 test("real inherited pipes verify readiness and clean shutdown; concurrent starts own one child", async () => {
   const backend = fixture("ready");
@@ -42,6 +52,13 @@ test("missing executable rejects without an unhandled pipe error", async () => {
   const backend = new Sidecar({ executable: "/no-such-atom-backend", datasetDir: os.tmpdir(), distDir: os.tmpdir(), version: "test", commit: "test" });
   await assert.rejects(backend.start(), /could not start/);
   await backend.stop();
+});
+
+test("listener denial exposes a bounded actionable reason without copying control text", async () => {
+  const rows = []; const backend = fixture("listen-failed", { diagnostics: (event, fields) => rows.push({ event, ...fields }) });
+  await assert.rejects(backend.start(), /local listener/); await backend.stop();
+  assert.ok(rows.some((row) => row.state === "failed" && row.reason === "listener"));
+  assert.equal(backend.owned.closed, true);
 });
 
 test("a child that ignores shutdown is killed and reaped within the owned shutdown ceiling", async () => {

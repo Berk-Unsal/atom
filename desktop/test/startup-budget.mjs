@@ -14,22 +14,26 @@ const desktop = path.resolve(import.meta.dirname, "..");
 const root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/startup-budget.json");
 const resources = path.join(desktop, "build/resources");
-const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-startup-budget-"));
 const result = { ...sourceIdentity(root), method: "20 paired fresh-profile launches and same-profile relaunches; OS file cache uncontrolled; no cache purge", samples: [] };
 const build = JSON.parse(await fs.readFile(path.join(resources, "build-info.json"), "utf8"));
 assert.equal(build.commit, result.source_commit, "Rebuild native resources for the measured source");
 assert.equal(result.source_dirty, false, "Measure a committed, clean source");
+const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-startup-budget-"));
 result.resource_build_commit = build.commit;
 result.binary_sha256 = sha256(await fs.readFile(path.join(resources, "atom-api")));
 result.manifest_sha256 = sha256(await fs.readFile(path.join(resources, "data-pipeline/manifest.json")));
 await fs.mkdir(path.dirname(output), { recursive: true });
 const checkpoint = () => fs.writeFile(output, JSON.stringify(result, null, 2) + "\n");
 let application;
+let currentProfile;
 async function launch(profile, resourceRoot = resources) {
+  currentProfile = profile;
   const started = Date.now();
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: profile, ATOM_DESKTOP_TEST_RESOURCES: resourceRoot };
   delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
+  const process = application.process();
+  process.once("exit", (code, signal) => { result.last_application_exit = { code, signal, time: new Date().toISOString() }; });
   const page = await application.firstWindow();
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));
@@ -58,6 +62,7 @@ try {
   for (let index = 0; index < 20; index++) {
     const profile = path.join(scratch, `profile-${index}`);
     for (const state of ["fresh_profile", "same_profile_relaunch"]) {
+      result.current_sample = { index, state };
       const { page: _page, ...sample } = await launch(profile);
       result.samples.push({ index, state, ...sample });
       await close(); await checkpoint();
@@ -92,7 +97,15 @@ try {
     aggregate_idle_rss_500MiB: result.idle.full_pack.rss_bytes <= 500 * 1024 * 1024,
   };
   result.result = Object.values(result.budgets).every(Boolean) ? "PASS" : "BUDGET_REVIEW_REQUIRED";
-} catch (error) { result.result = "FAIL"; result.failure = error.message; throw error; }
+} catch (error) {
+  result.result = "FAIL"; result.failure = error.message;
+  result.failure_diagnostics = {};
+  if (currentProfile) for (const component of ["host", "backend"]) {
+    const contents = await fs.readFile(path.join(currentProfile, `native-state/logs/${component}.log`), "utf8").catch(() => "");
+    result.failure_diagnostics[component] = contents.trim().split("\n").filter(Boolean).slice(-40).map(JSON.parse);
+  }
+  throw error;
+}
 finally {
   await checkpoint();
   if (application) await application.close().catch(() => {});

@@ -13,7 +13,10 @@ test("every existing Go API route has an explicit native policy decision", () =>
     for (const [, method, route] of source.matchAll(/router\.(GET|POST|DELETE|PUT|PATCH)\(\s*"([^"\n]+)"/g)) {
       if (!route.startsWith("/api/") && !["/healthz", "/readyz"].includes(route)) continue;
       const concrete = route.replace(":jobID", `job-${"a".repeat(24)}`).replace(":id", "building_123");
-      assert.equal(allowedAPIPath(method, concrete), true, `${method} ${route} needs a reviewed native route decision`);
+      // Dataset activation is a typed native transaction: renderer HTTP must
+      // not bypass registration, source revalidation or startup persistence.
+      const typedNativeOnly = method === "POST" && route === "/api/datasets/switch";
+      assert.equal(allowedAPIPath(method, concrete), !typedNativeOnly, `${method} ${route} needs a reviewed native route decision`);
       count++;
     }
   }

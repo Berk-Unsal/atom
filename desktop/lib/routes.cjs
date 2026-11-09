@@ -10,7 +10,7 @@ const ROUTES = {
   POST: new Set(["/api/analyze-sector", "/api/simulate", "/api/optimize-azimuth", "/api/explain-network-cell",
     "/api/evaluate-network", "/api/building-entry-analysis", "/api/coverage-gaps", "/api/recommend-sites",
     "/api/measurements/evaluate", "/api/interference", "/api/path-profile", "/api/core/scenario",
-    "/api/datasets/switch", "/api/coverage-surface", "/api/compare-network", "/api/optimize-network", "/api/spatial-evidence/path-profile",
+    "/api/coverage-surface", "/api/compare-network", "/api/optimize-network", "/api/spatial-evidence/path-profile",
     "/api/processes/batch-experiment/execution", "/api/sub-thz-reflection-reference", "/api/sub-thz-validation",
     "/api/sub-thz-reference", "/api/sub-thz-p1411-reference", "/api/sub-thz-material-reference"]),
   DELETE: new Set(["/api/rf-workflows"]),

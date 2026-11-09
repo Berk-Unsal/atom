@@ -1,6 +1,6 @@
 # Local desktop host
 
-This is the local Electron host developed through #149–#154 and #156. It launches the existing
+This is the local Electron host developed through #149–#156. It launches the existing
 `frontend-react` build and `backend-go` API. The D01 qualification selected
 Electron 44.7.0; this host pins 44.10.2 to include the
 [compromised-certificate mitigation](https://github.com/advisories/GHSA-jr5w-w6x2-84p9).
@@ -16,7 +16,7 @@ npm run build --prefix desktop
 npm start --prefix desktop
 ```
 
-The build stages generated assets, the unchanged Go executable, the local dataset
+The build stages generated assets, the shared Go API executable, the local dataset
 pack, the existing icon and root VERSION/build identity under `desktop/build`.
 It does not create an installer, sign a binary or publish a dataset. The app
 does not require the developer's current working directory when launched.
@@ -145,10 +145,10 @@ the project-file suite below separately exercises the approved-file workflow.
 These checks do not qualify production packaging, RF accuracy or native print actions. The security suite adds hostile origins, main/subframe navigation, popups, redirects, Chromium drag events, imported project text, stored report bytes and the isolated report surface; CI also requests the private API as another OS user without a token. Follow
 `docs/active-issues-goal-plan.md` for the remaining issue acceptance gates.
 
-Known external dependency: the shared Stadia map tiles show authentication-error
-images from the desktop origin without provider authorization. Native launch/RF
-checks do not establish production basemap permission. #155 owns that decision;
-this shell foundation does not hide the failure or claim a usable public map.
+The original shell foundation exposed Stadia authentication-error tiles from
+the desktop origin. The native target now selects the attributed OSM fallback
+described below; browser provider deployments retain their own authorization.
+Data redistribution and public installation/signing remain separate gates.
 
 The bridge and protocol follow Electron's
 [security guidance](https://www.electronjs.org/docs/latest/tutorial/security)
@@ -334,3 +334,59 @@ full platform qualification retain #158–#162 gates.
 
 Native APIs: [Electron print/PDF](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions)
 and [Save dialogs](https://www.electronjs.org/docs/latest/api/dialog#dialogshowsavedialogwindow-options).
+
+## Dataset packs and native maps
+
+Use Data → Add Dataset Pack to select a folder, or Data → Add Dataset Manifest
+to select its `manifest.json`. Review the pack identity, sources, licenses,
+declared byte size and hashes before registering. Copy into A.T.O.M is the
+default: only declared files enter a private stage, complete canonical Go
+validation runs again, then the stage is atomically installed and registered.
+The source folder stays unchanged. Advanced reference-in-place avoids a durable
+copy; keep that folder/drive available and immutable while in use. Validation
+on activation/start rejects changed contents. To locate a moved reference,
+choose the identical pack at its new folder and register the reference again.
+Older schema-1 registry metadata remains visible as unverified and is preserved
+without becoming an approved root. Choose Validate folder to review and validate
+it explicitly; existing recovery stores are not reset or silently migrated.
+
+Data → Manage Dataset Packs activates a registered ID through existing Go
+validation/atomic switching and saves the startup selection. A missing startup
+reference keeps native Data controls and the shared UI available for explicit
+recovery. No terminal/environment/Docker change or silent fallback is needed.
+The original project's dataset ID/version/hashes stay bound; its retained
+inventory can remain visible with the existing mismatch indicator. Activation
+clears current Results and never runs RF or migrates project/report provenance.
+
+Chooser/validation/copy cancellation preserves the active pack and removes
+incomplete staging. Native file, report and dataset operations share a busy/Quit
+gate. Activation's atomic commit is not represented as cancelable rollback.
+Settings/runtime-registry failures after a completed operation explicitly report
+what was registered or active; repair permissions/disk space and retry/restart
+as directed. A complete orphan after a later settings failure is not implicitly
+activated or deleted. Native limits are 1 MiB manifest, 2 GiB per layer, 4 GiB
+total and five minutes per canonical validation process; existing shared format
+and RF validation remain unchanged.
+
+Native light/dark maps use attributed OSM Standard with an identifying
+`A.T.O.M/<version>` User-Agent, normal HTTP caching and explicit offline Retry.
+Unconfigured Stadia choices are unavailable to the native target. Browser
+provider defaults/authentication stay unchanged. The public OSM service is
+best-effort; RF overlays remain available during denied/offline tiles. There is
+no area prefetch or offline map distribution. See the current official
+[OSMF policy](https://operations.osmfoundation.org/policies/tiles/) and
+[Stadia desktop authentication guidance](https://docs.stadiamaps.com/authentication/).
+
+Run `scripts/desktop-test.sh --datasets` after a local build. Routine native and
+development-loop tests block public OSM from process startup; they use failed or
+synthetic tiles, not automated upstream map navigation. The explicit
+`node desktop/test/provider-probe.mjs` is a bounded online qualification of one
+fixed tile and normal native cache reuse after relaunch, excluded from CI.
+[Qualification and limits](../docs/desktop-datasets-qualification.md) cover real
+Go/filesystem/relaunch behavior and the automation scope.
+
+The unchanged default bundle contains approximately 111.50 MiB of declared
+data. Its reproducible source audit and exact-hash pending approval record are
+in the [redistribution review](../docs/desktop-data-redistribution-review.md) and
+`desktop/data-redistribution.json`. Local builds are not public packaged-data
+approval; public distribution remains gated on that maintainer review.

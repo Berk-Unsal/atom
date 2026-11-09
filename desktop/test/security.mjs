@@ -1,4 +1,4 @@
-import { _electron as electron } from "playwright-core";
+import { launchNative } from "./native-launch.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -22,7 +22,7 @@ const server = http.createServer((request, response) => {
 await new Promise((resolve, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", resolve); });
 const hostileOrigin = `http://127.0.0.1:${server.address().port}`;
 try {
-  application = await electron.launch({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow();
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   await waitForRuntime(page, (runtime) => runtime.state === "ready");

@@ -24,6 +24,17 @@ if (process.isMainFrame && location.protocol === "app:" && location.host === "at
   saveProjectFile: (request) => ipcRenderer.invoke("atom:project-save", request),
   saveReportFile: (request) => ipcRenderer.invoke("atom:report-save", request),
   outputReport: (request) => ipcRenderer.invoke("atom:report-output", request),
+  getDatasetRegistry: () => ipcRenderer.invoke("atom:dataset-status"),
+  chooseDatasetPack: (kind) => ipcRenderer.invoke("atom:dataset-choose", kind),
+  installDatasetPack: (request) => ipcRenderer.invoke("atom:dataset-install", request),
+  activateDatasetPack: (id) => ipcRenderer.invoke("atom:dataset-activate", id),
+  cancelDatasetOperation: () => ipcRenderer.invoke("atom:dataset-cancel"),
+  onDatasetCommand: (callback) => {
+    if (typeof callback !== "function") throw new TypeError("Dataset listener must be a function");
+    const listener = (_event, command) => callback(command);
+    ipcRenderer.on("atom:dataset-command", listener);
+    return () => ipcRenderer.removeListener("atom:dataset-command", listener);
+  },
   setProjectFileState: (projects) => ipcRenderer.invoke("atom:project-state", projects),
   getProjectFileState: () => ipcRenderer.invoke("atom:project-status"),
   finishProjectCommand: (request) => ipcRenderer.invoke("atom:project-command-result", request),

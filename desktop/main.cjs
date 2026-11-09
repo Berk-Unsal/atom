@@ -20,6 +20,9 @@ const { createProjectFileClose } = require("./lib/project-file-close.cjs");
 const { registerProjectShortcuts } = require("./lib/project-file-shortcuts.cjs");
 const { ReportFiles } = require("./lib/report-files.cjs");
 const { registerReportFiles } = require("./lib/report-file-bridge.cjs");
+const { DatasetRegistry } = require("./lib/dataset-registry.cjs");
+const { registerDatasets } = require("./lib/dataset-bridge.cjs");
+const { activateDataset } = require("./lib/dataset-activation.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -43,6 +46,7 @@ let backend;
 let devControl;
 let projectFiles;
 let reportFiles;
+let datasets;
 let fileClose;
 let quitIntent = false;
 let supervisorQuitting = false;
@@ -58,17 +62,32 @@ async function launch() {
     iconPath: path.join(resources, "atom.png"), copyright: "A.T.O.M contributors" });
   const settings = new SettingsStore(storage.settings);
   try {
-    const hostSettings = settings.load();
-    settings.save({ ...hostSettings, preferences: { ...hostSettings.preferences, lastVersion: info.version } });
+    settings.load();
   } catch (error) { storageError = error; throw error; }
   const geometryFile = storage.geometry;
   const geometry = readGeometry(geometryFile, [screen.getPrimaryDisplay(), ...screen.getAllDisplays().filter((d) => d.id !== screen.getPrimaryDisplay().id)]);
+  // Public OSM native-client identification; normal Chromium HTTP caching is
+  // retained. No spoofed localhost/Referer, embedded provider key or prefetch.
+  session.defaultSession.setUserAgent(`A.T.O.M/${info.version} (+https://github.com/Berk-Unsal/atom)`);
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
   session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
     callback({ cancel: !allowRendererRequest(details, window?.webContents, devServer) });
   });
-  backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: path.join(resources, "data-pipeline"),
+  const registryFile = path.join(storage.runtime, "datasets.json");
+  datasets = new DatasetRegistry({ settings, packsRoot: storage.packs, registryFile, bundledRoot: path.join(resources, "data-pipeline"),
+    executable: path.join(resources, "atom-api"), isBusy: () => Boolean(projectFiles?.busy || reportFiles?.busy),
+    selectSource: (kind) => dialog.showOpenDialog(window, { title: "Add A.T.O.M dataset pack",
+      properties: [kind === "directory" ? "openDirectory" : "openFile", ...(process.platform === "darwin" ? ["noResolveAliases"] : [])],
+      ...(kind === "manifest" ? { filters: [{ name: "Dataset manifest (manifest.json)", extensions: ["json"] }] } : {}) }),
+    activate: (entry) => activateDataset(backend, entry),
+  });
+  let selectedDataset;
+  try {
+    selectedDataset = await datasets.initialize();
+    settings.save({ ...settings.value, preferences: { ...settings.value.preferences, lastVersion: info.version } });
+  } catch (error) { storageError = error; throw error; }
+  backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: selectedDataset, datasetRegistry: registryFile,
     distDir: path.join(resources, "dist"), version: info.version, commit: info.commit });
   devControl = createDevControl({ isPackaged: app.isPackaged, enabled: process.env.ATOM_DESKTOP_DEV_CONTROL, devServer,
     restart: () => backend.restart(), snapshot: () => backend.snapshot(), quit: () => { supervisorQuitting = true; if (!quitting) quitIntent = false; app.quit(); } });
@@ -105,23 +124,25 @@ async function launch() {
     await openExternal(safe);
   });
   projectFiles = new ProjectFiles({ settings,
-    isBusy: () => Boolean(reportFiles?.busy),
+    isBusy: () => Boolean(reportFiles?.busy || datasets.busy),
     selectOpen: () => dialog.showOpenDialog(window, { title: "Open A.T.O.M project", properties: ["openFile", ...(process.platform === "darwin" ? ["noResolveAliases"] : [])],
       filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }] }),
     selectSave: ({ mode, defaultPath }) => dialog.showSaveDialog(window, { title: mode === "export" ? "Export project copy" : "Save A.T.O.M project", defaultPath,
       filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }],
       properties: process.platform === "linux" ? ["showOverwriteConfirmation"] : ["createDirectory"], showsTagField: false }),
   });
-  reportFiles = new ReportFiles({ isBusy: () => projectFiles.busy,
+  reportFiles = new ReportFiles({ isBusy: () => projectFiles.busy || datasets.busy,
     selectSave: ({ name, extension }) => dialog.showSaveDialog(window, { title: "Save A.T.O.M report", defaultPath: name,
       filters: [{ name: `Report (${extension.toUpperCase()})`, extensions: [extension] }],
       properties: process.platform === "linux" ? ["showOverwriteConfirmation"] : ["createDirectory"], showsTagField: false }),
     createSurface: (html) => createReportSurface({ BrowserWindow, session, parent: window, html }),
   });
   registerReportFiles({ ipcMain, getWindow: () => window, files: reportFiles });
+  registerDatasets({ ipcMain, getWindow: () => window, registry: datasets });
+  const datasetCommand = (command) => { if (window && !window.isDestroyed() && !quitting && !quitIntent) window.webContents.send("atom:dataset-command", command); };
   const projectCommand = (command) => { if (window && !window.isDestroyed() && !quitting && (!quitIntent || command === "refresh")) window.webContents.send("atom:project-command", { command }); };
   registerProjectShortcuts(window.webContents, projectCommand);
-  fileClose = createProjectFileClose({ files: projectFiles, getWindow: () => window, isBusy: () => projectFiles.busy || reportFiles.busy,
+  fileClose = createProjectFileClose({ files: projectFiles, getWindow: () => window, isBusy: () => projectFiles.busy || reportFiles.busy || datasets.busy,
     showMessageBox: (...args) => dialog.showMessageBox(...args), sendCommand: (request) => {
       if (!window || window.isDestroyed()) throw new Error("The project window is unavailable");
       window.webContents.send("atom:project-command", request);
@@ -137,6 +158,11 @@ async function launch() {
       { id: "atom-project-export", label: "Export Project Copy…", accelerator: "CmdOrCtrl+Shift+E", click: () => projectCommand("export") },
       { type: "separator" }, { role: "quit" }] },
     { role: "editMenu" },
+    { label: "Data", submenu: [
+      { id: "atom-dataset-add-directory", label: "Add Dataset Pack…", click: () => datasetCommand("directory") },
+      { id: "atom-dataset-add-manifest", label: "Add Dataset Manifest…", click: () => datasetCommand("manifest") },
+      { id: "atom-dataset-manage", label: "Manage Dataset Packs…", click: () => datasetCommand("manage") },
+    ] },
     { label: "View", submenu: [{ role: "resetZoom" }, { role: "zoomIn" }, { role: "zoomOut" }, { type: "separator" }, { role: "togglefullscreen" }] },
     { role: "windowMenu" },
     { role: "help", submenu: [{ label: "A.T.O.M documentation", click: () => void openExternal("https://berk-unsal.github.io/atom/") },

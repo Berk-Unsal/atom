@@ -1,4 +1,4 @@
-import { _electron as electron } from "playwright-core";
+import { launchNative } from "./native-launch.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -73,7 +73,7 @@ try {
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve)); const origin = `http://127.0.0.1:${server.address().port}`;
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: profile, ATOM_DESKTOP_TEST_RESOURCES: resources }; delete env.ELECTRON_RUN_AS_NODE;
   delete env.ATOM_DESKTOP_DEV_SERVER; delete env.ATOM_DESKTOP_DEV_CONTROL;
-  application = await electron.launch({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow();
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) posts.push(request.url()); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 }); await waitForRuntime(page, (runtime) => runtime.state === "ready");

@@ -24,8 +24,9 @@ import ResultContextBadge from "./components/ResultContextBadge.jsx";
 import ContextualInspector from "./components/ContextualInspector.jsx";
 import ResearchReferenceBadge from "./components/ResearchReferenceBadge.jsx";
 import { KeyValueRows, TechnicalDetails, ToolSection } from "./components/ToolPrimitives.jsx";
-import { DARK_BASEMAP_ID, DEFAULT_BASEMAP_ID } from "./components/basemaps.js";
+import { initialBasemapChoices } from "./components/basemaps.js";
 import MapCanvas from "./components/MapCanvas.jsx";
+import NativeDatasetManager from "./components/NativeDatasetManager.jsx";
 import OptimizationGoalsPanel from "./components/OptimizationGoalsPanel.jsx";
 import { OptimizationScoreHelp, ParetoAlternativesHelp, SectorResultHelp } from "./components/OptimizationHelp.jsx";
 import { describeSectorResult } from "./utils/rfResultInterpretation.js";
@@ -250,7 +251,7 @@ export default function App() {
   const [selectionNotice, setSelectionNotice] = useState("");
   const [layerVisibility, setLayerVisibility] = useState(DEFAULT_LAYER_VISIBILITY);
   const { themePreference, resolvedTheme, setThemePreference } = useTheme();
-  const [basemapChoices, setBasemapChoices] = useState({ light: DEFAULT_BASEMAP_ID, dark: DARK_BASEMAP_ID });
+  const [basemapChoices, setBasemapChoices] = useState(() => initialBasemapChoices(platform.kind));
   const basemapId = basemapChoices[resolvedTheme];
   const setBasemapId = (id) => setBasemapChoices((choices) => ({ ...choices, [resolvedTheme]: id }));
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
@@ -1813,11 +1814,13 @@ export default function App() {
   }, [clearRenderedAnalysis, requests, resetNetworkArtifacts]);
 
 	const switchDataset = useCallback(async (datasetID) => {
-		if (!datasetID || datasetID === installedDatasets.active_id || isSwitchingDataset) return;
+		if (isSwitchingDataset) return { error: "Wait for the current dataset change to finish before activating another pack." };
+		if (!datasetID || (datasetID === installedDatasets.active_id && !platform.capabilities.nativeDatasets)) return;
 		setIsSwitchingDataset(true);
 		setDatasetMessage("Validating and loading dataset…");
 		try {
-			const response = await postJSON("/api/datasets/switch", { id: datasetID }, "Dataset switch failed");
+			const response = platform.capabilities.nativeDatasets ? await platform.datasets.activate(datasetID)
+				: await postJSON("/api/datasets/switch", { id: datasetID }, "Dataset switch failed");
 			clearSpatialContext();
 			restoredProjectRef.current = null;
 			setWorkspaceRestored(false);
@@ -1846,11 +1849,13 @@ export default function App() {
 			clearRenderedAnalysis();
 			setCalibrationProfile(null);
 			dispatchPlanChange("input");
-			setDatasetMessage(`${response.dataset?.name ?? datasetID} is active. Existing project scenarios remain bound to their original dataset.`);
+			setDatasetMessage(response.warning || `${response.dataset?.name ?? datasetID} is active. Existing project scenarios remain bound to their original dataset.`);
 			setDatasetRevision((current) => current + 1);
+			return response;
 		} catch (requestError) {
 			setDatasetMessage(requestError.message);
 			setIsSwitchingDataset(false);
+			return { error: requestError.message };
 		}
 	}, [clearRenderedAnalysis, clearSpatialContext, installedDatasets.active_id, isSwitchingDataset, requests, resetNetworkArtifacts]);
 
@@ -3847,6 +3852,7 @@ export default function App() {
 
   return (
     <main className="focused-app-shell">
+      {platform.capabilities.nativeDatasets ? <NativeDatasetManager onActivate={switchDataset} activeID={installedDatasets.active_id} /> : null}
       <a className="skip-link" href="#planning-map">Skip to planning map</a>
       <CommandBar
         appIconUrl={APP_ICON_URL}
@@ -5951,7 +5957,9 @@ function DataPanel({
 			<summary>Dataset details <span>{datasetMeta.name ?? "Installed packs, QA, and provenance"}</span></summary>
 			<section className="model-assumptions dataset-switcher" aria-label="Installed dataset packs">
 				<div className="panel-title"><Database size={16} /><span>Installed dataset packs</span></div>
-				<p className="data-note">Only packs discovered under the configured local <code>ATOM_DATASETS_ROOT</code> can be activated. A candidate is hash- and geometry-validated before the active in-memory snapshot changes.</p>
+				{platform.capabilities.nativeDatasets
+					? <p className="data-note">Use Data → Add Dataset Pack to copy or reference a validated local pack, or Data → Manage Dataset Packs to locate a moved reference. Activation validates the complete pack before replacing the active snapshot.</p>
+					: <p className="data-note">Only packs discovered under the configured local <code>ATOM_DATASETS_ROOT</code> can be activated. A candidate is hash- and geometry-validated before the active in-memory snapshot changes.</p>}
 				<div className="dataset-pack-list">
 					{(installedDatasets?.datasets ?? []).map((dataset) => (
 						<button key={dataset.id} type="button" className={dataset.active ? "active" : ""} disabled={dataset.active || isSwitchingDataset} onClick={() => onSwitchDataset(dataset.id)}>

@@ -31,6 +31,9 @@ var (
 )
 
 func main() {
+	if runDatasetJSONValidation(os.Args[1:]) {
+		return
+	}
 	desktop, err := startDesktopControlFromArgs(os.Args[1:])
 	if err != nil {
 		log.Fatalf("desktop control: %v", err)
@@ -41,11 +44,22 @@ func main() {
 			log.Fatalf("desktop listen: %v", err)
 		}
 	}
-	datasetPack, datasetErr := loadRuntimeDataset()
+	var datasetPack *raytracer.DatasetPack
+	var datasetErr error
+	registry := ""
+	if desktop != nil {
+		registry = os.Getenv("ATOM_DESKTOP_DATASET_REGISTRY")
+	}
+	if registry != "" {
+		datasetPack, datasetErr = loadDesktopRuntimeDataset(registry, os.Getenv("ATOM_DATASET_DIR"))
+	} else {
+		datasetPack, datasetErr = loadRuntimeDataset()
+	}
 	if desktop != nil {
 		desktop.announceDataset(datasetPack, datasetErr)
 	}
 	datasets := newDatasetRuntime(datasetPack, datasetErr, os.Getenv("ATOM_DATASETS_ROOT"))
+	datasets.desktopRegistry = registry
 	experiments := newExperimentManager(modelVersion, envInt("EXPERIMENT_WORKERS", 1), envInt("EXPERIMENT_QUEUE_SIZE", defaultExperimentQueueSize))
 	buildingIndex := raytracer.EmptyBuildingIndex()
 	buildingStats := raytracer.BuildingIndexStats{SourcePath: "not found"}

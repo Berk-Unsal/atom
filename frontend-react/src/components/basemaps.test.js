@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { Browser, tileLayer } from "leaflet";
-import { BASEMAPS, DEFAULT_BASEMAP_ID, getBasemap } from "./basemaps.js";
+import { BASEMAPS, DEFAULT_BASEMAP_ID, getBasemap, basemapsForTarget, initialBasemapChoices } from "./basemaps.js";
 
 describe("raster basemap configuration", () => {
+  it("uses an attributed OSM native fallback without changing browser providers or themes", () => {
+    expect(initialBasemapChoices("desktop")).toEqual({ light: "osm-standard", dark: "osm-standard" });
+    expect(basemapsForTarget("desktop").map(({ id }) => id)).toEqual(["osm-standard"]);
+    expect(basemapsForTarget("desktop")[0].attribution).toContain("OpenStreetMap contributors");
+    expect(initialBasemapChoices("browser")).toEqual({ light: "alidade-smooth", dark: "alidade-smooth-dark" });
+    expect(basemapsForTarget("browser")).toBe(BASEMAPS);
+  });
   it("uses the visually evaluated light default and resolves invalid choices", () => {
     expect(DEFAULT_BASEMAP_ID).toBe("alidade-smooth");
     expect(getBasemap("invalid")).toBe(getBasemap(DEFAULT_BASEMAP_ID));

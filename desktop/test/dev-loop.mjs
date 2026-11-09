@@ -44,6 +44,12 @@ async function copySource() {
   for (const directory of ["desktop", "frontend-react"]) await fs.symlink(path.join(root, directory, "node_modules"), path.join(fixture, directory, "node_modules"));
   for (const directory of ["data-pipeline", "icon"]) await fs.symlink(path.join(root, directory), path.join(fixture, directory));
   await fs.copyFile(path.join(root, "VERSION"), path.join(fixture, "VERSION"));
+  // The isolated fixture drives repeated RF/map views. Block public OSM DNS
+  // before the first renderer; no offline-area requests or prefetch in CI.
+  const nativeMain = path.join(fixture, "desktop/main.cjs");
+  const nativeSource = await fs.readFile(nativeMain, "utf8");
+  assert.ok(nativeSource.includes('app.setName("A.T.O.M");'), "Install the test-only provider block before any renderer");
+  await fs.writeFile(nativeMain, nativeSource.replace('app.setName("A.T.O.M");', 'app.commandLine.appendSwitch("no-proxy-server");\napp.commandLine.appendSwitch("host-resolver-rules", "MAP tile.openstreetmap.org ~NOTFOUND");\napp.setName("A.T.O.M");'));
   execFileSync("git", ["init", "-q", fixture]);
   execFileSync("git", ["-c", "user.name=Atom test fixture", "-c", "user.email=fixture@example.invalid", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null",
     "commit", "--allow-empty", "-qm", "Isolated native development fixture"], { cwd: fixture });

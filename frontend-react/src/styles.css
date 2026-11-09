@@ -8559,6 +8559,27 @@ div.project-menu-message {
 .apply-solution-actions button:disabled { opacity: 0.55; cursor: not-allowed; }
 .apply-solution-actions button:focus-visible { outline: 2px solid var(--ui-focus, var(--focus)); outline-offset: 2px; }
 
+.native-dataset-dialog { width: min(680px, calc(100vw - 24px)); }
+.native-dataset-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.native-dataset-dialog button { min-height: 36px; padding: var(--space-1) var(--space-2); border: 1px solid var(--line-strong); border-radius: var(--radius-control); color: var(--slate); background: var(--surface-raised); cursor: pointer; font: inherit; font-size: var(--text-meta); }
+.native-dataset-dialog button:disabled { opacity: 0.55; cursor: not-allowed; }
+.native-dataset-dialog button:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+.native-dataset-dialog h4 { margin: 0 0 var(--space-2); font-size: var(--text-control); color: var(--slate); }
+.native-dataset-actions { justify-content: flex-start; margin: var(--space-3) 0; }
+.native-dataset-selection, .native-dataset-list { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--line); }
+.native-dataset-dialog dl { display: grid; gap: var(--space-1); font-size: var(--text-meta); }
+.native-dataset-dialog dt { color: var(--muted); }
+.native-dataset-dialog dd { margin: 0 0 var(--space-2); overflow-wrap: anywhere; }
+.native-dataset-dialog details { margin: var(--space-2) 0; font-size: var(--text-meta); }
+.native-dataset-dialog summary { cursor: pointer; color: var(--slate); }
+.native-dataset-dialog fieldset { display: grid; gap: var(--space-2); margin: var(--space-3) 0; padding: var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-control); }
+.native-dataset-dialog label { display: flex; align-items: baseline; gap: var(--space-2); font-size: var(--text-meta); }
+.native-dataset-dialog input[type="radio"] { accent-color: var(--ui-accent-strong); }
+.native-dataset-dialog p { overflow-wrap: anywhere; }
+.native-dataset-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); font-size: var(--text-meta); }
+.native-dataset-entry p { margin: var(--space-1) 0; color: var(--muted); }
+.native-dataset-progress { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); font-size: var(--text-meta); }
+
 .pareto-role-legend { display: grid; gap: var(--space-1); padding: var(--space-2) var(--space-2); border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface-raised, #fbfdfc); }
 .pareto-role-legend p { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: var(--space-2); margin: 0; color: var(--muted); font-size: var(--text-meta); line-height: 1.35; }
 .pareto-role-legend strong { color: var(--slate); }
@@ -10394,3 +10415,9 @@ input[type="number"], .selection-summary-row strong { font-variant-numeric: tabu
 .spatial-comparison-counts th[scope="row"] { display: flex; align-items: center; gap: var(--space-1); font-weight: var(--weight-label); }
 .spatial-swatch { flex: 0 0 auto; color: var(--ink, #0f172a); }
 .spatial-comparison-error { margin: 0; color: var(--text-danger, #b91c1c); font-size: var(--text-meta); }
+
+/* Native offline feedback stays actionable and makes room for the map key. */
+.native-basemap-status { pointer-events: auto; }
+.native-basemap-status button { min-height: 32px; margin-top: var(--space-1); padding: var(--space-1) var(--space-2); border: 1px solid currentColor; border-radius: var(--radius-control); color: inherit; background: transparent; font: inherit; cursor: pointer; }
+.native-basemap-status button:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+.map-stage:has(.native-basemap-status) .focused-map-legend { bottom: calc(54px + var(--native-basemap-status-height, 140px)); max-height: min(300px, calc(100% - var(--native-basemap-status-height, 140px) - 160px)); }

@@ -1,4 +1,4 @@
-import { _electron as electron } from "playwright-core";
+import { launchNative } from "./native-launch.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -46,7 +46,7 @@ try {
     vite.once("exit", () => { clearTimeout(timer); reject(new Error(`Owned Vite server exited: ${output}`)); });
     vite.once("error", (error) => { clearTimeout(timer); reject(error); });
   });
-  application = await electron.launch({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
   nativeProcess = application.process();
   const page = await application.firstWindow();
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
@@ -125,7 +125,7 @@ try {
   await fs.unlink(path.join(resources, "atom-api"));
   await fs.symlink(path.join(workspace, "missing-atom-api"), path.join(resources, "atom-api"));
   phase = "missing sidecar recovery";
-  application = await electron.launch({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
   nativeProcess = application.process();
   const failedPage = await application.firstWindow();
   await failedPage.waitForFunction(() => Boolean(window.atomDesktop?.getRuntime), null, { timeout: 30_000 });

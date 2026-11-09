@@ -1,4 +1,4 @@
-import { BASEMAPS, DEFAULT_BASEMAP_ID } from "./basemaps.js";
+import { basemapsForTarget, DEFAULT_BASEMAP_ID } from "./basemaps.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
@@ -1060,7 +1060,7 @@ export function MapToolbar({
               </fieldset>
               <fieldset className="basemap-choices">
                 <legend>Basemap</legend>
-                {BASEMAPS.filter((basemap) => resolvedTheme === "dark" || basemap.theme === "light").map((basemap) => (
+                {basemapsForTarget(platform.kind).filter((basemap) => resolvedTheme === "dark" || basemap.theme === "light").map((basemap) => (
                   <label key={basemap.id}>
                     <input type="radio" name="basemap" value={basemap.id} checked={basemapId === basemap.id} onChange={() => onBasemapChange?.(basemap.id)} />
                     <span>{basemap.label}</span>

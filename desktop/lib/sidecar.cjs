@@ -10,11 +10,12 @@ const { APP_ORIGIN } = require("./policy.cjs");
 // Exactly one owned generation. Public snapshots intentionally omit its PID,
 // address, credential and stderr; only the host can operate the process/pipes.
 class Sidecar extends EventEmitter {
-  constructor({ executable, datasetDir, distDir, version, commit, timeout = 30_000, shutdownTimeout = 30_000, spawnProcess = spawn }) {
+  constructor({ executable, datasetDir, datasetRegistry, distDir, version, commit, timeout = 30_000, shutdownTimeout = 30_000, spawnProcess = spawn }) {
     super();
     for (const value of [timeout, shutdownTimeout]) if (!Number.isFinite(value) || value <= 0 || value > 30_000) throw new Error("Desktop timeouts must be within 30 seconds");
     for (const value of [executable, datasetDir, distDir]) if (!path.isAbsolute(value)) throw new Error("Desktop resources must use absolute paths");
-    Object.assign(this, { executable, datasetDir, distDir, version, commit, timeout, shutdownTimeout, spawnProcess });
+    if (datasetRegistry && !path.isAbsolute(datasetRegistry)) throw new Error("Desktop dataset registry must use an absolute path");
+    Object.assign(this, { executable, datasetDir, datasetRegistry, distDir, version, commit, timeout, shutdownTimeout, spawnProcess });
     this.state = "stopped";
     this.sequence = 0;
     this.uiReady = false;
@@ -83,6 +84,7 @@ class Sidecar extends EventEmitter {
         if (!settled) { settled = true; clearTimeout(timer); reject(new Error("Backend startup cancelled")); }
       };
       const env = { GIN_MODE: "release", ATOM_DATASET_DIR: this.datasetDir, FRONTEND_DIST_PATH: this.distDir };
+      if (this.datasetRegistry) env.ATOM_DESKTOP_DATASET_REGISTRY = this.datasetRegistry;
       for (const key of ["HOME", "TMPDIR", "LANG", "LC_ALL"]) if (process.env[key]) env[key] = process.env[key];
       let child;
       try { child = this.spawnProcess(this.executable, ["--desktop-control"], { cwd: this.datasetDir, env, stdio: ["ignore", "pipe", "pipe", "pipe", "pipe"] }); }

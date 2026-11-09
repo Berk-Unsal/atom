@@ -9,6 +9,10 @@ import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 const require = createRequire(import.meta.url);
 const desktop = path.resolve(import.meta.dirname, "..");
+const sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: desktop, encoding: "utf8" }).trim();
+const sourceDirty = Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: desktop, encoding: "utf8" }).trim());
+const buildInfo = JSON.parse(await fs.readFile(path.join(desktop, "build/resources/build-info.json"), "utf8"));
+assert.equal(buildInfo.commit, sourceCommit, "Rebuild desktop resources for this source before provider qualification");
 const version = (await fs.readFile(path.join(desktop, "../VERSION"), "utf8")).trim();
 const tile = "https://tile.openstreetmap.org/12/2421/1552.png";
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-provider-probe-"));
@@ -70,8 +74,7 @@ try {
   assert.deepEqual(await loadTile(reopened), { width: 256, height: 256 });
   const afterRelaunch = await application.evaluate(() => globalThis.__providerProbe);
   assert.ok(afterRelaunch.completed.some((entry) => entry.from_cache), "Normal native HTTP cache must survive relaunch");
-  const result = { checked_at: new Date().toISOString(), source_commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: desktop, encoding: "utf8" }).trim(),
-    source_dirty: Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: desktop, encoding: "utf8" }).trim()), platform: process.platform, architecture: process.arch,
+  const result = { checked_at: new Date().toISOString(), source_commit: sourceCommit, source_dirty: sourceDirty, resource_build_commit: buildInfo.commit, platform: process.platform, architecture: process.arch,
     tile, fixture: "production host with a test-only additional deny rule allowing exactly this OSM tile; all other grid images blocked before renderer startup", initial, after_relaunch: afterRelaunch,
     normal_native_cache_reused_after_relaunch: true, no_pan_zoom_or_area_prefetch: true, result: "PASS" };
   await fs.mkdir(path.join(desktop, "test-results"), { recursive: true });

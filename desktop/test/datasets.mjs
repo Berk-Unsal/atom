@@ -19,6 +19,9 @@ let application; let page; let phase = "startup";
 const rfPosts = []; const tiles = [];
 const result = { source_commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: desktop, encoding: "utf8" }).trim(),
   source_dirty: Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: desktop, encoding: "utf8" }).trim()), platform: process.platform, architecture: process.arch };
+const buildInfo = JSON.parse(await fs.readFile(path.join(desktop, "build/resources/build-info.json"), "utf8"));
+assert.equal(buildInfo.commit, result.source_commit, "Rebuild desktop resources for this source before dataset qualification");
+result.resource_build_commit = buildInfo.commit;
 const hash = (bytes) => crypto.createHash("sha256").update(bytes).digest("hex");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function until(predicate, message, timeout = 30_000) {

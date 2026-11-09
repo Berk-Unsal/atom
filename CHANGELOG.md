@@ -9,6 +9,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Add native dataset folder/manifest selection, canonical Go validation, managed copy/reference registration, explicit moved-reference recovery and persistent selection without changing project dataset identities or RF contracts.
 - Save shared reports and review packages through native dialogs and render Print/PDF in a scriptless isolated surface, preserving retained bytes/hashes and shared report lineage.
 - Add dialog-approved native project Open, Save, Save As and Export Copy through the shared portable-project format, with atomic replacement, external-edit conflicts, per-project file status and a save-before-quit choice separate from recovery autosave and Save Version.
+- Add bounded private desktop host/backend lifecycle logs, safe temporary logging fallback, Help → Open Logs, and explicit startup/renderer recovery with redacted failure codes and no calculation replay.
 - Resolve private native data/config/cache/log/state/runtime directories, preserve the stable durable desktop profile, add atomic host settings/registry/recent-file storage and qualify real IndexedDB stores across cache eviction, relocation and upgrades.
 
 - Add a dist-free desktop development command with Vite HMR, build-before-swap Go watching, syntax-checked shell relaunch, private supervisor control and additive native edit-loop/cleanup qualification.
@@ -23,6 +24,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Wrap report actions and retained-source controls inside narrow drawers so report text and buttons remain visible at the native minimum width.
 - Keep the saved Version associated when report metadata round-trips add only existing inventory defaults; preserve detection of real RF/profile/provenance edits.
 - Await native report output and prevent duplicate exports or automatic regeneration/second dialogs after a destination failure.
+- Keep native recovery running when a crashed/disconnected renderer cannot receive a runtime notification.
 - Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work and redundant VCS probes to keep warm replacements responsive; retain explicit canonical build identity.
 - Activate the existing macOS application on an explicit second launch, including restoring a hidden or minimized window.
 - Dispose native runtime subscriptions when their frontend module is hot-replaced, aborting old work without retrying RF actions.

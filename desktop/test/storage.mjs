@@ -78,7 +78,7 @@ try {
   for (const entry of ["main.cjs", "preload.cjs", "lib", "package.json"]) await fs.cp(path.join(desktop, entry), path.join(appDirectory, entry), { recursive: true });
   // Fail unattended qualification promptly if startup shows its recovery
   // dialog; do not leave a native modal waiting forever in test cleanup.
-  await fs.writeFile(path.join(appDirectory, "storage-test-bootstrap.cjs"), 'const { dialog } = require("electron"); dialog.showMessageBox = async (options) => { if (process.env.ATOM_STORAGE_FAILURE_FILE) require("node:fs").writeFileSync(process.env.ATOM_STORAGE_FAILURE_FILE, JSON.stringify(options), { mode: 0o600 }); console.error("STORAGE_STARTUP_FAILURE", options.message, options.detail); return { response: 0 }; }; require("./main.cjs");\n');
+  await fs.writeFile(path.join(appDirectory, "storage-test-bootstrap.cjs"), 'const { dialog } = require("electron"); dialog.showMessageBox = async (options) => { if (process.env.ATOM_STORAGE_FAILURE_FILE) require("node:fs").writeFileSync(process.env.ATOM_STORAGE_FAILURE_FILE, JSON.stringify(options), { mode: 0o600 }); console.error("STORAGE_STARTUP_FAILURE", options.message, options.detail); return { response: options.cancelId ?? 0 }; }; require("./main.cjs");\n');
   const manifest = JSON.parse(await fs.readFile(path.join(appDirectory, "package.json"), "utf8"));
   await fs.writeFile(path.join(appDirectory, "package.json"), JSON.stringify({ ...manifest, main: "storage-test-bootstrap.cjs" }));
   await fs.cp(path.join(desktop, "build/resources"), resources, { recursive: true });

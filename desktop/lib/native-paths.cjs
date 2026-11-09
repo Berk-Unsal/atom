@@ -48,8 +48,8 @@ function privateDirectory(directory, io = fs) {
   }
 }
 
-function prepareNativePaths(paths, io = fs) {
-  for (const directory of new Set([paths.profile, paths.data, paths.config, paths.cache, paths.state, paths.logs, paths.packs])) privateDirectory(directory, io);
+function prepareNativePaths(paths, io = fs, { prepareLogs = true } = {}) {
+  for (const directory of new Set([paths.profile, paths.data, paths.config, paths.cache, paths.state, ...(prepareLogs ? [paths.logs] : []), paths.packs])) privateDirectory(directory, io);
   // A runtime fallback is unique and disposable. Never place persistent work
   // here, and never reinterpret a cache directory as a durable profile.
   if (paths.runtimeBase) privateDirectory(paths.runtimeBase, io);

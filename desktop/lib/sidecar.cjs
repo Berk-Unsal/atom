@@ -6,16 +6,17 @@ const { StringDecoder } = require("node:string_decoder");
 const crypto = require("node:crypto");
 const path = require("node:path");
 const { APP_ORIGIN } = require("./policy.cjs");
+const { safeReason } = require("./diagnostic-logs.cjs");
 
 // Exactly one owned generation. Public snapshots intentionally omit its PID,
 // address, credential and stderr; only the host can operate the process/pipes.
 class Sidecar extends EventEmitter {
-  constructor({ executable, datasetDir, datasetRegistry, distDir, version, commit, timeout = 30_000, shutdownTimeout = 30_000, spawnProcess = spawn }) {
+  constructor({ executable, datasetDir, datasetRegistry, distDir, version, commit, timeout = 30_000, shutdownTimeout = 30_000, spawnProcess = spawn, diagnostics = () => {} }) {
     super();
     for (const value of [timeout, shutdownTimeout]) if (!Number.isFinite(value) || value <= 0 || value > 30_000) throw new Error("Desktop timeouts must be within 30 seconds");
     for (const value of [executable, datasetDir, distDir]) if (!path.isAbsolute(value)) throw new Error("Desktop resources must use absolute paths");
     if (datasetRegistry && !path.isAbsolute(datasetRegistry)) throw new Error("Desktop dataset registry must use an absolute path");
-    Object.assign(this, { executable, datasetDir, datasetRegistry, distDir, version, commit, timeout, shutdownTimeout, spawnProcess });
+    Object.assign(this, { executable, datasetDir, datasetRegistry, distDir, version, commit, timeout, shutdownTimeout, spawnProcess, diagnostics });
     this.state = "stopped";
     this.sequence = 0;
     this.uiReady = false;
@@ -36,8 +37,12 @@ class Sidecar extends EventEmitter {
   publish(state = this.state) {
     this.state = state;
     this.sequence++;
+    const snapshot = this.snapshot();
+    this.log("runtime", { state, generation: snapshot.generation, sequence: snapshot.sequence, ...snapshot.readiness, ...(this.lastErrorCode ? { reason: this.lastErrorCode } : {}) });
     this.emit("status", this.snapshot());
   }
+
+  log(event, fields) { try { this.diagnostics(event, fields); } catch { /* Logging cannot change service ownership or RF behavior. */ } }
 
   setUIReady(value) { this.uiReady = Boolean(value); this.publish(); }
 
@@ -58,6 +63,7 @@ class Sidecar extends EventEmitter {
 
   beginGeneration() {
     this.lastError = null;
+    this.lastErrorCode = null;
     this.pending = this.launch().finally(() => { this.pending = null; });
     this.pending.catch(() => {});
     return this.pending;
@@ -65,17 +71,18 @@ class Sidecar extends EventEmitter {
 
   launch() {
     const record = { token: crypto.randomBytes(32).toString("hex"), generation: crypto.randomBytes(16).toString("hex"),
-      address: null, listening: false, dataset: null, closed: false, stopping: false, controllers: new Set(), stderr: "" };
+      address: null, listening: false, dataset: null, closed: false, stopping: false, controllers: new Set(), stderr: "", stderrBytes: 0 };
     this.owned = record;
     this.publish("starting");
     return new Promise((resolve, reject) => {
       let settled = false;
       let timer;
-      const fail = (message) => {
+      const fail = (message, code = "control") => {
         if (record.failed || record.stopping || this.owned !== record) return;
         record.failed = true;
         this.invalidate(record);
         this.lastError = message;
+        this.lastErrorCode = safeReason(code);
         this.publish("failed");
         if (!settled) { settled = true; clearTimeout(timer); reject(new Error(message)); }
         this.killOwned(record);
@@ -88,22 +95,25 @@ class Sidecar extends EventEmitter {
       for (const key of ["HOME", "TMPDIR", "LANG", "LC_ALL"]) if (process.env[key]) env[key] = process.env[key];
       let child;
       try { child = this.spawnProcess(this.executable, ["--desktop-control"], { cwd: this.datasetDir, env, stdio: ["ignore", "pipe", "pipe", "pipe", "pipe"] }); }
-      catch { record.closed = true; record.exited = Promise.resolve(); fail("Backend could not start"); return; }
+      catch { record.closed = true; record.exited = Promise.resolve(); fail("Backend could not start", "launch"); return; }
       record.child = child;
       record.exited = new Promise((done) => child.once("close", () => {
         record.closed = true;
+        if (record.stderrBytes) this.log("backend-stderr", { generation: record.generation, bytes: record.stderrBytes, truncated: record.stderrBytes > 8192 });
         if (this.owned === record) this.publish();
         done();
       }));
-      timer = setTimeout(() => fail("Backend startup timed out"), this.timeout);
+      timer = setTimeout(() => fail("Backend startup timed out", "timeout"), this.timeout);
       child.stdout.on("data", () => {});
       child.stderr.on("data", (chunk) => {
+        record.stderrBytes = Math.min(1_000_000_000, record.stderrBytes + chunk.length);
         record.stderr = Buffer.from((record.stderr + chunk.toString()).split(record.token).join("[redacted]")).subarray(-8192).toString();
       });
-      child.once("error", (error) => fail(`Backend could not start (${error.code || "process error"})`));
+      child.once("error", (error) => fail(`Backend could not start (${safeReason(error.code)})`, safeReason(error.code)));
       child.once("exit", () => {
         this.invalidate(record);
-        if (!record.stopping) fail(settled ? "Planning service stopped. Choose Help → Restart planning service to recover; calculations were not replayed." : "Backend exited before readiness");
+        if (!record.stopping) this.log("backend-exit", { generation: record.generation, reason: "exit" });
+        if (!record.stopping) fail(settled ? "Planning service stopped. Choose Help → Restart planning service to recover; calculations were not replayed." : "Backend exited before readiness", "exit");
       });
       const [control, events] = [child.stdio[3], child.stdio[4]];
       for (const stream of [control, events]) stream.on("error", () => fail("Backend control pipe failed"));
@@ -123,12 +133,12 @@ class Sidecar extends EventEmitter {
           if (event.protocol !== 1 || event.generation !== record.generation) return fail("Backend identity did not match this launch");
           if (event.event === "listening") {
             const match = /^127\.0\.0\.1:([0-9]{1,5})$/.exec(event.address || "");
-            if (record.listening || !match || +match[1] < 1 || +match[1] > 65535 || event.pid !== child.pid || event.application_version !== this.version || event.build_commit !== this.commit) return fail("Backend binary identity mismatch; rebuild the local desktop");
+            if (record.listening || !match || +match[1] < 1 || +match[1] > 65535 || event.pid !== child.pid || event.application_version !== this.version || event.build_commit !== this.commit) return fail("Backend binary identity mismatch; rebuild the local desktop", "identity");
             record.address = event.address; record.listening = true;
             this.publish("loading-dataset");
           } else if (event.event === "dataset") {
             if (!record.listening || record.dataset) return fail("Backend announced dataset readiness out of order");
-            if (!event.dataset?.ready) return fail("Backend dataset is unavailable; verify the planning pack and rebuild");
+            if (!event.dataset?.ready) return fail("Backend dataset is unavailable; verify the planning pack and rebuild", "dataset");
             record.dataset = event.dataset;
             this.publish();
           } else if (event.event === "ready") {
@@ -137,6 +147,8 @@ class Sidecar extends EventEmitter {
             this.current = record;
             this.publish("ready");
             resolve(record);
+          } else if (event.event === "failed" && !record.listening && event.error === "listen failed") {
+            return fail("Planning service could not open its local listener. Check local network policy, then choose Help → Restart planning service.", "listener");
           } else return fail("Backend stopped or sent an unexpected control event");
         }
         if (Buffer.byteLength(buffer) > 4096) fail("Backend control event exceeded its limit");

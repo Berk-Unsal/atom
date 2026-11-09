@@ -1,0 +1,71 @@
+{
+  "checked_at": "2026-11-09T21:19:05.328Z",
+  "source_commit": "44b6cb9145cfc17187cf16bdacc25ec19e4fe4a2",
+  "source_dirty": false,
+  "resource_build_commit": "44b6cb9145cfc17187cf16bdacc25ec19e4fe4a2",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "tile": "https://tile.openstreetmap.org/12/2421/1552.png",
+  "fixture": "production host with a test-only additional deny rule allowing exactly this OSM tile; all other grid images blocked before renderer startup",
+  "initial": {
+    "sent": [
+      {
+        "user_agent": "A.T.O.M/0.13.1 (+https://github.com/Berk-Unsal/atom)",
+        "referer": null,
+        "origin": null,
+        "authorization_present": false,
+        "cache_control": null
+      }
+    ],
+    "completed": [
+      {
+        "status": 200,
+        "from_cache": false,
+        "cache_control": [
+          "max-age=87773, stale-while-revalidate=604800, stale-if-error=604800"
+        ],
+        "expires": [
+          "Mon, 09 Nov 2026 06:13:57 GMT"
+        ],
+        "etag": [
+          "\"8d895f71f9bc25f34032e2ec539bb487\""
+        ],
+        "content_type": [
+          "image/png"
+        ]
+      }
+    ]
+  },
+  "after_relaunch": {
+    "sent": [
+      {
+        "user_agent": "A.T.O.M/0.13.1 (+https://github.com/Berk-Unsal/atom)",
+        "referer": null,
+        "origin": null,
+        "authorization_present": false,
+        "cache_control": null
+      }
+    ],
+    "completed": [
+      {
+        "status": 200,
+        "from_cache": true,
+        "cache_control": [
+          "max-age=87773, stale-while-revalidate=604800, stale-if-error=604800"
+        ],
+        "expires": [
+          "Mon, 09 Nov 2026 06:13:57 GMT"
+        ],
+        "etag": [
+          "\"8d895f71f9bc25f34032e2ec539bb487\""
+        ],
+        "content_type": [
+          "image/png"
+        ]
+      }
+    ]
+  },
+  "normal_native_cache_reused_after_relaunch": true,
+  "no_pan_zoom_or_area_prefetch": true,
+  "result": "PASS"
+}

@@ -32,8 +32,8 @@ async function launch(profile, resourceRoot = resources) {
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: profile, ATOM_DESKTOP_TEST_RESOURCES: resourceRoot };
   delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
-  const process = application.process();
-  process.once("exit", (code, signal) => { result.last_application_exit = { code, signal, time: new Date().toISOString() }; });
+  const nativeProcess = application.process();
+  nativeProcess.once("exit", (code, signal) => { result.last_application_exit = { code, signal, time: new Date().toISOString() }; });
   const page = await application.firstWindow();
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));

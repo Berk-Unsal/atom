@@ -157,7 +157,7 @@ try {
   const box = await page.locator(".leaflet-container").boundingBox();
   for (let index = 0; index < 20; index++) {
     const x = box.x + box.width * 0.7; const y = box.y + box.height * 0.5;
-    await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x + (index % 2 ? -50 : 50), y + 20, { steps: 8 }); await page.mouse.up(); await sleep(50);
+    await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x + (index % 2 ? -50 : 50), y + (index % 2 ? -20 : 20), { steps: 8 }); await page.mouse.up(); await sleep(50);
   }
   await sleep(100);
   const frames = await page.evaluate(() => { globalThis.__qualificationFrames.active = false; return globalThis.__qualificationFrames; });
@@ -166,7 +166,24 @@ try {
   result.map = { method: "20 real pointer pan gestures with all eight result-ray layers; event timestamp to second animation frame is a presentation-latency proxy, not INP", frames: frames.frames.length,
     elapsed_ms: frames.frames.at(-1) - frames.frames[0], observed_fps: (frames.frames.length - 1) * 1000 / (frames.frames.at(-1) - frames.frames[0]), frame_gap_ms: distribution(gaps),
     input_to_second_frame_ms: distribution(frames.input_to_second_frame_ms), overlay_paths: await page.locator(".leaflet-overlay-pane path").count() };
-  assert.ok(result.map.overlay_paths > 8); await page.screenshot({ path: path.join(evidence, "qualification-eight-cell-map.png") });
+  // Leaflet's production renderer uses Canvas. Read back only AFTER the timed
+  // interval, so frequent-read heuristics cannot change its measured renderer.
+  const raster = () => page.evaluate(async () => Promise.all([...document.querySelectorAll(".leaflet-overlay-pane canvas")].map(async (canvas) => {
+    const pixels = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+    let painted = 0; for (let index = 3; index < pixels.length; index += 4) if (pixels[index]) painted++;
+    const digest = await crypto.subtle.digest("SHA-256", pixels);
+    return { width: canvas.width, height: canvas.height, painted_pixels: painted, sha256: [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("") };
+  })));
+  const paint = () => page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  assert.equal(await rays.getAttribute("aria-pressed"), "true");
+  result.map.rays_on_canvas = await raster();
+  assert.ok(result.map.rays_on_canvas.some((canvas) => canvas.painted_pixels > 0), "The timed map must contain rendered vector overlays");
+  await rays.click(); await paint();
+  result.map.rays_off_canvas = await raster();
+  assert.notDeepEqual(result.map.rays_on_canvas, result.map.rays_off_canvas, "Turning off all result rays must change the actual Canvas drawing");
+  result.map.ray_drawing_verified_after_timing = true;
+  await rays.click(); await paint();
+  await page.screenshot({ path: path.join(evidence, "qualification-eight-cell-map.png") });
   result.post_rf_process_tree = await processTree(application.process().pid);
   result.budgets = { rf_medians_within_5_percent: Object.values(result.timings).every((timing) => timing.within_5_percent),
     eight_cell_map_30fps: result.map.observed_fps >= 30, input_p95_100ms: result.map.input_to_second_frame_ms.p95 <= 100 };

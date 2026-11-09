@@ -118,6 +118,13 @@ function planInputsForScenarioIdentity(plan) {
   const inputs = { ...(plan ?? {}) };
   delete inputs.selectedMapCellId;
   delete inputs.rayScope;
+  // Saving domain metadata (including a Report definition) round-trips Cell
+  // inventory with these existing defaults. Their explicit representation is
+  // not an input edit; compare both sides with the same defaults while keeping
+  // all actual profile, identity, provenance and coordinate changes visible.
+  if (Array.isArray(inputs.inventory)) inputs.inventory = inputs.inventory.map((cell) => cell && typeof cell === "object"
+    ? { ...cell, rfProfile: cell.rfProfile ?? {}, sourceKey: cell.sourceKey ?? cell.id }
+    : cell);
   return inputs;
 }
 

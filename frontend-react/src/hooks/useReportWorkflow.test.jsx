@@ -35,6 +35,19 @@ afterEach(() => {
 });
 
 describe("useReportWorkflow", () => {
+  it("keeps another native output from starting while the first destination is still pending", async () => {
+    nativeCapabilities.nativeReports = true; let finish;
+    reportModules.buildPlanningReport.mockReturnValue({ domainBinding: { project_id: "project-1" }, view: { title: "Captured" } });
+    reportModules.buildReportArtifactOutput.mockReturnValue({ artifact: { artifact_id: "a" }, bytes: new Uint8Array([1]) });
+    reportModules.downloadReportBytes.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: { id: "project-1" }, currentReportInputs: {}, planningMode: "single",
+      saveReportDefinition: vi.fn(async () => ({})), saveArtifact: vi.fn(async () => ({ artifact_id: "a" })) }));
+    let first; act(() => { first = result.current.actions.exportCurrentMarkdown(); });
+    await waitFor(() => expect(finish).toBeTypeOf("function")); expect(result.current.state.outputBusy).toBe(true);
+    await act(async () => { expect(await result.current.actions.exportCurrentHtml()).toEqual({ canceled: true, busy: true }); });
+    expect(reportModules.buildPlanningReport).toHaveBeenCalledOnce();
+    await act(async () => { finish({ canceled: true }); await first; }); expect(result.current.state.outputBusy).toBe(false);
+  });
   it.each(["markdown", "html"])("a native %s output failure never regenerates or opens a second destination", async (format) => {
     nativeCapabilities.nativeReports = true;
     const report = { domainBinding: { project_id: "project-1" }, view: { title: "Captured source" } };

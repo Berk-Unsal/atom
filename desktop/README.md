@@ -1,6 +1,6 @@
 # Local desktop host
 
-This is the local Electron host developed through #149–#154. It launches the existing
+This is the local Electron host developed through #149–#154 and #156. It launches the existing
 `frontend-react` build and `backend-go` API. The D01 qualification selected
 Electron 44.7.0; this host pins 44.10.2 to include the
 [compromised-certificate mitigation](https://github.com/advisories/GHSA-jr5w-w6x2-84p9).
@@ -37,12 +37,12 @@ React's `src/platform/index.js` selects browser or native capabilities. The
 sandboxed preload exposes typed `getInfo()`, `openExternal(httpsURL)` and read-only
 runtime snapshots/change notifications through an exact-main-frame checked
 bridge. Runtime snapshots separate listener, dataset and loaded-renderer
-readiness without exposing the PID, port, token or stderr. Typed project-file methods expose only dialog-approved file display paths and opaque receipts; report integrations remain gated by #156. Native dependencies remain outside the headless Go and
+readiness without exposing the PID, port, token or stderr. Typed project-file methods expose only dialog-approved file display paths and opaque receipts; native report methods expose only bounded Save and Print/PDF operations. Native dependencies remain outside the headless Go and
 browser build graphs. API calls continue through the shared HTTP client and a
 stable `app://atom` route; host-only per-launch credentials travel to the owned
 dynamic-loopback child over inherited pipes. A non-secret client header prevents
 passive asset requests from becoming API calls. Imported report HTML never gets
-native capabilities. The host-only isolated report surface uses a separate temporary session, disabled scripts, no preload/opener/network and a bounded in-memory HTML route; #156 will connect user-approved Save/Print/PDF actions to it. See [the security boundary](SECURITY.md).
+native capabilities. The host-only isolated report surface uses a separate temporary session, disabled scripts, no preload/opener/network and a bounded in-memory HTML route; the report integration connects user-approved Save/Print/PDF actions to it. See [the security boundary](SECURITY.md).
 
 Choose **Help → Restart planning service…** for explicit recovery after a crash
 or when restarting an active service. Cancel leaves the current process alone.
@@ -112,6 +112,7 @@ Command modes:
 | `scripts/desktop-test.sh --dev-loop` | Isolated-source development-loop qualification and timing; no staged dist. |
 | `scripts/desktop-test.sh --storage` | Real unpacked-app persistence and recovery qualification. |
 | `scripts/desktop-test.sh --project-files` | Native file workflow and focused keyboard qualification. |
+| `scripts/desktop-test.sh --reports` | Exact native export bytes, isolated Print/PDF, reference pagination and normal report controls. |
 
 Packaging is a separate #159/#161 work package; none of these commands produces
 or publishes an installer. Web `npm run dev`, Go tests and Docker commands remain
@@ -277,3 +278,59 @@ The default suite requires actual window focus and injects native Electron key
 events to verify Save. `node desktop/test/project-files.mjs --menu-only` is an
 explicitly narrower local diagnostic when the session cannot activate windows;
 it records keyboard qualification as false. CI never uses that option.
+
+
+## Native reports and review packages
+
+Review → Report offers Save PDF and Print in the desktop app. Markdown, retained
+report Download and Review package use native Save dialogs. HTML/Markdown/SVG
+exports retain their existing shared bytes; review ZIPs keep the existing shared
+manifest/self-check. Save PDF and Print use the same shared report HTML, including
+its source/generator identity, timestamps, quantities and lineage. A retained
+HTML print uses its original verified bytes, without rebuilding it with current
+generator metadata. Source data is never recomputed by an export.
+
+Save verifies SHA-256 and size before asking for a destination, then uses the
+same conflict-checked atomic binary writer as project files. File hints are
+treated as untrusted names, not renderer-approved paths. Cancel and precommit
+failures preserve the previous destination and retained artifacts. Native
+exports are bounded at 64 MiB per file; larger output is refused as a whole,
+with existing evidence retained. No automatic trimming, regeneration or second
+chooser occurs after failure. A pending report operation disables duplicate
+report exports and keeps Quit from abandoning a native operation. Save Version
+and the project-file 16 MiB/UTF-8/structural limits remain separate.
+
+PDF uses Electron's own print engine in A4 portrait with backgrounds, shared
+print CSS, selectable text, PDF tags and an outline. Rendering has a 30-second
+deadline; its hidden surface is destroyed afterward. PDF tags are experimental
+Electron output and are not a PDF/UA compliance claim. Native Print uses the
+normal system print dialog, not silent/default-printer submission. Its visible
+isolated preview can be closed to cancel. No printer or external browser/tool
+is required for Save PDF.
+
+The report surface has no JavaScript, preload, opener or native bindings. It
+uses a temporary nonpersistent session with no network or privileged app access.
+Stored/imported HTML is treated as untrusted. Embedded data images/fonts may
+render; unavailable remote content stays blocked. The privileged app window is
+never replaced with report content, and the print operation receives no generic
+filesystem authority.
+
+Run `scripts/desktop-test.sh --reports` after a local build. The native suite
+compares fixed shared HTML/Markdown/SVG bytes and hashes, renders five existing
+report fixtures (including optimized, heterogeneous and long-identity/appendix
+cases) plus hostile HTML, and verifies A4, text bounds, complete labels, Turkish
+characters, source details and pagination. It also uses the normal app controls
+to save a real retained Markdown report, PDF and manifest-verified review ZIP
+after one explicit real-engine Run, with no export-triggered RF request. An
+actual unwritable destination preserves previous bytes and the original retained
+artifact/timestamp without a second dialog. Screenshots cover 1440 and 800 pixels.
+
+Dialog choices and the native Print callback are automated. Save PDF itself
+uses the real native engine; physical printers and OS dialog appearance are not
+qualified by callback automation. The accepted framework decision in #148 uses
+Electron, so this matrix targets its macOS/Ubuntu engines, not the superseded
+Wails/WebKit assumption in the original issue. Public installation/signing and
+full platform qualification retain #158–#162 gates.
+
+Native APIs: [Electron print/PDF](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions)
+and [Save dialogs](https://www.electronjs.org/docs/latest/api/dialog#dialogshowsavedialogwindow-options).

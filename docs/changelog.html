@@ -155,6 +155,9 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li><p>Save shared reports and review packages through native dialogs
+and render Print/PDF in a scriptless isolated surface, preserving
+retained bytes/hashes and shared report lineage.</p></li>
 <li><p>Add dialog-approved native project Open, Save, Save As and Export
 Copy through the shared portable-project format, with atomic
 replacement, external-edit conflicts, per-project file status and a
@@ -188,6 +191,11 @@ cancellation.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Keep the saved Version associated when report metadata round-trips
+add only existing inventory defaults; preserve detection of real
+RF/profile/provenance edits.</li>
+<li>Await native report output and prevent duplicate exports or
+automatic regeneration/second dialogs after a destination failure.</li>
 <li>Wait for completed editor writes in desktop Vite development and
 omit development-only DWARF linking work and redundant VCS probes to
 keep warm replacements responsive; retain explicit canonical build

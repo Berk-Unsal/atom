@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { createReportDefinition } from "../domain/report.js";
 import { namingForSource } from "../utils/downloadNames.js";
 import { platform } from "../platform/index.js";
@@ -29,6 +29,15 @@ export default function useReportWorkflow({
   onHistoricalReportCreated = () => {},
 } = {}) {
   const [reportWarning, setReportWarning] = useState("");
+  const [outputBusy, setOutputBusy] = useState(false);
+  const outputInFlight = useRef(false);
+  const withOutput = useCallback(async (operation) => {
+    if (!platform.capabilities.nativeReports) return operation();
+    if (outputInFlight.current) return { canceled: true, busy: true };
+    outputInFlight.current = true; setOutputBusy(true);
+    try { return await operation(); }
+    finally { outputInFlight.current = false; setOutputBusy(false); }
+  }, []);
 
   const reportDefinitions = useMemo(
     () => activeProject?.domain?.report_definitions ?? [],
@@ -312,16 +321,20 @@ export default function useReportWorkflow({
     if (deleted && selectedArtifactId === artifact.artifact_id) onArtifactSelected(null);
   }, [deleteArtifact, onArtifactSelected, selectedArtifactId]);
 
+  const outputActions = useMemo(() => ({
+    downloadArtifact: (...args) => withOutput(() => downloadArtifact(...args)),
+    exportCurrentHtml: (...args) => withOutput(() => exportCurrentHtml(...args)),
+    exportCurrentPrint: (...args) => withOutput(() => exportCurrentPrint(...args)),
+    exportCurrentMarkdown: (...args) => withOutput(() => exportCurrentMarkdown(...args)),
+    exportReviewPackage: (...args) => withOutput(() => exportReviewPackage(...args)),
+  }), [withOutput, downloadArtifact, exportCurrentHtml, exportCurrentPrint, exportCurrentMarkdown, exportReviewPackage]);
+
   return {
-    state: { currentReportSource, reportDefinitions, reportWarning },
+    state: { currentReportSource, reportDefinitions, reportWarning, outputBusy },
     actions: {
       createPlanningReport,
       deleteArtifact: deleteArtifactWithConfirmation,
-      downloadArtifact,
-      exportCurrentHtml,
-      exportCurrentPrint,
-      exportCurrentMarkdown,
-      exportReviewPackage,
+      ...outputActions,
       generateHistoricalReport,
       regenerateArtifact,
     },

@@ -3710,7 +3710,7 @@ export default function App() {
     onHistoricalReportCreated: focusHistoricalReport,
   });
   const {
-    state: { currentReportSource, reportDefinitions, reportWarning },
+    state: { currentReportSource, reportDefinitions, reportWarning, outputBusy: reportOutputBusy },
     actions: {
       deleteArtifact: deleteReportArtifact,
       downloadArtifact: downloadStoredReportArtifact,
@@ -4488,6 +4488,7 @@ export default function App() {
                 onExportPdf: exportPdfReport,
                 onPrint: printNativeReport,
                 nativeReports: platform.capabilities.nativeReports,
+                outputBusy: reportOutputBusy,
                 onExportReviewPackage: exportReviewPackage,
                 reportWarning,
                 currentWorkspace: workspaceLineage,

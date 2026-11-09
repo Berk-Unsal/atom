@@ -15,7 +15,8 @@
     "test:native": "node test/smoke.mjs && node test/lifecycle.mjs && node test/security.mjs",
     "test:dev-loop": "node test/dev-loop.mjs",
     "test:storage": "node test/storage.mjs",
-    "test:project-files": "node test/project-files.mjs"
+    "test:project-files": "node test/project-files.mjs",
+    "test:reports": "node test/reports.mjs"
   },
   "devDependencies": {
     "electron": "44.10.2",

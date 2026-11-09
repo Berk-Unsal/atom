@@ -21,6 +21,7 @@ function ReportExportPanel({
   onExportPdf,
   onPrint,
   nativeReports = false,
+  outputBusy = false,
   onExportReviewPackage,
   reportWarning,
   currentWorkspace,
@@ -62,16 +63,16 @@ function ReportExportPanel({
         </div>
       ) : null}
       <div className="report-actions">
-        <button type="button" className="report-button primary" onClick={onExportPdf}>
+        <button type="button" className="report-button primary" onClick={onExportPdf} disabled={outputBusy}>
           <FileText size={15} />
           <span>{nativeReports ? "Save PDF" : "PDF / Print"}</span>
         </button>
-        {nativeReports ? <button type="button" className="report-button" onClick={onPrint} disabled={!onPrint}><FileText size={15} /><span>Print</span></button> : null}
-        <button type="button" className="report-button" onClick={onExportMarkdown}>
+        {nativeReports ? <button type="button" className="report-button" onClick={onPrint} disabled={!onPrint || outputBusy}><FileText size={15} /><span>Print</span></button> : null}
+        <button type="button" className="report-button" onClick={onExportMarkdown} disabled={outputBusy}>
           <Download size={15} />
           <span>Markdown</span>
         </button>
-        <button type="button" className="report-button" onClick={onExportReviewPackage} disabled={!onExportReviewPackage}>
+        <button type="button" className="report-button" onClick={onExportReviewPackage} disabled={!onExportReviewPackage || outputBusy}>
           <Archive size={15} />
           <span>Review package</span>
         </button>

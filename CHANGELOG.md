@@ -16,7 +16,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
-- Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work to keep warm replacements responsive.
+- Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work and redundant VCS probes to keep warm replacements responsive; retain explicit canonical build identity.
 - Activate the existing macOS application on an explicit second launch, including restoring a hidden or minimized window.
 - Dispose native runtime subscriptions when their frontend module is hot-replaced, aborting old work without retrying RF actions.
 - Keep RF workflow cleanup bound to its original desktop runtime, so a retired capability never reaches a replacement service.

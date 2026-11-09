@@ -70,9 +70,10 @@ class DevSession extends EventEmitter {
     const candidate = path.join(this.resources, `atom-api-candidate-${crypto.randomUUID()}`);
     this.builds++; const started = performance.now(); this.notice("go-build-start", { builds: this.builds });
     try {
-      // This supervisor optimizes warm edits. Omit DWARF compression/link work;
+      // The supervisor already captures canonical VERSION/commit. Avoid repeated
+      // Git probes as well as DWARF linking work on each supervised edit;
       // production builds and the standalone Go debugger workflow are unchanged.
-      await this.run("go", ["build", "-trimpath", "-ldflags", `-w -X main.appVersion=${this.version} -X main.buildCommit=${this.commit}`, "-o", candidate, "."],
+      await this.run("go", ["build", "-buildvcs=false", "-trimpath", "-ldflags", `-w -X main.appVersion=${this.version} -X main.buildCommit=${this.commit}`, "-o", candidate, "."],
         { cwd: path.join(this.root, "backend-go"), signal });
       this.notice("go-built", { builds: this.builds, milliseconds: performance.now() - started });
       return candidate;

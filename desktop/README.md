@@ -169,6 +169,9 @@ Development sidecars omit DWARF debug sections to reduce warm linking time. The
 production build keeps its existing flags; use the standalone Go commands for
 debugger sessions. Desktop Vite waits 50 ms for completed editor writes so a
 Linux truncation notification cannot publish an incomplete stylesheet.
+The supervisor supplies its captured VERSION/commit explicitly and disables
+Go's redundant VCS subprocess probes for these development builds. The private
+startup identity checks still require that exact version and commit.
 
 ## Native storage and recovery
 

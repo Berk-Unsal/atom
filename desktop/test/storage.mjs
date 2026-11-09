@@ -122,7 +122,9 @@ try {
     const relocated = path.join(packagedRoot, "Relocated — çığ resources"); await fs.rename(resourcesIn(bundle), relocated); await fs.symlink(relocated, resourcesIn(bundle));
     await fs.chmod(bundle, 0o555);
   }
-  const upgradedResources = resourcesIn(bundle);
+  // Work on the installer-owned relocated tree, not its resource alias. The
+  // recursive permission helper intentionally never follows symlink leaves.
+  const upgradedResources = await fs.realpath(resourcesIn(bundle));
   await bundlePermissions(upgradedResources, true);
   const infoFile = path.join(upgradedResources, "build-info.json"); const info = JSON.parse(await fs.readFile(infoFile, "utf8"));
   const upgrade = "0.13.2-storage-test";

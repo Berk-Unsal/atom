@@ -1,5 +1,7 @@
 "use strict";
 
+// Host-created directories/files and inherited sidecar writes are private.
+process.umask(0o077);
 const { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, protocol, screen, session, shell } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -10,6 +12,8 @@ const { readGeometry, writeGeometry } = require("./lib/window-state.cjs");
 const { createRecoveryAction } = require("./lib/recovery.cjs");
 const { REPORT_SCHEME } = require("./lib/report-surface.cjs");
 const { createDevControl } = require("./lib/dev-control.cjs");
+const { nativePaths, privateDirectory, prepareNativePaths } = require("./lib/native-paths.cjs");
+const { SettingsStore } = require("./lib/settings-store.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -17,9 +21,16 @@ app.setName("A.T.O.M");
 app.enableSandbox();
 protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, codeCache: true } },
   { scheme: REPORT_SCHEME, privileges: { standard: true, secure: true, stream: true } }]);
-// Local builds get a separate profile and lock; never reuse browser/release data.
-if (!app.isPackaged) app.setPath("userData", process.env.ATOM_DESKTOP_TEST_PROFILE
-  ? path.resolve(process.env.ATOM_DESKTOP_TEST_PROFILE) : path.join(app.getPath("appData"), "A.T.O.M-local"));
+let storage;
+let storageError;
+try {
+  storage = nativePaths({ packaged: app.isPackaged, localProfile: !app.isPackaged ? process.env.ATOM_DESKTOP_TEST_PROFILE : undefined });
+  privateDirectory(storage.profile);
+  // Both paths must be set synchronously before Electron's ready event.
+  app.setPath("userData", storage.profile);
+  app.setPath("sessionData", storage.profile);
+  app.commandLine.appendSwitch("disk-cache-dir", path.join(storage.cache, "http"));
+} catch (error) { storageError = error; }
 
 let window;
 let backend;
@@ -29,13 +40,17 @@ let stopped = false;
 const openExternal = async (url) => { try { await shell.openExternal(url); } catch { /* Browser launch failure never opens content in the app. */ } };
 
 async function launch() {
+  if (storageError) throw storageError;
   const info = JSON.parse(fs.readFileSync(path.join(resources, "build-info.json"), "utf8"));
   app.setAboutPanelOptions({ applicationName: "A.T.O.M", applicationVersion: info.version,
     version: `${info.commit} · Electron ${process.versions.electron} · ${process.platform}/${process.arch}`,
     iconPath: path.join(resources, "atom.png"), copyright: "A.T.O.M contributors" });
-  const profile = app.getPath("userData");
-  fs.mkdirSync(profile, { recursive: true, mode: 0o700 });
-  const geometryFile = path.join(profile, "window.json");
+  const settings = new SettingsStore(storage.settings);
+  try {
+    const hostSettings = settings.load();
+    settings.save({ ...hostSettings, preferences: { ...hostSettings.preferences, lastVersion: info.version } });
+  } catch (error) { storageError = error; throw error; }
+  const geometryFile = storage.geometry;
   const geometry = readGeometry(geometryFile, [screen.getPrimaryDisplay(), ...screen.getAllDisplays().filter((d) => d.id !== screen.getPrimaryDisplay().id)]);
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
@@ -56,7 +71,9 @@ async function launch() {
   });
   window.on("page-title-updated", (event) => { event.preventDefault(); });
   window.once("ready-to-show", () => window.show());
-  window.on("close", () => { writeGeometry(geometryFile, window.getNormalBounds()); });
+  window.on("close", () => {
+    if (!writeGeometry(geometryFile, window.getNormalBounds())) dialog.showErrorBox("Window layout was not saved", "The native state directory could not be written. Existing workspace and report stores were not reset. Check available disk space and directory permissions before the next launch.");
+  });
   window.on("closed", () => { backend.setUIReady(false); window = null; app.quit(); });
   window.webContents.on("render-process-gone", () => backend.setUIReady(false));
   backend.on("status", (status) => {
@@ -93,9 +110,14 @@ async function launch() {
   if (window && !window.isDestroyed() && !quitting) backend.setUIReady(true);
 }
 
-if (!app.requestSingleInstanceLock()) {
+if (!storageError && !app.requestSingleInstanceLock()) {
   app.quit();
 } else {
+  if (!storageError) {
+    try { storage = prepareNativePaths(storage); app.setAppLogsPath(storage.logs); }
+    catch (error) { storageError = error; }
+  }
+  app.on("will-quit", () => { try { if (storage?.runtime) fs.rmSync(storage.runtime, { recursive: true, force: true }); } catch { /* Disposable runtime cleanup must not reset persistent storage or block quitting. */ } });
   app.on("second-instance", () => {
     if (!window) return;
     if (window.isMinimized()) window.restore();
@@ -114,12 +136,16 @@ if (!app.requestSingleInstanceLock()) {
     event.preventDefault();
     if (quitting) return;
     quitting = true;
+    session.defaultSession.flushStorageData();
     backend.stop().finally(() => { stopped = true; app.quit(); });
   });
-  app.whenReady().then(launch).catch(async () => {
+  app.whenReady().then(launch).catch(async (error) => {
     if (quitting) return;
-    await dialog.showMessageBox({ type: "error", title: "A.T.O.M could not start", message: "Local desktop resources are missing or invalid.",
-      detail: "Run npm run build in desktop, then start the application again. Existing projects are preserved." });
+    const storageFailure = Boolean(storageError);
+    await dialog.showMessageBox({ type: "error", title: "A.T.O.M could not start", message: storageFailure ? "Desktop storage or resources could not be opened safely." : "Local desktop resources are missing or invalid.",
+      detail: storageFailure
+        ? `Existing projects are preserved. Storage: ${storage?.config || "configured native directories"}. ${String(error?.code || error?.message || "Storage unavailable").slice(0, 1000)}. Check XDG paths, private directory permissions and disk space. Back up corrupt/newer settings and repair them explicitly before retrying; no store is reset automatically.`
+        : "Run npm run build in desktop, then start the application again. Existing projects are preserved." });
     app.quit();
   });
 }

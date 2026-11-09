@@ -13,7 +13,8 @@
     "test": "node --test test/*.test.cjs",
     "test:runtime": "node --test test/runtime.integration.cjs",
     "test:native": "node test/smoke.mjs && node test/lifecycle.mjs && node test/security.mjs",
-    "test:dev-loop": "node test/dev-loop.mjs"
+    "test:dev-loop": "node test/dev-loop.mjs",
+    "test:storage": "node test/storage.mjs"
   },
   "devDependencies": {
     "electron": "44.10.2",

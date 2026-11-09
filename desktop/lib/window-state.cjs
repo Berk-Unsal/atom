@@ -1,7 +1,7 @@
 "use strict";
 
 const fs = require("node:fs");
-const path = require("node:path");
+const { atomicWriteJSON } = require("./settings-store.cjs");
 
 function boundedGeometry(saved, displays) {
   const primary = displays[0].workArea;
@@ -22,14 +22,10 @@ function readGeometry(file, displays) {
 }
 
 function writeGeometry(file, bounds) {
-  const temporary = `${file}.tmp`;
   try {
-    fs.mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
-    fs.writeFileSync(temporary, JSON.stringify(bounds), { mode: 0o600 });
-    fs.renameSync(temporary, file);
+    atomicWriteJSON(file, bounds, { limit: 4096 });
     return true;
   } catch {
-    try { fs.unlinkSync(temporary); } catch { /* Failed state writes do not prevent quitting. */ }
     return false;
   }
 }

@@ -31,12 +31,15 @@ const noGroups = async (pids) => {
 
 async function copySource() {
   await fs.mkdir(fixture);
-  for (const directory of ["desktop", "frontend-react", "backend-go"]) {
-    const source = path.join(root, directory);
-    await fs.cp(source, path.join(fixture, directory), { recursive: true, filter: (file) => {
-      const relative = path.relative(source, file).split(path.sep);
-      return !["node_modules", "build", "dist", "test-results", "spike", ".git"].some((name) => relative.includes(name));
-    } });
+  // A qualification fixture must not copy ignored local credentials/settings.
+  // New implementation files must be staged/committed before this frozen test.
+  const files = execFileSync("git", ["ls-files", "-z", "--", "desktop", "frontend-react", "backend-go"], { cwd: root, encoding: "utf8" }).split("\0").filter(Boolean);
+  for (const relative of files) {
+    if (["node_modules", "build", "dist", "test-results", "spike", ".git"].some((name) => relative.split("/").includes(name))) continue;
+    const source = path.join(root, relative); const destination = path.join(fixture, relative);
+    await fs.mkdir(path.dirname(destination), { recursive: true });
+    if ((await fs.lstat(source)).isSymbolicLink()) await fs.symlink(await fs.readlink(source), destination);
+    else await fs.copyFile(source, destination);
   }
   for (const directory of ["desktop", "frontend-react"]) await fs.symlink(path.join(root, directory, "node_modules"), path.join(fixture, directory, "node_modules"));
   for (const directory of ["data-pipeline", "icon"]) await fs.symlink(path.join(root, directory), path.join(fixture, directory));

@@ -153,7 +153,7 @@ The bridge and protocol follow Electron's
 [security guidance](https://www.electronjs.org/docs/latest/tutorial/security)
 and [session-specific protocol rules](https://www.electronjs.org/docs/latest/api/protocol).
 
-The development-loop suite copies the actual frontend/host/backend source into
+The development-loop suite copies the tracked frontend/host/backend source into
 a temporary Git fixture and shares installed dependencies/read-only input data.
 It edits visible JSX and CSS (20 warmed samples each), never the working tree;
 checks no Go build or host reload during HMR; and asserts p95 <=1 s, a warm Go

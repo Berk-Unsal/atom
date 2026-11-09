@@ -68,6 +68,7 @@ function launch() {
 }
 
 let command; let browser; let page; let blocker;
+const consoleMessages = [];
 const result = { source_commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
   source_dirty: Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim()),
   reference: { platform: process.platform, architecture: process.arch, kernel: os.release(), cpu: os.cpus()[0].model,
@@ -79,7 +80,7 @@ try {
   const host = await command.wait((event) => event.event === "host-ready");
   await command.wait((event) => event.event === "ready");
   browser = await chromium.connectOverCDP(host.debugURL); page = browser.contexts()[0].pages()[0];
-  const consoleMessages = []; page.on("console", (message) => { if (/hmr|websocket|content security/i.test(message.text())) consoleMessages.push(message.text().replace(/token=[^&\s]+/g, "token=[redacted]").slice(0, 200)); });
+  page.on("console", (message) => { if (/hmr|websocket|content security|vite|error/i.test(message.text())) { consoleMessages.push(message.text().replace(/token=[^&\s]+/g, "token=[redacted]").slice(0, 200)); if (consoleMessages.length > 50) consoleMessages.shift(); } });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   const bridge = await page.evaluate(() => window.atomDesktop.getInfo()); result.reference.electron = bridge.shellVersion;
   result.fixture_build_commit = bridge.commit;
@@ -104,6 +105,7 @@ try {
   for (const kind of ["jsx", "css"]) {
     const samples = [];
     for (let index = 0; index < 23; index++) {
+      result.current_edit = { kind, index };
       const started = performance.now();
       if (kind === "jsx") {
         const text = `A.T.O.M HMR${index}`;
@@ -125,6 +127,7 @@ try {
   await page.screenshot({ path: path.join(evidence, "dev-loop-hmr.png") });
   await fs.writeFile(jsxFile, originalJSX); await fs.writeFile(cssFile, originalCSS);
   await page.waitForFunction(() => document.querySelector(".command-brand strong")?.textContent === "A.T.O.M");
+  await page.waitForFunction(() => getComputedStyle(document.querySelector(".command-bar")).borderTopWidth !== "3px");
   assert.equal(await page.evaluate(() => globalThis.__atomDevHMRSession), "preserved");
   assert.equal((await page.evaluate(() => window.atomDesktop.getRuntime())).generation, originalRuntime.generation);
   assert.equal(command.events.filter((event) => event.event === "go-build-start").length, 1);
@@ -144,6 +147,7 @@ try {
   await fs.writeFile(goFile, `${originalGo}\n// Desktop development warm Go edit.\n`);
   const replaced = await command.wait((event) => event.event === "go-ready", cursor);
   result.warm_go_edit_to_ready_ms = performance.now() - goStarted;
+  result.warm_go_compile_ms = command.events.slice(cursor).find((event) => event.event === "go-built")?.milliseconds;
   assert.ok(result.warm_go_edit_to_ready_ms <= 5000, "Warm Go edit exceeded 5s guidance");
   assert.notEqual(replaced.runtime.generation, originalRuntime.generation);
   assert.equal(alive(originalPID), false); assert.equal(await metaStatus(), 200);
@@ -214,7 +218,11 @@ try {
   console.log(JSON.stringify(result, null, 2));
 } catch (error) {
   await page?.screenshot({ path: path.join(evidence, "failed-dev-loop.png") }).catch(() => {});
-  const failure = { ...result, error: error.stack, output: command?.output(), events: command?.events.map(({ debugURL, resources, ...event }) => event) };
+  const visibleStyle = await page?.evaluate(() => {
+    const element = document.querySelector(".command-bar");
+    return element ? { color: getComputedStyle(element).borderTopColor, width: getComputedStyle(element).borderTopWidth } : null;
+  }).catch(() => null);
+  const failure = { ...result, console_hmr_messages: consoleMessages, visible_style: visibleStyle, error: error.stack, output: command?.output(), events: command?.events.map(({ debugURL, resources, ...event }) => event) };
   await fs.writeFile(path.join(evidence, "failed-dev-loop.json"), JSON.stringify(failure, null, 2));
   console.error(JSON.stringify(failure, null, 2)); throw error;
 } finally {

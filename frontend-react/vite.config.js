@@ -19,7 +19,11 @@ export default defineConfig({
     setupFiles: "./src/test/setup.js",
   },
   server: {
-    ...(desktopDev ? { host: "127.0.0.1", strictPort: true, hmr: { host: "127.0.0.1", clientPort: 5173, protocol: "ws" } } : {}),
+    ...(desktopDev ? { host: "127.0.0.1", strictPort: true,
+      // Linux can report truncation before an editor finishes its write. Wait
+      // briefly for complete bytes rather than publishing an empty stylesheet.
+      watch: { awaitWriteFinish: { stabilityThreshold: 50, pollInterval: 10 } },
+      hmr: { host: "127.0.0.1", clientPort: 5173, protocol: "ws" } } : {}),
     proxy: desktopDev ? {} : {
       "/api": "http://localhost:8080",
       "/healthz": "http://localhost:8080",

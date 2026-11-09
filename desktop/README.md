@@ -164,3 +164,8 @@ are retained as `dev-loop.json` and `dev-loop-hmr.png`. Native CI runs it on bot
 macOS and Ubuntu X11; timing evidence is scoped to the recorded hardware.
 
 See the dated [development-loop qualification](../docs/desktop-dev-loop-qualification.md) for frozen local source, raw measurements and platform scope.
+
+Development sidecars omit DWARF debug sections to reduce warm linking time. The
+production build keeps its existing flags; use the standalone Go commands for
+debugger sessions. Desktop Vite waits 50 ms for completed editor writes so a
+Linux truncation notification cannot publish an incomplete stylesheet.

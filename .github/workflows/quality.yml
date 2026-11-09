@@ -213,7 +213,7 @@ jobs:
           cache: npm
           cache-dependency-path: frontend-react/package-lock.json
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
 
   data-pipeline:

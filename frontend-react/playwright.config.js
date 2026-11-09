@@ -18,6 +18,12 @@ export default defineConfig({
     { name: "desktop-1024", use: { ...devices["Desktop Chrome"], viewport: { width: 1024, height: 768 } } },
     { name: "tablet-768", use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1024 } } },
     { name: "mobile-390", use: { ...devices["Pixel 5"], viewport: { width: 390, height: 844 } } },
+    {
+      name: "webkit-early-warning",
+      use: { ...devices["Desktop Safari"], viewport: { width: 1440, height: 900 } },
+      testMatch: "workspace.spec.js",
+      grep: /runs a sector and preserves a named scenario|supports keyboard disclosure navigation without starting RF work|generates a historical Report from cold Run History without opening Report first/,
+    },
   ],
   webServer: realBackendE2E
     ? {

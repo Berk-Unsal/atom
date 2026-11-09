@@ -63,7 +63,11 @@ try {
   const recovered = await waitForRuntime(page, (runtime) => runtime.state === "ready" && runtime.generation !== first.generation);
   await application.evaluate(({ dialog, BrowserWindow }) => {
     globalThis.__rendererRecovery = []; dialog.showMessageBox = async (...args) => { globalThis.__rendererRecovery.push(args.at(-1)); return { response: 0 }; };
-    BrowserWindow.getAllWindows()[0].webContents.forcefullyCrashRenderer();
+    globalThis.__rendererEvents = [];
+    const contents = BrowserWindow.getAllWindows()[0].webContents;
+    contents.on("render-process-gone", (_event, details) => globalThis.__rendererEvents.push({ event: "gone", reason: details.reason, exitCode: details.exitCode }));
+    contents.on("did-finish-load", () => globalThis.__rendererEvents.push({ event: "loaded" }));
+    contents.forcefullyCrashRenderer();
   });
   await until(async () => (await rows(directory, "host")).some((row) => row.event === "renderer-reload"), "Renderer crash did not offer explicit recovery");
   // Playwright marks the deliberately crashed Page terminally crashed. Check
@@ -130,7 +134,12 @@ try {
   result.local_records_were_structured_private_and_redacted = true; result.result = "PASS";
   await fs.mkdir(output, { recursive: true }); await fs.writeFile(path.join(output, "diagnostics.json"), JSON.stringify(result, null, 2)); console.log(JSON.stringify(result, null, 2));
 } catch (error) {
-  await fs.mkdir(output, { recursive: true }); await fs.writeFile(path.join(output, "failed-diagnostics.json"), JSON.stringify({ ...result, error: error.stack }, null, 2)); throw error;
+  let nativeState;
+  try { nativeState = await application?.evaluate(({ BrowserWindow }) => ({ events: globalThis.__rendererEvents, dialogs: globalThis.__rendererRecovery,
+    windows: BrowserWindow.getAllWindows().map((owner) => ({ destroyed: owner.isDestroyed(), loading: owner.webContents.isLoading(), url: owner.webContents.getURL() })) })); } catch { /* Main process may already have exited. */ }
+  const lifecycle = {};
+  for (const component of ["host", "backend"]) try { lifecycle[component] = await rows(path.join(profileAt("healthy"), "native-state/logs"), component); } catch { /* Failure may precede creation or follow fallback. */ }
+  await fs.mkdir(output, { recursive: true }); await fs.writeFile(path.join(output, "failed-diagnostics.json"), JSON.stringify({ ...result, error: error.stack, nativeState, lifecycle }, null, 2)); throw error;
 } finally {
   await close(); await fs.chmod(path.join(profileAt("fallback"), "native-state/logs"), 0o700).catch(() => {});
   for (const directory of fallbackDirectories) await fs.rm(directory, { recursive: true, force: true });

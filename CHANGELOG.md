@@ -17,6 +17,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Keep native recovery running when a crashed/disconnected renderer cannot receive a runtime notification.
 - Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work and redundant VCS probes to keep warm replacements responsive; retain explicit canonical build identity.
 - Activate the existing macOS application on an explicit second launch, including restoring a hidden or minimized window.
 - Dispose native runtime subscriptions when their frontend module is hot-replaced, aborting old work without retrying RF actions.

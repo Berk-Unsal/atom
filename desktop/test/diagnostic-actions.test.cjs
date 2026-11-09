@@ -1,7 +1,16 @@
 "use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { createDiagnosticActions } = require("../lib/diagnostic-actions.cjs");
+const { createDiagnosticActions, notifyRuntime } = require("../lib/diagnostic-actions.cjs");
+
+test("a disposed renderer frame cannot throw out of a native lifecycle notification", () => {
+  const sent = []; const owner = { isDestroyed: () => false, webContents: { isDestroyed: () => false, send: (...args) => sent.push(args) } };
+  assert.equal(notifyRuntime(owner, { state: "ready" }), true); assert.equal(sent.length, 1);
+  owner.webContents.send = () => { throw new Error("Render frame disposed"); };
+  assert.equal(notifyRuntime(owner, { state: "failed" }), false);
+  assert.equal(notifyRuntime(null, {}), false);
+  owner.webContents.isDestroyed = () => true; assert.equal(notifyRuntime(owner, {}), false);
+});
 
 function fixture(responses, { directory = "/owned/current-logs", error = "", fallback = false } = {}) {
   const dialogs = []; const opened = []; const records = []; const actions = [];

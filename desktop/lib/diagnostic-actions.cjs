@@ -1,6 +1,13 @@
 "use strict";
 const { safeReason } = require("./diagnostic-logs.cjs");
 
+function notifyRuntime(owner, status) {
+  try {
+    if (!owner || owner.isDestroyed() || owner.webContents.isDestroyed()) return false;
+    owner.webContents.send("atom:runtime-status", status); return true;
+  } catch { return false; } // A disconnected/crashed renderer cannot stop native recovery.
+}
+
 function createDiagnosticActions({ logs, openPath, showMessageBox, getWindow, relaunch, quit }) {
   let rendererDecision;
   async function openLogs() {
@@ -50,4 +57,4 @@ function createDiagnosticActions({ logs, openPath, showMessageBox, getWindow, re
   }
   return { openLogs, startup, renderer };
 }
-module.exports = { createDiagnosticActions };
+module.exports = { createDiagnosticActions, notifyRuntime };

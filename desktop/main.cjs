@@ -15,7 +15,7 @@ const { createDevControl } = require("./lib/dev-control.cjs");
 const { nativePaths, privateDirectory, prepareNativePaths } = require("./lib/native-paths.cjs");
 const { SettingsStore } = require("./lib/settings-store.cjs");
 const { DiagnosticLogs, safeReason } = require("./lib/diagnostic-logs.cjs");
-const { createDiagnosticActions } = require("./lib/diagnostic-actions.cjs");
+const { createDiagnosticActions, notifyRuntime } = require("./lib/diagnostic-actions.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -100,7 +100,7 @@ async function launch() {
   });
   backend.on("status", (status) => {
     devControl?.publish(status);
-    if (window && !window.isDestroyed()) window.webContents.send("atom:runtime-status", status);
+    notifyRuntime(window, status);
   });
   ipcMain.handle("atom:runtime", (event) => { assertMainFrame(event, window); return backend.snapshot(); });
   ipcMain.handle("atom:info", (event) => {

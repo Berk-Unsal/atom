@@ -1,5 +1,5 @@
 import { BASEMAPS, DEFAULT_BASEMAP_ID } from "./basemaps.js";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   Check,
@@ -29,6 +29,7 @@ import { downloadFilename, namingForSource } from "../utils/downloadNames.js";
 import { versionStateLabel } from "../domain/resultContext.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
 import { platform } from "../platform/index.js";
+import useNativeProjectFiles from "../hooks/useNativeProjectFiles.js";
 import PanelHeader from "./PanelHeader.jsx";
 
 export function CommandBar({
@@ -177,7 +178,12 @@ export function WorkspaceLineageContext({ context, persistenceState = "saved" })
   );
 }
 
-export function ProjectMenu({
+export function ProjectMenu(props) {
+  const nativeFiles = useNativeProjectFiles(props);
+  return <ProjectMenuContent key={props.activeProject?.id} {...props} nativeFiles={nativeFiles} />;
+}
+
+function ProjectMenuContent({
   activeProject,
   compatible,
   exportContent,
@@ -192,28 +198,39 @@ export function ProjectMenu({
   onSelectProject,
   projects,
   staleResultRunLabel = "",
+  nativeFiles,
+  fileReady = true,
 }) {
-  const [open, setOpen] = useState(false);
+  const [manuallyOpen, setManuallyOpen] = useState(false);
+  const [dismissedNotice, setDismissedNotice] = useState(0);
+  const open = manuallyOpen || nativeFiles.notice > dismissedNotice;
   const [name, setName] = useState(activeProject?.name ?? "");
   const [message, setMessage] = useState("");
   const [fileRecovery, setFileRecovery] = useState(null);
   const [savingScenario, setSavingScenario] = useState(false);
+  const [localMessageNotice, setLocalMessageNotice] = useState(-1);
+  const useNativeMessage = nativeFiles.notice > localMessageNotice;
   const [confirmProjectDelete, setConfirmProjectDelete] = useState(false);
   const rootRef = useRef(null);
   const fileRef = useRef(null);
   const triggerRef = useRef(null);
+  const displayedMessage = nativeFiles.enabled && useNativeMessage ? nativeFiles.message : message;
+  const displayedRecovery = nativeFiles.enabled && useNativeMessage ? nativeFiles.recovery : fileRecovery;
+  const fileStatus = nativeFiles.statuses.find((row) => row.id === activeProject?.id);
+
+  const closeMenu = useCallback(() => { setManuallyOpen(false); setDismissedNotice(nativeFiles.notice); }, [nativeFiles.notice]);
 
   useEffect(() => {
     if (!open) return undefined;
     const close = (event) => {
-      if (!rootRef.current?.contains(event.target)) setOpen(false);
+      if (!rootRef.current?.contains(event.target)) closeMenu();
     };
     // The open menu owns Escape (capture phase) so the drawer underneath stays open.
     const closeOnEscape = (event) => {
       if (event.key !== "Escape") return;
       event.preventDefault();
       event.stopPropagation();
-      setOpen(false);
+      closeMenu();
       triggerRef.current?.focus();
     };
     document.addEventListener("pointerdown", close);
@@ -222,9 +239,10 @@ export function ProjectMenu({
       document.removeEventListener("pointerdown", close);
       window.removeEventListener("keydown", closeOnEscape, true);
     };
-  }, [open]);
+  }, [open, closeMenu]);
 
   const importFile = async (event) => {
+    setLocalMessageNotice(nativeFiles.notice);
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -243,6 +261,7 @@ export function ProjectMenu({
   };
 
   const downloadProject = () => {
+    setLocalMessageNotice(nativeFiles.notice);
     setFileRecovery(null);
     try {
       const blob = new Blob([exportContent()], { type: "application/json" });
@@ -263,6 +282,7 @@ export function ProjectMenu({
   };
 
   const saveScenario = async () => {
+    setLocalMessageNotice(nativeFiles.notice);
     setFileRecovery(null);
     setSavingScenario(true);
     setMessage("Saving Version…");
@@ -282,7 +302,7 @@ export function ProjectMenu({
         ref={triggerRef}
         type="button"
         className="project-menu-trigger"
-        onClick={() => setOpen((current) => !current)}
+        onClick={() => { if (open) closeMenu(); else setManuallyOpen(true); }}
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-label={`Project menu, ${activeProject?.name ?? "Project"}`}
@@ -292,7 +312,7 @@ export function ProjectMenu({
         <ChevronDown size={13} />
       </button>
       {open ? (
-        <div className="project-menu" role="dialog" aria-label="Project and scenarios">
+        <div className={`project-menu${nativeFiles.enabled ? " project-menu-native-files" : ""}`} role="dialog" aria-label="Project and scenarios">
           <label>
             <span>Project</span>
             <select value={activeProject?.id ?? ""} onChange={(event) => onSelectProject(event.target.value)}>
@@ -318,18 +338,27 @@ export function ProjectMenu({
               </div>
             </div>
           ) : null}
-          <div className="project-menu-actions">
-            <button type="button" onClick={() => fileRef.current?.click()}><Upload size={14} /> Import</button>
-            <button type="button" onClick={downloadProject}><Download size={14} /> Export</button>
+          <div className={`project-menu-actions${nativeFiles.enabled ? " project-menu-file-actions" : ""}`}>
+            {nativeFiles.enabled ? <>
+              <button type="button" disabled={nativeFiles.busy} onClick={() => nativeFiles.execute("open")}><FolderOpen size={14} /> Open Project</button>
+              <button type="button" disabled={nativeFiles.busy || !fileReady} onClick={() => nativeFiles.execute("save")}><Save size={14} /> Save Project</button>
+              <button type="button" disabled={nativeFiles.busy || !fileReady} onClick={() => nativeFiles.execute("saveAs")}><Save size={14} /> Save As</button>
+              <button type="button" disabled={nativeFiles.busy || !fileReady} onClick={() => nativeFiles.execute("export")}><Download size={14} /> Export Copy</button>
+            </> : <>
+              <button type="button" onClick={() => fileRef.current?.click()}><Upload size={14} /> Import</button>
+              <button type="button" onClick={downloadProject}><Download size={14} /> Export</button>
+            </>}
             <input ref={fileRef} hidden type="file" accept=".json,.atom-project.json" onChange={importFile} />
           </div>
-          {message && fileRecovery ? (
+          {nativeFiles.enabled ? <p className="project-menu-file-state" data-dirty={Boolean(fileStatus?.path && fileStatus.dirty)} title={fileStatus?.path || undefined} role="status">{fileStatus?.path
+            ? `${fileStatus.dirty ? "Unsaved changes to" : "Saved to"} ${fileStatus.name}` : "Recovery storage only. Save Project chooses a portable file."}</p> : null}
+          {displayedMessage && displayedRecovery ? (
             <div className="project-menu-message" role="status">
-              <p>{message}</p>
+              <p>{displayedMessage}</p>
               <div className="project-menu-recovery">
-                <p><strong>{fileRecovery.operation === "export" ? "Export stopped." : "Import stopped."}</strong> {fileRecovery.reason}</p>
+                <p><strong>{displayedRecovery.operation === "export" ? "Export stopped." : "Import stopped."}</strong> {displayedRecovery.reason}</p>
                 <p>{platform.kind === "desktop" ? "Your current project and retained evidence remain in this app’s recovery storage. Keep its durable profile." : "Your current project and retained evidence remain in this browser. Keep this browser’s site data."}</p>
-                {fileRecovery.operation === "import" ? <p>The original file is unchanged. Ask its author for a smaller, separately created project.</p> : null}
+                {displayedRecovery.operation === "import" ? <p>The original file is unchanged. Ask its author for a smaller, separately created project.</p> : null}
                 <p>Close this menu, then open Review → Report. Download an available report separately with Markdown, or use PDF / Print. A report is not a full editable project backup.</p>
                 <p>For future smaller exports, use New to start a separate project with fewer Cells or saved Scenarios. This does not archive this project or shrink its retained evidence.</p>
                 <a href="https://berk-unsal.github.io/atom/project-format.html#resource-and-error-contract" target="_blank" rel="noreferrer">Portable project format limits</a>
@@ -355,7 +384,7 @@ export function ProjectMenu({
               </div>
             )) : <p className="project-menu-empty">Save the current plan to create a comparison baseline.</p>}
           </div>
-          {message && !fileRecovery ? <p className="project-menu-message" role="status">{message}</p> : null}
+          {displayedMessage && !displayedRecovery ? <p className="project-menu-message" role={nativeFiles.error && useNativeMessage ? "alert" : "status"}>{displayedMessage}</p> : null}
         </div>
       ) : null}
     </div>

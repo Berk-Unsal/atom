@@ -7,9 +7,9 @@ test("every typed file operation checks the exact owned main frame before invoki
   const handlers = new Map(); const calls = [];
   const frame = { url: "app://atom/" }; const contents = { mainFrame: frame };
   const window = { webContents: contents, isDestroyed: () => false };
-  const files = Object.fromEntries(["open", "acceptOpen", "discardOpen", "save", "setProjects"].map((name) => [name, (value) => { calls.push({ name, value }); return { name }; }]));
+  const files = Object.fromEntries(["open", "acceptOpen", "discardOpen", "save", "setProjects", "status"].map((name) => [name, (value) => { calls.push({ name, value }); return { name }; }]));
   const unregister = registerProjectFiles({ ipcMain: { handle: (key, callback) => handlers.set(key, callback), removeHandler: (key) => handlers.delete(key) }, getWindow: () => window, files });
-  assert.equal(handlers.size, 5);
+  assert.equal(handlers.size, 7);
   for (const handler of handlers.values()) {
     await assert.rejects(handler({ sender: contents, senderFrame: { url: frame.url } }, {}));
     await assert.rejects(handler({ sender: {}, senderFrame: frame }, {}));

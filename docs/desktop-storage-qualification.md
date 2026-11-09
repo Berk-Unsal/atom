@@ -56,7 +56,14 @@ fault-injection evidence, not a claim of physically filling the local disk.
 
 ## Scope and reproduction
 
-Both additive native CI targets must pass before this batch is ready for review.
+Both native storage suites passed on head `c8e3323b82df0a86106e353994a8dd01a0b8da70`
+in Quality run `42600219098`, test merge
+`8a0eed5ad529e6d60a54250a95c62a2d96e468f6` (parents `984c28a`/`c8e3323`).
+Artifacts `13664778755` (macOS) and `13665741440` (Ubuntu) retain their raw results.
+[PR #188](https://github.com/Berk-Unsal/atom/pull/188) remains draft: overall
+12/13 checks passed, with macOS warm Go replacement at 5.93 s against the
+unchanged 5 s development-loop limit. Its functional cases passed; this measured
+performance shortfall is not waived by passing storage checks.
 Ubuntu relocates the Resources tree while keeping its AppArmor-qualified binary
 path fixed; arbitrary executable relocation, installed upgrade/uninstall,
 Wayland, Intel Mac and signed/quarantined bundles retain their roadmap gates.

@@ -44,6 +44,8 @@ import { WORKSPACE_STAGES, WORKSPACE_TOOLS } from "./components/workspaceTools.j
 import useTheme from "./hooks/useTheme.js";
 import useRequestCoordinator from "./hooks/useRequestCoordinator.js";
 import useProjectWorkspace from "./hooks/useProjectWorkspace.js";
+import { platform } from "./platform/index.js";
+import { pendingProjectFileRevision } from "./utils/projectFileRevision.js";
 import useRunHistory from "./hooks/useRunHistory.js";
 import useRunExecution from "./hooks/useRunExecution.js";
 import useReportArtifacts from "./hooks/useReportArtifacts.js";
@@ -394,6 +396,7 @@ export default function App() {
   const [undoNotice, setUndoNotice] = useState(null);
   const [selectedArtifactId, setSelectedArtifactId] = useState(null);
   const restoredProjectRef = useRef(null);
+  const draftSaveTimerRef = useRef(null);
   const lastScenarioSourceRef = useRef(null);
   const cellExplanationCacheRef = useRef(new Map());
   const coverageSurfaceSourceKeyRef = useRef(null);
@@ -739,40 +742,32 @@ export default function App() {
     setSelectionNotice(`Sample opened as a new project. Selected Cells ${selected.map((tower) => tower.cellId ?? tower.id).join(" and ")}, nearest the pre-selected sector; change them here.`);
   }, [activeProject, towers, workspaceRestored]);
 
+  const fileWorkingPlan = useMemo(() => ({
+    layerVisibility, planningMode,
+    selectedNetworkTowerIds: normalizeNetworkSelection(selectedNetworkTowerIds, towers),
+    networkAzimuths, optimizationConfig, selectedTowerId: selectedTower?.id ?? null,
+    selectionPolygon, areaOfInterestEnabled, settings, inventory: towers,
+  }), [layerVisibility, planningMode, selectedNetworkTowerIds, towers, networkAzimuths,
+    optimizationConfig, selectedTower?.id, selectionPolygon, areaOfInterestEnabled, settings]);
+  const pendingFileRevision = useMemo(() => platform.capabilities.nativeProjectFiles
+    ? pendingProjectFileRevision(activeProject, fileWorkingPlan) : null, [activeProject, fileWorkingPlan]);
+
   useEffect(() => {
     if (!workspaceLoaded || restoredProjectRef.current !== activeProject?.id || hydratedDatasetRevision !== datasetRevision) {
       return undefined;
     }
+    if (platform.capabilities.nativeProjectFiles && !pendingFileRevision) return undefined;
     const timeout = window.setTimeout(() => {
-      saveProjectDraft({
-        plan: {
-          layerVisibility,
-          planningMode,
-          selectedNetworkTowerIds: normalizeNetworkSelection(selectedNetworkTowerIds, towers),
-          networkAzimuths,
-          optimizationConfig,
-          selectedTowerId: selectedTower?.id ?? null,
-          selectionPolygon,
-          areaOfInterestEnabled,
-          settings,
-			inventory: towers,
-        },
-      });
+      draftSaveTimerRef.current = null;
+      saveProjectDraft({ plan: fileWorkingPlan });
     }, 500);
-    return () => window.clearTimeout(timeout);
+    draftSaveTimerRef.current = timeout;
+    return () => { window.clearTimeout(timeout); if (draftSaveTimerRef.current === timeout) draftSaveTimerRef.current = null; };
   }, [
-    layerVisibility,
-    planningMode,
+    fileWorkingPlan,
+    pendingFileRevision,
     activeProject?.id,
-    areaOfInterestEnabled,
     saveProjectDraft,
-    selectedNetworkTowerIds,
-    networkAzimuths,
-    optimizationConfig,
-    selectedTower?.id,
-    selectionPolygon,
-    settings,
-		towers,
 		datasetRevision,
 		hydratedDatasetRevision,
     workspaceLoaded,
@@ -3870,8 +3865,18 @@ export default function App() {
         radiusMeters={formatNumber(settings.radiusMeters, 0)}
         projectControl={(
           <ProjectMenu
-            key={projectWorkspace.activeProject?.id}
             activeProject={projectWorkspace.activeProject}
+            fileRevision={pendingFileRevision}
+            fileReady={workspaceRestored && hydratedDatasetRevision === datasetRevision}
+            prepareFileProject={(id) => {
+              if (id !== activeProject?.id) return projectWorkspace.prepareProjectFile(id);
+              if (restoredProjectRef.current !== id || hydratedDatasetRevision !== datasetRevision) {
+                throw new Error("Wait for this project’s working plan to finish restoring, then save again.");
+              }
+              window.clearTimeout(draftSaveTimerRef.current);
+              draftSaveTimerRef.current = null;
+              return projectWorkspace.prepareProjectFile(id, pendingFileRevision ? { plan: fileWorkingPlan } : undefined);
+            }}
             compatible={isDatasetCompatible(projectWorkspace.activeProject, appMeta)}
             exportContent={projectWorkspace.exportActiveProject}
             onAddProject={() => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.addProject(); }}
@@ -3880,6 +3885,15 @@ export default function App() {
             onDuplicateProject={() => { clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null); restoredProjectRef.current = null; setWorkspaceRestored(false); projectWorkspace.duplicateProject(); }}
             onImportProject={(text) => {
               // File guards run synchronously before any current evidence is cleared.
+              if (platform.capabilities.nativeProjectFiles) {
+                return projectWorkspace.importProject(text, { beforeCommit: async () => {
+                  window.clearTimeout(draftSaveTimerRef.current); draftSaveTimerRef.current = null;
+                  if (activeProject) await projectWorkspace.prepareProjectFile(activeProject.id,
+                    restoredProjectRef.current === activeProject.id && hydratedDatasetRevision === datasetRevision && pendingFileRevision ? { plan: fileWorkingPlan } : undefined);
+                  clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null);
+                  restoredProjectRef.current = null; setWorkspaceRestored(false);
+                } });
+              }
               const imported = projectWorkspace.importProject(text);
               clearSpatialContext(); clearCurrentResultRun(); setFocusedRunId(null);
               restoredProjectRef.current = null; setWorkspaceRestored(false);

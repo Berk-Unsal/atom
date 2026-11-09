@@ -23,6 +23,8 @@ if (process.isMainFrame && location.protocol === "app:" && location.host === "at
   discardProjectOpen: (ticket) => ipcRenderer.invoke("atom:project-discard", ticket),
   saveProjectFile: (request) => ipcRenderer.invoke("atom:project-save", request),
   setProjectFileState: (projects) => ipcRenderer.invoke("atom:project-state", projects),
+  getProjectFileState: () => ipcRenderer.invoke("atom:project-status"),
+  finishProjectCommand: (request) => ipcRenderer.invoke("atom:project-command-result", request),
   onProjectCommand: (callback) => {
     if (typeof callback !== "function") throw new TypeError("Project command listener must be a function");
     const listener = (_event, command) => callback(command);

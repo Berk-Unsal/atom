@@ -1,6 +1,6 @@
 # Local desktop host
 
-This is the local Electron host developed through #149–#152. It launches the existing
+This is the local Electron host developed through #149–#154. It launches the existing
 `frontend-react` build and `backend-go` API. The D01 qualification selected
 Electron 44.7.0; this host pins 44.10.2 to include the
 [compromised-certificate mitigation](https://github.com/advisories/GHSA-jr5w-w6x2-84p9).
@@ -37,8 +37,7 @@ React's `src/platform/index.js` selects browser or native capabilities. The
 sandboxed preload exposes typed `getInfo()`, `openExternal(httpsURL)` and read-only
 runtime snapshots/change notifications through an exact-main-frame checked
 bridge. Runtime snapshots separate listener, dataset and loaded-renderer
-readiness without exposing the PID, port, token, paths or stderr. Native file/report integrations remain gated by
-their dedicated issues. Native dependencies remain outside the headless Go and
+readiness without exposing the PID, port, token or stderr. Typed project-file methods expose only dialog-approved file display paths and opaque receipts; report integrations remain gated by #156. Native dependencies remain outside the headless Go and
 browser build graphs. API calls continue through the shared HTTP client and a
 stable `app://atom` route; host-only per-launch credentials travel to the owned
 dynamic-loopback child over inherited pipes. A non-secret client header prevents
@@ -111,6 +110,8 @@ Command modes:
 | `scripts/desktop-test.sh --runtime` | Real-Go transport/lifecycle cases after a local build. |
 | `scripts/desktop-test.sh --native` | Production/Vite/security engine checks after a local build. |
 | `scripts/desktop-test.sh --dev-loop` | Isolated-source development-loop qualification and timing; no staged dist. |
+| `scripts/desktop-test.sh --storage` | Real unpacked-app persistence and recovery qualification. |
+| `scripts/desktop-test.sh --project-files` | Native file workflow and focused keyboard qualification. |
 
 Packaging is a separate #159/#161 work package; none of these commands produces
 or publishes an installer. Web `npm run dev`, Go tests and Docker commands remain
@@ -138,10 +139,9 @@ window. Runtime integration tests also reserve 8080,
 verify bad binary/pack rejection, check credential/generation/port rotation and
 parent-EOF listener cleanup. Tests use only their owned child PIDs and isolated
 profiles/resources. Native dialog confirmation is stubbed for menu automation;
-actual file dialogs remain #154 qualification.
+the project-file suite below separately exercises the approved-file workflow.
 
-These checks do not qualify production packaging, RF accuracy, native file/print
-actions. The security suite adds hostile origins, main/subframe navigation, popups, redirects, Chromium drag events, imported project text, stored report bytes and the isolated report surface; CI also requests the private API as another OS user without a token. Follow
+These checks do not qualify production packaging, RF accuracy or native print actions. The security suite adds hostile origins, main/subframe navigation, popups, redirects, Chromium drag events, imported project text, stored report bytes and the isolated report surface; CI also requests the private API as another OS user without a token. Follow
 `docs/active-issues-goal-plan.md` for the remaining issue acceptance gates.
 
 Known external dependency: the shared Stadia map tiles show authentication-error
@@ -219,7 +219,7 @@ before external cleanup. Runtime scratch can be removed after an abnormal exit;
 it contains no durable workspace. User-chosen project/report destinations are
 associations, never redirected to cache, runtime or autosave locations. The
 project menu identifies desktop autosave as recovery storage and recommends a
-portable exported file for a separate backup. Native file dialogs are #154.
+portable exported file for a separate backup. See the native project-file workflow below.
 
 Run `scripts/desktop-test.sh --storage` after the local build. The suite constructs
 a disposable unpacked application with a genuinely renamed executable (native
@@ -233,3 +233,47 @@ registry/recent associations and packs, and verifies private permissions.
 macOS relocates the entire `.app`; Ubuntu relocates Resources while retaining
 the exact AppArmor-qualified executable path. Installer, signing, arbitrary
 Linux executable relocation and clean-machine qualification remain #159–#162.
+
+
+## Native project files
+
+File → Open Project, Save Project, Save Project As and Export Project Copy use
+the same controller as the project menu. Cmd/Ctrl+O, Cmd/Ctrl+S,
+Cmd/Ctrl+Shift+S and Cmd/Ctrl+Shift+E invoke those operations. Save captures the
+current working inputs before the recovery timer fires; it creates no Version
+and runs no RF request. Save Version continues to create a planning Version.
+
+Open uses the existing shared importer, including schema 1/2 compatibility,
+16 MiB file and expanded/structural limits, lineage and stale-result rules.
+Rejected or cancelled Open leaves the active workspace and result in place.
+An accepted import gets its own associated source path; normalization may make
+it dirty until saved as schema 3. Save As changes that project's association
+only after its write commits. Export writes an independent copy and keeps the
+association. Unassociated projects use a Save dialog. Associations survive
+relaunch as host metadata; the domain workspace stays in its existing repository.
+
+Only native dialogs approve paths. The renderer cannot submit arbitrary file
+paths or call generic filesystem APIs. Writes use an exclusive temporary sibling,
+fsync and atomic rename, preserving the old file on precommit failure. A content
+and identity fingerprint detects external edits before replacement; a conflict
+asks the user to reopen or choose Save As. This is conflict detection, not an
+exclusive cross-process file lock. Symlink leaves and nonregular files are
+rejected. If bytes commit but association settings fail, the UI reports success
+with a warning and retains the chosen path.
+
+File status compares the exact shared serialized snapshot by SHA-256, marking
+pending working inputs dirty immediately. Quit with dirty associated files
+offers Keep Editing, Quit with Recovery, or Save Files and Quit. Cancellation,
+failed writes and new edits keep the app open. Recovery-only projects retain
+their existing autosave behavior. A portable project does not guarantee a full
+copy of independent Run History or retained report artifact bytes; use explicit
+report/review exports for those records.
+
+Reproduce with a local build and `scripts/desktop-test.sh --project-files`. The
+suite runs the real sandboxed renderer, shared parser/serializer, IPC, filesystem
+and Go sidecar in private temporary directories. Dialog choices are automated
+through stubbed Electron dialog responses; this does not qualify OS chooser UI.
+The default suite requires actual window focus and injects native Electron key
+events to verify Save. `node desktop/test/project-files.mjs --menu-only` is an
+explicitly narrower local diagnostic when the session cannot activate windows;
+it records keyboard qualification as false. CI never uses that option.

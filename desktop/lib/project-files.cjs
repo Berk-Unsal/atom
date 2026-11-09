@@ -31,6 +31,7 @@ class ProjectFiles {
         dirty: !record || !record.revision || revision !== record.revision };
     });
   }
+  dirtyFiles() { return this.status().filter((row) => row.dirty && /^[a-f0-9]{64}$/.test(this.associations.get(row.id)?.fingerprint?.sha256 || "")); }
   async single(action) {
     if (this.busy) throw new ProjectFileError("file_busy", "Finish the current native file operation first.");
     this.busy = true;
@@ -73,6 +74,7 @@ class ProjectFiles {
     // can differ from the source, so Open alone never promises a clean file.
     const warning = this.persist({ kind: "project", projectId: request.projectId, path: record.path,
       fingerprint: record.fingerprint, revision: null, savedAt: this.now() });
+    if (!this.projects.has(request.projectId)) this.projects.set(request.projectId, "import-pending");
     return { associated: true, path: record.path, warning };
   }
   discardOpen(ticket) { this.tickets.delete(ticket); }

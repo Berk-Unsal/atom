@@ -277,11 +277,32 @@ export default function useProjectWorkspace(meta) {
     });
   }, [activeProjectID, updateProject]);
 
-  const importProject = useCallback((text) => {
+  const importProject = useCallback((text, { beforeCommit } = {}) => {
     const project = repository.importProjectFile(text);
-    return commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }))
+    const activate = () => commit((current) => ({ ...current, activeProjectId: project.id, projects: [...current.projects, project] }))
       .then(() => project);
+    return beforeCommit ? Promise.resolve(beforeCommit()).then(activate) : activate();
   }, [commit, repository]);
+
+  const prepareProjectFile = useCallback(async (projectId, draft) => {
+    if (!workspaceRef.current.projects.some((candidate) => candidate.id === projectId)) {
+      throw new Error("The project is no longer available to save.");
+    }
+    let saved;
+    if (draft) {
+      saved = updateProject(projectId, (project) => repository.updateProjectDraft({
+        ...project, datasetRef: project.datasetRef ?? repository.datasetReference(meta),
+      }, draft));
+    }
+    // Capture before awaiting persistence: later input/history updates must not
+    // change the snapshot or make an older completed Save appear current.
+    const project = workspaceRef.current.projects.find((candidate) => candidate.id === projectId);
+    if (!project) throw new Error("The project is no longer available to save.");
+    // A failed recovery write remains visible through commit's error state.
+    // Still allow a portable file to rescue the current in-memory work.
+    await saved?.catch(() => {});
+    return project;
+  }, [meta, repository, updateProject]);
 
   return {
     activeProject,
@@ -300,6 +321,7 @@ export default function useProjectWorkspace(meta) {
     importProject,
     loaded,
     persistenceState,
+    prepareProjectFile,
     renameProject,
     renameScenario,
     restoreScenario,

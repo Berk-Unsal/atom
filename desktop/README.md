@@ -162,3 +162,5 @@ generation rejection, retained dev workspace on relaunch, startup cancellation
 and occupied-port handling. Raw samples/reference hardware and an HMR screenshot
 are retained as `dev-loop.json` and `dev-loop-hmr.png`. Native CI runs it on both
 macOS and Ubuntu X11; timing evidence is scoped to the recorded hardware.
+
+See the dated [development-loop qualification](../docs/desktop-dev-loop-qualification.md) for frozen local source, raw measurements and platform scope.

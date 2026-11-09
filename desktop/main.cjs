@@ -10,7 +10,7 @@ const { createRouter } = require("./lib/router.cjs");
 const { APP_ORIGIN, assertMainFrame, allowRendererRequest, isTrustedDocument, externalURL, lockNavigation } = require("./lib/policy.cjs");
 const { readGeometry, writeGeometry } = require("./lib/window-state.cjs");
 const { createRecoveryAction } = require("./lib/recovery.cjs");
-const { REPORT_SCHEME } = require("./lib/report-surface.cjs");
+const { REPORT_SCHEME, createReportSurface } = require("./lib/report-surface.cjs");
 const { createDevControl } = require("./lib/dev-control.cjs");
 const { nativePaths, privateDirectory, prepareNativePaths } = require("./lib/native-paths.cjs");
 const { SettingsStore } = require("./lib/settings-store.cjs");
@@ -18,6 +18,8 @@ const { ProjectFiles } = require("./lib/project-files.cjs");
 const { registerProjectFiles } = require("./lib/project-file-bridge.cjs");
 const { createProjectFileClose } = require("./lib/project-file-close.cjs");
 const { registerProjectShortcuts } = require("./lib/project-file-shortcuts.cjs");
+const { ReportFiles } = require("./lib/report-files.cjs");
+const { registerReportFiles } = require("./lib/report-file-bridge.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -40,6 +42,7 @@ let window;
 let backend;
 let devControl;
 let projectFiles;
+let reportFiles;
 let fileClose;
 let quitIntent = false;
 let supervisorQuitting = false;
@@ -102,15 +105,23 @@ async function launch() {
     await openExternal(safe);
   });
   projectFiles = new ProjectFiles({ settings,
+    isBusy: () => Boolean(reportFiles?.busy),
     selectOpen: () => dialog.showOpenDialog(window, { title: "Open A.T.O.M project", properties: ["openFile", ...(process.platform === "darwin" ? ["noResolveAliases"] : [])],
       filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }] }),
     selectSave: ({ mode, defaultPath }) => dialog.showSaveDialog(window, { title: mode === "export" ? "Export project copy" : "Save A.T.O.M project", defaultPath,
       filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }],
       properties: process.platform === "linux" ? ["showOverwriteConfirmation"] : ["createDirectory"], showsTagField: false }),
   });
+  reportFiles = new ReportFiles({ isBusy: () => projectFiles.busy,
+    selectSave: ({ name, extension }) => dialog.showSaveDialog(window, { title: "Save A.T.O.M report", defaultPath: name,
+      filters: [{ name: `Report (${extension.toUpperCase()})`, extensions: [extension] }],
+      properties: process.platform === "linux" ? ["showOverwriteConfirmation"] : ["createDirectory"], showsTagField: false }),
+    createSurface: (html) => createReportSurface({ BrowserWindow, session, parent: window, html }),
+  });
+  registerReportFiles({ ipcMain, getWindow: () => window, files: reportFiles });
   const projectCommand = (command) => { if (window && !window.isDestroyed() && !quitting && (!quitIntent || command === "refresh")) window.webContents.send("atom:project-command", { command }); };
   registerProjectShortcuts(window.webContents, projectCommand);
-  fileClose = createProjectFileClose({ files: projectFiles, getWindow: () => window,
+  fileClose = createProjectFileClose({ files: projectFiles, getWindow: () => window, isBusy: () => projectFiles.busy || reportFiles.busy,
     showMessageBox: (...args) => dialog.showMessageBox(...args), sendCommand: (request) => {
       if (!window || window.isDestroyed()) throw new Error("The project window is unavailable");
       window.webContents.send("atom:project-command", request);

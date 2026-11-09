@@ -11,8 +11,8 @@ const invalid = () => new ProjectFileError("file_invalid_request", "The native p
 // No method accepts a renderer-provided path. Only native dialogs and previously
 // committed user associations can create a filesystem capability.
 class ProjectFiles {
-  constructor({ settings, selectOpen, selectSave, io, now = Date.now }) {
-    Object.assign(this, { settings, selectOpen, selectSave, io, now });
+  constructor({ settings, selectOpen, selectSave, io, now = Date.now, isBusy = () => false }) {
+    Object.assign(this, { settings, selectOpen, selectSave, io, now, isBusy });
     this.associations = new Map(); this.tickets = new Map(); this.projects = new Map(); this.busy = false;
     for (const record of settings.load().recentFiles.filter((entry) => entry.kind === "project")) {
       if (identifier(record.projectId) && !this.associations.has(record.projectId)) this.associations.set(record.projectId, record);
@@ -33,7 +33,7 @@ class ProjectFiles {
   }
   dirtyFiles() { return this.status().filter((row) => row.dirty && /^[a-f0-9]{64}$/.test(this.associations.get(row.id)?.fingerprint?.sha256 || "")); }
   async single(action) {
-    if (this.busy) throw new ProjectFileError("file_busy", "Finish the current native file operation first.");
+    if (this.busy || this.isBusy()) throw new ProjectFileError("file_busy", "Finish the current native file operation first.");
     this.busy = true;
     try { return await action(); } catch (error) { throw normalizeFileError(error); }
     finally { this.busy = false; }
@@ -66,7 +66,7 @@ class ProjectFiles {
     });
   }
   acceptOpen(request) {
-    if (this.busy) throw new ProjectFileError("file_busy", "Finish the current native file operation first.");
+    if (this.busy || this.isBusy()) throw new ProjectFileError("file_busy", "Finish the current native file operation first.");
     if (!strictKeys(request, ["ticket", "projectId"]) || !identifier(request.projectId)) throw invalid();
     const record = this.tickets.get(request.ticket); this.tickets.delete(request.ticket);
     if (!record || this.now() - record.createdAt > 120_000) throw new ProjectFileError("file_receipt_expired", "Reopen the native project dialog; its read receipt is no longer available.");

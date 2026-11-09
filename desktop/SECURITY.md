@@ -144,6 +144,9 @@ failed load never commits a replacement snapshot, and canceled request contexts
 are checked before Go's switch commit. No filesystem watcher or RF retry is
 added. Keep referenced files immutable while active; existing shared file-serving
 semantics are unchanged. Native busy/Quit checks include dataset operations.
+Legacy schema-1 metadata survives without implicit approval: it is displayed as
+unverified, excluded from the runtime root file and cannot activate until an
+explicit native chooser/validation transaction replaces that record.
 
 The native session permits only valid HTTPS OSM raster tile image coordinates
 in addition to owned app/data resources. Stadia's unconfigured origin is removed

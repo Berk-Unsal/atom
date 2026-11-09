@@ -346,6 +346,9 @@ The source folder stays unchanged. Advanced reference-in-place avoids a durable
 copy; keep that folder/drive available and immutable while in use. Validation
 on activation/start rejects changed contents. To locate a moved reference,
 choose the identical pack at its new folder and register the reference again.
+Older schema-1 registry metadata remains visible as unverified and is preserved
+without becoming an approved root. Choose Validate folder to review and validate
+it explicitly; existing recovery stores are not reset or silently migrated.
 
 Data → Manage Dataset Packs activates a registered ID through existing Go
 validation/atomic switching and saves the startup selection. A missing startup

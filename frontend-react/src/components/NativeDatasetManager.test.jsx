@@ -11,6 +11,16 @@ function fixture() {
   return { adapter, selection, send: (value) => act(() => command(value)) };
 }
 describe("native dataset task", () => {
+  it("requires explicit folder validation for legacy metadata without offering activation", async () => {
+    const { adapter, send } = fixture(); const onActivate = vi.fn();
+    adapter.status.mockResolvedValue({ busy: false, phase: "idle", datasets: [{ id: "legacy", name: "Old metadata", version: "Not validated", mode: "unverified", needs_validation: true, location: "/old/folder" }] });
+    render(<NativeDatasetManager adapter={adapter} onActivate={onActivate} />);
+    send("manage");
+    const validate = await screen.findByRole("button", { name: "Validate folder…" });
+    expect(screen.queryByRole("button", { name: "Activate", exact: true })).not.toBeInTheDocument();
+    fireEvent.click(validate); await waitFor(() => expect(adapter.choose).toHaveBeenCalledWith("directory"));
+    expect(onActivate).not.toHaveBeenCalled();
+  });
   it("defaults to managed copy and shows source/license/size/hash before explicit registration", async () => {
     const { adapter, send } = fixture(); const onActivate = vi.fn(async () => ({ status: "active" }));
     render(<NativeDatasetManager adapter={adapter} onActivate={onActivate} />);

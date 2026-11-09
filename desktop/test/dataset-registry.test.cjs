@@ -161,3 +161,18 @@ test("corrupt startup selection cannot silently substitute the bundled pack or r
   settings.save({ ...settings.value, preferences: { activeDataset: "missing-pack" } });
   assert.notEqual(await registry.initialize(), registry.bundledRoot);
 });
+test("legacy metadata survives unchanged without becoming an approved root; explicit validation upgrades only the chosen record", async (t) => {
+  const { registry, settings, source, calls } = await fixture(t);
+  const legacy = { id: "reference", path: source, note: "old schema-1 registry metadata" };
+  settings.save({ ...settings.value, datasets: [legacy, { id: "unavailable-metadata", path: "/not-mounted" }] });
+  const original = await fs.readFile(settings.file);
+  await registry.initialize();
+  assert.deepEqual(await fs.readFile(settings.file), original);
+  assert.equal(registry.status().datasets.find((entry) => entry.id === "reference").needs_validation, true);
+  assert.deepEqual(JSON.parse(await fs.readFile(registry.registryFile)).entries.map((entry) => entry.id), ["bundle"]);
+  await assert.rejects(registry.activateID("reference")); assert.deepEqual(calls, []);
+  const selected = await registry.choose("directory"); await registry.install({ ticket: selected.ticket, mode: "reference" });
+  assert.equal(settings.value.datasets.find((entry) => entry.id === "reference").manifest_sha256, selected.manifest_sha256);
+  assert.deepEqual(settings.value.datasets.find((entry) => entry.id === "unavailable-metadata"), { id: "unavailable-metadata", path: "/not-mounted" });
+  await registry.activateID("reference"); assert.deepEqual(calls, ["reference"]);
+});

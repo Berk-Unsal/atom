@@ -5,13 +5,17 @@ const crypto = require("node:crypto");
 const { atomicWriteJSON, validateSettings } = require("./settings-store.cjs");
 const { DatasetError, invalid, checkAbort, sourceRoot, readManifest, streamLayer, inspectDataset } = require("./dataset-source.cjs");
 const validHash = (hash) => typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash);
+const legacyEntry = (entry) => entry && !Object.hasOwn(entry, "mode") && !Object.hasOwn(entry, "manifest_sha256");
 class DatasetRegistry {
   constructor({ settings, packsRoot, registryFile, bundledRoot, executable, selectSource, activate, isBusy = () => false, inspect = inspectDataset }) {
     Object.assign(this, { settings, packsRoot, registryFile, bundledRoot, executable, selectSource, activate, isBusy, inspect });
     this.busy = false; this.phase = "idle"; this.ticket = null; this.abort = null; this.bundle = null;
   }
   entries() {
-    const entries = this.settings.value.datasets;
+    // Schema 1 already allowed metadata-only {id,path} records before native
+    // installation existed. Preserve them verbatim, but never treat them as
+    // approved roots or prevent the durable workspace from opening.
+    const entries = this.settings.value.datasets.filter((entry) => !legacyEntry(entry));
     const ids = new Set(this.bundle ? [this.bundle.id] : []);
     for (const entry of entries) {
       if (!entry || ids.has(entry.id) || Buffer.byteLength(entry.id || "") > 128 || !validHash(entry.manifest_sha256)
@@ -45,7 +49,11 @@ class DatasetRegistry {
   status() {
     return { busy: this.busy, phase: this.phase, startup_id: this.settings.value.preferences.activeDataset || this.bundle?.id || null,
       warning: this.bundle ? null : "Bundled dataset metadata is unavailable. Restore the application resources or add a valid pack to recover explicitly.",
-      datasets: this.entries().map(({ id, name, version, mode, manifest_sha256, path: location }) => ({ id, name, version, mode, manifest_sha256, location })) };
+      datasets: [
+        ...this.entries().map(({ id, name, version, mode, manifest_sha256, path: location }) => ({ id, name, version, mode, manifest_sha256, location })),
+        ...this.settings.value.datasets.filter(legacyEntry).map((entry) => ({ id: entry.id, name: typeof entry.name === "string" ? entry.name : entry.id,
+          version: typeof entry.version === "string" ? entry.version : "Not validated", mode: "unverified", manifest_sha256: null, location: entry.path, needs_validation: true })),
+      ] };
   }
   async single(phase, operation) {
     if (this.busy || this.isBusy()) throw new DatasetError("file_busy", "Finish or cancel the current native file, print, or dataset operation first.");

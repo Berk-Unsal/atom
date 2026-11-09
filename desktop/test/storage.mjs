@@ -63,6 +63,9 @@ async function bundlePermissions(directory, writable) {
 }
 try {
   await fs.mkdir(home, { recursive: true, mode: 0o700 });
+  // A terminated prior qualification can leave its read-only fixture behind.
+  // Restore only this disposable package tree; never touch the durable profile.
+  await bundlePermissions(packagedRoot, true).catch((error) => { if (error.code !== "ENOENT") throw error; });
   await fs.rm(packagedRoot, { recursive: true, force: true }); await fs.mkdir(packagedRoot, { recursive: true });
   const electronDistribution = path.dirname(require("electron"));
   await fs.cp(isMac ? path.resolve(electronDistribution, "../..") : electronDistribution, bundle, { recursive: true, preserveTimestamps: true, verbatimSymlinks: true });
@@ -142,6 +145,12 @@ try {
   assert.equal((await page.evaluate(() => window.atomDesktop.getInfo())).version, upgrade);
   const after = JSON.parse(await fs.readFile(paths.settings, "utf8"));
   assert.equal(after.preferences.lastVersion, upgrade); assert.deepEqual(after.recentFiles, before.recentFiles); assert.deepEqual(after.datasets, before.datasets);
+  const registryMetadata = await page.evaluate(async () => (await window.atomDesktop.getDatasetRegistry()).value);
+  assert.equal(registryMetadata.datasets.find((entry) => entry.id === "retained-test-pack").needs_validation, true);
+  const deniedLegacy = await page.evaluate(() => window.atomDesktop.activateDatasetPack("retained-test-pack"));
+  assert.equal(deniedLegacy.ok, false);
+  assert.deepEqual(JSON.parse(await fs.readFile(paths.settings, "utf8")).datasets, before.datasets);
+  result.legacy_registry_metadata_survived_without_implicit_approval = true;
   assert.equal(await fs.readFile(path.join(paths.packs, "retained-pack-marker"), "utf8"), "pack bytes");
   assert.equal(await fs.readFile(chosen, "utf8"), "chosen portable file bytes");
   result.relocation_and_tested_version_upgrade_preserved_all_stores = true;

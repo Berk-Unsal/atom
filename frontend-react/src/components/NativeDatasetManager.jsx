@@ -92,10 +92,10 @@ export default function NativeDatasetManager({ onActivate, activeID, adapter = p
         <div className="apply-solution-actions"><button type="button" className="primary" disabled={blocked} onClick={install}>{mode === "managed" ? "Copy and register" : "Register reference"}</button></div>
       </section> : null}
       <section aria-label="Registered dataset packs" className="native-dataset-list"><h4>Registered packs</h4>
-        {registry.datasets.length ? registry.datasets.map((entry) => <div key={entry.id} className="native-dataset-entry">
+        {registry.datasets.length ? registry.datasets.map((entry, index) => <div key={`${entry.id}:${entry.mode}:${index}`} className="native-dataset-entry">
           <div><strong>{entry.name || entry.id}</strong><p>{entry.id} · {entry.version} · {entry.mode}{entry.id === registry.startup_id ? " · Startup selection" : ""}</p>
             <details><summary>Location and manifest hash</summary><p>{entry.location}</p><p>{entry.manifest_sha256}</p></details></div>
-          <button type="button" disabled={blocked} onClick={() => activate(entry.id)}>{entry.id === activeID ? "Revalidate active pack" : "Activate"}</button>
+          <button type="button" disabled={blocked} onClick={() => entry.needs_validation ? choose("directory") : activate(entry.id)}>{entry.needs_validation ? "Validate folder…" : entry.id === activeID ? "Revalidate active pack" : "Activate"}</button>
         </div>) : <p className="data-note">No usable packs are registered. Choose a valid pack to recover.</p>}
       </section>
     </dialog>

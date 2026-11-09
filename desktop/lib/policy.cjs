@@ -3,7 +3,7 @@
 const APP_ORIGIN = "app://atom";
 const API_HEADER = "x-atom-client";
 const GENERATION_HEADER = "x-atom-runtime-generation";
-const RELEASE_CSP = "default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; form-action 'none'; img-src 'self' data: https://tile.openstreetmap.org https://tiles.stadiamaps.com; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:";
+const RELEASE_CSP = "default-src 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; form-action 'none'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:";
 
 function isAppURL(raw) {
   try {
@@ -35,7 +35,10 @@ function allowRendererRequest(details, contents, devServer = "") {
   if (isAppURL(details.url)) return true;
   try {
     const url = new URL(details.url);
-    if (details.resourceType === "image" && ["https://tile.openstreetmap.org", "https://tiles.stadiamaps.com"].includes(url.origin) && !url.username && !url.password) return true;
+    if (details.resourceType === "image" && url.origin === "https://tile.openstreetmap.org" && !url.username && !url.password && !url.search) {
+      const tile = /^\/(\d{1,2})\/(\d{1,6})\/(\d{1,6})\.png$/.exec(url.pathname);
+      if (tile && +tile[1] <= 19 && +tile[2] < 2 ** +tile[1] && +tile[3] < 2 ** +tile[1]) return true;
+    }
     if (["image", "font"].includes(details.resourceType) && url.protocol === "data:") return true;
     return devServer === "http://127.0.0.1:5173" && details.resourceType === "webSocket" && url.origin === "ws://127.0.0.1:5173";
   } catch { return false; }

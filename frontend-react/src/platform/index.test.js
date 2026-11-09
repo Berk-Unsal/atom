@@ -2,6 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 import { createPlatform } from "./index.js";
 
 describe("shared platform boundary", () => {
+  it("enables native datasets only with all six typed capabilities", async () => {
+    const methods = ["getDatasetRegistry", "chooseDatasetPack", "installDatasetPack", "activateDatasetPack", "cancelDatasetOperation"];
+    const bridge = { protocol: 1, getInfo: async () => ({}), openExternal: vi.fn(), onDatasetCommand: vi.fn(() => () => {}) };
+    for (const name of methods) bridge[name] = vi.fn(async () => ({ ok: true, value: { registered: true } }));
+    const native = createPlatform(bridge);
+    expect(native.capabilities.nativeDatasets).toBe(true);
+    await native.datasets.install({ ticket: "opaque", mode: "reference" });
+    expect(bridge.installDatasetPack).toHaveBeenCalledWith({ ticket: "opaque", mode: "reference" });
+    bridge.activateDatasetPack.mockResolvedValue({ ok: false, error: { code: "dataset_unavailable", message: "Locate the pack" } });
+    await expect(native.datasets.activate("pack")).rejects.toMatchObject({ code: "dataset_unavailable", message: "Locate the pack" });
+    for (const name of [...methods, "onDatasetCommand"]) expect(createPlatform({ ...bridge, [name]: undefined }).capabilities.nativeDatasets).toBe(false);
+    expect(createPlatform().capabilities.nativeDatasets).toBe(false); native.dispose();
+  });
   it("enables report authority only through both typed operations and propagates their bounded errors", async () => {
     const bridge = { protocol: 1, getInfo: async () => ({}), openExternal: vi.fn(), saveReportFile: vi.fn(async () => ({ ok: true, value: { canceled: true } })), outputReport: vi.fn(async () => ({ ok: false, error: { code: "report_integrity", message: "Hash mismatch" } })) };
     const native = createPlatform(bridge);

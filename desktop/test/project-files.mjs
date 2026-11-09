@@ -1,4 +1,4 @@
-import { _electron as electron } from "playwright-core";
+import { launchNative } from "./native-launch.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -43,7 +43,7 @@ async function readyMenu() {
   await until(async () => !await page.getByRole("button", { name: "Save Project", exact: true }).isDisabled(), "Project working plan did not restore");
 }
 try {
-  application = await electron.launch({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow();
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
@@ -157,7 +157,7 @@ try {
   const last = JSON.parse(await fs.readFile(path.join(scratch, "Legacy 2 — çığ.json"), "utf8")); assert.equal(last.project.name, "Unsaved portable name");
   await until(() => { try { process.kill(apiPID, 0); return false; } catch { return true; } }, "Quit left an owned API child");
   result.save_files_and_quit_committed_and_reaped_child = true;
-  application = await electron.launch({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow();
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   await waitForRuntime(page, (runtime) => runtime.state === "ready");

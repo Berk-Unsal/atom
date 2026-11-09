@@ -95,9 +95,10 @@ native project/report dialogs remain their own work packages.
 The issue referenced PR #63 as open; it was closed without merging on
 2026-11-06. This work neither changes nor merges it and does not impose HTTPS
 on the private authenticated loopback or existing local browser development.
-Provider access/data redistribution, signing and clean-machine packaging are
-separate gates in the issue plan. Existing Stadia authentication-error tiles do
-not establish production basemap permission.
+Data redistribution, signing and clean-machine packaging are separate gates in
+the issue plan. Native provider access now uses the policy-constrained OSM
+fallback described below; Stadia authentication-error tiles never established
+production basemap permission.
 
 The implementation follows Electron's
 [security checklist](https://www.electronjs.org/docs/latest/tutorial/security),
@@ -122,3 +123,38 @@ bounded rendering deadline; visible native Print remains explicitly cancellable.
 Untrusted filename hints are stripped of path/control/bidirectional separators
 and constrained to the requested format. No report content receives arbitrary
 file paths, general IPC, API credentials or main-window navigation authority.
+
+## Dataset registration and native maps
+
+Only exact-main-document typed dataset operations may select/register/activate a
+pack. Source paths come from a native directory/manifest chooser; renderer
+requests carry opaque short-lived tickets, fixed modes or existing IDs. The host
+streams bounded declared regular files, rejects traversal/symlink escapes,
+checks hashes/stability and invokes the owned binary's complete canonical Go
+validator without a listener or credentials. Cancellation reaps that validator.
+Managed copies use private staging, complete revalidation and atomic directory
+publication before settings registration. Original sources are never changed.
+
+A disposable private 0600 root/manifest-hash registry reaches the Go process
+only in inherited-pipe desktop mode. Existing browser/headless discovery is
+unchanged. Desktop renderer HTTP cannot bypass the typed activation transaction
+through `/api/datasets/switch`. References and managed copies revalidate on
+activation/start; changed or missing references require explicit repair. A
+failed load never commits a replacement snapshot, and canceled request contexts
+are checked before Go's switch commit. No filesystem watcher or RF retry is
+added. Keep referenced files immutable while active; existing shared file-serving
+semantics are unchanged. Native busy/Quit checks include dataset operations.
+
+The native session permits only valid HTTPS OSM raster tile image coordinates
+in addition to owned app/data resources. Stadia's unconfigured origin is removed
+from native CSP/network authority. The normal HTTP cache and distinct
+`A.T.O.M/<version> (+https://github.com/Berk-Unsal/atom)` User-Agent remain; no
+provider key, localhost identity or forged Referer is introduced. Attributed
+offline feedback retains RF overlays and an explicit Retry action. Automated
+native navigation blocks public OSM DNS from startup. The separate bounded
+online qualification allows one fixed tile URL and checks real cache reuse;
+there is no pan/zoom bot, area prefetch or offline tile distribution.
+
+The pending exact-hash [data review](../docs/desktop-data-redistribution-review.md)
+is not a redistribution approval. Native validation establishes pack integrity,
+not source rights. Public packaging retains that maintainer gate.

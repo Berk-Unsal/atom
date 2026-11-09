@@ -155,6 +155,10 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li><p>Add native dataset folder/manifest selection, canonical Go
+validation, managed copy/reference registration, explicit
+moved-reference recovery and persistent selection without changing
+project dataset identities or RF contracts.</p></li>
 <li><p>Save shared reports and review packages through native dialogs
 and render Print/PDF in a scriptless isolated surface, preserving
 retained bytes/hashes and shared report lineage.</p></li>
@@ -191,6 +195,11 @@ cancellation.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Use the attributed OSM Standard fallback with an identifying
+User-Agent and normal HTTP cache on desktop; keep denied/offline
+feedback and Retry usable without hiding the map key. Unconfigured
+Stadia access remains available only to existing browser
+deployments.</li>
 <li>Wrap report actions and retained-source controls inside narrow
 drawers so report text and buttons remain visible at the native minimum
 width.</li>

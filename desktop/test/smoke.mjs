@@ -1,4 +1,4 @@
-import { _electron as electron } from "playwright-core";
+import { launchNative } from "./native-launch.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -17,7 +17,7 @@ let nativeProcess;
 let page;
 const requests = [];
 try {
-  application = await electron.launch({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
   nativeProcess = application.process();
   page = await application.firstWindow();
   page.on("response", (response) => { if (new URL(response.url()).pathname.startsWith("/api/")) { requests.push({ path: new URL(response.url()).pathname, status: response.status() }); if (requests.length > 100) requests.shift(); } });
@@ -30,7 +30,7 @@ try {
   assert.equal(info.rendererSandboxed, true);
   assert.equal(info.commit, JSON.parse(await fs.readFile(path.join(root, "build/resources/build-info.json"), "utf8")).commit);
   const bridge = await page.evaluate(() => ({ keys: Object.keys(window.atomDesktop).sort(), node: typeof window.require, process: typeof window.process }));
-  assert.deepEqual(bridge, { keys: ["acceptProjectOpen", "discardProjectOpen", "finishProjectCommand", "getInfo", "getProjectFileState", "getRuntime", "onProjectCommand", "onRuntimeChange", "openExternal", "openProjectFile", "outputReport", "protocol", "saveProjectFile", "saveReportFile", "setProjectFileState"], node: "undefined", process: "undefined" });
+  assert.deepEqual(bridge, { keys: ["acceptProjectOpen", "activateDatasetPack", "cancelDatasetOperation", "chooseDatasetPack", "discardProjectOpen", "finishProjectCommand", "getDatasetRegistry", "getInfo", "getProjectFileState", "getRuntime", "installDatasetPack", "onDatasetCommand", "onProjectCommand", "onRuntimeChange", "openExternal", "openProjectFile", "outputReport", "protocol", "saveProjectFile", "saveReportFile", "setProjectFileState"], node: "undefined", process: "undefined" });
   const status = await page.evaluate(async () => {
     const runtime = await window.atomDesktop.getRuntime();
     const response = await fetch("/readyz", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": runtime.generation } });

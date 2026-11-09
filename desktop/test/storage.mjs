@@ -1,4 +1,4 @@
-import { _electron as electron } from "playwright-core";
+import { launchNative } from "./native-launch.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -41,7 +41,7 @@ function privatePort() {
   const port = /TCP 127\.0\.0\.1:(\d+) \(LISTEN\)/.exec(listener)?.[1]; assert.ok(port); return Number(port);
 }
 async function launch() {
-  application = await electron.launch({ executablePath: executableIn(bundle), args: [], cwd: home, env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: executableIn(bundle), args: [], cwd: home, env, chromiumSandbox: true, timeout: 60_000 });
   application.process().stderr.on("data", (chunk) => {
     const text = chunk.toString(); if (text.includes("STORAGE_STARTUP_FAILURE")) result.startup_failure = text.slice(0, 1500);
   });

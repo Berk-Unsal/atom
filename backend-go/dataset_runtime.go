@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -16,11 +17,13 @@ import (
 )
 
 type datasetRuntime struct {
-	mu          sync.RWMutex
-	switchMu    sync.Mutex
-	pack        *raytracer.DatasetPack
-	loadError   string
-	installRoot string
+	mu              sync.RWMutex
+	switchMu        sync.Mutex
+	pack            *raytracer.DatasetPack
+	loadError       string
+	installRoot     string
+	desktopRegistry string
+	loadPack        func(string) (*raytracer.DatasetPack, error)
 }
 
 type installedDataset struct {
@@ -50,8 +53,9 @@ type installedDatasetList struct {
 }
 
 type datasetCandidate struct {
-	root     string
-	manifest raytracer.DatasetManifest
+	root         string
+	manifest     raytracer.DatasetManifest
+	manifestHash string
 }
 
 type datasetSwitchInput struct {
@@ -126,14 +130,21 @@ func (runtime *datasetRuntime) List() installedDatasetList {
 }
 
 func (runtime *datasetRuntime) Switch(id string) (*raytracer.DatasetPack, error) {
+	return runtime.SwitchContext(context.Background(), id)
+}
+
+func (runtime *datasetRuntime) SwitchContext(ctx context.Context, id string) (*raytracer.DatasetPack, error) {
 	id = strings.TrimSpace(id)
 	if id == "" || len(id) > 128 {
 		return nil, errors.New("dataset id is required and must be at most 128 bytes")
 	}
 	runtime.switchMu.Lock()
 	defer runtime.switchMu.Unlock()
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	current := runtime.Current()
-	if current != nil && current.Manifest.ID == id {
+	if current != nil && current.Manifest.ID == id && runtime.desktopRegistry == "" {
 		return current, nil
 	}
 	candidates, _ := runtime.candidates()
@@ -141,12 +152,22 @@ func (runtime *datasetRuntime) Switch(id string) (*raytracer.DatasetPack, error)
 	if !exists {
 		return nil, errors.New("dataset is not installed")
 	}
-	pack, err := raytracer.LoadDatasetPack(candidate.root)
+	loader := runtime.loadPack
+	if loader == nil {
+		loader = raytracer.LoadDatasetPack
+	}
+	pack, err := loader(candidate.root)
 	if err != nil {
 		return nil, fmt.Errorf("installed dataset failed validation: %w", err)
 	}
 	if pack.Manifest.ID != id {
 		return nil, errors.New("installed dataset id changed while loading")
+	}
+	if err := validateDesktopCandidate(candidate, pack); err != nil {
+		return nil, err
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 	runtime.mu.Lock()
 	runtime.pack = pack
@@ -156,6 +177,9 @@ func (runtime *datasetRuntime) Switch(id string) (*raytracer.DatasetPack, error)
 }
 
 func (runtime *datasetRuntime) candidates() (map[string]datasetCandidate, []string) {
+	if runtime.desktopRegistry != "" {
+		return desktopDatasetCandidates(runtime.desktopRegistry)
+	}
 	result := make(map[string]datasetCandidate)
 	duplicateIDs := make(map[string]struct{})
 	warnings := []string{}
@@ -217,7 +241,7 @@ func registerDatasetRoutes(router *gin.Engine, runtime *datasetRuntime, adminAPI
 		if !bindJSON(c, &input, "dataset switch") {
 			return
 		}
-		pack, err := runtime.Switch(input.ID)
+		pack, err := runtime.SwitchContext(c.Request.Context(), input.ID)
 		if err != nil {
 			if err.Error() == "dataset is not installed" {
 				c.JSON(http.StatusNotFound, gin.H{"error": "dataset is not installed"})

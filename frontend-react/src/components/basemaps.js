@@ -8,7 +8,7 @@ export const BASEMAPS = Object.freeze([
     id: "osm-standard",
     label: "OpenStreetMap",
     url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
     maxZoom: 19,
     retina: false,
     className: "atom-basemap atom-basemap-osm",
@@ -42,4 +42,14 @@ export const BASEMAPS = Object.freeze([
 
 export function getBasemap(id) {
   return BASEMAPS.find((basemap) => basemap.id === id) ?? BASEMAPS.find((basemap) => basemap.id === DEFAULT_BASEMAP_ID);
+}
+
+// app:// has neither Stadia's localhost exemption nor approved domain auth.
+// Desktop therefore uses the public, attributed OSM service in both themes;
+// browser deployments keep their existing provider choices and defaults.
+export function basemapsForTarget(kind) {
+  return kind === "desktop" ? BASEMAPS.filter(({ id }) => id === "osm-standard") : BASEMAPS;
+}
+export function initialBasemapChoices(kind) {
+  return kind === "desktop" ? { light: "osm-standard", dark: "osm-standard" } : { light: DEFAULT_BASEMAP_ID, dark: DARK_BASEMAP_ID };
 }

@@ -5,6 +5,7 @@ const fs = require("node:fs/promises");
 const os = require("node:os");
 const path = require("node:path");
 const net = require("node:net");
+const { spawn } = require("node:child_process");
 const { Sidecar } = require("../lib/sidecar.cjs");
 const { createRouter } = require("../lib/router.cjs");
 const resources = path.resolve(__dirname, "../build/resources");
@@ -26,6 +27,19 @@ function occupy(port) {
 }
 
 const request = (target, token = target.token) => fetch(`http://${target.address}/readyz`, { headers: { "x-atom-desktop-token": token, Origin: "app://atom" } });
+
+test("owned canonical validation exits on parent lifetime EOF without publishing a listener or result", { timeout: 10_000 }, async (t) => {
+  const child = spawn(path.join(resources, "atom-api"), ["--validate-dataset-json", path.join(resources, "data-pipeline"), "--parent-lifetime-stdin"], { stdio: ["pipe", "pipe", "pipe"] });
+  t.after(() => { if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL"); });
+  let output = ""; child.stdout.on("data", (chunk) => { output += chunk.toString(); }); child.stderr.on("data", () => {}); child.stdin.on("error", () => {});
+  const closed = new Promise((resolve, reject) => { child.once("close", resolve); child.once("error", reject); });
+  // Ending the host-owned pipe simulates even abrupt parent death while the
+  // real 111 MiB pack is being loaded. It must not finish a background candidate.
+  child.stdin.end();
+  assert.equal(await closed, 1);
+  assert.equal(output, "");
+  assert.throws(() => process.kill(child.pid, 0), { code: "ESRCH" });
+});
 
 test("real API uses ephemeral loopback with 8080 occupied and no dist or endpoint files", async (t) => {
   const busy = await occupy(8080); t.after(() => busy?.close());

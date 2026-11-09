@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add native dataset folder/manifest selection, canonical Go validation, managed copy/reference registration, explicit moved-reference recovery and persistent selection without changing project dataset identities or RF contracts.
 - Save shared reports and review packages through native dialogs and render Print/PDF in a scriptless isolated surface, preserving retained bytes/hashes and shared report lineage.
 - Add dialog-approved native project Open, Save, Save As and Export Copy through the shared portable-project format, with atomic replacement, external-edit conflicts, per-project file status and a save-before-quit choice separate from recovery autosave and Save Version.
 - Resolve private native data/config/cache/log/state/runtime directories, preserve the stable durable desktop profile, add atomic host settings/registry/recent-file storage and qualify real IndexedDB stores across cache eviction, relocation and upgrades.
@@ -18,6 +19,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Use the attributed OSM Standard fallback with an identifying User-Agent and normal HTTP cache on desktop; keep denied/offline feedback and Retry usable without hiding the map key. Unconfigured Stadia access remains available only to existing browser deployments.
 - Wrap report actions and retained-source controls inside narrow drawers so report text and buttons remain visible at the native minimum width.
 - Keep the saved Version associated when report metadata round-trips add only existing inventory defaults; preserve detection of real RF/profile/provenance edits.
 - Await native report output and prevent duplicate exports or automatic regeneration/second dialogs after a destination failure.

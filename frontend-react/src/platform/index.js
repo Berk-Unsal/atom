@@ -2,7 +2,7 @@ import { createRuntimeGuard } from "./runtime.js";
 
 const browserPlatform = Object.freeze({
   kind: "browser",
-  capabilities: Object.freeze({ nativeProjectFiles: false, nativeReports: false }),
+  capabilities: Object.freeze({ nativeProjectFiles: false, nativeReports: false, nativeDatasets: false }),
   getInfo: async () => ({ kind: "browser" }),
   bindOperation: () => {},
   captureOperation: () => () => true,
@@ -20,6 +20,8 @@ export function createPlatform(bridge) {
   const nativeFiles = ["openProjectFile", "acceptProjectOpen", "discardProjectOpen", "saveProjectFile", "setProjectFileState", "getProjectFileState", "onProjectCommand", "finishProjectCommand"]
     .every((name) => typeof bridge[name] === "function");
   const nativeReports = ["saveReportFile", "outputReport"].every((name) => typeof bridge[name] === "function");
+  const nativeDatasets = ["getDatasetRegistry", "chooseDatasetPack", "installDatasetPack", "activateDatasetPack", "cancelDatasetOperation", "onDatasetCommand"]
+    .every((name) => typeof bridge[name] === "function");
   const fileCall = async (method, ...args) => {
     const response = await bridge[method](...args);
     if (response?.ok === true) return response.value;
@@ -29,7 +31,10 @@ export function createPlatform(bridge) {
   };
   return Object.freeze({
     kind: "desktop",
-    capabilities: Object.freeze({ nativeProjectFiles: nativeFiles, nativeReports }),
+    capabilities: Object.freeze({ nativeProjectFiles: nativeFiles, nativeReports, nativeDatasets }),
+    datasets: nativeDatasets ? Object.freeze({ status: () => fileCall("getDatasetRegistry"), choose: (kind) => fileCall("chooseDatasetPack", kind),
+      install: (request) => fileCall("installDatasetPack", request), activate: (id) => fileCall("activateDatasetPack", id),
+      cancel: () => fileCall("cancelDatasetOperation"), onCommand: (callback) => bridge.onDatasetCommand(callback) }) : null,
     reports: nativeReports ? Object.freeze({ save: (request) => fileCall("saveReportFile", request), output: (request) => fileCall("outputReport", request) }) : null,
     projectFiles: nativeFiles ? Object.freeze({
       open: () => fileCall("openProjectFile"),

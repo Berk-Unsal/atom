@@ -98,3 +98,21 @@ Existing Stadia denial tiles stay visible and are still a separate #155 gate.
 
 Sources: [Electron Print/PDF API](https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions),
 [Electron Save dialogs](https://www.electronjs.org/docs/latest/api/dialog#dialogshowsavedialogwindow-options).
+
+## Subsequent native CI result
+
+Head `80722cb` passed both report suites in Quality run `42654106150`, clean
+merge `3372dfe` (parents `82ab0f2`/`80722cb`). macOS artifact `13691388847` and
+Ubuntu artifact `13691413815` retain all seven PDFs, structured results and UI
+captures. Both targets preserve the 7/10/9/10/11 reference pagination and pass
+the exact shared-byte, hostile HTML, normal controls, permission, cancellation,
+Quit and no-RF checks. Strict project-file, storage, lifecycle/focus and security
+suites also pass. The obsolete synchronous popup lifecycle fixture was updated
+to await native Save cancellation; no OS dialog is left pending in that test.
+
+Overall Quality remains 11/13: warm Go replacement measured macOS 6.177 s and
+Ubuntu 6.178 s against the unchanged 5 s limit. Development-loop functional
+cases, JSX/CSS p95 and host timing pass. This report feature evidence does not
+waive the independent performance gate. The Stadia observation above describes
+the frozen report source; subsequent #155 work uses the separately qualified
+native OSM fallback.

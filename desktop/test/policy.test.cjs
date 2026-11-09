@@ -15,7 +15,8 @@ test("the session permits only the owned application and approved tile images", 
   assert.equal(check("app://atom/", "mainFrame"), true);
   assert.equal(check("app://atom/assets/index.js", "script"), true);
   assert.equal(check("app://atom/api/meta"), true);
-  assert.equal(check("https://tiles.stadiamaps.com/tiles/1.png", "image"), true);
+  assert.equal(check("https://tile.openstreetmap.org/12/2421/1552.png", "image"), true);
+  for (const url of ["https://tiles.stadiamaps.com/tiles/1.png", "https://tile.openstreetmap.org/steal.png", "https://tile.openstreetmap.org/1/2/1.png", "https://tile.openstreetmap.org/20/1/1.png", "https://tile.openstreetmap.org/1/1/1.png?secret=x"]) assert.equal(check(url, "image"), false);
   assert.equal(check("data:image/png;base64,AA==", "image"), true);
   for (const [url, type] of [["https://evil.test/", "mainFrame"], ["app://atom/report.html", "mainFrame"], ["app://atom/", "subFrame"],
     ["file:///etc/passwd", "image"], ["http://127.0.0.1:43210/api/meta", "xhr"], ["https://evil.test/image", "image"],

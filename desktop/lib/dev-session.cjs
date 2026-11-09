@@ -11,7 +11,7 @@ const { RebuildQueue } = require("./rebuild-queue.cjs");
 const { DevHost } = require("./dev-host.cjs");
 const { runOwned, stopOwned } = require("./dev-process.cjs");
 
-const HOST_LIBRARIES = new Set(["sidecar.cjs", "router.cjs", "policy.cjs", "routes.cjs", "recovery.cjs", "window-state.cjs", "report-surface.cjs", "dev-control.cjs", "native-paths.cjs", "settings-store.cjs", "project-file-io.cjs", "project-files.cjs", "project-file-bridge.cjs", "project-file-close.cjs", "project-file-shortcuts.cjs", "portable-file-io.cjs", "report-files.cjs", "report-file-bridge.cjs"]);
+const HOST_LIBRARIES = new Set(["sidecar.cjs", "router.cjs", "policy.cjs", "routes.cjs", "recovery.cjs", "window-state.cjs", "report-surface.cjs", "dev-control.cjs", "native-paths.cjs", "settings-store.cjs", "project-file-io.cjs", "project-files.cjs", "project-file-bridge.cjs", "project-file-close.cjs", "project-file-shortcuts.cjs", "portable-file-io.cjs", "report-files.cjs", "report-file-bridge.cjs", "dataset-source.cjs", "dataset-registry.cjs", "dataset-bridge.cjs", "dataset-activation.cjs"]);
 const backendSource = (file) => ["go.mod", "go.sum"].includes(file) || (file.endsWith(".go") && !file.endsWith("_test.go") && !file.startsWith("vendor/"));
 const privateDirectory = async (directory) => {
   await fsp.mkdir(directory, { recursive: true, mode: 0o700 });

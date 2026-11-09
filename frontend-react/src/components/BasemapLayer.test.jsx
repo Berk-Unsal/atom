@@ -20,6 +20,16 @@ it("makes provider errors observable and resets failure when the provider change
   expect(screen.getByRole("button")).toHaveClass("atom-basemap-osm");
 });
 
+it("keeps native offline overlays available and offers an explicit same-provider retry", () => {
+  render(<BasemapLayer basemap={getBasemap("osm-standard")} native />);
+  fireEvent.click(screen.getByRole("button", { name: "Tile error" }));
+  expect(screen.getByRole("status")).toHaveTextContent("RF layers remain available. Check your connection");
+  expect(screen.getByRole("status")).not.toHaveTextContent("Alidade");
+  fireEvent.click(screen.getByRole("button", { name: "Retry base map" }));
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Tile error" })).toHaveAttribute("data-opacity", "1");
+});
+
 
 it("keeps dark provider failure observable and resets it on fallback", () => {
   const { rerender } = render(<BasemapLayer basemap={getBasemap("alidade-smooth-dark")} />);

@@ -112,10 +112,11 @@ try {
   // Relocate the actual unpacked application with no change to the profile.
   // Ubuntu's exact executable policy stays stable by moving only Resources;
   // macOS moves the .app itself (installer/signing qualification is separate).
+  await fs.chmod(bundle, 0o755);
   if (isMac) {
     const moved = path.join(packagedRoot, "Relocated — çığ A.T.O.M.app"); await fs.rename(bundle, moved); bundle = moved;
+    await fs.chmod(bundle, 0o555);
   } else {
-    await fs.chmod(bundle, 0o755);
     // Linux also needs write permission on the directory being moved between
     // parents to update its '..' entry. This is a stopped installer operation.
     await fs.chmod(resourcesIn(bundle), 0o755);

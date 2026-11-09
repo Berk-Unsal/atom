@@ -122,7 +122,6 @@ try {
     }
     const sorted = [...samples].sort((a, b) => a - b);
     result.hmr[kind] = { samples_ms: samples, p95_ms: sorted[Math.ceil(sorted.length * 0.95) - 1], max_ms: sorted.at(-1) };
-    assert.ok(result.hmr[kind].p95_ms <= 1000, `${kind} warmed HMR exceeded 1s p95`);
   }
   await page.screenshot({ path: path.join(evidence, "dev-loop-hmr.png") });
   await fs.writeFile(jsxFile, originalJSX); await fs.writeFile(cssFile, originalCSS);
@@ -156,7 +155,6 @@ try {
   const datasetAt = statusAt((runtime) => runtime.generation === replaced.runtime.generation && runtime.readiness.dataset);
   result.warm_go_phases_ms = { compile: result.warm_go_compile_ms, drain: startingAt - restartingAt,
     start_to_listener: listenerAt - startingAt, dataset_load: datasetAt - listenerAt, dataset_to_ready: replaced.received_at_ms - datasetAt };
-  assert.ok(result.warm_go_edit_to_ready_ms <= 5000, "Warm Go edit exceeded 5s guidance");
   assert.notEqual(replaced.runtime.generation, originalRuntime.generation);
   assert.equal(alive(originalPID), false); assert.equal(await metaStatus(), 200);
   assert.equal(await page.evaluate(async (generation) => (await fetch("/api/meta", { headers: { "x-atom-client": "1", "x-atom-runtime-generation": generation } })).status, originalRuntime.generation), 409);
@@ -175,7 +173,6 @@ try {
   await browser.close(); browser = await chromium.connectOverCDP(nextHost.debugURL); page = browser.contexts()[0].pages()[0];
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   result.warm_shell_edit_to_ready_ms = performance.now() - shellStarted;
-  assert.ok(result.warm_shell_edit_to_ready_ms <= 10_000, "Warm shell edit exceeded 10s guidance");
   assert.notEqual(host.pid, nextHost.pid); assert.equal(alive(host.pid), false);
   await page.getByRole("button", { name: "Project menu, Dev loop retained workspace", exact: true }).waitFor();
   assert.equal(command.events.filter((event) => event.event === "go-build-start").length, 3);
@@ -221,9 +218,18 @@ try {
   assert.equal(command.events.some((event) => event.event === "go-build-start"), false);
   result.occupied_vite_port_failed_without_takeover = true;
   result.console_hmr_messages = consoleMessages;
-  result.result = "PASS";
+  // Complete functional/cleanup evidence even on a slow runner. The original
+  // timing limits still fail this command; a timing miss is never a PASS.
+  result.functional_result = "PASS";
+  result.timing_budgets = Object.fromEntries([
+    ["jsx_p95", result.hmr.jsx.p95_ms, 1000], ["css_p95", result.hmr.css.p95_ms, 1000],
+    ["warm_go", result.warm_go_edit_to_ready_ms, 5000], ["warm_host", result.warm_shell_edit_to_ready_ms, 10_000],
+  ].map(([name, observed_ms, budget_ms]) => [name, { observed_ms, budget_ms, passed: observed_ms <= budget_ms }]));
+  const missed = Object.entries(result.timing_budgets).filter(([, budget]) => !budget.passed).map(([name]) => name);
+  result.result = missed.length ? "TIMING_BUDGET_MISSED" : "PASS";
   await fs.writeFile(path.join(evidence, "dev-loop.json"), JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result, null, 2));
+  assert.equal(missed.length, 0, `Native timing guidance exceeded: ${missed.join(", ")}`);
 } catch (error) {
   await page?.screenshot({ path: path.join(evidence, "failed-dev-loop.png") }).catch(() => {});
   const visibleStyle = await page?.evaluate(() => {

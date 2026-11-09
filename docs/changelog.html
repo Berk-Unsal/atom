@@ -155,6 +155,10 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li><p>Add bounded private desktop host/backend lifecycle logs, safe
+temporary logging fallback, Help → Open Logs, and explicit
+startup/renderer recovery with redacted failure codes and no calculation
+replay.</p></li>
 <li><p>Resolve private native data/config/cache/log/state/runtime
 directories, preserve the stable durable desktop profile, add atomic
 host settings/registry/recent-file storage and qualify real IndexedDB
@@ -183,6 +187,8 @@ cancellation.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Keep native recovery running when a crashed/disconnected renderer
+cannot receive a runtime notification.</li>
 <li>Wait for completed editor writes in desktop Vite development and
 omit development-only DWARF linking work and redundant VCS probes to
 keep warm replacements responsive; retain explicit canonical build

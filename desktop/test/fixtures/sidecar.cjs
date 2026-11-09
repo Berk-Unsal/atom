@@ -20,6 +20,7 @@ input.on("data", (chunk) => {
     if (scenario === "invalid-json") { output.write("bad\n"); continue; }
     if (scenario === "oversized") { output.write("x".repeat(20_000)); continue; }
     if (scenario === "ready-first") { send("ready"); continue; }
+    if (scenario === "listen-failed") { send("failed", { error: "listen failed" }); continue; }
     send("listening", { address: scenario === "foreign-address" ? "0.0.0.0:8080" : "127.0.0.1:54321",
       pid: scenario === "foreign-pid" ? process.pid + 1 : process.pid,
       application_version: scenario === "wrong-version" ? "bad" : "test", build_commit: scenario === "wrong-commit" ? "bad" : "test" });

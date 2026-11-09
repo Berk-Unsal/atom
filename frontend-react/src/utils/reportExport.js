@@ -13,7 +13,7 @@ import { resolveReportSource } from "../domain/reportSource.js";
 import { buildReportPresentationModel } from "./reportModel.js";
 import { renderReportMarkdown } from "./reportMarkdown.js";
 import { renderReportHtml } from "./reportHtml.js";
-import { printReportHtml } from "./reportArtifactDownload.js";
+import { downloadReportBytes, printReportHtml } from "./reportArtifactDownload.js";
 
 export { buildComparisonBarChartSvg, buildComparisonSlopeChartSvg, getComparisonMetrics } from "./comparisonCharts.js";
 
@@ -227,11 +227,12 @@ export function buildHistoricalPlanningReport({
 export function downloadMarkdownReport(report) {
   const markdown = renderMarkdownReport(report);
   const view = getReportViewModel(report);
-  downloadBlob(reportFilename({ project: view.identity.projectName, scenario: view.identity.scenarioName, version: view.identity.version, date: report.generatedAt, mode: view.identity.mode, extension: "md" }), markdown, "text/markdown;charset=utf-8");
+  return downloadReportBytes({ filename: reportFilename({ project: view.identity.projectName, scenario: view.identity.scenarioName, version: view.identity.version, date: report.generatedAt, mode: view.identity.mode, extension: "md" }), media_type: "text/markdown;charset=utf-8" }, new TextEncoder().encode(markdown));
 }
 
-export function openPdfReport(report) {
-  return printReportHtml(renderPrintableReport(report));
+export function openPdfReport(report, options = {}) {
+  const view = getReportViewModel(report);
+  return printReportHtml(renderPrintableReport(report), { filename: reportFilename({ project: view.identity.projectName, scenario: view.identity.scenarioName, version: view.identity.version, date: report.generatedAt, mode: view.identity.mode, extension: "pdf" }), ...options });
 }
 
 export function renderMarkdownReport(report, options = {}) {
@@ -1130,16 +1131,4 @@ function formatDateSlug(date) {
 function slugify(value) {
   const slug = String(value ?? "planning").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   return slug || "planning";
-}
-
-function downloadBlob(filename, content, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
 }

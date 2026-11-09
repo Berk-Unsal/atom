@@ -1,12 +1,12 @@
 "use strict";
 const crypto = require("node:crypto");
 
-function createProjectFileClose({ files, getWindow, showMessageBox, sendCommand, timeout = 120_000 }) {
+function createProjectFileClose({ files, getWindow, showMessageBox, sendCommand, timeout = 120_000, isBusy = () => files.busy }) {
   let decision; let pending;
   async function choose() {
     const owner = getWindow();
     if (!owner || owner.isDestroyed()) return false;
-    if (files.busy) { sendCommand({ command: "busy" }); return false; }
+    if (isBusy()) { sendCommand({ command: "busy" }); return false; }
     const dirty = files.dirtyFiles();
     if (!dirty.length) return true;
     const answer = await showMessageBox(owner, { type: "warning", title: "Project files have unsaved changes",
@@ -23,7 +23,7 @@ function createProjectFileClose({ files, getWindow, showMessageBox, sendCommand,
       try { sendCommand({ command: "saveAll", id, projectIds: dirty.map((project) => project.id) }); }
       catch { pending?.resolve(false); }
     });
-    return success && getWindow() === owner && !owner.isDestroyed() && !files.busy && files.dirtyFiles().length === 0;
+    return success && getWindow() === owner && !owner.isDestroyed() && !isBusy() && files.dirtyFiles().length === 0;
   }
   return {
     decide() { if (!decision) decision = choose().finally(() => { decision = null; }); return decision; },

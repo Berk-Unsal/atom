@@ -109,6 +109,17 @@ describe("projectStore", () => {
     expect(rfInputChange.activeScenarioId).toBeNull();
   });
 
+  it("keeps the saved Version after a report round-trip adds only inventory defaults", () => {
+    const project = createProjectWorkspace().projects[0];
+    const raw = { id: "LTE-26380", cellId: 26380, coordinates: [32.8279, 39.9279], inventorySource: "dataset", editable: true };
+    const scenario = createScenario("Saved plan", { plan: { inventory: [{ ...raw, rfProfile: {}, sourceKey: raw.id }] } });
+    project.scenarios.push(scenario); project.activeScenarioId = scenario.id;
+    expect(updateProjectDraft(project, { plan: { inventory: [raw] } }).activeScenarioId).toBe(scenario.id);
+    expect(updateProjectDraft(project, { plan: { inventory: [{ ...raw, rfProfile: { txPowerDbm: 31 } }] } }).activeScenarioId).toBeNull();
+    expect(updateProjectDraft(project, { plan: { inventory: [{ ...raw, sourceKey: "different-provenance" }] } }).activeScenarioId).toBeNull();
+    expect(raw).not.toHaveProperty("rfProfile");
+  });
+
   it("rejects unsupported future schemas", () => {
     expect(() => normalizeWorkspace({ schemaVersion: PROJECT_SCHEMA_VERSION + 1, projects: [] })).toThrow(/schema/i);
   });

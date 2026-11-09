@@ -6,12 +6,13 @@ if [ "$#" -gt 1 ]; then
   exit 2
 fi
 case "${1:-unit}" in
-  --help) printf '%s\n' 'Usage: scripts/desktop-test.sh [unit|--runtime|--native|--dev-loop|--storage|--project-files]'; exit 0 ;;
+  --help) printf '%s\n' 'Usage: scripts/desktop-test.sh [unit|--runtime|--native|--dev-loop|--storage|--project-files|--reports]'; exit 0 ;;
   unit) exec npm test --prefix "$ATOM_REPO_ROOT/desktop" ;;
   --native) exec npm run test:native --prefix "$ATOM_REPO_ROOT/desktop" ;;
   --runtime) exec npm run test:runtime --prefix "$ATOM_REPO_ROOT/desktop" ;;
   --dev-loop) exec npm run test:dev-loop --prefix "$ATOM_REPO_ROOT/desktop" ;;
   --storage) exec npm run test:storage --prefix "$ATOM_REPO_ROOT/desktop" ;;
   --project-files) exec npm run test:project-files --prefix "$ATOM_REPO_ROOT/desktop" ;;
-  *) printf '%s\n' 'Usage: scripts/desktop-test.sh [unit|--runtime|--native|--dev-loop|--storage|--project-files]' >&2; exit 2 ;;
+  --reports) exec npm run test:reports --prefix "$ATOM_REPO_ROOT/desktop" ;;
+  *) printf '%s\n' 'Usage: scripts/desktop-test.sh [unit|--runtime|--native|--dev-loop|--storage|--project-files|--reports]' >&2; exit 2 ;;
 esac

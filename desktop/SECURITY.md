@@ -103,3 +103,22 @@ The implementation follows Electron's
 [security checklist](https://www.electronjs.org/docs/latest/tutorial/security),
 [native navigation events](https://www.electronjs.org/docs/latest/api/web-contents)
 and [session request API](https://www.electronjs.org/docs/latest/api/web-request).
+
+
+## Report exports and Print/PDF
+
+Two exact-main-document IPC operations accept bounded typed byte arrays, known
+formats/modes, a filename hint and SHA-256. Paths never come from the renderer.
+The host verifies the original bytes before native dialogs. Retained output is
+not regenerated after a failure. The common binary writer stages private
+exclusive siblings, checks destination conflicts twice and atomically commits;
+the project wrapper retains its independent 16 MiB UTF-8 contract. Native report
+exports have a 64 MiB whole-file limit.
+
+Print/PDF passes only validated HTML into the existing scriptless, sandboxed,
+nonpersistent report surface with no preload/opener/network/native bridge. The
+host owns the Print/PDF call and tears the surface down afterward. PDF has a
+bounded rendering deadline; visible native Print remains explicitly cancellable.
+Untrusted filename hints are stripped of path/control/bidirectional separators
+and constrained to the requested format. No report content receives arbitrary
+file paths, general IPC, API credentials or main-window navigation authority.

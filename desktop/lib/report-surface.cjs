@@ -6,8 +6,8 @@ const REPORT_SCHEME = "atom-report";
 const REPORT_CSP = "sandbox; default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; connect-src 'none'; form-action 'none'";
 const MAX_REPORT_BYTES = 64 * 1024 * 1024;
 
-/** Main-process-only renderer for the shared HTML. No bridge or file paths.
- * #156 will attach user-approved print/PDF actions to this isolated surface. */
+/** Main-process-only renderer for shared HTML. ReportFiles attaches the
+ * user-approved Print/PDF actions; this surface has no bridge or file paths. */
 async function createReportSurface({ BrowserWindow, session, parent, html, timeout = 30_000 }) {
   if (typeof html !== "string" || Buffer.byteLength(html) > MAX_REPORT_BYTES) throw new Error("Report HTML exceeds the supported size");
   if (!Number.isFinite(timeout) || timeout <= 0 || timeout > 30_000) throw new Error("Invalid report load deadline");

@@ -22,6 +22,8 @@ if (process.isMainFrame && location.protocol === "app:" && location.host === "at
   acceptProjectOpen: (request) => ipcRenderer.invoke("atom:project-accept", request),
   discardProjectOpen: (ticket) => ipcRenderer.invoke("atom:project-discard", ticket),
   saveProjectFile: (request) => ipcRenderer.invoke("atom:project-save", request),
+  saveReportFile: (request) => ipcRenderer.invoke("atom:report-save", request),
+  outputReport: (request) => ipcRenderer.invoke("atom:report-output", request),
   setProjectFileState: (projects) => ipcRenderer.invoke("atom:project-state", projects),
   getProjectFileState: () => ipcRenderer.invoke("atom:project-status"),
   finishProjectCommand: (request) => ipcRenderer.invoke("atom:project-command-result", request),

@@ -29,6 +29,7 @@ const exited = (child, timeout = 10_000) => new Promise((resolve, reject) => {
   child.once("exit", (code) => { clearTimeout(timer); resolve(code); });
 });
 let application; let nativeProcess; let childPID; let vite;
+let phase = "startup";
 try {
   vite = fork(path.join(root, "test/fixtures/vite-server.mjs"), [],
     { cwd: path.join(root, "../frontend-react"), env: { ...process.env, ATOM_DESKTOP_DEV: "1" }, stdio: ["ignore", "pipe", "pipe", "ipc"] });
@@ -55,6 +56,11 @@ try {
   await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
   const first = await page.evaluate(() => window.atomDesktop.getRuntime());
   assert.deepEqual(first.readiness, { listener: true, dataset: true, ui: true });
+  phase = "retained report cancellation";
+  await application.evaluate(({ dialog }) => {
+    globalThis.__reportSaveDialogs = 0;
+    dialog.showSaveDialog = async () => { globalThis.__reportSaveDialogs++; return { canceled: true }; };
+  });
   const storedReport = await page.evaluate(async () => {
     const { LocalArtifactStore } = await import("/src/repository/artifactStore.js");
     const { createGeneratedReportArtifact } = await import("/src/domain/report.js");
@@ -63,16 +69,19 @@ try {
     const html = '<!doctype html><script>opener.atomDesktop.openExternal("https://evil.invalid/");opener.__reportExecuted=true</script><iframe src="app://atom/"></iframe>';
     const metadata = await store.putArtifact(createGeneratedReportArtifact({ artifact_id: "native-hostile-html", report_id: "native-security-fixture", format: "html" }), html);
     const retained = await store.getArtifact(metadata.artifact_id);
-    let error;
-    try { openStoredHtmlReport(retained.metadata, retained.bytes); } catch (failure) { error = failure.message; }
-    return { error, sameBytes: new TextDecoder().decode(retained.bytes) === html, hash: retained.metadata.content_hash, executed: Boolean(globalThis.__reportExecuted) };
+    const opened = await openStoredHtmlReport(retained.metadata, retained.bytes);
+    const after = await store.getArtifact(metadata.artifact_id);
+    return { artifact: opened.artifact_id, sameBytes: new TextDecoder().decode(after.bytes) === html,
+      hash: after.metadata.content_hash, executed: Boolean(globalThis.__reportExecuted) };
   });
-  assert.match(storedReport.error, /report window was blocked/);
+  assert.equal(storedReport.artifact, "native-hostile-html");
+  assert.equal(await application.evaluate(() => globalThis.__reportSaveDialogs), 1);
   assert.equal(storedReport.sameBytes, true); assert.equal(storedReport.executed, false);
   assert.match(storedReport.hash, /^[a-f0-9]{64}$/);
   assert.equal(await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().length), 1);
   childPID = apiPID(nativeProcess.pid); assert.ok(childPID);
 
+  phase = "second launch focus";
   await application.evaluate(({ app }) => { globalThis.__secondLaunches = 0; app.on("second-instance", () => { globalThis.__secondLaunches++; }); });
   await application.evaluate(({ app, BrowserWindow }) => {
     BrowserWindow.getAllWindows()[0].minimize();
@@ -90,6 +99,7 @@ try {
   assert.equal(apiPID(nativeProcess.pid), childPID);
   assert.equal((await page.evaluate(() => window.atomDesktop.getRuntime())).generation, first.generation);
 
+  phase = "explicit service recovery";
   process.kill(childPID, "SIGKILL");
   await waitForRuntime(page, (runtime) => runtime.state === "failed", 10_000);
   assert.equal(await page.evaluate(async () => { try { await (await import("/src/utils/apiClient.js")).getJSON("/api/meta"); return "unexpected success"; } catch (error) { return error.code; } }), "runtime_changed");
@@ -103,6 +113,7 @@ try {
   await fs.mkdir(path.join(root, "test-results"), { recursive: true });
   await page.screenshot({ path: path.join(root, "test-results/vite-runtime.png") });
   const killedAt = Date.now();
+  phase = "abrupt host death";
   nativeProcess.kill("SIGKILL"); await exited(nativeProcess);
   while (alive(childPID) && Date.now() - killedAt < 30_000) await sleep(50);
   assert.equal(alive(childPID), false, "API must exit on abrupt host death");
@@ -113,6 +124,7 @@ try {
   // missing sidecar: the real UI must remain available with a bounded failure.
   await fs.unlink(path.join(resources, "atom-api"));
   await fs.symlink(path.join(workspace, "missing-atom-api"), path.join(resources, "atom-api"));
+  phase = "missing sidecar recovery";
   application = await electron.launch({ executablePath: require("electron"), args: [root], env, chromiumSandbox: true, timeout: 60_000 });
   nativeProcess = application.process();
   const failedPage = await application.firstWindow();
@@ -126,11 +138,22 @@ try {
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close());
   await exited(nativeProcess, 35_000);
   const evidence = { result: "PASS", cleanViteWithoutDist: true, repeatedLaunchFocusedExistingHost: true, crashRequiredExplicitRecovery: true,
-    generationRotated: true, storedHtmlHadNoWindowOrNativeAuthority: true, sameProfileRelaunchAfterHostDeath: true, missingSidecarKeptUsableWindow: true, abruptHostDeath: { childExited: true, listenerClosed: true, milliseconds: deathMs } };
+    generationRotated: true, canceledStoredHtmlPreservedBytesWithoutRendering: true, sameProfileRelaunchAfterHostDeath: true, missingSidecarKeptUsableWindow: true, abruptHostDeath: { childExited: true, listenerClosed: true, milliseconds: deathMs } };
   await fs.writeFile(path.join(root, "test-results/lifecycle.json"), JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));
+} catch (error) {
+  await fs.mkdir(path.join(root, "test-results"), { recursive: true });
+  const failure = { phase, message: error.message };
+  await fs.writeFile(path.join(root, "test-results/failed-lifecycle.json"), JSON.stringify(failure, null, 2));
+  console.error(JSON.stringify(failure));
+  throw error;
 } finally {
-  if (application && nativeProcess?.exitCode === null && nativeProcess?.signalCode === null) await application.close();
+  if (application && nativeProcess?.exitCode === null && nativeProcess?.signalCode === null) {
+    // Failures must not wait indefinitely for an OS dialog or dirty-file Quit
+    // confirmation. Normal close/reaping is asserted above before this cleanup.
+    await application.evaluate(({ app }) => app.exit()).catch(() => {});
+    await application.close();
+  }
   if (childPID && alive(childPID)) { process.kill(childPID, "SIGKILL"); }
   if (vite && vite.exitCode === null && vite.signalCode === null) { vite.kill("SIGTERM"); await exited(vite); }
   await fs.rm(workspace, { recursive: true, force: true });

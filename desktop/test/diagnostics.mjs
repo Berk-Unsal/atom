@@ -61,14 +61,18 @@ try {
   await until(async () => (await rows(directory, "backend")).some((row) => row.event === "backend-exit"), "Child exit did not produce its structured diagnostic");
   await application.evaluate(({ dialog, Menu }) => { dialog.showMessageBox = async () => ({ response: 0 }); Menu.getApplicationMenu().getMenuItemById("atom-restart-service").click(); });
   const recovered = await waitForRuntime(page, (runtime) => runtime.state === "ready" && runtime.generation !== first.generation);
-  await application.evaluate(({ dialog, BrowserWindow }) => {
+  const rendererPID = await application.evaluate(({ dialog, BrowserWindow }) => {
     globalThis.__rendererRecovery = []; dialog.showMessageBox = async (...args) => { globalThis.__rendererRecovery.push(args.at(-1)); return { response: 0 }; };
     globalThis.__rendererEvents = [];
     const contents = BrowserWindow.getAllWindows()[0].webContents;
     contents.on("render-process-gone", (_event, details) => globalThis.__rendererEvents.push({ event: "gone", reason: details.reason, exitCode: details.exitCode }));
     contents.on("did-finish-load", () => globalThis.__rendererEvents.push({ event: "loaded" }));
-    contents.forcefullyCrashRenderer();
+    return contents.getOSProcessId();
   });
+  assert.ok(Number.isSafeInteger(rendererPID) && rendererPID > 0 && rendererPID !== application.process().pid);
+  // The API crash helper emitted no process-gone event under the Ubuntu CI
+  // debugger. Terminate only the renderer identified by our owned webContents.
+  process.kill(rendererPID, "SIGKILL"); result.renderer_fault_injection = "owned-renderer-SIGKILL";
   await until(async () => (await rows(directory, "host")).some((row) => row.event === "renderer-reload"), "Renderer crash did not offer explicit recovery");
   // Playwright marks the deliberately crashed Page terminally crashed. Check
   // the recovered real webContents rather than reusing its stale CDP Page.

@@ -14,6 +14,8 @@ const { REPORT_SCHEME } = require("./lib/report-surface.cjs");
 const { createDevControl } = require("./lib/dev-control.cjs");
 const { nativePaths, privateDirectory, prepareNativePaths } = require("./lib/native-paths.cjs");
 const { SettingsStore } = require("./lib/settings-store.cjs");
+const { ProjectFiles } = require("./lib/project-files.cjs");
+const { registerProjectFiles } = require("./lib/project-file-bridge.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -35,6 +37,7 @@ try {
 let window;
 let backend;
 let devControl;
+let projectFiles;
 let quitting = false;
 let stopped = false;
 const openExternal = async (url) => { try { await shell.openExternal(url); } catch { /* Browser launch failure never opens content in the app. */ } };
@@ -92,10 +95,24 @@ async function launch() {
     if (!safe) throw new Error("Only HTTPS links are supported");
     await openExternal(safe);
   });
+  projectFiles = new ProjectFiles({ settings,
+    selectOpen: () => dialog.showOpenDialog(window, { title: "Open A.T.O.M project", properties: ["openFile", ...(process.platform === "darwin" ? ["noResolveAliases"] : [])],
+      filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }] }),
+    selectSave: ({ mode, defaultPath }) => dialog.showSaveDialog(window, { title: mode === "export" ? "Export project copy" : "Save A.T.O.M project", defaultPath,
+      filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }],
+      properties: process.platform === "linux" ? ["showOverwriteConfirmation"] : ["createDirectory"], showsTagField: false }),
+  });
+  registerProjectFiles({ ipcMain, getWindow: () => window, files: projectFiles });
+  const projectCommand = (command) => { if (window && !window.isDestroyed() && !quitting) window.webContents.send("atom:project-command", { command }); };
   const recover = createRecoveryAction({ backend, getWindow: () => window, showMessageBox: (...args) => dialog.showMessageBox(...args) });
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     ...(process.platform === "darwin" ? [{ label: "A.T.O.M", submenu: [{ label: "About A.T.O.M", click: () => app.showAboutPanel() }, { type: "separator" }, { role: "hide" }, { role: "hideOthers" }, { role: "unhide" }, { type: "separator" }, { role: "quit" }] }] : []),
-    { label: "File", submenu: [{ role: "quit" }] },
+    { label: "File", submenu: [
+      { id: "atom-project-open", label: "Open Project…", accelerator: "CmdOrCtrl+O", click: () => projectCommand("open") },
+      { id: "atom-project-save", label: "Save Project", accelerator: "CmdOrCtrl+S", click: () => projectCommand("save") },
+      { id: "atom-project-save-as", label: "Save Project As…", accelerator: "CmdOrCtrl+Shift+S", click: () => projectCommand("saveAs") },
+      { id: "atom-project-export", label: "Export Project Copy…", accelerator: "CmdOrCtrl+Shift+E", click: () => projectCommand("export") },
+      { type: "separator" }, { role: "quit" }] },
     { role: "editMenu" },
     { label: "View", submenu: [{ role: "resetZoom" }, { role: "zoomIn" }, { role: "zoomOut" }, { type: "separator" }, { role: "togglefullscreen" }] },
     { role: "windowMenu" },

@@ -25,7 +25,9 @@ export function createPlatform(bridge) {
     beginRequest: (signal, operationSignal) => runtime.begin(signal, operationSignal),
     bindOperation: (signal) => runtime.bindOperation(signal),
     captureOperation: () => runtime.captureOperation(),
+    dispose: () => runtime.dispose(),
   });
 }
 
 export const platform = createPlatform(globalThis.atomDesktop);
+if (import.meta.hot) import.meta.hot.dispose(() => platform.dispose?.());

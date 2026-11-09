@@ -155,6 +155,10 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li>Add a dist-free desktop development command with Vite HMR,
+build-before-swap Go watching, syntax-checked shell relaunch, private
+supervisor control and additive native edit-loop/cleanup
+qualification.</li>
 <li>Restrict desktop API routing to explicit methods, paths and
 authenticated loopback targets; isolate report HTML in a temporary
 session without scripts, network or native authority, and add
@@ -174,6 +178,13 @@ paths, file identity and byte checks, and Save/Open cancellation.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li>Wait for completed editor writes in desktop Vite development and
+omit development-only DWARF linking work to keep warm replacements
+responsive.</li>
+<li>Activate the existing macOS application on an explicit second
+launch, including restoring a hidden or minimized window.</li>
+<li>Dispose native runtime subscriptions when their frontend module is
+hot-replaced, aborting old work without retrying RF actions.</li>
 <li>Keep RF workflow cleanup bound to its original desktop runtime, so a
 retired capability never reaches a replacement service.</li>
 <li>Preserve the newer workspace/result association when an older

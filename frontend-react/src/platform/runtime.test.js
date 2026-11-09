@@ -12,6 +12,15 @@ function runtime() {
 }
 
 describe("desktop runtime leases", () => {
+  it("disposes HMR listeners and cancels old work without replaying it", async () => {
+    const unsubscribe = vi.fn(); const bridge = { getRuntime: vi.fn(async () => ready()), onRuntimeChange: vi.fn(() => unsubscribe) };
+    const guard = createRuntimeGuard(bridge); const lease = await guard.begin();
+    const current = guard.captureOperation(); await vi.waitFor(() => expect(current()).toBe(true));
+    guard.dispose(); guard.dispose();
+    expect(unsubscribe).toHaveBeenCalledTimes(1); expect(lease.signal.aborted).toBe(true); expect(current()).toBe(false);
+    await expect(guard.begin()).rejects.toMatchObject({ code: "runtime_changed" });
+    expect(bridge.onRuntimeChange).toHaveBeenCalledTimes(1);
+  });
   it("invalidates every in-flight request on crash/restart without retrying it", async () => {
     const host = runtime();
     const first = await host.guard.begin();

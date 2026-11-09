@@ -8,10 +8,12 @@
   },
   "scripts": {
     "start": "node scripts/start.cjs",
+    "dev": "node scripts/dev.cjs",
     "build": "node scripts/build.cjs",
     "test": "node --test test/*.test.cjs",
     "test:runtime": "node --test test/runtime.integration.cjs",
-    "test:native": "node test/smoke.mjs && node test/lifecycle.mjs && node test/security.mjs"
+    "test:native": "node test/smoke.mjs && node test/lifecycle.mjs && node test/security.mjs",
+    "test:dev-loop": "node test/dev-loop.mjs"
   },
   "devDependencies": {
     "electron": "44.10.2",

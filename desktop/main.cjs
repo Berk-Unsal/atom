@@ -9,6 +9,7 @@ const { APP_ORIGIN, assertMainFrame, allowRendererRequest, isTrustedDocument, ex
 const { readGeometry, writeGeometry } = require("./lib/window-state.cjs");
 const { createRecoveryAction } = require("./lib/recovery.cjs");
 const { REPORT_SCHEME } = require("./lib/report-surface.cjs");
+const { createDevControl } = require("./lib/dev-control.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -22,6 +23,7 @@ if (!app.isPackaged) app.setPath("userData", process.env.ATOM_DESKTOP_TEST_PROFI
 
 let window;
 let backend;
+let devControl;
 let quitting = false;
 let stopped = false;
 const openExternal = async (url) => { try { await shell.openExternal(url); } catch { /* Browser launch failure never opens content in the app. */ } };
@@ -42,6 +44,8 @@ async function launch() {
   });
   backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: path.join(resources, "data-pipeline"),
     distDir: path.join(resources, "dist"), version: info.version, commit: info.commit });
+  devControl = createDevControl({ isPackaged: app.isPackaged, enabled: process.env.ATOM_DESKTOP_DEV_CONTROL, devServer,
+    restart: () => backend.restart(), snapshot: () => backend.snapshot(), quit: () => app.quit() });
   protocol.handle("app", createRouter({ distDir: path.join(resources, "dist"), sidecar: backend, devServer }));
   const icon = nativeImage.createFromPath(path.join(resources, "atom.png"));
   if (app.dock) app.dock.setIcon(icon);
@@ -56,6 +60,7 @@ async function launch() {
   window.on("closed", () => { backend.setUIReady(false); window = null; app.quit(); });
   window.webContents.on("render-process-gone", () => backend.setUIReady(false));
   backend.on("status", (status) => {
+    devControl?.publish(status);
     if (window && !window.isDestroyed()) window.webContents.send("atom:runtime-status", status);
   });
   ipcMain.handle("atom:runtime", (event) => { assertMainFrame(event, window); return backend.snapshot(); });
@@ -94,6 +99,9 @@ if (!app.requestSingleInstanceLock()) {
   app.on("second-instance", () => {
     if (!window) return;
     if (window.isMinimized()) window.restore();
+    // A second launch is an explicit request to activate the existing app.
+    // Showing a window alone does not activate a hidden macOS application.
+    if (process.platform === "darwin") { app.show(); app.focus({ steal: true }); }
     window.show(); window.focus();
   });
   app.on("web-contents-created", (_event, contents) => lockNavigation(contents, (url) => {

@@ -1,6 +1,6 @@
 # Local desktop host
 
-This is the production host foundation for #149. It launches the existing
+This is the local Electron host developed through #149–#152. It launches the existing
 `frontend-react` build and `backend-go` API. The D01 qualification selected
 Electron 44.7.0; this host pins 44.10.2 to include the
 [compromised-certificate mitigation](https://github.com/advisories/GHSA-jr5w-w6x2-84p9).
@@ -59,20 +59,63 @@ Run-history database write remains historical without replacing the association
 for a newer action, workspace or runtime. Domain serializers and RF outputs are
 unchanged.
 
-For a Vite-only UI, first stage the local Go/resources using the build command
-above, then run the existing Vite source in one terminal and the host in another:
+For development, install the same dependencies, then use one command:
 
 ```sh
-ATOM_DESKTOP_DEV=1 npm run dev --prefix frontend-react -- --host 127.0.0.1 --port 5173 --strictPort
-ATOM_DESKTOP_DEV_SERVER=http://127.0.0.1:5173 npm start --prefix desktop
+scripts/desktop-dev.sh
+# Optional isolated profile (private user-owned directory):
+scripts/desktop-dev.sh --profile /absolute/path/to/atom-dev-profile
 ```
 
-The development router accepts only that fixed loopback origin, serves the same
-`app://atom` application and keeps API traffic on the private Go route. It works
-without a staged `dist`; packaged builds ignore the development/test resource
-overrides. The dev CSP's inline React preamble and loopback HMR socket are absent
-from the production CSP. Automatic Go rebuilds and measured edit-loop budgets
-remain #152 work.
+This starts the existing React/Vite source at `127.0.0.1:5173`, stages only the
+manifest-declared pack and Go resources in a private temporary directory, and
+opens the sandboxed app at `app://atom`. No frontend `dist`, installer, signing
+credential or second React application is required. An occupied Vite port fails
+before compiling; the command never takes over another server. Direct Vite HTTP
+API/status requests return 403; the app's host injects credentials on the private
+Go route. Ordinary browser Vite proxies remain unchanged outside desktop mode.
+
+The first Go/toolchain build and dataset validation can be cold. Once the command
+prints `ready`, JSX/CSS changes use Vite HMR without Go or packaging work. A Go
+source/module edit, including `backend-go/raytracer`, compiles a candidate before
+atomically replacing the runtime executable and requesting a generation change.
+After a successful initial launch, failed compilation keeps the last good service. Superseded candidates are
+removed rather than installed. A main/preload/host-library edit is syntax-checked
+before the host drains and relaunches. Failed shell syntax keeps the last good
+host too. In-flight calculations are cancelled safely and never replayed.
+Changes during initial Go startup are remembered and applied before final ready.
+
+Ctrl-C closes watchers, aborts owned compiler groups, drains the owned app/Go
+child, closes Vite and removes temporary resources. The dev profile is retained
+for the next session. It is separate from release, ordinary local-build and test
+profiles: `~/Library/Application Support/A.T.O.M-dev` on macOS, or
+`${XDG_DATA_HOME:-~/.local/share}/atom-dev/profile` on Linux (relative XDG overrides
+are ignored). Existing profile directories must be user-owned and 0700. No
+browser or release profile is migrated or reset. Formal release-storage/upgrade
+qualification remains #153.
+
+Build identity is captured from root VERSION and commit when the command starts.
+Changing VERSION stops the command with a restart instruction; restart after a
+commit to refresh its identity. Changes to supervisor/build tooling itself also
+require restarting the command. Developer inspection is used only by the private
+test observer; the normal command opens no debugging listener or public control
+endpoint. Packaged builds ignore dev resource/profile/control overrides.
+
+Command modes:
+
+| Command | Purpose |
+| --- | --- |
+| `scripts/desktop-dev.sh` | Source UI, HMR and supervised Go/shell edits; no dist needed. |
+| `scripts/desktop-build.sh` | Unsigned local shared resources, including the production frontend dist. |
+| `scripts/desktop-test.sh` | Host unit/contract checks. |
+| `scripts/desktop-test.sh --runtime` | Real-Go transport/lifecycle cases after a local build. |
+| `scripts/desktop-test.sh --native` | Production/Vite/security engine checks after a local build. |
+| `scripts/desktop-test.sh --dev-loop` | Isolated-source development-loop qualification and timing; no staged dist. |
+
+Packaging is a separate #159/#161 work package; none of these commands produces
+or publishes an installer. Web `npm run dev`, Go tests and Docker commands remain
+independent. The dev CSP adds only the React preamble and fixed-loopback HMR
+socket; these permissions are absent from release CSP.
 
 Checks:
 
@@ -80,6 +123,7 @@ Checks:
 npm test --prefix desktop
 npm run test:runtime --prefix desktop
 npm run test:native --prefix desktop
+npm run test:dev-loop --prefix desktop
 npm test --prefix frontend-react
 npm run lint --prefix frontend-react
 ```
@@ -108,3 +152,20 @@ this shell foundation does not hide the failure or claim a usable public map.
 The bridge and protocol follow Electron's
 [security guidance](https://www.electronjs.org/docs/latest/tutorial/security)
 and [session-specific protocol rules](https://www.electronjs.org/docs/latest/api/protocol).
+
+The development-loop suite copies the tracked frontend/host/backend source into
+a temporary Git fixture and shares installed dependencies/read-only input data.
+It edits visible JSX and CSS (20 warmed samples each), never the working tree;
+checks no Go build or host reload during HMR; and asserts p95 <=1 s, a warm Go
+edit <=5 s and a shell edit <=10 s. It also verifies compilation failures, old
+generation rejection, retained dev workspace on relaunch, startup cancellation
+and occupied-port handling. Raw samples/reference hardware and an HMR screenshot
+are retained as `dev-loop.json` and `dev-loop-hmr.png`. Native CI runs it on both
+macOS and Ubuntu X11; timing evidence is scoped to the recorded hardware.
+
+See the dated [development-loop qualification](../docs/desktop-dev-loop-qualification.md) for frozen local source, raw measurements and platform scope.
+
+Development sidecars omit DWARF debug sections to reduce warm linking time. The
+production build keeps its existing flags; use the standalone Go commands for
+debugger sessions. Desktop Vite waits 50 ms for completed editor writes so a
+Linux truncation notification cannot publish an incomplete stylesheet.

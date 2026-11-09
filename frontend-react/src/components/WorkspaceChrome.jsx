@@ -28,6 +28,7 @@ import { projectFileRecoveryReason } from "../utils/projectFileRecovery.js";
 import { downloadFilename, namingForSource } from "../utils/downloadNames.js";
 import { versionStateLabel } from "../domain/resultContext.js";
 import ResultContextBadge from "./ResultContextBadge.jsx";
+import { platform } from "../platform/index.js";
 import PanelHeader from "./PanelHeader.jsx";
 
 export function CommandBar({
@@ -327,7 +328,7 @@ export function ProjectMenu({
               <p>{message}</p>
               <div className="project-menu-recovery">
                 <p><strong>{fileRecovery.operation === "export" ? "Export stopped." : "Import stopped."}</strong> {fileRecovery.reason}</p>
-                <p>Your current project and retained evidence remain in this browser. Keep this browser’s site data.</p>
+                <p>{platform.kind === "desktop" ? "Your current project and retained evidence remain in this app’s recovery storage. Keep its durable profile." : "Your current project and retained evidence remain in this browser. Keep this browser’s site data."}</p>
                 {fileRecovery.operation === "import" ? <p>The original file is unchanged. Ask its author for a smaller, separately created project.</p> : null}
                 <p>Close this menu, then open Review → Report. Download an available report separately with Markdown, or use PDF / Print. A report is not a full editable project backup.</p>
                 <p>For future smaller exports, use New to start a separate project with fewer Cells or saved Scenarios. This does not archive this project or shrink its retained evidence.</p>
@@ -335,7 +336,7 @@ export function ProjectMenu({
               </div>
             </div>
           ) : null}
-          <p className="project-menu-save-note">Drafts autosave in this browser. Save Version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.</p>
+          <p className="project-menu-save-note">{platform.kind === "desktop" ? "Drafts autosave in this app’s recovery storage. Export a portable file to keep a separate backup." : "Drafts autosave in this browser."} Save Version records immutable inputs. Export includes retained Scenario evidence; download reports separately. Separate Run History and coverage surfaces are not included.</p>
           <div className="scenario-menu-header">
             <strong>Scenarios / Versions</strong>
             <button type="button" onClick={saveScenario} disabled={savingScenario}>

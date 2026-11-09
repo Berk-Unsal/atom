@@ -6,6 +6,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Resolve private native data/config/cache/log/state/runtime directories, preserve the stable durable desktop profile, add atomic host settings/registry/recent-file storage and qualify real IndexedDB stores across cache eviction, relocation and upgrades.
+
 - Add a dist-free desktop development command with Vite HMR, build-before-swap Go watching, syntax-checked shell relaunch, private supervisor control and additive native edit-loop/cleanup qualification.
 - Restrict desktop API routing to explicit methods, paths and authenticated loopback targets; isolate report HTML in a temporary session without scripts, network or native authority, and add real-engine hostile-content tests.
 - Add explicit desktop planning-service recovery with separate API/dataset/UI readiness, per-action runtime generation guards, late-result protection and native tests for Vite-only startup, repeated launch, crash/recovery and abrupt host death.
@@ -14,7 +16,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
-- Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work to keep warm replacements responsive.
+- Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work and redundant VCS probes to keep warm replacements responsive; retain explicit canonical build identity.
 - Activate the existing macOS application on an explicit second launch, including restoring a hidden or minimized window.
 - Dispose native runtime subscriptions when their frontend module is hot-replaced, aborting old work without retrying RF actions.
 - Keep RF workflow cleanup bound to its original desktop runtime, so a retired capability never reaches a replacement service.

@@ -28,9 +28,9 @@ The only window is resizable. Closing it quits the app and drains its owned
 backend; a second launch focuses the existing window. Standard Edit/View/Window
 menus and platform shortcuts work. About identifies root VERSION, commit,
 Electron, OS and architecture. Local unsigned launches use `A.T.O.M-local` under
-Electron's application-data directory, separate from the future release profile.
-Window geometry is bounded to available displays and recovered from a corrupt or
-unwritable settings file. `ATOM_DESKTOP_TEST_PROFILE` selects an isolated absolute
+the native configuration/Application Support directory, separate from the release profile.
+Window geometry is bounded to available displays and recovered from a corrupt
+state file. Failed layout writes are reported. `ATOM_DESKTOP_TEST_PROFILE` selects an isolated absolute
 profile for local native tests; packaged builds ignore that override.
 
 React's `src/platform/index.js` selects browser or native capabilities. The
@@ -91,8 +91,8 @@ for the next session. It is separate from release, ordinary local-build and test
 profiles: `~/Library/Application Support/A.T.O.M-dev` on macOS, or
 `${XDG_DATA_HOME:-~/.local/share}/atom-dev/profile` on Linux (relative XDG overrides
 are ignored). Existing profile directories must be user-owned and 0700. No
-browser or release profile is migrated or reset. Formal release-storage/upgrade
-qualification remains #153.
+browser or release profile is migrated or reset. The release-storage test below qualifies an unpacked app separately from
+installer/signing and clean-machine support.
 
 Build identity is captured from root VERSION and commit when the command starts.
 Changing VERSION stops the command with a restart instruction; restart after a
@@ -169,3 +169,67 @@ Development sidecars omit DWARF debug sections to reduce warm linking time. The
 production build keeps its existing flags; use the standalone Go commands for
 debugger sessions. Desktop Vite waits 50 ms for completed editor writes so a
 Linux truncation notification cannot publish an incomplete stylesheet.
+The supervisor supplies its captured VERSION/commit explicitly and disables
+Go's redundant VCS subprocess probes for these development builds. The private
+startup identity checks still require that exact version and commit.
+
+## Native storage and recovery
+
+The release host fixes both Electron `userData` and `sessionData` before ready,
+uses a persistent default session and serves the same `app://atom` origin after
+port changes, upgrades or relocation. Existing workspace, Run History and report
+artifact repositories keep their IndexedDB names, versions and domain schemas;
+localStorage fallback data stays in that same durable profile. Browser storage
+is never imported, cleared or reset implicitly.
+
+| Purpose | macOS release | Linux release |
+| --- | --- | --- |
+| Durable data / packs | `~/Library/Application Support/A.T.O.M` / `packs` | `${XDG_DATA_HOME:-~/.local/share}/atom` / `packs` |
+| Chromium profile | data directory / `webview` | data directory / `webview` |
+| Host configuration | data directory / `config` | `${XDG_CONFIG_HOME:-~/.config}/atom` |
+| Host state | data directory / `state` | `${XDG_STATE_HOME:-~/.local/state}/atom` |
+| Disposable HTTP cache | `~/Library/Caches/A.T.O.M` | `${XDG_CACHE_HOME:-~/.cache}/atom` |
+| Logs | `~/Library/Logs/A.T.O.M` | state directory / `logs` |
+| Disposable runtime | private unique OS temporary directory | private unique directory below a valid `XDG_RUNTIME_DIR`, or OS temporary directory |
+
+Only absolute XDG overrides are accepted. A cache root that contains a durable
+root is rejected before use. Native-owned directories must be user-owned 0700;
+shared permissions, symlink leaves and unwriteable locations fail explicitly
+without chmod'ing existing directories or selecting another profile. Host files
+are 0600 and the host/child umask is 077. No installed application resource is a
+write target. Local/test/dev profiles contain their own native data, config,
+cache, state and runtime directories; packaged applications ignore all dev/test
+profile, resource, Vite and control overrides.
+
+`settings.json` is a bounded, versioned host-only record for preferences, dataset
+registry entries and recent chosen-file associations. It holds no workspace,
+Run inputs, credentials or report bytes. A unique exclusive sibling write,
+fsync and atomic rename preserve the previous file on disk/quota/rename failure;
+interrupted siblings are not replayed. Malformed, insecure or newer settings
+stop startup with a recovery dialog. Back up the file and repair the indicated
+permissions/settings or free disk space, then retry. No automatic reset,
+downgrade or browser migration occurs. Window geometry is separate, recoverable
+state; failed layout writes are reported without resetting domain stores.
+
+Clear only the documented cache root or Electron's HTTP cache. Do not delete the
+profile, site data or IndexedDB as a cache-cleanup operation: they contain work
+and retained report bytes. GPU/shader implementation caches may also exist
+inside Chromium's profile; the whole profile is never disposable. Quit the app
+before external cleanup. Runtime scratch can be removed after an abnormal exit;
+it contains no durable workspace. User-chosen project/report destinations are
+associations, never redirected to cache, runtime or autosave locations. The
+project menu identifies desktop autosave as recovery storage and recommends a
+portable exported file for a separate backup. Native file dialogs are #154.
+
+Run `scripts/desktop-test.sh --storage` after the local build. The suite constructs
+a disposable unpacked application with a genuinely renamed executable (native
+`app.isPackaged === true`, not a property mock), an isolated HOME/XDG environment,
+read-only application resources and an independent cwd. A test-only bundle calls
+the existing production repository contracts in real Chromium IndexedDB. It
+checks workspace/Run History/artifact hashes and bytes plus localStorage across
+relaunch, actual sidecar port changes, HTTP-cache eviction, resource relocation
+and an explicit test-version Go/host upgrade. It retains native settings,
+registry/recent associations and packs, and verifies private permissions.
+macOS relocates the entire `.app`; Ubuntu relocates Resources while retaining
+the exact AppArmor-qualified executable path. Installer, signing, arbitrary
+Linux executable relocation and clean-machine qualification remain #159–#162.

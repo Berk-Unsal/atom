@@ -9,8 +9,20 @@ public installation support or the web/Docker server's deployment policy.
   receives the typed preload. Every IPC handler independently checks the sender,
   frame identity and document URL. Other documents, frames and windows cannot
   use it. There is no generic invoke, filesystem, process, destination or restart
-  method. Native file and report operations will be added by #154/#156 with
-  dialog-approved typed capabilities; this boundary does not grant a file path.
+  method. Typed project-file operations accept a native dialog choice or a
+  previously committed association, never a renderer-provided path. Only the
+  selected display path/name and an opaque Open receipt cross to the main frame.
+  Report Save/Print integration remains #156.
+- Open reads are bounded to 16 MiB, regular UTF-8 files, without following a
+  replaced symlink or blocking on a FIFO. An Open receipt creates no association
+  until the shared parser/importer accepts the project. Save uses the existing
+  serializer and an exclusive same-directory temporary file, fsync and rename;
+  external fingerprints are checked before staging and before commit. This
+  detects conflicts but is not a cross-process file lock. Export writes a copy.
+  Filesystem errors return bounded actionable messages without unrelated paths
+  or stacks. A settings failure after successful file commit reports truthful
+  success plus a native-association retention warning; it never rolls back over
+  a user file.
 - The host creates a fresh 256-bit token and generation for each owned Go child.
   Credentials cross inherited control pipes and host-side HTTP headers only.
   The renderer knows a non-secret generation, never the token, PID or endpoint.

@@ -47,6 +47,47 @@ afterEach(() => {
 });
 
 describe("useProjectWorkspace", () => {
+  it("validates Open before flushing and preserves the previous project's pending draft before activation", async () => {
+    const { result } = renderHook(() => useProjectWorkspace(null));
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+    const original = result.current.activeProject;
+    const beforeCommit = vi.fn(() => result.current.prepareProjectFile(original.id, { plan: { settings: { power: 32 } } }));
+    expect(() => result.current.importProject("{invalid", { beforeCommit })).toThrow(/valid JSON/);
+    expect(beforeCommit).not.toHaveBeenCalled();
+    await act(async () => { await result.current.importProject(exportProjectFile(original), { beforeCommit }); });
+    expect(beforeCommit).toHaveBeenCalledTimes(1);
+    expect(result.current.workspace.projects.find((project) => project.id === original.id).draft.plan.settings.power).toBe(32);
+    expect(result.current.activeProject.id).not.toBe(original.id);
+  });
+  it("captures the latest working draft for a file without creating a Version or adopting later changes", async () => {
+    const { result } = renderHook(() => useProjectWorkspace(null));
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+    const original = result.current.activeProject;
+    let release;
+    persistence.hold = new Promise((resolve) => { release = resolve; });
+    let preparing;
+    act(() => { preparing = result.current.prepareProjectFile(original.id, { plan: { settings: { power: 30 } } }); });
+    expect(result.current.activeProject.draft.plan.settings.power).toBe(30);
+    act(() => { result.current.renameProject("Later rename"); });
+    let captured;
+    await act(async () => { release(); captured = await preparing; await persistence.queue; });
+    expect(captured.name).toBe(original.name);
+    expect(captured.draft.plan.settings.power).toBe(30);
+    expect(captured.scenarios).toHaveLength(original.scenarios.length);
+    expect(result.current.activeProject.name).toBe("Later rename");
+  });
+
+  it("keeps portable backup available when recovery storage fails, with the failure still visible", async () => {
+    const { result } = renderHook(() => useProjectWorkspace(null));
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+    persistence.failNext = true;
+    let captured;
+    await act(async () => { captured = await result.current.prepareProjectFile(result.current.activeProject.id, { plan: { settings: { power: 31 } } }); });
+    expect(result.current.persistenceState).toBe("error");
+    expect(result.current.error).toMatch(/quota/);
+    expect(JSON.parse(exportProjectFile(captured)).project.draft.plan.settings.power).toBe(31);
+  });
+
   it("preserves new Version history when a newer autosave queued the previous Scenario", async () => {
     const { result } = renderHook(() => useProjectWorkspace(null));
     await waitFor(() => expect(result.current.loaded).toBe(true));

@@ -5858,6 +5858,31 @@ a:focus-visible {
   flex: 1;
 }
 
+.project-menu-native-files .project-menu-file-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.project-menu-native-files .project-menu-message,
+.project-menu-file-state {
+  overflow-wrap: anywhere;
+}
+
+.project-menu-native-files .project-menu-save-note,
+.project-menu-file-state {
+  color: var(--muted);
+}
+
+.project-menu-file-state {
+  margin: var(--space-2) 0;
+  font-size: var(--text-meta);
+  line-height: 1.4;
+}
+
+.project-menu-file-state[data-dirty="true"] {
+  color: var(--text-warning, #7a4a00);
+}
+
 .scenario-menu-header {
   justify-content: space-between;
   margin-top: var(--space-3);

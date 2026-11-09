@@ -14,6 +14,10 @@ const { REPORT_SCHEME } = require("./lib/report-surface.cjs");
 const { createDevControl } = require("./lib/dev-control.cjs");
 const { nativePaths, privateDirectory, prepareNativePaths } = require("./lib/native-paths.cjs");
 const { SettingsStore } = require("./lib/settings-store.cjs");
+const { ProjectFiles } = require("./lib/project-files.cjs");
+const { registerProjectFiles } = require("./lib/project-file-bridge.cjs");
+const { createProjectFileClose } = require("./lib/project-file-close.cjs");
+const { registerProjectShortcuts } = require("./lib/project-file-shortcuts.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -35,6 +39,10 @@ try {
 let window;
 let backend;
 let devControl;
+let projectFiles;
+let fileClose;
+let quitIntent = false;
+let supervisorQuitting = false;
 let quitting = false;
 let stopped = false;
 const openExternal = async (url) => { try { await shell.openExternal(url); } catch { /* Browser launch failure never opens content in the app. */ } };
@@ -60,7 +68,7 @@ async function launch() {
   backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: path.join(resources, "data-pipeline"),
     distDir: path.join(resources, "dist"), version: info.version, commit: info.commit });
   devControl = createDevControl({ isPackaged: app.isPackaged, enabled: process.env.ATOM_DESKTOP_DEV_CONTROL, devServer,
-    restart: () => backend.restart(), snapshot: () => backend.snapshot(), quit: () => app.quit() });
+    restart: () => backend.restart(), snapshot: () => backend.snapshot(), quit: () => { supervisorQuitting = true; if (!quitting) quitIntent = false; app.quit(); } });
   protocol.handle("app", createRouter({ distDir: path.join(resources, "dist"), sidecar: backend, devServer }));
   const icon = nativeImage.createFromPath(path.join(resources, "atom.png"));
   if (app.dock) app.dock.setIcon(icon);
@@ -71,10 +79,11 @@ async function launch() {
   });
   window.on("page-title-updated", (event) => { event.preventDefault(); });
   window.once("ready-to-show", () => window.show());
-  window.on("close", () => {
+  window.on("close", (event) => {
+    if (!stopped) { event.preventDefault(); app.quit(); return; }
     if (!writeGeometry(geometryFile, window.getNormalBounds())) dialog.showErrorBox("Window layout was not saved", "The native state directory could not be written. Existing workspace and report stores were not reset. Check available disk space and directory permissions before the next launch.");
   });
-  window.on("closed", () => { backend.setUIReady(false); window = null; app.quit(); });
+  window.on("closed", () => { backend.setUIReady(false); window = null; if (!quitting) quitIntent = false; app.quit(); });
   window.webContents.on("render-process-gone", () => backend.setUIReady(false));
   backend.on("status", (status) => {
     devControl?.publish(status);
@@ -92,10 +101,30 @@ async function launch() {
     if (!safe) throw new Error("Only HTTPS links are supported");
     await openExternal(safe);
   });
+  projectFiles = new ProjectFiles({ settings,
+    selectOpen: () => dialog.showOpenDialog(window, { title: "Open A.T.O.M project", properties: ["openFile", ...(process.platform === "darwin" ? ["noResolveAliases"] : [])],
+      filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }] }),
+    selectSave: ({ mode, defaultPath }) => dialog.showSaveDialog(window, { title: mode === "export" ? "Export project copy" : "Save A.T.O.M project", defaultPath,
+      filters: [{ name: "A.T.O.M project (JSON)", extensions: ["json"] }],
+      properties: process.platform === "linux" ? ["showOverwriteConfirmation"] : ["createDirectory"], showsTagField: false }),
+  });
+  const projectCommand = (command) => { if (window && !window.isDestroyed() && !quitting && (!quitIntent || command === "refresh")) window.webContents.send("atom:project-command", { command }); };
+  registerProjectShortcuts(window.webContents, projectCommand);
+  fileClose = createProjectFileClose({ files: projectFiles, getWindow: () => window,
+    showMessageBox: (...args) => dialog.showMessageBox(...args), sendCommand: (request) => {
+      if (!window || window.isDestroyed()) throw new Error("The project window is unavailable");
+      window.webContents.send("atom:project-command", request);
+    } });
+  registerProjectFiles({ ipcMain, getWindow: () => window, files: projectFiles, notifyChange: () => projectCommand("refresh"), finishCommand: (request) => fileClose.finish(request) });
   const recover = createRecoveryAction({ backend, getWindow: () => window, showMessageBox: (...args) => dialog.showMessageBox(...args) });
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     ...(process.platform === "darwin" ? [{ label: "A.T.O.M", submenu: [{ label: "About A.T.O.M", click: () => app.showAboutPanel() }, { type: "separator" }, { role: "hide" }, { role: "hideOthers" }, { role: "unhide" }, { type: "separator" }, { role: "quit" }] }] : []),
-    { label: "File", submenu: [{ role: "quit" }] },
+    { label: "File", submenu: [
+      { id: "atom-project-open", label: "Open Project…", accelerator: "CmdOrCtrl+O", click: () => projectCommand("open") },
+      { id: "atom-project-save", label: "Save Project", accelerator: "CmdOrCtrl+S", click: () => projectCommand("save") },
+      { id: "atom-project-save-as", label: "Save Project As…", accelerator: "CmdOrCtrl+Shift+S", click: () => projectCommand("saveAs") },
+      { id: "atom-project-export", label: "Export Project Copy…", accelerator: "CmdOrCtrl+Shift+E", click: () => projectCommand("export") },
+      { type: "separator" }, { role: "quit" }] },
     { role: "editMenu" },
     { label: "View", submenu: [{ role: "resetZoom" }, { role: "zoomIn" }, { role: "zoomOut" }, { type: "separator" }, { role: "togglefullscreen" }] },
     { role: "windowMenu" },
@@ -134,10 +163,17 @@ if (!storageError && !app.requestSingleInstanceLock()) {
   app.on("before-quit", (event) => {
     if (stopped || !backend) return;
     event.preventDefault();
-    if (quitting) return;
-    quitting = true;
-    session.defaultSession.flushStorageData();
-    backend.stop().finally(() => { stopped = true; app.quit(); });
+    if (quitting || quitIntent) return;
+    quitIntent = true;
+    void (async () => {
+      if (!supervisorQuitting && window && !window.isDestroyed() && fileClose && !await fileClose.decide()) return;
+      if (quitting || stopped) return;
+      quitting = true;
+      session.defaultSession.flushStorageData();
+      try { await backend.stop(); } finally { stopped = true; app.quit(); }
+    })().catch(async () => {
+      if (!stopped) { quitting = false; await dialog.showMessageBox({ type: "error", title: "A.T.O.M kept open", message: "Project file status could not be checked safely.", detail: "Existing work is preserved. Check the project menu and finish any native file dialog, then try Quit again." }); }
+    }).finally(() => { quitIntent = false; });
   });
   app.whenReady().then(launch).catch(async (error) => {
     if (quitting) return;

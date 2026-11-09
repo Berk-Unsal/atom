@@ -6,6 +6,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add dialog-approved native project Open, Save, Save As and Export Copy through the shared portable-project format, with atomic replacement, external-edit conflicts, per-project file status and a save-before-quit choice separate from recovery autosave and Save Version.
 - Resolve private native data/config/cache/log/state/runtime directories, preserve the stable durable desktop profile, add atomic host settings/registry/recent-file storage and qualify real IndexedDB stores across cache eviction, relocation and upgrades.
 
 - Add a dist-free desktop development command with Vite HMR, build-before-swap Go watching, syntax-checked shell relaunch, private supervisor control and additive native edit-loop/cleanup qualification.

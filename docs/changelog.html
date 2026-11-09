@@ -199,40 +199,44 @@ cancellation.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
-<li>Use the attributed OSM Standard fallback with an identifying
+<li><p>Reuse temporary building-feature decode storage during dataset
+loading while preserving every footprint, tag, ID and coordinate; reduce
+allocation pressure without changing RF scope or precision.</p></li>
+<li><p>Use the attributed OSM Standard fallback with an identifying
 User-Agent and normal HTTP cache on desktop; keep denied/offline
 feedback and Retry usable without hiding the map key. Unconfigured
 Stadia access remains available only to existing browser
-deployments.</li>
-<li>Wrap report actions and retained-source controls inside narrow
+deployments.</p></li>
+<li><p>Wrap report actions and retained-source controls inside narrow
 drawers so report text and buttons remain visible at the native minimum
-width.</li>
-<li>Keep the saved Version associated when report metadata round-trips
-add only existing inventory defaults; preserve detection of real
-RF/profile/provenance edits.</li>
-<li>Await native report output and prevent duplicate exports or
-automatic regeneration/second dialogs after a destination failure.</li>
-<li>Keep native recovery running when a crashed/disconnected renderer
-cannot receive a runtime notification.</li>
-<li>Wait for completed editor writes in desktop Vite development and
+width.</p></li>
+<li><p>Keep the saved Version associated when report metadata
+round-trips add only existing inventory defaults; preserve detection of
+real RF/profile/provenance edits.</p></li>
+<li><p>Await native report output and prevent duplicate exports or
+automatic regeneration/second dialogs after a destination
+failure.</p></li>
+<li><p>Keep native recovery running when a crashed/disconnected renderer
+cannot receive a runtime notification.</p></li>
+<li><p>Wait for completed editor writes in desktop Vite development and
 omit development-only DWARF linking work and redundant VCS probes to
 keep warm replacements responsive; retain explicit canonical build
-identity.</li>
-<li>Activate the existing macOS application on an explicit second
-launch, including restoring a hidden or minimized window.</li>
-<li>Dispose native runtime subscriptions when their frontend module is
-hot-replaced, aborting old work without retrying RF actions.</li>
-<li>Keep RF workflow cleanup bound to its original desktop runtime, so a
-retired capability never reaches a replacement service.</li>
-<li>Preserve the newer workspace/result association when an older
+identity.</p></li>
+<li><p>Activate the existing macOS application on an explicit second
+launch, including restoring a hidden or minimized window.</p></li>
+<li><p>Dispose native runtime subscriptions when their frontend module
+is hot-replaced, aborting old work without retrying RF actions.</p></li>
+<li><p>Keep RF workflow cleanup bound to its original desktop runtime,
+so a retired capability never reaches a replacement service.</p></li>
+<li><p>Preserve the newer workspace/result association when an older
 Run-history write completes after a desktop restart or newer action;
-retain its truthful historical Run.</li>
-<li>Update the backend's <code>golang.org/x/net</code> to 0.62.0 and its
-required crypto/text dependencies to clear the container scan's
-CVE-2026-78661 HTML-parser denial-of-service finding.</li>
-<li>Refresh both production Alpine image pins to 3.24.4 with zlib
+retain its truthful historical Run.</p></li>
+<li><p>Update the backend's <code>golang.org/x/net</code> to 0.62.0 and
+its required crypto/text dependencies to clear the container scan's
+CVE-2026-78661 HTML-parser denial-of-service finding.</p></li>
+<li><p>Refresh both production Alpine image pins to 3.24.4 with zlib
 1.3.2-r1 for CVE-2026-85091, and check the built images' zlib security
-floor in CI.</li>
+floor in CI.</p></li>
 </ul>
 <h2 id="0131---2026-10-27"><a
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.0...v0.13.1">0.13.1</a>

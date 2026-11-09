@@ -1,11 +1,70 @@
 package raytracer
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
+
+func TestStreamingBuildingFeaturesMatchIndependentDecode(t *testing.T) {
+	// Missing/null fields must not inherit the previous feature's ID, tags or
+	// geometry. Later decoding must not mutate already published footprints.
+	const polygon = `{"type":"Polygon","coordinates":[[[32,39],[33,39],[33,40],[32,39]]]}`
+	const multi = `{"type":"MultiPolygon","coordinates":[[[[34,39],[35,39],[35,40],[34,39]]],[[[36,39],[37,39],[37,40],[36,39]]]]}`
+	cases := map[string]string{
+		"missing fields":   `[{"id":"first","properties":{"HEIGHT":12,"building":"YES","custom":{"a":true}},"geometry":` + polygon + `},{"geometry":` + multi + `},{"id":0},{},{"properties":{"building:levels":2},"geometry":` + polygon + `}]`,
+		"null fields":      `[{"id":"first","properties":{"weight":9,"height":27},"geometry":` + polygon + `},null,{"id":null,"properties":null,"geometry":null},{"geometry":` + polygon + `},{"properties":{"custom":null,"flag":false,"values":[1,"x"]},"geometry":` + polygon + `}]`,
+		"partial geometry": `[{"id":42,"properties":{"material":"brick"},"geometry":` + polygon + `},{"geometry":{"type":"Polygon"}},{"geometry":{"coordinates":[[[32,39],[33,39],[33,40],[32,39]]]}},{"geometry":{"type":null,"coordinates":null}},{"id":"last","properties":{},"geometry":` + multi + `}]`,
+	}
+	for name, features := range cases {
+		t.Run(name, func(t *testing.T) {
+			data := []byte(`{"type":"FeatureCollection","features":` + features + `}`)
+			var independentlyDecoded featureCollection
+			if err := json.Unmarshal(data, &independentlyDecoded); err != nil {
+				t.Fatal(err)
+			}
+			var expected []*BuildingFootprint
+			for i, f := range independentlyDecoded.Features {
+				expected = appendFeatureFootprints(expected, f, i)
+			}
+			path := filepath.Join(t.TempDir(), "features.geojson")
+			if err := os.WriteFile(path, data, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			index, _, err := LoadBuildingIndexFromGeoJSON(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if actual := index.Footprints(); !reflect.DeepEqual(actual, expected) {
+				t.Fatalf("streamed footprints differ from independent decode:\nactual: %#v\nexpected: %#v", actual, expected)
+			}
+		})
+	}
+}
+
+func TestStreamingBuildingFeaturesRejectInvalidJSON(t *testing.T) {
+	for _, data := range []string{
+		`{"type":"FeatureCollection","features":[{"geometry":`,
+		`{"type":"FeatureCollection","features":{}}`,
+		`{"type":"FeatureCollection","features":[{"properties":42}]}`,
+		`{"type":"FeatureCollection","features":[{"geometry":{"type":42}}]}`,
+		`{"type":"FeatureCollection","features":[]} {}`,
+		`{"type":"Polygon","features":[]}`,
+	} {
+		t.Run(data, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "invalid.geojson")
+			if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err := LoadBuildingIndexFromGeoJSON(path); err == nil {
+				t.Fatal("accepted invalid GeoJSON")
+			}
+		})
+	}
+}
 
 func TestLoadBuildingIndexDefaultsMissingDemandWeightToZero(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "buildings.geojson")

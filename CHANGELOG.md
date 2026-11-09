@@ -20,6 +20,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Reuse temporary building-feature decode storage during dataset loading while preserving every footprint, tag, ID and coordinate; reduce allocation pressure without changing RF scope or precision.
+
 - Use the attributed OSM Standard fallback with an identifying User-Agent and normal HTTP cache on desktop; keep denied/offline feedback and Retry usable without hiding the map key. Unconfigured Stadia access remains available only to existing browser deployments.
 - Wrap report actions and retained-source controls inside narrow drawers so report text and buttons remain visible at the native minimum width.
 - Keep the saved Version associated when report metadata round-trips add only existing inventory defaults; preserve detection of real RF/profile/provenance edits.

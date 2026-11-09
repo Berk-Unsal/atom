@@ -152,8 +152,8 @@ try {
   const statusAt = (predicate) => command.events.slice(cursor).find((event) => event.event === "runtime-status" && predicate(event.runtime))?.received_at_ms;
   const restartingAt = statusAt((runtime) => runtime.state === "restarting");
   const startingAt = statusAt((runtime) => runtime.state === "starting");
-  const listenerAt = statusAt((runtime) => runtime.state === "loading-dataset" && runtime.readiness.listener);
-  const datasetAt = statusAt((runtime) => runtime.readiness.dataset);
+  const listenerAt = statusAt((runtime) => runtime.generation === replaced.runtime.generation && runtime.state === "loading-dataset" && runtime.readiness.listener);
+  const datasetAt = statusAt((runtime) => runtime.generation === replaced.runtime.generation && runtime.readiness.dataset);
   result.warm_go_phases_ms = { compile: result.warm_go_compile_ms, drain: startingAt - restartingAt,
     start_to_listener: listenerAt - startingAt, dataset_load: datasetAt - listenerAt, dataset_to_ready: replaced.received_at_ms - datasetAt };
   assert.ok(result.warm_go_edit_to_ready_ms <= 5000, "Warm Go edit exceeded 5s guidance");

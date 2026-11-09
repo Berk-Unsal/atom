@@ -32,6 +32,11 @@ async function choose(filePath) {
   await application.evaluate((_electron, filePath) => { globalThis.__reportChoices.push(filePath ? { canceled: false, filePath } : { canceled: true }); }, filePath);
 }
 const fixture = (method, ...args) => page.evaluate(async ({ method, args }) => (await import("/assets/report-contract.js"))[method](...args), { method, args });
+async function drawerFits() {
+  const clipped = await page.evaluate(() => [...document.querySelectorAll(".tool-drawer-body, .report-card, .report-actions, .report-artifacts, .report-artifact-list, .report-artifact-row")]
+    .filter((element) => element.scrollWidth > element.clientWidth + 1).map((element) => ({ class: element.className, width: element.clientWidth, content: element.scrollWidth })));
+  assert.deepEqual(clipped, [], "Report content must fit its drawer, not only the outer viewport");
+}
 async function inspectPdf(file, entry) {
   const bytes = await fs.readFile(file); assert.ok(bytes.includes(Buffer.from("/StructTreeRoot")));
   const loading = getDocument({ data: new Uint8Array(bytes), useSystemFonts: true }); const pdf = await loading.promise;
@@ -142,9 +147,11 @@ try {
   assert.equal(posts.length, beforeExports); result.normal_ui_saved_retained_markdown_pdf_and_verified_review_zip_without_rf = true;
   await page.setViewportSize({ width: 1440, height: 900 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await drawerFits();
   await page.screenshot({ path: path.join(output, "native-report-actions.png") });
   await page.setViewportSize({ width: 800, height: 900 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await drawerFits();
   await page.screenshot({ path: path.join(output, "native-report-actions-800.png") });
   result.report_controls_fit_wide_and_minimum_width = true;
   const deniedDirectory = path.join(scratch, "Read only report destination"); await fs.mkdir(deniedDirectory);

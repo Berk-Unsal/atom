@@ -18,6 +18,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Wrap report actions and retained-source controls inside narrow drawers so report text and buttons remain visible at the native minimum width.
 - Keep the saved Version associated when report metadata round-trips add only existing inventory defaults; preserve detection of real RF/profile/provenance edits.
 - Await native report output and prevent duplicate exports or automatic regeneration/second dialogs after a destination failure.
 - Wait for completed editor writes in desktop Vite development and omit development-only DWARF linking work and redundant VCS probes to keep warm replacements responsive; retain explicit canonical build identity.

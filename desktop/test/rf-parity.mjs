@@ -98,7 +98,8 @@ try {
   assert.ok(base, "Owned standalone process must bind loopback");
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "profile") }; delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
-  if (process.argv.includes("--compact")) await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1024, 768));
+  const viewport = process.argv.includes("--compact") ? [1024, 768] : [1440, 900];
+  await application.evaluate(({ BrowserWindow }, size) => BrowserWindow.getAllWindows()[0].setContentSize(...size), viewport);
   page = await application.firstWindow();
   // The preload can answer runtime IPC before the initial document transition
   // has settled. Observe the actual app UI before evaluating renderer state.
@@ -106,7 +107,9 @@ try {
   await page.waitForLoadState("domcontentloaded");
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   await waitForRuntime(page, (state) => state.state === "ready");
+  await page.waitForFunction(([width, height]) => innerWidth === width && innerHeight === height, viewport);
   result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
+  assert.deepEqual([result.reference.viewport.width, result.reference.viewport.height], viewport, "Measure the requested content viewport, excluding native window chrome");
   result.reference.work_area = await application.evaluate(({ screen }) => screen.getPrimaryDisplay().workArea);
   const nativeMeta = await nativeRequest("/api/meta"); const standaloneMeta = await standaloneRequest("/api/meta");
   assert.equal(nativeMeta.status, 200); assert.equal(standaloneMeta.status, 200);

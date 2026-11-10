@@ -95,3 +95,13 @@ Production run `42840964208` completes all 40 startup samples per platform and U
 The architecture plan requires 20 warmed samples per endpoint. Historical RF runs above used one warm-up plus four timed pairs, so their timing evidence does not satisfy that sample-count requirement. The harness now performs one warm-up plus 20 timed native/standalone pairs for each of simulate, evaluate-network and optimize-network, followed by the three technology comparisons: 66 complete deterministic pairs. Each timed endpoint has ten native-first and ten standalone-first pairs, with sequential RF execution and all raw timings retained.
 
 To stay within the unchanged production policy, the harness reads each transport's actual ordinary/follow-up remaining allowance and reset header. Unused workflow reservations are closed through the ordinary API, then their returned quota headers become the next admission observation. A request that cannot fund its root and children waits for that observed window before submission; a 429 still fails and is never retried. Pacing is outside measured request latency and recorded separately. Missing/malformed or enlarged-limit headers fail qualification. Unit regressions cover quota exhaustion, complete network funding and invalid headers. New full native verification is pending; the 5% comparator and all other original budgets remain unchanged.
+
+Clean local source/build `8536da4c9ab6098db5e8229a51feede429444300` completes all **66 exact response pairs**, metadata/technology parity, both eight-Cell workflows, painted Canvas proof and owned-process cleanup. Each endpoint has the required 20 timed pairs. The [frozen raw record](assets/desktop-rf-twenty-macos.json) includes every timing and two observed quota waits (59.987 s and 45.999 s); there are no rejected RF calls or retries. The final result is **BUDGET_REVIEW_REQUIRED**:
+
+| Endpoint | Native median | Standalone median | Absolute relative difference |
+| --- | ---: | ---: | ---: |
+| simulate | 19.40 ms | 14.01 ms | 38.47% — fails 5% |
+| evaluate-network | 398.85 ms | 396.17 ms | 0.68% — passes |
+| optimize-network | 7394.90 ms | 7429.65 ms | 0.47% — passes |
+
+This is an Apple M4/10 logical CPU/24 GiB local machine, rather than the declared four-core/16 GiB reference. Native frame bounds also yielded a **1440×868 content viewport**, so its map proxies do not qualify the requested 1440×900 viewport. The fixture now sets and asserts the actual content size (1440×900 normally, 1024×768 for explicit compact scope), and Ubuntu's virtual display has room for that content plus native chrome. The corrected viewport needs its own frozen native run; historical measurements retain their actual dimensions and source. No performance comparator changes.

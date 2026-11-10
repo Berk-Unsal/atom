@@ -4,6 +4,7 @@ umask 077
 session=${1:?x11 or wayland required}
 case "$session" in x11|wayland) ;; *) exit 2 ;; esac
 ATOM_DESKTOP_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+. "$ATOM_DESKTOP_ROOT/test/deb-runtime-cleanup.sh"
 export XDG_RUNTIME_DIR=$(mktemp -d /tmp/atom-deb-runtime-XXXXXX)
 export ATOM_DEB_DISPLAY_SESSION="$session" LIBGL_ALWAYS_SOFTWARE=1
 dbus-update-activation-environment XDG_RUNTIME_DIR
@@ -11,7 +12,7 @@ unset ELECTRON_RUN_AS_NODE
 compositor_pid=
 cleanup() {
   if [ -n "$compositor_pid" ]; then kill "$compositor_pid" 2>/dev/null || true; wait "$compositor_pid" 2>/dev/null || true; fi
-  rm -rf "$XDG_RUNTIME_DIR"
+  cleanup_deb_runtime "$XDG_RUNTIME_DIR"
 }
 trap cleanup EXIT
 trap 'exit 130' INT

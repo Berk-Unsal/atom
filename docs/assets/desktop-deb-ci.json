@@ -1,0 +1,68 @@
+{
+  "run_id": 42834631863,
+  "url": "https://github.com/Berk-Unsal/atom/actions/runs/42834631863",
+  "pr_head": "cda8ac212c5f984f0d954b5ffdb77eca81c0d02d",
+  "execution_commit": "fe5464f69b6f0812da27ddc7478dc099a3a536a8",
+  "binary_uploaded": false,
+  "scope": "Disposable Ubuntu 24.04 Actions VM; Xvfb/Mutter X11 and headless native Wayland; supplied save responses; prior-Debian-version fixture uses current product source. Not graphical installer, real chooser/Print or clean GNOME qualification.",
+  "targets": [
+    {
+      "session": "x11",
+      "evidence_artifact_id": 13773501454,
+      "execution_commit": "fe5464f69b6f0812da27ddc7478dc099a3a536a8",
+      "result": "PASS",
+      "deb": {
+        "file": "atom-0.13.1-linux-x64-internal-unsigned.deb",
+        "bytes": 116134896,
+        "sha256": "464452bfba34b3d29b8eccedef45028c5655b961efe312969d5b5bf136b82301"
+      },
+      "elf_files": 6,
+      "phases": [
+        {
+          "phase": "installed previous-package-version fixture",
+          "result": "PASS",
+          "restored_project_differences": [],
+          "bundle_bytes_and_links_unchanged": true,
+          "owned_processes_exited": true
+        },
+        {
+          "phase": "upgraded current candidate",
+          "result": "PASS",
+          "restored_project_differences": [],
+          "bundle_bytes_and_links_unchanged": true,
+          "owned_processes_exited": true
+        }
+      ],
+      "apt_upgrade_remove_purge_preserved_user_bytes": true
+    },
+    {
+      "session": "wayland",
+      "evidence_artifact_id": 13773791262,
+      "execution_commit": "fe5464f69b6f0812da27ddc7478dc099a3a536a8",
+      "result": "PASS",
+      "deb": {
+        "file": "atom-0.13.1-linux-x64-internal-unsigned.deb",
+        "bytes": 116135124,
+        "sha256": "15ef4e437a58965d3ca5350666c473e74fd8fa6ac7b3d5be89bcaa5ca4f51fbc"
+      },
+      "elf_files": 6,
+      "phases": [
+        {
+          "phase": "installed previous-package-version fixture",
+          "result": "PASS",
+          "restored_project_differences": [],
+          "bundle_bytes_and_links_unchanged": true,
+          "owned_processes_exited": true
+        },
+        {
+          "phase": "upgraded current candidate",
+          "result": "PASS",
+          "restored_project_differences": [],
+          "bundle_bytes_and_links_unchanged": true,
+          "owned_processes_exited": true
+        }
+      ],
+      "apt_upgrade_remove_purge_preserved_user_bytes": true
+    }
+  ]
+}

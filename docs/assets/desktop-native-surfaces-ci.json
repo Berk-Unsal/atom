@@ -1,105 +1,21 @@
 {
   "schema": 1,
-  "run_id": 42885067397,
-  "url": "https://github.com/Berk-Unsal/atom/actions/runs/42885067397",
-  "pr_head": "c9c2e8dd7d1383eb25fe0103bb8a4c4df30c1c05",
-  "source_commit": "874f91ef50d5507a7866b3da9039ee9116b65683",
+  "run_id": 42888151982,
+  "url": "https://github.com/Berk-Unsal/atom/actions/runs/42888151982",
+  "pr_head": "2b889b7ccaa3b1f6c43f98a966890fc1ea938f47",
+  "source_commit": "a401ef756f0425c6ed913c79f9613f9ab9ceffb9",
   "scope": "Actual installed production GTK portal chooser widgets in disposable X11/native Wayland; not graphical installer, clean GNOME or configured-printer Print qualification. No dialog response or filesystem operation was mocked.",
   "binary_or_source_rows_uploaded": false,
   "targets": [
     {
       "session": "x11",
-      "evidence_artifact_id": 13795877152,
-      "source_commit": "874f91ef50d5507a7866b3da9039ee9116b65683",
+      "evidence_artifact_id": 13797781129,
+      "source_commit": "a401ef756f0425c6ed913c79f9613f9ab9ceffb9",
       "reference": {
         "platform": "linux",
         "architecture": "x64",
         "kernel": "7.0.0-1017-azure",
-        "cpu": "AMD EPYC 9V74 80-Core Processor",
-        "logical_cpus": 4,
-        "memory_bytes": 16760348672,
-        "node": "v24.22.2"
-      },
-      "result": "PASS",
-      "dialog_actions": [
-        {
-          "title": "Save A.T.O.M project",
-          "operation": "save",
-          "button": "Save",
-          "native_widgets_only": true
-        },
-        {
-          "title": "Save A.T.O.M project",
-          "operation": "cancel",
-          "button": "Cancel",
-          "native_widgets_only": true
-        },
-        {
-          "title": "Open A.T.O.M project",
-          "operation": "cancel",
-          "button": "Cancel",
-          "native_widgets_only": true
-        },
-        {
-          "title": "Open A.T.O.M project",
-          "operation": "open",
-          "button": "Select",
-          "native_widgets_only": true
-        },
-        {
-          "title": "Save A.T.O.M report",
-          "operation": "save",
-          "button": "Save",
-          "native_widgets_only": true
-        },
-        {
-          "title": "Save A.T.O.M report",
-          "operation": "save",
-          "button": "Save",
-          "native_widgets_only": true
-        },
-        {
-          "title": "Save A.T.O.M report",
-          "operation": "cancel",
-          "button": "Cancel",
-          "native_widgets_only": true
-        }
-      ],
-      "rf_posts": [
-        "/api/analyze-sector"
-      ],
-      "associated_project_dirty_flags": [
-        false,
-        false
-      ],
-      "original_project_change_paths": [],
-      "saved_project": {
-        "bytes": 201374,
-        "sha256": "3acfe1e8272e1011259a2f164151df9380994e6554a7966610d832ce2ea3e583",
-        "path_characters": 141
-      },
-      "project_save_open_cancellation_preserved_workspace_bytes_and_association": true,
-      "opened_same_file_identity_and_bytes": true,
-      "markdown_saved_exact_retained_hash": {
-        "bytes": 14493,
-        "sha256": "a1c1df3ebe94fcd6625688ca1a5a6230a1cf188c1e6ba1826a604c978669830a"
-      },
-      "pdf": {
-        "bytes": 362196,
-        "sha256": "6a6bf9b7970667497ee1d88eff057fe49570d118d1bebe9c16197b9fdb557a7c"
-      },
-      "report_cancellation_preserved_retained_artifacts_and_saved_pdf": true,
-      "ordinary_quit_and_owned_process_cleanup": true
-    },
-    {
-      "session": "wayland",
-      "evidence_artifact_id": 13795682537,
-      "source_commit": "874f91ef50d5507a7866b3da9039ee9116b65683",
-      "reference": {
-        "platform": "linux",
-        "architecture": "x64",
-        "kernel": "7.0.0-1017-azure",
-        "cpu": "AMD EPYC 9V74 80-Core Processor",
+        "cpu": "AMD EPYC 7763 64-Core Processor",
         "logical_cpus": 4,
         "memory_bytes": 16760344576,
         "node": "v24.22.2"
@@ -159,21 +75,106 @@
       "original_project_change_paths": [],
       "saved_project": {
         "bytes": 201374,
-        "sha256": "6031cc51846821cdd85813f6827352ca382b63fc54a72096c135fc20be5513da",
+        "sha256": "a765368480854796b9653fe23d19eb08c7cb5c090999f90b3414c27a1e32c12e",
         "path_characters": 141
       },
       "project_save_open_cancellation_preserved_workspace_bytes_and_association": true,
       "opened_same_file_identity_and_bytes": true,
       "markdown_saved_exact_retained_hash": {
         "bytes": 14493,
-        "sha256": "182da1a95600a8d1333a82b5541285913442b6d275f24baca61bc3c772af9cdb"
+        "sha256": "080b976421abef2dcc9f363271c7c1584461af17183462e1bc7ef5f7f50af760"
       },
       "pdf": {
-        "bytes": 362184,
-        "sha256": "070559866fb0bf4b040ac2c489275c7b866cad76d6f74ccd4dcbfd1888e57a83"
+        "bytes": 362204,
+        "sha256": "781f00b0299eb6b214a907ced7de2bc0ad865092e10b53b47b51d6ef626520db"
+      },
+      "report_cancellation_preserved_retained_artifacts_and_saved_pdf": true,
+      "ordinary_quit_and_owned_process_cleanup": true
+    },
+    {
+      "session": "wayland",
+      "evidence_artifact_id": 13798040687,
+      "source_commit": "a401ef756f0425c6ed913c79f9613f9ab9ceffb9",
+      "reference": {
+        "platform": "linux",
+        "architecture": "x64",
+        "kernel": "7.0.0-1017-azure",
+        "cpu": "AMD EPYC 7763 64-Core Processor",
+        "logical_cpus": 4,
+        "memory_bytes": 16760344576,
+        "node": "v24.22.2"
+      },
+      "result": "PASS",
+      "dialog_actions": [
+        {
+          "title": "Save A.T.O.M project",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M project",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "open",
+          "button": "Select",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        }
+      ],
+      "rf_posts": [
+        "/api/analyze-sector"
+      ],
+      "associated_project_dirty_flags": [
+        false,
+        false
+      ],
+      "original_project_change_paths": [],
+      "saved_project": {
+        "bytes": 201374,
+        "sha256": "545f9a6b6a004d0aad27ac4fe81bb78805f6ef05fb85106bcab001936a7ffb77",
+        "path_characters": 141
+      },
+      "project_save_open_cancellation_preserved_workspace_bytes_and_association": true,
+      "opened_same_file_identity_and_bytes": true,
+      "markdown_saved_exact_retained_hash": {
+        "bytes": 14493,
+        "sha256": "8b1c3f10b2e46ff204fe2b9a6a413aef3c963033057ccda6015678e376fa1c86"
+      },
+      "pdf": {
+        "bytes": 362202,
+        "sha256": "bd180ea5282bceb5229fc1a1b9aa8d9e8c376456ebfe532d7986eb850e22ac73"
       },
       "report_cancellation_preserved_retained_artifacts_and_saved_pdf": true,
       "ordinary_quit_and_owned_process_cleanup": true
     }
-  ]
+  ],
+  "previous_verified_run_id": 42885067397
 }

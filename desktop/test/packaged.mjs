@@ -10,6 +10,7 @@ import { sourceIdentity, processTree, assertExited, sleep, sha256 } from "./qual
 const require = createRequire(import.meta.url);
 const { nativePaths } = require("../lib/native-paths.cjs");
 const { inventory } = require("../lib/package-contract.cjs");
+const { exportProjectFile } = await import("../../frontend-react/src/utils/projectStore.js");
 const desktop = path.resolve(import.meta.dirname, "..");
 const root = path.dirname(desktop);
 const result = { ...sourceIdentity(root), mode: "production packaged host; native Save responses supplied by test, actual Print surface not qualified", rf_posts: [] };
@@ -73,7 +74,19 @@ async function launch() {
 async function ordinaryQuit() {
   const processes = await processTree(app.process().pid);
   assert.equal(processes.processes.filter((row) => row.executable === "atom-api").length, 1);
-  await app.evaluate(({ app }) => app.quit()); await app.close(); app = null;
+  // Detect an unexpected dirty prompt without leaving unattended CI blocked
+  // in an OS sheet. Keep Editing is safe; failure cleanup retains recovery.
+  await app.evaluate(({ app, dialog }) => {
+    globalThis.__packageQuitPrompt = false;
+    dialog.showMessageBox = async () => { globalThis.__packageQuitPrompt = true; return { response: 0 }; };
+    app.quit();
+  });
+  await until(async () => {
+    if (app.process().exitCode !== null) return true;
+    assert.equal(await app.evaluate(() => globalThis.__packageQuitPrompt), false, "Clean ordinary Quit unexpectedly asked about unsaved files");
+    return false;
+  }, "Ordinary Quit did not exit");
+  await app.close(); app = null;
   await assertExited(processes.processes.map((row) => row.pid));
 }
 try {
@@ -101,6 +114,25 @@ try {
   await ordinaryQuit();
   await launch();
   await page.getByRole("button", { name: /^Project menu,/ }).click();
+  const savedProject = JSON.parse(await fs.readFile(projectFile, "utf8"));
+  const restored = await page.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open("atom-planning-workspace", 1);
+    request.onerror = () => reject(new Error("Cannot inspect private qualification workspace"));
+    request.onsuccess = () => {
+      const db = request.result; const read = db.transaction("workspace").objectStore("workspace").get("current");
+      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace.projects.find((project) => project.id === workspace.activeProjectId)); };
+      read.onerror = () => { db.close(); reject(new Error("Cannot read qualification workspace")); };
+    };
+  }));
+  const restoredProject = JSON.parse(exportProjectFile(restored));
+  const changed = [];
+  function differences(before, after, key = "") {
+    if (JSON.stringify(before) === JSON.stringify(after)) return;
+    if (before && after && typeof before === "object" && typeof after === "object") {
+      for (const name of new Set([...Object.keys(before), ...Object.keys(after)])) differences(before[name], after[name], key + "/" + name);
+    } else changed.push({ path: key, before, after });
+  }
+  differences(savedProject, restoredProject); result.restored_project_differences = changed.slice(0, 30);
   await page.getByText(/Saved to Türkçe package.atom-project.json/).waitFor();
   assert.ok(await cleanAssociation());
   await page.keyboard.press("Escape");
@@ -116,7 +148,10 @@ try {
   throw error;
 } finally {
   await fs.mkdir(path.dirname(output), { recursive: true }); await fs.writeFile(output, JSON.stringify(result, null, 2) + "\n");
-  if (app) await app.close().catch(() => {});
+  if (app) {
+    await app.evaluate(({ dialog }) => { dialog.showMessageBox = async () => ({ response: 1 }); }).catch(() => {});
+    await app.close().catch(() => {});
+  }
   await permissions(relocated, true).catch(() => {}); await fs.rm(scratch, { recursive: true, force: true });
 }
 console.log(JSON.stringify(result, null, 2));

@@ -20,10 +20,19 @@
     "test:datasets": "node test/datasets.mjs",
     "test:diagnostics": "node test/diagnostics.mjs",
     "test:startup-budget": "node test/startup-budget.mjs",
-    "test:rf-parity": "node test/rf-parity.mjs"
+    "test:rf-parity": "node test/rf-parity.mjs",
+    "package": "node scripts/package.mjs",
+    "test:package": "node test/packaged.mjs"
   },
   "devDependencies": {
+    "@electron/packager": "20.3.0",
     "electron": "44.10.2",
     "playwright-core": "1.61.1"
+  },
+  "overrides": {
+    "@electron/asar": {
+      "glob": "14.0.4",
+      "minimatch": "11.0.5"
+    }
   }
 }

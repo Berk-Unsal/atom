@@ -6,6 +6,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add native architecture-specific internal desktop package assembly, macOS ZIP/DMG recipes, byte/permission inventories and a production-bundle relocation/read-only smoke. Public distribution and default-data upload remain gated.
+
 - Add native dataset folder/manifest selection, canonical Go validation, managed copy/reference registration, explicit moved-reference recovery and persistent selection without changing project dataset identities or RF contracts.
 - Save shared reports and review packages through native dialogs and render Print/PDF in a scriptless isolated surface, preserving retained bytes/hashes and shared report lineage.
 - Add dialog-approved native project Open, Save, Save As and Export Copy through the shared portable-project format, with atomic replacement, external-edit conflicts, per-project file status and a save-before-quit choice separate from recovery autosave and Save Version.

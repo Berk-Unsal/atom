@@ -10,7 +10,7 @@ import { exportMetadata } from "./candidate-metadata.mjs";
 const require = createRequire(import.meta.url);
 const { inventory, hash, dataApproval } = require("../lib/package-contract.cjs");
 const { validateAuthorization, validateCIContext, validateDeveloperIdentity, entitlementsFor, validateNotary, validateSignature } = require("../lib/signing-contract.cjs");
-const { consumeCredentials, privateKeychain } = require("../lib/signing-credentials.cjs");
+const { withSigningCredentials, privateKeychain } = require("../lib/signing-credentials.cjs");
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const [mode, packageArgument] = process.argv.slice(2);
 if (!["--plan", "--execute"].includes(mode) || !packageArgument || process.argv.length !== 4) throw new Error("Usage: node desktop/scripts/sign.mjs --plan|--execute PACKAGE_DIRECTORY");
@@ -55,20 +55,20 @@ const identity = validateAuthorization(authorization, { version, source_commit: 
 if (!dataApproved || metadata.data_redistribution_approved !== true) throw new Error("Exact bundled-data approval is required in both the source package and signing policy before any Apple upload");
 if (metadata.notices_complete !== true) throw new Error("Complete runtime notices are required before signing or Apple upload");
 await environmentProtection();
-const credentials = consumeCredentials(process.env);
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-private-signing-"));
 let keychain;
 const output = path.join(desktop, "build/signed-candidates", `atom-${version}-darwin-${metadata.arch}`);
 const receipt = { ...plan, certificate_sha1: identity.certificateSHA1, team_id: identity.teamID, notarization: [], signatures: [], verification: {}, trust: "unsigned-incomplete" };
 await fs.mkdir(output, { recursive: true });
-Object.assign(receipt, await exportMetadata(resourceRoot, output, { version, source_commit: metadata.commit, platform: "darwin", arch: metadata.arch }));
 const run = (command, args) => {
   const result = spawnSync(command, args, { encoding: "utf8", maxBuffer: 2 * 1024 * 1024 });
   if (result.status !== 0 || result.error) throw new Error(`${path.basename(command)} failed during candidate signing/verification`);
   return { stdout: result.stdout || "", stderr: result.stderr || "" };
 };
 const app = path.join(scratch, "A.T.O.M.app");
+await withSigningCredentials(process.env, async (credentials) => {
 try {
+  Object.assign(receipt, await exportMetadata(resourceRoot, output, { version, source_commit: metadata.commit, platform: "darwin", arch: metadata.arch }));
   keychain = privateKeychain(scratch, credentials);
   validateDeveloperIdentity(keychain.identities, identity);
   await fs.cp(original, app, { recursive: true, verbatimSymlinks: true });
@@ -134,9 +134,10 @@ try {
   await fs.writeFile(path.join(output, "SHA256SUMS"), receipt.artifacts.map((artifact) => `${artifact.sha256}  ${artifact.file}\n`).join(""));
 } catch (error) { receipt.result = "FAIL"; receipt.failure = error.message; throw error; }
 finally {
-  keychain?.cleanup(); credentials.p12.fill(0); credentials.notary.fill(0);
+  try { keychain?.cleanup(); }
+  finally { await fs.rm(scratch, { recursive: true, force: true }); }
   await fs.writeFile(path.join(output, "signing.json"), JSON.stringify(receipt, null, 2) + "\n");
   await fs.writeFile(path.join(output, `atom-${version}-darwin-${metadata.arch}.signing.json`), JSON.stringify(receipt, null, 2) + "\n");
-  await fs.rm(scratch, { recursive: true, force: true });
 }
+});
 console.log(JSON.stringify(receipt, null, 2));

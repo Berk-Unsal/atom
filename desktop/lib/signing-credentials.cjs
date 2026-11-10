@@ -41,4 +41,9 @@ function privateKeychain(directory, credentials) {
     return { keychain, notaryKey, identities: security(["find-identity", "-v", "-p", "codesigning", keychain]), cleanup };
   } catch (error) { cleanup(); throw error; }
 }
-module.exports = { consumeCredentials, privateKeychain, SECRET_NAMES };
+async function withSigningCredentials(env, operation) {
+  const credentials = consumeCredentials(env);
+  try { return await operation(credentials); }
+  finally { credentials.p12.fill(0); credentials.notary.fill(0); }
+}
+module.exports = { consumeCredentials, privateKeychain, SECRET_NAMES, withSigningCredentials };

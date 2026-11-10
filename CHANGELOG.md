@@ -7,6 +7,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 ### Added
 
 - Add Ubuntu 24.04 x86_64 internal .deb assembly, measured ELF dependency metadata, desktop identity and per-app sandbox policy, with separate X11/Wayland install/upgrade/removal qualification. Public Linux support and data distribution remain gated.
+- Add an opt-in protected macOS signing/notarization candidate recipe with exact-source/data authorization, minimal per-file entitlements, temporary credential handling and signature/stapling/Gatekeeper verification. Public trust and distribution require external approval and qualification.
 
 - Add native architecture-specific internal desktop package assembly, macOS ZIP/DMG recipes, byte/permission inventories and a production-bundle relocation/read-only smoke. Public distribution and default-data upload remain gated.
 

@@ -116,7 +116,13 @@ async function launch() {
   let rendererLoaded = false;
   window.webContents.on("did-finish-load", () => {
     rendererLoaded = true;
-    if (!quitting && window && !window.isDestroyed() && isTrustedDocument(window.webContents.getURL())) backend.setUIReady(true);
+    if (!quitting && window && !window.isDestroyed() && isTrustedDocument(window.webContents.getURL())) {
+      // A loaded hidden native window can stop receiving initial frame
+      // callbacks on Wayland. Do not make first visibility depend solely on
+      // ready-to-show; respect an explicit minimize while loading.
+      if (!window.isVisible() && !window.isMinimized()) window.show();
+      backend.setUIReady(true);
+    }
   });
   window.webContents.on("render-process-gone", (_event, details) => {
     backend.setUIReady(false);

@@ -35,6 +35,7 @@ const relocated = installed ? "/opt/atom-planner" : path.join(scratch, "Outside 
 const executable = path.join(relocated, process.platform === "darwin" ? "Contents/MacOS/atom-desktop" : "atom-desktop");
 const originalBundle = path.join(packageRoot, process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M-linux-x64");
 const output = path.join(desktop, "test-results/packaged.json");
+await fs.mkdir(path.dirname(output), { recursive: true });
 const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin", XDG_DATA_HOME: path.join(home, "data"), XDG_CONFIG_HOME: path.join(home, "config"),
   XDG_CACHE_HOME: path.join(home, "cache"), XDG_STATE_HOME: path.join(home, "state"),
   ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "must-not-use"), ATOM_DESKTOP_TEST_RESOURCES: "/nonexistent", ATOM_DESKTOP_DEV_SERVER: "http://127.0.0.1:1" };
@@ -106,6 +107,7 @@ async function launch() {
   page.setDefaultTimeout(30_000);
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
+  await until(async () => app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().some((window) => window.webContents.getURL() === "app://atom/" && window.isVisible())), "Loaded native window remained hidden");
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));
   await waitForRuntime(page, (runtime) => runtime.state === "ready");
   assert.equal(page.url(), "app://atom/");
@@ -167,10 +169,14 @@ try {
   }
   await page.getByRole("button", { name: "Review workspace", exact: true }).click(); await page.locator("#stage-tool-review-report").click();
   await page.locator(".report-source-lineage").filter({ hasText: "Runs: Simulation Run" }).first().waitFor();
-  await app.evaluate(({ dialog }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); }, pdfFile);
+  const previousPDF = await fs.readFile(pdfFile).catch(() => null);
+  await app.evaluate(({ dialog }, file) => { globalThis.__packageReportChooserCalls = 0; dialog.showSaveDialog = async () => { globalThis.__packageReportChooserCalls++; return { canceled: false, filePath: file }; }; }, pdfFile);
   await page.getByRole("button", { name: "Save PDF", exact: true }).click();
+  await until(async () => app.evaluate(() => globalThis.__packageReportChooserCalls === 1), "The current PDF export did not request its destination");
+  await until(async () => page.getByRole("button", { name: "Save PDF", exact: true }).isEnabled(), "The current PDF export did not finish");
   await until(async () => Boolean(await fs.stat(pdfFile).catch(() => null)), "Packaged report PDF was not saved");
   const pdf = await fs.readFile(pdfFile); assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
+  if (previousPDF) assert.notEqual(sha256(pdf), sha256(previousPDF), "The explicit new-Run report export did not replace the previous phase's PDF");
   result.pdf = { bytes: pdf.length, sha256: sha256(pdf) };
   await app.evaluate(({ dialog, Menu }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); Menu.getApplicationMenu().getMenuItemById("atom-project-save-as").click(); }, projectFile);
   await until(cleanAssociation, "Portable Save did not establish a clean association");

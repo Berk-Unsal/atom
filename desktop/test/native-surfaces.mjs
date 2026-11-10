@@ -130,8 +130,12 @@ try {
   result.report_cancellation_preserved_retained_artifacts_and_saved_pdf = true;
   const printers = await application.evaluate(async ({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.getPrintersAsync());
   const printer = printers.find((row) => row.name === "AtomQualification");
-  assert.ok(printer?.isDefault, "The disposable local virtual printer must be the real OS default");
-  result.printer = { name: printer.name, is_default: printer.isDefault, status: printer.status };
+  assert.ok(printer, "The installed app must enumerate the real local virtual printer");
+  // Electron 44 PrinterInfo has no isDefault property. Independently observe
+  // the real CUPS default rather than treating a removed API field as evidence.
+  const defaultPrinter = (await run("lpstat", ["-d"])).stdout.trim();
+  assert.equal(defaultPrinter, "system default destination: AtomQualification");
+  result.printer = { name: printer.name, cups_default: defaultPrinter, state: printer.options?.["printer-state"] };
   const jobsBefore = await queueJobs(); assert.equal(jobsBefore, "");
   const printArtifacts = await artifacts();
   await page.getByRole("button", { name: "Print", exact: true }).click(); await printAction("cancel");

@@ -1,6 +1,20 @@
 "use strict";
 const test = require("node:test"); const assert = require("node:assert/strict");
-const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand } = require("../lib/deb-contract.cjs");
+const fs = require("node:fs"); const os = require("node:os"); const path = require("node:path");
+const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand, normalizeInstalledModes } = require("../lib/deb-contract.cjs");
+test("root-owned installed software is traversable/readable without retaining setuid bits or following links", (t) => {
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "atom-deb-modes-")); t.after(() => fs.rmSync(scratch, { recursive: true, force: true }));
+  const root = path.join(scratch, "payload"); fs.mkdirSync(root, { mode: 0o700 });
+  fs.writeFileSync(path.join(root, "data"), "fixture", { mode: 0o600 });
+  fs.writeFileSync(path.join(root, "binary"), "fixture", { mode: 0o755 }); fs.chmodSync(path.join(root, "binary"), 0o4755);
+  const outside = path.join(scratch, "outside"); fs.writeFileSync(outside, "untouched", { mode: 0o600 });
+  fs.symlinkSync("../outside", path.join(root, "link"));
+  normalizeInstalledModes(root);
+  assert.equal(fs.statSync(root).mode & 0o7777, 0o755);
+  assert.equal(fs.statSync(path.join(root, "data")).mode & 0o7777, 0o644);
+  assert.equal(fs.statSync(path.join(root, "binary")).mode & 0o7777, 0o755);
+  assert.equal(fs.statSync(outside).mode & 0o7777, 0o600);
+});
 test("native command runner supports inherited output and propagates real failures", () => {
   assert.equal(runCommand(process.execPath, ["-e", "process.stdout.write(' result \\n')"]), "result");
   assert.equal(runCommand(process.execPath, ["-e", "process.exit(0)"], { stdio: "inherit" }), "");

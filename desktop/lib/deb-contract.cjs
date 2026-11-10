@@ -1,8 +1,18 @@
 "use strict";
 const { execFileSync } = require("node:child_process");
+const fs = require("node:fs"); const path = require("node:path");
 function runCommand(command, args, options = {}) {
   const output = execFileSync(command, args, { encoding: "utf8", ...options });
   return typeof output === "string" ? output.trim() : "";
+}
+function normalizeInstalledModes(root) {
+  const stat = fs.lstatSync(root);
+  if (stat.isSymbolicLink()) return;
+  if (stat.isDirectory()) {
+    fs.chmodSync(root, 0o755);
+    for (const name of fs.readdirSync(root)) normalizeInstalledModes(path.join(root, name));
+  } else if (stat.isFile()) fs.chmodSync(root, stat.mode & 0o111 ? 0o755 : 0o644);
+  else throw new Error("Installed packages require regular files/directories or internal links");
 }
 const DYNAMIC_PACKAGES = ["apparmor (>= 4.0)", "libgtk-3-0t64", "libnss3", "libasound2t64", "libgbm1", "libxss1", "libxshmfence1", "libxkbcommon0", "libatk-bridge2.0-0t64", "libcups2t64", "xdg-utils", "xdg-desktop-portal", "xdg-desktop-portal-gnome"];
 function assertUbuntu({ platform, arch, dpkgArch, release }) {
@@ -29,4 +39,4 @@ function control({ version, dependencies, installedBytes }) {
   if (!dependencies.length || dependencies.some((item) => /[\r\n]/.test(item))) throw new Error("Invalid runtime dependency list");
   return `Package: atom-planner\nVersion: ${version}\nSection: science\nPriority: optional\nArchitecture: amd64\nMaintainer: A.T.O.M contributors <noreply@github.com>\nInstalled-Size: ${Math.ceil(installedBytes / 1024)}\nDepends: ${[...new Set([...dependencies, ...DYNAMIC_PACKAGES])].sort().join(", ")}\nHomepage: https://github.com/Berk-Unsal/atom\nDescription: A.T.O.M telecom planning (internal unsigned candidate)\n Shared React/Go planning product with an Electron desktop host.\n Public distribution and supported-environment qualification remain gated.\n`;
 }
-module.exports = { assertUbuntu, linkedLibraries, dependencyFloor, control, DYNAMIC_PACKAGES, runCommand };
+module.exports = { assertUbuntu, linkedLibraries, dependencyFloor, control, DYNAMIC_PACKAGES, runCommand, normalizeInstalledModes };

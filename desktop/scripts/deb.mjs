@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand } = require("../lib/deb-contract.cjs");
+const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand, normalizeInstalledModes } = require("../lib/deb-contract.cjs");
 const { inventory, hash } = require("../lib/package-contract.cjs");
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const run = (command, args, options = {}) => runCommand(command, args, { cwd: root, ...options });
@@ -65,6 +65,10 @@ try {
   const rows = inventory(scratch);
   const body = control({ version, dependencies: [...dependencies], installedBytes: rows.reduce((sum, row) => sum + (row.bytes || 0), 0) });
   await fs.writeFile(path.join(debian, "control"), body);
+  // Packager's private staging root can be 0700. dpkg installs it as root, so
+  // normalize public software traversal/read modes before root ownership is
+  // applied. Native user-data permissions remain the runtime's private 0700.
+  normalizeInstalledModes(scratch);
   run("desktop-file-validate", [path.join(scratch, "usr/share/applications/io.github.berk-unsal.atom.desktop")]);
   run("sh", ["-n", path.join(debian, "postinst")]); run("sh", ["-n", path.join(debian, "postrm")]);
   const destination = path.join(packageRoot, `atom-${version}-linux-x64-internal-unsigned.deb`);

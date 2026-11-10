@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+if [ "${1:-}" = configure ] && command -v aa-enabled >/dev/null 2>&1 && aa-enabled; then
+  apparmor_parser -r /etc/apparmor.d/atom-planner
+fi

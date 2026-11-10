@@ -22,7 +22,9 @@
     "test:startup-budget": "node test/startup-budget.mjs",
     "test:rf-parity": "node test/rf-parity.mjs",
     "package": "node scripts/package.mjs",
-    "test:package": "node test/packaged.mjs"
+    "test:package": "node test/packaged.mjs",
+    "package:deb": "node scripts/deb.mjs",
+    "test:deb": "node test/deb-installed.mjs"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",

@@ -1,0 +1,8 @@
+abi <abi/4.0>,
+include <tunables/global>
+
+# Exact installed executable; Chromium retains its user-namespace sandbox.
+# No machine-wide sysctl change or setuid sandbox helper is required.
+profile atom-planner /opt/atom-planner/atom-desktop flags=(unconfined) {
+  userns,
+}

@@ -15,6 +15,7 @@ const desktop = path.resolve(import.meta.dirname, "..");
 const root = path.dirname(desktop);
 const result = { ...sourceIdentity(root), mode: "production packaged host; native Save responses supplied by test, actual Print surface not qualified", rf_posts: [] };
 const diagnose = process.argv.includes("--diagnose");
+const installed = process.argv.includes("--installed");
 result.qualification = !diagnose;
 if (!diagnose) assert.equal(result.source_dirty, false);
 const version = (await fs.readFile(path.join(root, "VERSION"), "utf8")).trim();
@@ -22,9 +23,15 @@ const packageRoot = path.join(desktop, "build/packages", `atom-${version}-${proc
 const metadata = JSON.parse(await fs.readFile(path.join(packageRoot, "package.json"), "utf8"));
 assert.equal(metadata.commit, result.source_commit); assert.equal(metadata.version, version);
 result.package = metadata;
-const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-package-smoke-"));
+const scratch = installed ? process.env.ATOM_DEB_QUALIFICATION_ROOT : await fs.mkdtemp(path.join(os.tmpdir(), "atom-package-smoke-"));
+if (installed) {
+  assert.equal(process.platform, "linux"); assert.equal(process.env.GITHUB_ACTIONS, "true");
+  assert.ok(scratch && path.basename(scratch).startsWith("atom-deb-install-") && path.dirname(scratch) === os.tmpdir());
+  const stat = await fs.lstat(scratch); assert.equal(stat.isDirectory() && !stat.isSymbolicLink(), true);
+  assert.equal(stat.uid, process.getuid()); assert.equal(stat.mode & 0o777, 0o700);
+}
 const home = path.join(scratch, "Native home — çığ spaces");
-const relocated = path.join(scratch, "Outside repository — çığ spaces", process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M");
+const relocated = installed ? "/opt/atom-planner" : path.join(scratch, "Outside repository — çığ spaces", process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M");
 const executable = path.join(relocated, process.platform === "darwin" ? "Contents/MacOS/atom-desktop" : "atom-desktop");
 const originalBundle = path.join(packageRoot, process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M-linux-x64");
 const output = path.join(desktop, "test-results/packaged.json");
@@ -79,7 +86,8 @@ async function cleanAssociation() {
   return false;
 }
 async function launch() {
-  app = await launchNative({ executablePath: executable, cwd: home, args: [], env, chromiumSandbox: true, timeout: 60_000 });
+  const args = installed && process.env.ATOM_DEB_DISPLAY_SESSION === "wayland" ? ["--ozone-platform=wayland"] : [];
+  app = await launchNative({ executablePath: executable, cwd: home, args, env, chromiumSandbox: true, timeout: 60_000 });
   page = await app.firstWindow(); await page.waitForLoadState("domcontentloaded");
   page.setDefaultTimeout(30_000);
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
@@ -117,11 +125,17 @@ async function ordinaryQuit() {
 }
 try {
   await fs.mkdir(home, { recursive: true, mode: 0o700 });
-  await fs.mkdir(path.dirname(relocated), { recursive: true });
-  await fs.cp(originalBundle, relocated, { recursive: true, verbatimSymlinks: true });
+  if (!installed) {
+    await fs.mkdir(path.dirname(relocated), { recursive: true });
+    await fs.cp(originalBundle, relocated, { recursive: true, verbatimSymlinks: true });
+  }
   const before = inventory(relocated).map(({ mode: _mode, ...row }) => row);
-  await permissions(relocated, false);
-  await launch(); result.readonly_relocated_production_bundle_launched = true;
+  if (!installed) await permissions(relocated, false);
+  else { assert.notEqual(process.getuid(), 0); assert.equal(await fs.access(executable, 2).then(() => true, () => false), false); }
+  await launch();
+  result.readonly_relocated_production_bundle_launched = !installed;
+  result.installed_root_owned_bundle_launched = installed;
+  result.display_session = installed ? process.env.ATOM_DEB_DISPLAY_SESSION : null;
   const sector = page.waitForResponse((response) => response.url().endsWith("/api/analyze-sector") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Run Sector", exact: true }).click(); assert.equal((await sector).status(), 200);
   await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
@@ -162,6 +176,6 @@ try {
     await app.evaluate(({ app, dialog }) => { dialog.showMessageBox = async () => ({ response: 1 }); app.quit(); }).catch(() => {});
     await app.close().catch(() => {});
   }
-  await permissions(relocated, true).catch(() => {}); await fs.rm(scratch, { recursive: true, force: true });
+  if (!installed) { await permissions(relocated, true).catch(() => {}); await fs.rm(scratch, { recursive: true, force: true }); }
 }
 console.log(JSON.stringify(result, null, 2));

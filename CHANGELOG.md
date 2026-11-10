@@ -27,6 +27,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Prepare existing project compatibility metadata before native portable Save, keeping untouched files clean when later report/domain operations materialize defaults without creating a planning Version or running RF.
+
 - Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.
 
 - Refresh native content-hash status after the first project Save so unchanged bytes become clean without another edit or RF run.

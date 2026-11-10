@@ -17,3 +17,11 @@ The workflow retains only source-bound JSON receipts, real chooser accessibility
 Local validation covers driver process/title/state restrictions, ambiguous/refused editable fields, exact Cancel activation, Node/shell syntax and the inherited host regressions. A macOS syntax check is not GTK or Wayland evidence. Native outcomes must come from the actual workflow before any acceptance claim.
 
 These are disposable headless sessions. They do not qualify a graphical package-manager installation, a complete clean GNOME machine, configured-printer Print, signed/quarantined macOS downloads or the original performance budgets. Existing macOS chooser observations and native automation retain their own source/scope. Physical/OS Print acceptance, rights, provider and support decisions remain separate.
+
+## First production observations and correction
+
+Both sessions in run `42881510735` complete the seven actual GTK project/report chooser actions, including file identity, retained Markdown hash and PDF cancellation. The final ordinary-Quit check fails. Run `42882559930` then confirms an older associated Project becomes dirty when shared report/domain operations add its previously implicit description, tags and inventory metadata; the active imported Project is clean. This is a production normalization issue rather than a failed chooser response.
+
+Native file preparation now materializes that existing compatibility metadata in the target Project through the existing ordered recovery queue before capturing its portable content-hash baseline. It preserves drafts, existing Scenario/Version count and timestamps, does not run RF, and is idempotent on subsequent preparation. A regression fails on the prior implementation and passes with the fix; actual changed content still changes the portable bytes. The shared schema/serializer and size limits are unchanged. Hosted verification is pending.
+
+The first difference diagnostic accidentally retained expanded inventory values. Both owned artifacts from run `42882559930` (`13794997540`, `13793924362`) were removed; the API confirms no artifacts remain for that run. Diagnostic differences now include only bounded paths, types, lengths and SHA-256, with regressions preventing source rows from appearing in their output. Native files/reports and default layers remain excluded from uploads.

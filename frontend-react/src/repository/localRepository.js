@@ -486,6 +486,15 @@ export class LocalRepository {
     return this.store.exportProjectFile(project);
   }
 
+  prepareProjectFile(project) {
+    // Materialize the existing compatibility metadata before a native file
+    // becomes the content-hash baseline. Later domain/report operations must
+    // not make an untouched legacy Project appear edited merely by doing this.
+    const workspace = { schemaVersion: 2, activeProjectId: project.id, projects: [project] };
+    const normalized = domainToWorkspace(workspaceToDomain(workspace), workspace).projects[0];
+    return JSON.stringify(normalized) === JSON.stringify(project) ? project : normalized;
+  }
+
   importProjectFile(text) {
     return this.store.importProjectFile(text);
   }

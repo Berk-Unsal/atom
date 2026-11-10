@@ -1,6 +1,11 @@
 "use strict";
 const test = require("node:test"); const assert = require("node:assert/strict");
-const { assertUbuntu, linkedLibraries, dependencyFloor, control } = require("../lib/deb-contract.cjs");
+const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand } = require("../lib/deb-contract.cjs");
+test("native command runner supports inherited output and propagates real failures", () => {
+  assert.equal(runCommand(process.execPath, ["-e", "process.stdout.write(' result \\n')"]), "result");
+  assert.equal(runCommand(process.execPath, ["-e", "process.exit(0)"], { stdio: "inherit" }), "");
+  assert.throws(() => runCommand(process.execPath, ["-e", "process.exit(7)"], { stdio: "ignore" }), (error) => error.status === 7);
+});
 test("Ubuntu package baseline rejects another distro, release, host or architecture", () => {
   const target = { platform: "linux", arch: "x64", dpkgArch: "amd64", release: 'ID=ubuntu\nVERSION_ID="24.04"\n' };
   assert.equal(assertUbuntu(target).VERSION_ID, "24.04");

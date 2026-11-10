@@ -1,12 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { execFileSync } from "node:child_process";
 const require = createRequire(import.meta.url);
-const { assertUbuntu, linkedLibraries, dependencyFloor, control } = require("../lib/deb-contract.cjs");
+const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand } = require("../lib/deb-contract.cjs");
 const { inventory, hash } = require("../lib/package-contract.cjs");
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
-const run = (command, args, options = {}) => execFileSync(command, args, { cwd: root, encoding: "utf8", ...options }).trim();
+const run = (command, args, options = {}) => runCommand(command, args, { cwd: root, ...options });
 if (process.argv.length !== 2) throw new Error("Usage: node desktop/scripts/deb.mjs");
 if (process.platform !== "linux") throw new Error("Build the .deb natively on updated Ubuntu 24.04 x86_64");
 const os = assertUbuntu({ platform: process.platform, arch: process.arch, dpkgArch: run("dpkg", ["--print-architecture"]), release: await fs.readFile("/etc/os-release", "utf8") });

@@ -9,6 +9,8 @@ import { execFile } from "node:child_process";
 import { createRequire } from "node:module";
 import { launchNative } from "./native-launch.mjs";
 import { waitForRuntime } from "./runtime-wait.mjs";
+import { startupDiagnostics } from "./startup-diagnostics.mjs";
+import { exportProjectFile } from "../../frontend-react/src/utils/projectStore.js";
 import { sourceIdentity, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 const require = createRequire(import.meta.url);
 const { inventory } = require("../lib/package-contract.cjs");
@@ -46,13 +48,13 @@ async function drive(action, title, target) {
 }
 async function command(id) { await application.evaluate(({ Menu }, commandId) => Menu.getApplicationMenu().getMenuItemById(commandId).click(), id); }
 async function fileState() { const receipt = await page.evaluate(() => window.atomDesktop.getProjectFileState()); assert.equal(receipt.ok, true); return receipt.value; }
-async function project() {
-  return page.evaluate(() => new Promise((resolve, reject) => {
+async function project(all = false) {
+  return page.evaluate((all) => new Promise((resolve, reject) => {
     const request = indexedDB.open("atom-planning-workspace", 1);
     request.onupgradeneeded = () => request.transaction.abort(); request.onerror = () => reject(new Error("Workspace unavailable"));
     request.onsuccess = () => { const database = request.result; const read = database.transaction("workspace").objectStore("workspace").get("current");
-      read.onsuccess = () => { database.close(); resolve(read.result.projects.find((project) => project.id === read.result.activeProjectId)); }; read.onerror = () => { database.close(); reject(new Error("Workspace read failed")); }; };
-  }));
+      read.onsuccess = () => { database.close(); resolve(all ? read.result.projects : read.result.projects.find((project) => project.id === read.result.activeProjectId)); }; read.onerror = () => { database.close(); reject(new Error("Workspace read failed")); }; };
+  }), all);
 }
 async function artifacts() {
   return page.evaluate(() => new Promise((resolve, reject) => {
@@ -119,6 +121,18 @@ try {
   result.report_cancellation_preserved_retained_artifacts_and_saved_pdf = true;
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
+  result.file_status_before_quit = await fileState();
+  const originalAfterImport = (await project(true)).find((row) => row.id === projectBeforeCancel.id);
+  const oldFile = JSON.parse(exportProjectFile(projectBeforeCancel)); const currentFile = JSON.parse(exportProjectFile(originalAfterImport));
+  result.original_project_changes = [];
+  function compare(left, right, key = "") {
+    if (JSON.stringify(left) === JSON.stringify(right)) return;
+    if (left && right && typeof left === "object" && typeof right === "object") {
+      for (const name of new Set([...Object.keys(left), ...Object.keys(right)])) compare(left[name], right[name], `${key}/${name}`);
+    } else if (result.original_project_changes.length < 30) result.original_project_changes.push({ path: key, before: left, after: right });
+  }
+  compare(oldFile, currentFile);
+  assert.ok(result.file_status_before_quit.filter((row) => row.path).every((row) => !row.dirty), "Every associated project must be clean before ordinary Quit");
   const processes = await processTree(application.process().pid); await application.evaluate(({ app }) => app.quit());
   let timer; try { await Promise.race([application.close(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("Ordinary native Quit did not finish")), 15_000); })]); } finally { clearTimeout(timer); }
   application = null; await assertExited(processes.processes.map((row) => row.pid));
@@ -126,6 +140,7 @@ try {
   result.ordinary_quit_and_owned_process_cleanup = true; result.result = "PASS";
 } catch (error) {
   result.result = "FAIL"; result.failure = error.stack;
+  if (application && page) result.failure_diagnostics = await startupDiagnostics(application, page);
   await page?.screenshot({ path: path.join(desktop, "test-results/native-surfaces-failed.png"), timeout: 5000 }).catch(() => {});
   throw error;
 } finally {

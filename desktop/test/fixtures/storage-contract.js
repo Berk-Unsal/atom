@@ -1,6 +1,6 @@
 // Bundled only by the native storage test into its disposable packaged fixture.
 // Exercise the shared production repositories in a real Chromium IndexedDB.
-import { loadProjectWorkspace, saveProjectWorkspace } from "../../../frontend-react/src/utils/projectStore.js";
+import { loadProjectWorkspace } from "../../../frontend-react/src/utils/projectStore.js";
 import { createLocalRepository } from "../../../frontend-react/src/repository/localRepository.js";
 import { LocalRunHistoryRepository } from "../../../frontend-react/src/repository/runHistoryRepository.js";
 import { LocalArtifactStore } from "../../../frontend-react/src/repository/artifactStore.js";
@@ -9,8 +9,7 @@ import { createGeneratedReportArtifact } from "../../../frontend-react/src/domai
 
 export async function seed() {
   const workspace = await loadProjectWorkspace();
-  workspace.projects[0].name = "Durable Ankara — çığ workspace";
-  await saveProjectWorkspace(workspace);
+  if (workspace.projects[0].name !== "Durable Ankara — çığ workspace") throw new Error("Wait for the actual application rename to persist before seeding independent stores");
   const projectId = workspace.projects[0].id;
   const run = createRun({ run_id: "native-storage-run", project_id: projectId, status: "succeeded", summary: { note: "durable native evidence fixture" } });
   await new LocalRunHistoryRepository().saveRun(run);
@@ -20,6 +19,8 @@ export async function seed() {
   localStorage.setItem("native-storage-fallback-marker", "retained localStorage");
   return { projectId, hash: artifact.content_hash };
 }
+
+export async function projectName() { return (await loadProjectWorkspace()).projects[0].name; }
 
 export async function inspect() {
   const workspace = await createLocalRepository().loadWorkspace();

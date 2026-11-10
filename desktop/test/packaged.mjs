@@ -45,16 +45,19 @@ const pdfFile = path.join(scratch, "Package report — çığ.pdf");
 let app; let page; let savedProject; let launchNumber = 0;
 result.api_responses = []; result.renderer_errors = [];
 const bounded = (rows, row) => { rows.push(row); if (rows.length > 100) rows.shift(); };
-async function projectDifferences() {
-  const restored = await page.evaluate(() => new Promise((resolve, reject) => {
+async function readActiveProject() {
+  return page.evaluate(() => new Promise((resolve, reject) => {
     const request = indexedDB.open("atom-planning-workspace", 1);
     request.onerror = () => reject(new Error("Cannot inspect private qualification workspace"));
     request.onsuccess = () => {
       const db = request.result; const read = db.transaction("workspace").objectStore("workspace").get("current");
-      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace.projects.find((project) => project.id === workspace.activeProjectId)); };
+      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace?.projects?.find((project) => project.id === workspace.activeProjectId) ?? null); };
       read.onerror = () => { db.close(); reject(new Error("Cannot read qualification workspace")); };
     };
   }));
+}
+async function projectDifferences() {
+  const restored = await readActiveProject();
   const current = JSON.parse(exportProjectFile(restored));
   const changed = [];
   function compare(before, after, key = "") {
@@ -147,11 +150,21 @@ try {
   result.readonly_relocated_production_bundle_launched = !installed;
   result.installed_root_owned_bundle_launched = installed;
   result.display_session = installed ? process.env.ATOM_DEB_DISPLAY_SESSION : null;
+  const existingProject = await readActiveProject();
+  const existingScenario = existingProject?.scenarios?.find((scenario) => scenario.id === existingProject.activeScenarioId);
+  const existingRevision = existingScenario?.domain?.current_revision_id ?? null;
+  if (existingRevision) await page.getByText(`Version ${existingScenario.domain.revision}`, { exact: true }).first().waitFor();
   const sector = page.waitForResponse((response) => response.url().endsWith("/api/analyze-sector") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Run Sector", exact: true }).click(); assert.equal((await sector).status(), 200);
   await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
-  await page.getByRole("button", { name: /^Project menu,/ }).click(); await page.getByRole("button", { name: "Save Version", exact: true }).click();
-  await page.getByText("Version saved", { exact: true }).waitFor(); await page.keyboard.press("Escape");
+  if (!existingRevision) {
+    await page.getByRole("button", { name: /^Project menu,/ }).click(); await page.getByRole("button", { name: "Save Version", exact: true }).click();
+    await page.getByText("Version saved", { exact: true }).waitFor(); await page.keyboard.press("Escape");
+  } else {
+    // A new Run of unchanged saved inputs remains bound to that Version.
+    // Do not create Version 2 and demand the immutable Version-1 Run be moved.
+    result.preserved_existing_version_for_its_new_run = existingRevision;
+  }
   await page.getByRole("button", { name: "Review workspace", exact: true }).click(); await page.locator("#stage-tool-review-report").click();
   await page.locator(".report-source-lineage").filter({ hasText: "Runs: Simulation Run" }).first().waitFor();
   await app.evaluate(({ dialog }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); }, pdfFile);
@@ -178,6 +191,8 @@ try {
   result.owned_processes_exited = true; result.result = diagnose ? "DIAGNOSTIC_ONLY" : "PASS";
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
+  result.window_state = await app?.evaluate(({ BrowserWindow, screen }) => ({ windows: BrowserWindow.getAllWindows().map((window) => ({ visible: window.isVisible(), minimized: window.isMinimized(),
+    bounds: window.getBounds(), url: window.webContents.getURL(), loading: window.webContents.isLoading() })), work_area: screen.getPrimaryDisplay().workArea })).catch(() => null);
   const diagnostic = page?.evaluate(async () => {
     const runtime = await window.atomDesktop.getRuntime();
     const probes = [];
@@ -189,6 +204,8 @@ try {
     }
     return { runtime, probes, run_state: document.querySelector(".run-state")?.textContent,
       report_lineage: [...document.querySelectorAll(".report-source-lineage")].map((element) => element.textContent),
+      primary_disabled: document.querySelector(".command-run-button")?.disabled, visibility_state: document.visibilityState,
+      alerts: [...document.querySelectorAll('[role="alert"]')].map((element) => element.textContent.slice(0, 1000)),
       project_menu: [...document.querySelectorAll("button")].find((button) => button.getAttribute("aria-label")?.startsWith("Project menu,"))?.getAttribute("aria-label") };
   });
   let timer;
@@ -201,6 +218,12 @@ try {
     result.failure_logs[component] = log.trim().split("\n").filter(Boolean).slice(-30).map((line) => { try { return JSON.parse(line); } catch { return { malformed: true }; } });
   }
   if (savedProject) result.restored_project_differences = await projectDifferences().catch(() => null);
+  if (result.window_state?.windows?.some((window) => window.url === "app://atom/" && !window.visible && !window.minimized && !window.loading)) {
+    // Diagnostic only: retain FAIL even if manually mapping a loaded hidden
+    // window releases rendering. No production bypass or automatic RF retry.
+    await app.evaluate(({ BrowserWindow }) => { for (const window of BrowserWindow.getAllWindows()) if (window.webContents.getURL() === "app://atom/") window.show(); }).catch(() => {});
+    result.show_loaded_window_diagnostic = await page.evaluate(() => ({ visibility: document.visibilityState, primary_disabled: document.querySelector(".command-run-button")?.disabled })).catch(() => null);
+  }
   await page?.screenshot({ path: path.join(desktop, "test-results/package-failed.png"), timeout: 5000 }).catch((error) => { result.screenshot_failure = error.message.slice(0, 500); });
   throw error;
 } finally {

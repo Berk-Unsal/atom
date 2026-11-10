@@ -42,7 +42,9 @@ delete env.ELECTRON_RUN_AS_NODE;
 const expectedPaths = nativePaths({ packaged: true, home, env });
 const projectFile = path.join(scratch, "Türkçe package.atom-project.json");
 const pdfFile = path.join(scratch, "Package report — çığ.pdf");
-let app; let page; let savedProject;
+let app; let page; let savedProject; let launchNumber = 0;
+result.api_responses = []; result.renderer_errors = [];
+const bounded = (rows, row) => { rows.push(row); if (rows.length > 100) rows.shift(); };
 async function projectDifferences() {
   const restored = await page.evaluate(() => new Promise((resolve, reject) => {
     const request = indexedDB.open("atom-planning-workspace", 1);
@@ -86,9 +88,18 @@ async function cleanAssociation() {
   return false;
 }
 async function launch() {
+  launchNumber++;
   const args = installed && process.env.ATOM_DEB_DISPLAY_SESSION === "wayland" ? ["--ozone-platform=wayland"] : [];
   app = await launchNative({ executablePath: executable, cwd: home, args, env, chromiumSandbox: true, timeout: 60_000 });
-  page = await app.firstWindow(); await page.waitForLoadState("domcontentloaded");
+  page = await app.firstWindow();
+  page.on("pageerror", (error) => bounded(result.renderer_errors, { launch: launchNumber, message: error.message.slice(0, 1000) }));
+  page.on("response", (response) => {
+    if (response.url().startsWith("app://atom/api/")) bounded(result.api_responses, { launch: launchNumber, method: response.request().method(), path: new URL(response.url()).pathname, status: response.status() });
+  });
+  page.on("requestfailed", (request) => {
+    if (request.url().startsWith("app://atom/api/")) bounded(result.api_responses, { launch: launchNumber, method: request.method(), path: new URL(request.url()).pathname, failure: request.failure()?.errorText });
+  });
+  await page.waitForLoadState("domcontentloaded");
   page.setDefaultTimeout(30_000);
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
@@ -167,8 +178,30 @@ try {
   result.owned_processes_exited = true; result.result = diagnose ? "DIAGNOSTIC_ONLY" : "PASS";
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
+  const diagnostic = page?.evaluate(async () => {
+    const runtime = await window.atomDesktop.getRuntime();
+    const probes = [];
+    for (const endpoint of ["/api/meta", "/api/towers"]) {
+      try {
+        const response = await fetch(endpoint, { headers: { "x-atom-client": "1", "x-atom-runtime-generation": runtime.generation }, signal: AbortSignal.timeout(2000) });
+        const json = await response.json(); probes.push({ endpoint, status: response.status, features: json.features?.length, error_code: json.error?.code });
+      } catch (error) { probes.push({ endpoint, failure: error.name }); }
+    }
+    return { runtime, probes, run_state: document.querySelector(".run-state")?.textContent,
+      report_lineage: [...document.querySelectorAll(".report-source-lineage")].map((element) => element.textContent),
+      project_menu: [...document.querySelectorAll("button")].find((button) => button.getAttribute("aria-label")?.startsWith("Project menu,"))?.getAttribute("aria-label") };
+  });
+  let timer;
+  try { result.failure_diagnostics = await Promise.race([diagnostic, new Promise((resolve) => { timer = setTimeout(() => resolve({ unavailable: "bounded renderer diagnostic timeout" }), 6000); })]); }
+  catch { result.failure_diagnostics = { unavailable: "renderer closed or unavailable" }; }
+  finally { clearTimeout(timer); }
+  result.failure_logs = {};
+  for (const component of ["host", "backend"]) {
+    const log = await fs.readFile(path.join(expectedPaths.logs, `${component}.log`), "utf8").catch(() => "");
+    result.failure_logs[component] = log.trim().split("\n").filter(Boolean).slice(-30).map((line) => { try { return JSON.parse(line); } catch { return { malformed: true }; } });
+  }
   if (savedProject) result.restored_project_differences = await projectDifferences().catch(() => null);
-  await page?.screenshot({ path: path.join(desktop, "test-results/package-failed.png") }).catch(() => {});
+  await page?.screenshot({ path: path.join(desktop, "test-results/package-failed.png"), timeout: 5000 }).catch((error) => { result.screenshot_failure = error.message.slice(0, 500); });
   throw error;
 } finally {
   await fs.mkdir(path.dirname(output), { recursive: true }); await fs.writeFile(output, JSON.stringify(result, null, 2) + "\n");

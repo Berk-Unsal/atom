@@ -6,6 +6,7 @@ case "$session" in x11|wayland) ;; *) exit 2 ;; esac
 ATOM_DESKTOP_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 export XDG_RUNTIME_DIR=$(mktemp -d /tmp/atom-deb-runtime-XXXXXX)
 export ATOM_DEB_DISPLAY_SESSION="$session" LIBGL_ALWAYS_SOFTWARE=1
+dbus-update-activation-environment XDG_RUNTIME_DIR
 unset ELECTRON_RUN_AS_NODE
 compositor_pid=
 cleanup() {

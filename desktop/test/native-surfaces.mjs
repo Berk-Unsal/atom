@@ -19,7 +19,7 @@ const run = promisify(execFile);
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/native-surfaces.json");
 const result = { ...sourceIdentity(root), platform: process.platform, arch: process.arch, session: process.env.ATOM_DEB_DISPLAY_SESSION,
-  scope: "Installed production app; real owned GTK portal widgets via AT-SPI; no chooser response or Electron dialog method replacement. Headless session, not graphical installer or physical Print qualification.", dialogs: [], rf_posts: [] };
+  scope: "Installed production app; real GTK file and Print widgets via AT-SPI, local CUPS-PDF queue; no chooser response or Electron dialog method replacement. Headless session, not graphical installer or physical printer qualification.", dialogs: [], rf_posts: [] };
 assert.equal(process.env.GITHUB_ACTIONS, "true"); assert.equal(process.platform, "linux"); assert.notEqual(process.getuid(), 0);
 assert.equal(result.source_dirty, false);
 const scratch = process.env.ATOM_NATIVE_SURFACE_ROOT; const home = process.env.ATOM_NATIVE_SURFACE_HOME; const documents = process.env.ATOM_NATIVE_SURFACE_DOCUMENTS;
@@ -48,6 +48,14 @@ async function drive(action, title, target) {
   const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
 }
 async function command(id) { await application.evaluate(({ Menu }, commandId) => Menu.getApplicationMenu().getMenuItemById(commandId).click(), id); }
+async function printAction(action) {
+  const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/native-print-driver.py"), "--pid", String(application.process().pid), "--action", action],
+    { timeout: 40_000, maxBuffer: 128 * 1024 });
+  const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
+}
+async function queueJobs(completed = false) {
+  return (await run("lpstat", ["-W", completed ? "completed" : "all", "-o", "AtomQualification"])).stdout.trim();
+}
 async function fileState() { const receipt = await page.evaluate(() => window.atomDesktop.getProjectFileState()); assert.equal(receipt.ok, true); return receipt.value; }
 async function project(all = false) {
   return page.evaluate((all) => new Promise((resolve, reject) => {
@@ -120,6 +128,30 @@ try {
   const afterCancel = await artifacts(); for (const artifact of retainedBeforeCancel) assert.ok(afterCancel.some((row) => row.artifact_id === artifact.artifact_id && row.content_hash === artifact.content_hash));
   assert.equal(await fs.stat(canceledPDF).then(() => true, () => false), false); assert.equal(sha256(await fs.readFile(pdfFile)), sha256(pdf));
   result.report_cancellation_preserved_retained_artifacts_and_saved_pdf = true;
+  const printers = await application.evaluate(async ({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.getPrintersAsync());
+  const printer = printers.find((row) => row.name === "AtomQualification");
+  assert.ok(printer?.isDefault, "The disposable local virtual printer must be the real OS default");
+  result.printer = { name: printer.name, is_default: printer.isDefault, status: printer.status };
+  const jobsBefore = await queueJobs(); assert.equal(jobsBefore, "");
+  const printArtifacts = await artifacts();
+  await page.getByRole("button", { name: "Print", exact: true }).click(); await printAction("cancel");
+  await until(() => page.getByRole("button", { name: "Print", exact: true }).isEnabled(), "Real Print cancellation did not return");
+  assert.equal(await queueJobs(), jobsBefore); assert.equal(sha256(await fs.readFile(pdfFile)), sha256(pdf));
+  for (const artifact of printArtifacts) assert.ok((await artifacts()).some((row) => row.artifact_id === artifact.artifact_id && row.content_hash === artifact.content_hash));
+  result.real_print_cancel_preserved_artifacts_pdf_and_queue = true;
+  const printerDirectory = path.join(os.userInfo().homedir, "PDF");
+  const beforePrint = new Set(await fs.readdir(printerDirectory).catch((error) => { if (error.code === "ENOENT") return []; throw error; }));
+  await page.getByRole("button", { name: "Print", exact: true }).click(); await printAction("print");
+  await until(() => page.getByRole("button", { name: "Print", exact: true }).isEnabled(), "Real Print submission did not return");
+  await until(async () => (await queueJobs(true)).split("\n").filter(Boolean).length === 1, "CUPS did not complete exactly one report job", 60_000);
+  let printFile;
+  await until(async () => { const files = (await fs.readdir(printerDirectory).catch(() => [])).filter((file) => !beforePrint.has(file) && file.endsWith(".pdf"));
+    if (files.length !== 1) return false; printFile = path.join(printerDirectory, files[0]); return (await fs.stat(printFile)).size > 0;
+  }, "Local virtual printer did not produce one PDF", 60_000);
+  const printed = await fs.readFile(printFile); assert.equal(printed.subarray(0, 5).toString(), "%PDF-");
+  const text = (await run("pdftotext", [printFile, "-"])).stdout;
+  assert.match(text, /Çankaya Ağ Planı/); assert.match(text, /Simulation Run/);
+  result.real_print_completed_local_job = { bytes: printed.length, sha256: sha256(printed), retained_project_and_run_text: true };
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
   result.file_status_before_quit = await fileState();

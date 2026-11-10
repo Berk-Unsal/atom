@@ -87,7 +87,7 @@ try {
   result.accessibility_explicitly_enabled_for_native_widget_test = true;
   result.accessibility = await application.evaluate(({ app }) => {
     app.setAccessibilitySupportEnabled(true);
-    return { enabled: app.accessibilitySupportEnabled, renderer_flag: app.commandLine.hasSwitch("force-renderer-accessibility"),
+    return { enabled: app.isAccessibilitySupportEnabled(), features: app.getAccessibilitySupportFeatures(), renderer_flag: app.commandLine.hasSwitch("force-renderer-accessibility"),
       gtk_modules: process.env.GTK_MODULES, no_at_bridge: process.env.NO_AT_BRIDGE ?? null };
   });
   assert.equal(result.accessibility.enabled, true);

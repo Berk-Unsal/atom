@@ -1,0 +1,570 @@
+{
+  "pr_head": "8ebaac8e24265e7aa52daba0e1b1613dca47a0e3",
+  "package_run": 42838004386,
+  "ubuntu_run": 42838004544,
+  "binary_uploaded": false,
+  "scope": "Native internal unsigned package/SBOM smoke on hosted macOS arm64/Intel and Ubuntu 24.04 X11/native Wayland installed-package fixtures. Not signing, physical Print, graphical installer or clean minimum-OS acceptance.",
+  "targets": [
+    {
+      "target": "arm64",
+      "evidence_artifact_id": 13774888129,
+      "source_commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+      "package": {
+        "schema": 1,
+        "version": "0.13.1",
+        "commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+        "source_dirty": false,
+        "platform": "darwin",
+        "arch": "arm64",
+        "shell": "electron",
+        "shell_version": "44.10.2",
+        "bundle_id": "io.github.berk-unsal.atom",
+        "trust": "internal-unsigned",
+        "public_distribution": false,
+        "data_redistribution_approved": false,
+        "binary_upload_permitted": false,
+        "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "data_layer_sha256": {
+          "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+          "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+        },
+        "notices_complete": true,
+        "sbom_sha256": "c2071f59c8dab1030c9053bb56307f4e48c137705fba4e5db8e5be43a3c27ba0",
+        "license_index_sha256": "8aec85838ee9dc500c753c558d874f97ab8f52c69087d7c2947996f7acde11cc",
+        "file_manifest_sha256": "c8d4b5645cab4aa24bb384ff11f83c7aec3502d0c5d461f8e7fee1cecb9b8e3b",
+        "unpacked_bytes": 464507139,
+        "native_architectures": {
+          "Contents/Frameworks/A.T.O.M Helper (GPU).app/Contents/MacOS/A.T.O.M Helper (GPU)": "arm64",
+          "Contents/Frameworks/A.T.O.M Helper (Plugin).app/Contents/MacOS/A.T.O.M Helper (Plugin)": "arm64",
+          "Contents/Frameworks/A.T.O.M Helper (Renderer).app/Contents/MacOS/A.T.O.M Helper (Renderer)": "arm64",
+          "Contents/Frameworks/A.T.O.M Helper.app/Contents/MacOS/A.T.O.M Helper": "arm64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework": "arm64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/app_shim_loader": "arm64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler": "arm64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib": "arm64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib": "arm64",
+          "Contents/Frameworks/Mantle.framework/Versions/A/Mantle": "arm64",
+          "Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC": "arm64",
+          "Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt": "arm64",
+          "Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel": "arm64",
+          "Contents/MacOS/atom-desktop": "arm64",
+          "Contents/Resources/atom-api": "arm64"
+        },
+        "artifacts": [
+          {
+            "file": "atom-0.13.1-darwin-arm64-internal-unsigned.zip",
+            "bytes": 154140440,
+            "sha256": "72b07806ea4e7f9fce126d11d1af5554ca7bb6e5b29b29df5b23e0671de772a1"
+          },
+          {
+            "file": "atom-0.13.1-darwin-arm64-internal-unsigned.dmg",
+            "bytes": 171930856,
+            "sha256": "f74482a5e6f2e39287cb5a18ccc01680233fd203a881218823de61902736cda5"
+          }
+        ],
+        "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+      },
+      "runtime_components": 35,
+      "notices_complete": true,
+      "native": {
+        "result": "PASS",
+        "restored_project_differences": [],
+        "relaunch_preserved_version_file_association_and_profile": true,
+        "bundle_bytes_and_links_unchanged": true,
+        "owned_processes_exited": true
+      }
+    },
+    {
+      "target": "intel",
+      "evidence_artifact_id": 13774164350,
+      "source_commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+      "package": {
+        "schema": 1,
+        "version": "0.13.1",
+        "commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+        "source_dirty": false,
+        "platform": "darwin",
+        "arch": "x64",
+        "shell": "electron",
+        "shell_version": "44.10.2",
+        "bundle_id": "io.github.berk-unsal.atom",
+        "trust": "internal-unsigned",
+        "public_distribution": false,
+        "data_redistribution_approved": false,
+        "binary_upload_permitted": false,
+        "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "data_layer_sha256": {
+          "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+          "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+        },
+        "notices_complete": true,
+        "sbom_sha256": "118344de88673deb2b8704baffd9a01f27d0002d9ea228913a244fe7df983a0c",
+        "license_index_sha256": "3d470ed372d5f284f859ca8139f5c7d0944e63bcc0c5399587c894c9a5ff7bd0",
+        "file_manifest_sha256": "e6ab396783ecabf5b8b168cd0d4c4279361d7a5d6e6555191ec0ad6853c1c01b",
+        "unpacked_bytes": 469822047,
+        "native_architectures": {
+          "Contents/Frameworks/A.T.O.M Helper (GPU).app/Contents/MacOS/A.T.O.M Helper (GPU)": "x86_64",
+          "Contents/Frameworks/A.T.O.M Helper (Plugin).app/Contents/MacOS/A.T.O.M Helper (Plugin)": "x86_64",
+          "Contents/Frameworks/A.T.O.M Helper (Renderer).app/Contents/MacOS/A.T.O.M Helper (Renderer)": "x86_64",
+          "Contents/Frameworks/A.T.O.M Helper.app/Contents/MacOS/A.T.O.M Helper": "x86_64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework": "x86_64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/app_shim_loader": "x86_64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler": "x86_64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib": "x86_64",
+          "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib": "x86_64",
+          "Contents/Frameworks/Mantle.framework/Versions/A/Mantle": "x86_64",
+          "Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC": "x86_64",
+          "Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt": "x86_64",
+          "Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel": "x86_64",
+          "Contents/MacOS/atom-desktop": "x86_64",
+          "Contents/Resources/atom-api": "x86_64"
+        },
+        "artifacts": [
+          {
+            "file": "atom-0.13.1-darwin-x64-internal-unsigned.zip",
+            "bytes": 159042168,
+            "sha256": "ebcbb86f974fd1f2589f8d982341bee955e05ae6da25a588e53eb1d91dcad742"
+          },
+          {
+            "file": "atom-0.13.1-darwin-x64-internal-unsigned.dmg",
+            "bytes": 178133321,
+            "sha256": "a9e2437749afd814a2b5ed8099c62b0ad88d585ab66a1dd37b3a459553ae4e27"
+          }
+        ],
+        "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+      },
+      "runtime_components": 35,
+      "notices_complete": true,
+      "native": {
+        "result": "PASS",
+        "restored_project_differences": [],
+        "relaunch_preserved_version_file_association_and_profile": true,
+        "bundle_bytes_and_links_unchanged": true,
+        "owned_processes_exited": true
+      }
+    },
+    {
+      "target": "x11",
+      "evidence_artifact_id": 13775605454,
+      "source_commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+      "package": {
+        "schema": 1,
+        "version": "0.13.1",
+        "commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+        "source_dirty": false,
+        "platform": "linux",
+        "arch": "x64",
+        "shell": "electron",
+        "shell_version": "44.10.2",
+        "bundle_id": "io.github.berk-unsal.atom",
+        "trust": "internal-unsigned",
+        "public_distribution": false,
+        "data_redistribution_approved": false,
+        "binary_upload_permitted": false,
+        "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "data_layer_sha256": {
+          "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+          "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+        },
+        "notices_complete": true,
+        "sbom_sha256": "e4ffb321f2e5093e43e1d51b408709af8fdffcdf2926453c4a7573a03417db17",
+        "license_index_sha256": "17be2ddf83de2eece8b7c36a53aa67bbd66fdb6bb4a68a07ac84af8dd5ae86aa",
+        "file_manifest_sha256": "36c7e0f3304a2ea72c37d146e24adc1771f2223de2fe1f65d62eff7697a1714a",
+        "unpacked_bytes": 460557142,
+        "native_architectures": {
+          "atom-desktop": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=ed0e966e283e7ebc846558b2b47ee8e437357215, stripped",
+          "resources/atom-api": "ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, Go BuildID=v5b7tZlDyVfWqPr8gJM3/I1IBUvvWBHFf01ULzeJK/awyIfJNZ87I80Jc0SV7S/q0R4GRAS-59oJe1wl42y, BuildID[sha1]=d70291916fd9134d500301d581c739b0c4bc57b2, with debug_info, not stripped"
+        },
+        "artifacts": [
+          {
+            "file": "atom-0.13.1-linux-x64-internal-unsigned.tar.gz",
+            "bytes": 149614620,
+            "sha256": "bbf37e80605fdc95af489f1ebc64850ab2c5c1c96b5a4d197fba2b38f8a1c037"
+          }
+        ],
+        "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+      },
+      "runtime_components": 35,
+      "notices_complete": true,
+      "native": {
+        "result": "PASS",
+        "apt_upgrade_remove_purge_preserved_user_bytes": true,
+        "phases": [
+          {
+            "phase": "installed previous-package-version fixture",
+            "result": "PASS",
+            "restored_project_differences": []
+          },
+          {
+            "phase": "upgraded current candidate",
+            "result": "PASS",
+            "restored_project_differences": []
+          }
+        ]
+      },
+      "deb": {
+        "file": "atom-0.13.1-linux-x64-internal-unsigned.deb",
+        "bytes": 116162974,
+        "sha256": "096381f59bc8440ead1feb351e55d2920de8eb8fe2b8c86056c6a90e0490e3e5"
+      }
+    },
+    {
+      "target": "wayland",
+      "evidence_artifact_id": 13775086850,
+      "source_commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+      "package": {
+        "schema": 1,
+        "version": "0.13.1",
+        "commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+        "source_dirty": false,
+        "platform": "linux",
+        "arch": "x64",
+        "shell": "electron",
+        "shell_version": "44.10.2",
+        "bundle_id": "io.github.berk-unsal.atom",
+        "trust": "internal-unsigned",
+        "public_distribution": false,
+        "data_redistribution_approved": false,
+        "binary_upload_permitted": false,
+        "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "data_layer_sha256": {
+          "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+          "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+        },
+        "notices_complete": true,
+        "sbom_sha256": "e4ffb321f2e5093e43e1d51b408709af8fdffcdf2926453c4a7573a03417db17",
+        "license_index_sha256": "17be2ddf83de2eece8b7c36a53aa67bbd66fdb6bb4a68a07ac84af8dd5ae86aa",
+        "file_manifest_sha256": "36c7e0f3304a2ea72c37d146e24adc1771f2223de2fe1f65d62eff7697a1714a",
+        "unpacked_bytes": 460557142,
+        "native_architectures": {
+          "atom-desktop": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=ed0e966e283e7ebc846558b2b47ee8e437357215, stripped",
+          "resources/atom-api": "ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, Go BuildID=v5b7tZlDyVfWqPr8gJM3/I1IBUvvWBHFf01ULzeJK/awyIfJNZ87I80Jc0SV7S/q0R4GRAS-59oJe1wl42y, BuildID[sha1]=d70291916fd9134d500301d581c739b0c4bc57b2, with debug_info, not stripped"
+        },
+        "artifacts": [
+          {
+            "file": "atom-0.13.1-linux-x64-internal-unsigned.tar.gz",
+            "bytes": 149615003,
+            "sha256": "1661cf893b8321a205a578aac82bb40b34ff7fdffc7d4b572d2e034e367647c5"
+          }
+        ],
+        "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+      },
+      "runtime_components": 35,
+      "notices_complete": true,
+      "native": {
+        "result": "PASS",
+        "apt_upgrade_remove_purge_preserved_user_bytes": true,
+        "phases": [
+          {
+            "phase": "installed previous-package-version fixture",
+            "result": "PASS",
+            "restored_project_differences": []
+          },
+          {
+            "phase": "upgraded current candidate",
+            "result": "PASS",
+            "restored_project_differences": []
+          }
+        ]
+      },
+      "deb": {
+        "file": "atom-0.13.1-linux-x64-internal-unsigned.deb",
+        "bytes": 116163520,
+        "sha256": "d2d86e1377d447db5cab21d6600feb46eda7450e68e90647bf735820fde5e73c"
+      }
+    }
+  ],
+  "production_run": 42838004162,
+  "production": [
+    {
+      "platform": "mac",
+      "evidence_artifact_id": 13776335406,
+      "source_commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+      "startup_result": "BUDGET_REVIEW_REQUIRED",
+      "samples": 40,
+      "startup": {
+        "fresh_profile": {
+          "launch_to_plannable_ms": {
+            "median": 4498,
+            "p95": 5034,
+            "max": 14397
+          },
+          "launch_to_dataset_ready_ms": {
+            "median": 4278,
+            "p95": 4781,
+            "max": 13208
+          },
+          "sidecar_start_to_dataset_ready_ms": {
+            "median": 3778,
+            "p95": 4183,
+            "max": 5890
+          }
+        },
+        "same_profile_relaunch": {
+          "launch_to_plannable_ms": {
+            "median": 4431,
+            "p95": 5200,
+            "max": 6180
+          },
+          "launch_to_dataset_ready_ms": {
+            "median": 4214,
+            "p95": 4846,
+            "max": 5939
+          },
+          "sidecar_start_to_dataset_ready_ms": {
+            "median": 3808.5,
+            "p95": 4153,
+            "max": 5004
+          }
+        }
+      },
+      "idle_rss_bytes": {
+        "full_pack": 878608384,
+        "sample_pack": 464568320
+      },
+      "startup_budgets": {
+        "fresh_profile_launch_p95_10s": true,
+        "same_profile_launch_p95_5s": false,
+        "fresh_profile_sidecar_dataset_p95_8s": true,
+        "same_profile_sidecar_dataset_p95_4s": false,
+        "aggregate_idle_rss_500MiB": false
+      },
+      "rf_result": "BUDGET_REVIEW_REQUIRED",
+      "rf_budgets": {
+        "rf_medians_within_5_percent": false,
+        "eight_cell_map_30fps": true,
+        "input_p95_100ms": true
+      },
+      "exact_comparisons": 18,
+      "rf_timings": {
+        "/api/simulate": {
+          "native_ms": {
+            "samples": [
+              181.09999999997672,
+              81.40000000002328,
+              62.29999999998836,
+              54.09999999997672
+            ],
+            "median": 71.85000000000582,
+            "p95": 181.09999999997672,
+            "max": 181.09999999997672
+          },
+          "standalone_ms": {
+            "samples": [
+              61.88737500000025,
+              63.6596669999999,
+              31.821916999999303,
+              55.516999999999825
+            ],
+            "median": 58.702187500000036,
+            "p95": 63.6596669999999,
+            "max": 63.6596669999999
+          },
+          "absolute_median_difference_fraction": 0.22397483058030465,
+          "within_5_percent": false
+        },
+        "/api/evaluate-network": {
+          "native_ms": {
+            "samples": [
+              912.5999999999767,
+              1141.6999999999534,
+              847,
+              962.0999999999767
+            ],
+            "median": 937.3499999999767,
+            "p95": 1141.6999999999534,
+            "max": 1141.6999999999534
+          },
+          "standalone_ms": {
+            "samples": [
+              1561.9082500000004,
+              959.0171249999985,
+              1074.7057920000007,
+              874.1124580000032
+            ],
+            "median": 1016.8614584999996,
+            "p95": 1561.9082500000004,
+            "max": 1561.9082500000004
+          },
+          "absolute_median_difference_fraction": 0.07819301030182857,
+          "within_5_percent": false
+        },
+        "/api/optimize-network": {
+          "native_ms": {
+            "samples": [
+              16144.5,
+              16362.800000000047,
+              15943.800000000047,
+              16356.099999999977
+            ],
+            "median": 16250.299999999988,
+            "p95": 16362.800000000047,
+            "max": 16362.800000000047
+          },
+          "standalone_ms": {
+            "samples": [
+              15227.486084000004,
+              15104.693958000003,
+              16702.30012499998,
+              15212.700125000003
+            ],
+            "median": 15220.093104500003,
+            "p95": 16702.30012499998,
+            "max": 16702.30012499998
+          },
+          "absolute_median_difference_fraction": 0.06768729260896511,
+          "within_5_percent": false
+        }
+      },
+      "ui": {
+        "Evaluate Network": true,
+        "Optimize Network": true
+      }
+    },
+    {
+      "platform": "linux",
+      "evidence_artifact_id": 13775191175,
+      "source_commit": "79aa10a0ee60e00b359b5628ea19f25c4e443b6a",
+      "startup_result": "BUDGET_REVIEW_REQUIRED",
+      "samples": 40,
+      "startup": {
+        "fresh_profile": {
+          "launch_to_plannable_ms": {
+            "median": 3085,
+            "p95": 3212,
+            "max": 4482
+          },
+          "launch_to_dataset_ready_ms": {
+            "median": 2838.5,
+            "p95": 2928,
+            "max": 3228
+          },
+          "sidecar_start_to_dataset_ready_ms": {
+            "median": 2625.5,
+            "p95": 2713,
+            "max": 2721
+          }
+        },
+        "same_profile_relaunch": {
+          "launch_to_plannable_ms": {
+            "median": 3060.5,
+            "p95": 3148,
+            "max": 3176
+          },
+          "launch_to_dataset_ready_ms": {
+            "median": 2828.5,
+            "p95": 2896,
+            "max": 2910
+          },
+          "sidecar_start_to_dataset_ready_ms": {
+            "median": 2633.5,
+            "p95": 2699,
+            "max": 2706
+          }
+        }
+      },
+      "idle_rss_bytes": {
+        "full_pack": 1284456448,
+        "sample_pack": 836530176
+      },
+      "startup_budgets": {
+        "fresh_profile_launch_p95_10s": true,
+        "same_profile_launch_p95_5s": true,
+        "fresh_profile_sidecar_dataset_p95_8s": true,
+        "same_profile_sidecar_dataset_p95_4s": true,
+        "aggregate_idle_rss_500MiB": false
+      },
+      "rf_result": "BUDGET_REVIEW_REQUIRED",
+      "rf_budgets": {
+        "rf_medians_within_5_percent": false,
+        "eight_cell_map_30fps": true,
+        "input_p95_100ms": true
+      },
+      "exact_comparisons": 18,
+      "rf_timings": {
+        "/api/simulate": {
+          "native_ms": {
+            "samples": [
+              50.20000000001164,
+              47.59999999997672,
+              41.20000000001164,
+              44.5
+            ],
+            "median": 46.04999999998836,
+            "p95": 50.20000000001164,
+            "max": 50.20000000001164
+          },
+          "standalone_ms": {
+            "samples": [
+              113.42314499999975,
+              25.67105900000024,
+              26.326704000000063,
+              22.907608999999866
+            ],
+            "median": 25.998881500000152,
+            "p95": 113.42314499999975,
+            "max": 113.42314499999975
+          },
+          "absolute_median_difference_fraction": 0.7712300431073578,
+          "within_5_percent": false
+        },
+        "/api/evaluate-network": {
+          "native_ms": {
+            "samples": [
+              659.2999999999884,
+              640.3000000000466,
+              670.5,
+              627.8999999999651
+            ],
+            "median": 649.8000000000175,
+            "p95": 670.5,
+            "max": 670.5
+          },
+          "standalone_ms": {
+            "samples": [
+              652.1354719999999,
+              648.8896320000003,
+              672.3082749999994,
+              629.5702690000016
+            ],
+            "median": 650.5125520000001,
+            "p95": 672.3082749999994,
+            "max": 672.3082749999994
+          },
+          "absolute_median_difference_fraction": 0.0010953701013023398,
+          "within_5_percent": true
+        },
+        "/api/optimize-network": {
+          "native_ms": {
+            "samples": [
+              11187.600000000035,
+              11202.099999999977,
+              11148.899999999907,
+              11234
+            ],
+            "median": 11194.850000000006,
+            "p95": 11234,
+            "max": 11234
+          },
+          "standalone_ms": {
+            "samples": [
+              11214.618134000004,
+              11261.60166600001,
+              11411.53859499999,
+              11286.639735000004
+            ],
+            "median": 11274.120700500007,
+            "p95": 11411.53859499999,
+            "max": 11411.53859499999
+          },
+          "absolute_median_difference_fraction": 0.007031209138685712,
+          "within_5_percent": true
+        }
+      },
+      "ui": {
+        "Evaluate Network": true,
+        "Optimize Network": true
+      }
+    }
+  ]
+}

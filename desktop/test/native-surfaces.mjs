@@ -79,7 +79,7 @@ async function completeProjectDialog() {
   await page.keyboard.press("Escape");
 }
 try {
-  const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin" }; delete env.ELECTRON_RUN_AS_NODE;
+  const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin", ACCESSIBILITY_ENABLED: "1" }; delete env.ELECTRON_RUN_AS_NODE;
   // Chromium defers ATK bridge initialization to Aura. Enable accessibility
   // explicitly for this OS-widget test, independently of performance suites.
   application = await launchNative({ executablePath: executable, cwd: documents,
@@ -88,7 +88,7 @@ try {
   result.accessibility = await application.evaluate(({ app }) => {
     app.setAccessibilitySupportEnabled(true);
     return { enabled: app.isAccessibilitySupportEnabled(), features: app.getAccessibilitySupportFeatures(), renderer_flag: app.commandLine.hasSwitch("force-renderer-accessibility"),
-      gtk_modules: process.env.GTK_MODULES, no_at_bridge: process.env.NO_AT_BRIDGE ?? null };
+      gtk_modules: process.env.GTK_MODULES, accessibility_environment: process.env.ACCESSIBILITY_ENABLED, no_at_bridge: process.env.NO_AT_BRIDGE ?? null };
   });
   assert.equal(result.accessibility.enabled, true);
   page = await application.firstWindow(); page.setDefaultTimeout(30_000); await page.waitForLoadState("domcontentloaded");

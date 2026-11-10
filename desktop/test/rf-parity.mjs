@@ -83,7 +83,10 @@ try {
   assert.ok(base, "Owned standalone process must bind loopback");
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "profile") }; delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
+  if (process.argv.includes("--compact")) await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1024, 768));
   page = await application.firstWindow(); await waitForRuntime(page, (state) => state.state === "ready");
+  result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
+  result.reference.work_area = await application.evaluate(({ screen }) => screen.getPrimaryDisplay().workArea);
   const nativeMeta = await nativeRequest("/api/meta"); const standaloneMeta = await standaloneRequest("/api/meta");
   assert.equal(nativeMeta.status, 200); assert.equal(standaloneMeta.status, 200);
   assert.deepEqual(JSON.parse(nativeMeta.text), JSON.parse(standaloneMeta.text));
@@ -141,9 +144,16 @@ try {
     await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
     assert.deepEqual(uiPosts.slice(before), [endpoint, ...Array(8).fill("/api/simulate")]); result.ui[button] = true;
   }
-  const rays = page.getByRole("button", { name: "Propagation rays layer", exact: true });
+  const view = page.getByRole("button", { name: "Map view options", exact: true });
+  const rayControl = async () => {
+    const quick = page.locator(".map-visualization-quick-controls").getByRole("button", { name: "Propagation rays layer", exact: true });
+    if (await quick.isVisible()) return quick;
+    if (await view.getAttribute("aria-expanded") !== "true") await view.click();
+    return page.locator("#map-view-menu").getByRole("button", { name: "Propagation rays layer", exact: true });
+  };
+  let rays = await rayControl();
   if (await rays.getAttribute("aria-pressed") !== "true") await rays.click();
-  await page.getByRole("button", { name: "Map view options", exact: true }).click();
+  if (await view.getAttribute("aria-expanded") !== "true") await view.click();
   await page.getByRole("combobox", { name: "Ray scope", exact: true }).selectOption("all"); await page.keyboard.press("Escape");
   const drawer = page.getByRole("button", { name: "Close tool drawer", exact: true }); if (await drawer.isVisible()) await drawer.click();
   assert.equal(await page.locator(".tower-order-badge").count(), 8);
@@ -163,7 +173,7 @@ try {
   const frames = await page.evaluate(() => { globalThis.__qualificationFrames.active = false; return globalThis.__qualificationFrames; });
   assert.equal(frames.input_to_second_frame_ms.length, 20);
   const gaps = frames.frames.slice(1).map((time, index) => time - frames.frames[index]);
-  result.map = { method: "20 real pointer pan gestures with all eight result-ray layers; event timestamp to second animation frame is a presentation-latency proxy, not INP", frames: frames.frames.length,
+  result.map = { method: "20 real pointer pan gestures with all eight result-ray layers; animation-frame cadence is a render-scheduling proxy, not a physical-display presentation count; event timestamp to second animation frame is a presentation-latency proxy, not INP", frames: frames.frames.length,
     elapsed_ms: frames.frames.at(-1) - frames.frames[0], observed_fps: (frames.frames.length - 1) * 1000 / (frames.frames.at(-1) - frames.frames[0]), frame_gap_ms: distribution(gaps),
     input_to_second_frame_ms: distribution(frames.input_to_second_frame_ms), overlay_paths: await page.locator(".leaflet-overlay-pane path").count() };
   // Leaflet's production renderer uses Canvas. Read back only AFTER the timed
@@ -175,6 +185,7 @@ try {
     return { width: canvas.width, height: canvas.height, painted_pixels: painted, sha256: [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("") };
   })));
   const paint = () => page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  rays = await rayControl();
   assert.equal(await rays.getAttribute("aria-pressed"), "true");
   result.map.rays_on_canvas = await raster();
   assert.ok(result.map.rays_on_canvas.some((canvas) => canvas.painted_pixels > 0), "The timed map must contain rendered vector overlays");
@@ -182,7 +193,7 @@ try {
   result.map.rays_off_canvas = await raster();
   assert.notDeepEqual(result.map.rays_on_canvas, result.map.rays_off_canvas, "Turning off all result rays must change the actual Canvas drawing");
   result.map.ray_drawing_verified_after_timing = true;
-  await rays.click(); await paint();
+  rays = await rayControl(); await rays.click(); await page.keyboard.press("Escape"); await paint();
   await page.screenshot({ path: path.join(evidence, "qualification-eight-cell-map.png") });
   result.post_rf_process_tree = await processTree(application.process().pid);
   result.budgets = { rf_medians_within_5_percent: Object.values(result.timings).every((timing) => timing.within_5_percent),

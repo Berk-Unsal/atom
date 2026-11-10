@@ -20,6 +20,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Refresh native content-hash status after the first project Save so unchanged bytes become clean without another edit or RF run.
+- Keep the desktop development bootstrap alive when an observed source edit supersedes a compiler input, discarding partial-write outputs and surfacing genuine current-source failures.
+- Include the actual draft Run explicitly named by the current saved Version in its Report lineage, without rewriting history or borrowing unavailable/foreign Runs.
+
 - Keep a cleared dataset result detached when older Run/Pareto history writes finish, while retaining the original historical Run.
 - Reject malformed bundled dataset identities before publishing native recovery metadata, retaining explicit valid-pack recovery.
 

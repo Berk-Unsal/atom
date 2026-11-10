@@ -191,16 +191,21 @@ try {
 
   command = launch();
   await command.wait((event) => event.event === "go-build-start");
+  // A real editor may truncate before its completed write. Keep that partial
+  // source until the first build is observed as superseded, then finish it.
+  await fs.writeFile(goFile, "");
+  await command.wait((event) => event.event === "go-build-superseded");
   await fs.writeFile(goFile, `${originalGo}\n// Edit during the initial development build must not be missed.\n`);
   const relaunched = await command.wait((event) => event.event === "host-ready");
   await command.wait((event) => event.event === "ready");
-  assert.ok(command.events.some((event) => event.event === "go-ready"));
+  assert.ok(command.events.some((event) => event.event === "go-built" && event.builds >= 2), "The first host must use a completed build after the partial edit");
   browser = await chromium.connectOverCDP(relaunched.debugURL); page = browser.contexts()[0].pages()[0];
   await page.getByRole("button", { name: "Project menu, Dev loop retained workspace", exact: true }).waitFor();
   command.child.kill("SIGTERM"); assert.equal(await exit(command.child), 0); await noGroups(command.owned);
   await browser.close(); browser = null;
   result.same_profile_relaunch_retained_workspace = true;
   result.edit_during_initial_build_was_applied = true;
+  result.partial_initial_editor_write_did_not_exit_or_install_stale_output = true;
 
   command = launch();
   await command.wait((event) => event.event === "go-build-start");

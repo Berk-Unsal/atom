@@ -24,9 +24,15 @@ assert.equal(JSON.parse(await fs.readFile(path.join(desktop,'build/resources/bui
 const result={source_commit:sourceCommit,source_dirty:false,platform:process.platform,architecture:process.arch,kernel:os.release(),surface_driver:'CUA actual OS controls; native dialog/print methods not replaced',steps:[]};
 const app=await electron.launch({executablePath:require('electron'),args:['--no-proxy-server','--host-resolver-rules=MAP tile.openstreetmap.org ~NOTFOUND',desktop],env,chromiumSandbox:true,timeout:60000});
 const page=await app.firstWindow();await page.getByRole('button',{name:'Run Sector',exact:true}).waitFor();
+await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent.trim()==='Run Sector'&&!button.disabled));
 const posts=[];page.on('request',request=>{if(request.method()==='POST'&&request.url().startsWith('app://atom/api/'))posts.push(new URL(request.url()).pathname)});
 const status=async()=>{await fs.mkdir(path.join(desktop,'test-results'),{recursive:true});await fs.writeFile(path.join(desktop,'test-results/native-os-surfaces.json'),JSON.stringify({...result,scratch,saved,open,rf_posts:posts},null,2));};
 await status();console.log(JSON.stringify({ready:true,scratch,saved,open,pid:app.process().pid}));
+async function associatedWith(states,file,clean=false){
+ const expected=await fs.stat(file);
+ for(const row of states){if(!row.path||(clean&&row.dirty))continue;const actual=await fs.stat(row.path).catch(()=>null);if(actual&&actual.dev===expected.dev&&actual.ino===expected.ino)return true;}
+ return false;
+}
 const cli=createInterface({input:process.stdin,terminal:false});
 try {
  for await(const command of cli){
@@ -35,10 +41,10 @@ try {
     await app.evaluate(({Menu},id)=>Menu.getApplicationMenu().getMenuItemById(id).click(),command==='open'?'atom-project-open':'atom-project-save-as');
     console.log('Opened actual OS '+command+' surface');
    }else if(command==='verify-save'){
-    const file=JSON.parse(await fs.readFile(saved,'utf8'));assert.equal(file.schemaVersion,3);const approved=await fs.realpath(saved);const states=await page.evaluate(async()=> (await window.atomDesktop.getProjectFileState()).value);assert.ok(states.some(row=>row.path===approved&&!row.dirty));result.steps.push({operation:'native Save As',valid_project:true,approved_association:true,filename:path.basename(saved)});console.log('Verified native saved project');
+    const file=JSON.parse(await fs.readFile(saved,'utf8'));assert.equal(file.schemaVersion,3);const states=await page.evaluate(async()=> (await window.atomDesktop.getProjectFileState()).value);assert.ok(await associatedWith(states,saved,true));result.steps.push({operation:'native Save As',valid_project:true,approved_association:true,filename:path.basename(saved)});console.log('Verified native saved project');
    }else if(command==='verify-open'){
     await page.getByRole('button',{name:/^Project menu,/}).waitFor();
-    const awaitedPath=await fs.realpath(open);const states=await page.evaluate(async()=> (await window.atomDesktop.getProjectFileState()).value);assert.ok(states.some(row=>row.path===awaitedPath));result.steps.push({operation:'native Open',approved_association:true,filename:path.basename(open),project_menu:await page.getByRole('button',{name:/^Project menu,/}).innerText()});console.log('Recorded Open result');
+    const states=await page.evaluate(async()=> (await window.atomDesktop.getProjectFileState()).value);assert.ok(await associatedWith(states,open));result.steps.push({operation:'native Open',approved_association:true,filename:path.basename(open),project_menu:await page.getByRole('button',{name:/^Project menu,/}).innerText()});console.log('Recorded Open result');
    }else if(command==='snapshot-cancel'){
     globalThis.beforeCancel={hash:createHash('sha256').update(await fs.readFile(saved)).digest('hex'),state:await page.evaluate(async()=> (await window.atomDesktop.getProjectFileState()).value)};console.log('Captured state before real OS cancellation');
    }else if(command==='verify-cancel'){
@@ -62,4 +68,4 @@ try {
    await status();
   }catch(e){console.log('Command failed: '+e.message);result.steps.push({operation:command,error:e.message});await status();}
  }
-}finally{await app.close().catch(()=>{});console.log('Closed owned native app; evidence kept');}
+}finally{cli.close();process.stdin.pause();await app.close().catch(()=>{});console.log('Closed owned native app; evidence kept');}

@@ -35,6 +35,60 @@ afterEach(() => {
 });
 
 describe("useReportWorkflow", () => {
+  it("uses the actual draft Run explicitly named by the current saved Version without rewriting history", () => {
+    const run = { run_id: "draft-run", project_id: "project-1", run_type: "simulation", status: "succeeded", scenario_revision_id: null };
+    const scenario = { id: "scenario-1", domain: { current_revision_id: "revision-2", revisions: [
+      { scenario_revision_id: "revision-1", revision: 1, metadata: { source_run_id: "draft-run" } },
+      { scenario_revision_id: "revision-2", revision: 2, metadata: { source_run_id: "draft-run" } },
+    ] } };
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: { id: "project-1" }, activeScenario: scenario,
+      planningMode: "single", planDirty: false, runHistoryRuns: [run] }));
+    expect(result.current.state.currentReportSource).toMatchObject({ run_ids: ["draft-run"], scenario_revision_id: "revision-2",
+      runs: [{ run_id: "draft-run", scenario_id: "scenario-1", scenario_revision_id: "revision-2" }] });
+    expect(run).toEqual({ run_id: "draft-run", project_id: "project-1", run_type: "simulation", status: "succeeded", scenario_revision_id: null });
+  });
+
+  it.each([
+    ["unavailable", []],
+    ["another project", [{ run_id: "draft-run", project_id: "other", run_type: "simulation", status: "succeeded" }]],
+    ["unknown project", [{ run_id: "draft-run", run_type: "simulation", status: "succeeded" }]],
+    ["already bound to another Version", [{ run_id: "draft-run", project_id: "project-1", run_type: "simulation", status: "succeeded", scenario_revision_id: "other-version" }]],
+  ])("does not invent a current Report Run when its named source is %s", (_label, runs) => {
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: { id: "project-1" },
+      activeScenario: { id: "scenario-1", domain: { current_revision_id: "revision-1", revisions: [{ scenario_revision_id: "revision-1", revision: 1, metadata: { source_run_id: "draft-run" } }] } },
+      planningMode: "single", planDirty: false, runHistoryRuns: runs }));
+    expect(result.current.state.currentReportSource.run_ids).toEqual([]);
+  });
+
+  it("regenerates a draft-source Report using its explicitly recorded Version rather than the active Version", async () => {
+    const revision = { scenario_revision_id: "report-version", revision: 2, metadata: { source_run_id: "draft-run" } };
+    const scenario = { id: "scenario-1", domain: { current_revision_id: "active-version", revisions: [{ scenario_revision_id: "active-version" }, revision] } };
+    const definition = { report_id: "report-1", scenario_id: "scenario-1", scenario_revision_id: "report-version", run_ids: ["draft-run"] };
+    const project = { id: "project-1", scenarios: [scenario], domain: { report_definitions: [definition] } };
+    const run = { run_id: "draft-run", project_id: "project-1", run_type: "simulation", status: "succeeded", scenario_revision_id: null };
+    const error = vi.fn(); const save = vi.fn(async () => ({ artifact_id: "new-artifact" }));
+    reportModules.buildHistoricalPlanningReport.mockReturnValue({ view: { title: "Historical" } });
+    reportModules.buildReportArtifactOutput.mockReturnValue({ artifact: { artifact_id: "new-artifact" }, bytes: new Uint8Array([1]) });
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: project, activeScenario: scenario, runHistoryRuns: [run], saveArtifact: save, setApplicationError: error }));
+    await act(async () => result.current.actions.regenerateArtifact({ artifact_id: "original", report_id: "report-1", format: "markdown" }));
+    expect(reportModules.buildHistoricalPlanningReport).toHaveBeenCalledWith(expect.objectContaining({ scenarioRevision: revision,
+      runs: [expect.objectContaining({ run_id: "draft-run", scenario_revision_id: "report-version" })] }));
+    expect(run.scenario_revision_id).toBeNull(); expect(save).toHaveBeenCalledOnce(); expect(error).not.toHaveBeenCalled();
+  });
+
+  it.each(["missing Run", "unbound Run not named by this Version"])("keeps historical bytes when regeneration has a %s", async (condition) => {
+    const revision = { scenario_revision_id: "revision-1", metadata: { source_run_id: condition === "missing Run" ? "draft-run" : "other-run" } };
+    const scenario = { id: "scenario-1", domain: { current_revision_id: "revision-1", revisions: [revision] } };
+    const definition = { report_id: "report-1", scenario_id: "scenario-1", scenario_revision_id: "revision-1", run_ids: ["draft-run"] };
+    const error = vi.fn(); const save = vi.fn(); const remove = vi.fn();
+    const runs = condition === "missing Run" ? [] : [{ run_id: "draft-run", project_id: "project-1", status: "succeeded", run_type: "simulation", scenario_revision_id: null }];
+    const { result } = renderHook(() => useReportWorkflow({ activeProject: { id: "project-1", scenarios: [scenario], domain: { report_definitions: [definition] } },
+      activeScenario: scenario, runHistoryRuns: runs, saveArtifact: save, deleteArtifact: remove, setApplicationError: error }));
+    await act(async () => result.current.actions.regenerateArtifact({ artifact_id: "original", report_id: "report-1", format: "markdown" }));
+    expect(error).toHaveBeenCalledWith(expect.stringMatching(/exact historical source Version/));
+    expect(save).not.toHaveBeenCalled(); expect(remove).not.toHaveBeenCalled(); expect(reportModules.buildHistoricalPlanningReport).not.toHaveBeenCalled();
+  });
+
   it("keeps another native output from starting while the first destination is still pending", async () => {
     nativeCapabilities.nativeReports = true; let finish;
     reportModules.buildPlanningReport.mockReturnValue({ domainBinding: { project_id: "project-1" }, view: { title: "Captured" } });

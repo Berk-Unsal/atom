@@ -1,5 +1,32 @@
 "use strict";
 const { EventEmitter } = require("node:events");
+const { setTimeout: delay } = require("node:timers/promises");
+
+// The initial compiler has no last-good service yet. Retry only when an
+// observed edit superseded its input (including an editor's temporary EOF),
+// and never install an output built from that superseded source revision.
+async function buildInitialRevision({ build, discard, getRevision, signal, debounce = 150, onSuperseded = () => {} }) {
+  for (;;) {
+    signal.throwIfAborted();
+    const revision = getRevision();
+    let candidate; let failure;
+    try { candidate = await build({ signal }); } catch (error) { failure = error; }
+    // Drain pending fs.watch callbacks before deciding whether the compiler
+    // diagnosed the current source or an in-progress/superseded write.
+    await new Promise((resolve) => setImmediate(resolve));
+    if (signal.aborted) {
+      if (candidate !== undefined) await discard(candidate);
+      signal.throwIfAborted();
+    }
+    if (revision === getRevision()) {
+      if (failure) throw failure;
+      return candidate;
+    }
+    if (candidate !== undefined) await discard(candidate);
+    onSuperseded();
+    await delay(debounce, undefined, { signal });
+  }
+}
 
 /** Compile before touching the running service. Coalesce edits and discard a
  * candidate if another edit arrived while it compiled. No automatic RF retry. */
@@ -64,4 +91,4 @@ class RebuildQueue extends EventEmitter {
   }
 }
 
-module.exports = { RebuildQueue };
+module.exports = { RebuildQueue, buildInitialRevision };

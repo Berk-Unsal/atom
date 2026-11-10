@@ -178,6 +178,17 @@ test("corrupt startup selection cannot silently substitute the bundled pack or r
   settings.save({ ...settings.value, preferences: { activeDataset: "missing-pack" } });
   assert.notEqual(await registry.initialize(), registry.bundledRoot);
 });
+test("corrupt approved registry labels fail explicitly without rewriting settings", async (t) => {
+  const { registry, settings } = await fixture(t);
+  const selected = await registry.choose("directory"); await registry.install({ ticket: selected.ticket, mode: "reference" });
+  const original = settings.value; const entry = original.datasets[0];
+  for (const key of ["name", "version"]) for (const value of [{}, null, " ", "x".repeat(129)]) {
+    settings.save({ ...original, datasets: [{ ...entry, [key]: value }] });
+    const before = await fs.readFile(settings.file);
+    await assert.rejects(registry.initialize(), { code: "dataset_registry_invalid" });
+    assert.deepEqual(await fs.readFile(settings.file), before);
+  }
+});
 test("legacy metadata survives unchanged without becoming an approved root; explicit validation upgrades only the chosen record", async (t) => {
   const { registry, settings, source, calls } = await fixture(t);
   const legacy = { id: "reference", path: source, note: "old schema-1 registry metadata" };

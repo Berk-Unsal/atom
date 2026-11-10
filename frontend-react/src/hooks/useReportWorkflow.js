@@ -2,11 +2,23 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { createReportDefinition } from "../domain/report.js";
 import { namingForSource } from "../utils/downloadNames.js";
 import { platform } from "../platform/index.js";
+import { attributeRunToSourceVersion } from "../utils/restoredRunBinding.js";
 
 const loadReportExportModule = () => importDeferredModule(() => import("../utils/reportExport.js"));
 const loadReportArtifactModule = () => importDeferredModule(() => import("../utils/reportArtifact.js"));
 const loadReportArtifactDownloadModule = () => importDeferredModule(() => import("../utils/reportArtifactDownload.js"));
 const loadReviewPackageModule = () => importDeferredModule(() => import("../utils/reviewPackage.js"));
+
+function runForReportVersion(run, project, scenario, revisionID) {
+  if (!run) return null;
+  const projectID = project?.domain?.project_id ?? project?.id;
+  if (run.project_id && projectID && String(run.project_id) !== String(projectID)) return null;
+  // A draft Run may be attributed only by this exact Version's explicit
+  // source_run_id and its known project. The immutable Run stays unbound.
+  if (!run.scenario_revision_id && (!projectID || String(run.project_id) !== String(projectID))) return null;
+  const revision = scenario?.domain?.revisions?.find((candidate) => String(candidate.scenario_revision_id) === String(revisionID));
+  return attributeRunToSourceVersion(run, [{ ...scenario, domain: { ...scenario?.domain, revisions: revision ? [revision] : [] } }]);
+}
 
 /** Coordinates report sources, on-demand renderers, retained artifact storage and downloads. */
 export default function useReportWorkflow({
@@ -48,12 +60,11 @@ export default function useReportWorkflow({
     if (planDirty || !revisionID) return [];
     // A live evaluation has no persisted optimization Run, even if this Version has an older one.
     if (planningMode === "network" && currentReportInputs?.networkResultKind === "evaluation") return [];
-    const compatible = runHistoryRuns.filter((run) => (
-      String(run.scenario_revision_id) === String(revisionID) && run.status === "succeeded"
-    ));
+    const compatible = runHistoryRuns.map((run) => runForReportVersion(run, activeProject, activeScenario, revisionID))
+      .filter((run) => run && String(run.scenario_revision_id) === String(revisionID) && run.status === "succeeded");
     const type = planningMode === "network" ? "optimization" : "simulation";
     return compatible.filter((run) => run.run_type === type).slice(0, 1);
-  }, [activeScenario?.domain?.current_revision_id, currentReportInputs?.networkResultKind, planDirty, planningMode, runHistoryRuns]);
+  }, [activeProject, activeScenario, currentReportInputs?.networkResultKind, planDirty, planningMode, runHistoryRuns]);
 
   // One lineage for the current Report: the definition stores it and the Report source card shows it.
   const currentReportSource = useMemo(() => {
@@ -248,10 +259,12 @@ export default function useReportWorkflow({
     try {
       let report;
       if (definition.run_ids?.length > 0) {
-        const runs = runHistoryRuns.filter((run) => definition.run_ids.includes(run.run_id));
-        const run = runs[0];
-        const { revision, scenario } = historicalReportContext(run);
-        if (!run || !revision || !scenario) throw new Error("The exact historical source Version for this report is unavailable; regeneration was not performed.");
+        const scenario = (activeProject?.scenarios ?? []).find((candidate) => String(candidate.domain?.scenario_id ?? candidate.id) === String(definition.scenario_id));
+        const revision = scenario?.domain?.revisions?.find((candidate) => String(candidate.scenario_revision_id) === String(definition.scenario_revision_id));
+        const runs = definition.run_ids.map((id) => runForReportVersion(runHistoryRuns.find((run) => String(run.run_id) === String(id)), activeProject, scenario, definition.scenario_revision_id));
+        if (!revision || !scenario || runs.some((run) => !run || String(run.scenario_revision_id) !== String(definition.scenario_revision_id))) {
+          throw new Error("The exact historical source Version for this report is unavailable; regeneration was not performed.");
+        }
         const { buildHistoricalPlanningReport } = await loadReportExportModule();
         report = buildHistoricalPlanningReport({ appMeta, project: activeProject, scenario, scenarioRevision: revision, runs });
       } else {
@@ -266,7 +279,7 @@ export default function useReportWorkflow({
         setApplicationError(regenerateError.message);
       }
     }
-  }, [activeProject, appMeta, createPlanningReport, historicalReportContext, persistReportArtifact, reportDefinitions, runHistoryRuns, setApplicationError]);
+  }, [activeProject, appMeta, createPlanningReport, persistReportArtifact, reportDefinitions, runHistoryRuns, setApplicationError]);
 
   const downloadArtifact = useCallback(async (artifact) => {
     try {

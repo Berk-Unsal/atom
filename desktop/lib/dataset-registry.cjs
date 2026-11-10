@@ -5,6 +5,7 @@ const crypto = require("node:crypto");
 const { atomicWriteJSON, validateSettings } = require("./settings-store.cjs");
 const { DatasetError, invalid, checkAbort, sourceRoot, readManifest, streamLayer, inspectDataset } = require("./dataset-source.cjs");
 const validHash = (hash) => typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash);
+const validIdentity = (value) => typeof value === "string" && value.trim().length > 0 && Buffer.byteLength(value.trim()) <= 128;
 const legacyEntry = (entry) => entry && !Object.hasOwn(entry, "mode") && !Object.hasOwn(entry, "manifest_sha256");
 class DatasetRegistry {
   constructor({ settings, packsRoot, registryFile, bundledRoot, executable, selectSource, activate, isBusy = () => false, inspect = inspectDataset }) {
@@ -18,8 +19,9 @@ class DatasetRegistry {
     const entries = this.settings.value.datasets.filter((entry) => !legacyEntry(entry));
     const ids = new Set(this.bundle ? [this.bundle.id] : []);
     for (const entry of entries) {
-      if (!entry || ids.has(entry.id) || Buffer.byteLength(entry.id || "") > 128 || !validHash(entry.manifest_sha256)
-        || !["managed", "reference"].includes(entry.mode) || typeof entry.version !== "string" || !path.isAbsolute(entry.path || "")
+      if (!entry || !validIdentity(entry.id) || !validIdentity(entry.name) || !validIdentity(entry.version) || ids.has(entry.id)
+        || Buffer.byteLength(entry.id) > 128 || !validHash(entry.manifest_sha256)
+        || !["managed", "reference"].includes(entry.mode) || !path.isAbsolute(entry.path || "")
         || (entry.mode === "managed" && path.dirname(entry.path) !== this.packsRoot)) throw new DatasetError("dataset_registry_invalid", "The native dataset registry is invalid. Original settings were preserved; back them up and repair the registry explicitly.");
       ids.add(entry.id);
     }

@@ -7,7 +7,7 @@ const crypto = require("node:crypto");
 const { fork, execFileSync } = require("node:child_process");
 const { EventEmitter } = require("node:events");
 const { stageDatasetPack } = require("./resources.cjs");
-const { RebuildQueue } = require("./rebuild-queue.cjs");
+const { RebuildQueue, buildInitialRevision } = require("./rebuild-queue.cjs");
 const { DevHost } = require("./dev-host.cjs");
 const { runOwned, stopOwned } = require("./dev-process.cjs");
 
@@ -134,13 +134,18 @@ class DevSession extends EventEmitter {
     // Remember edits made during the first cold build/launch as well as warm
     // edits. Install the normal watcher before removing this bootstrap watch.
     let bootstrapChanged = false;
+    let bootstrapRevision = 0;
     const bootstrapWatch = fs.watch(path.join(this.root, "backend-go"), { recursive: true }, (_kind, filename) => {
-      if (!filename || backendSource(filename.toString().split(path.sep).join("/"))) bootstrapChanged = true;
+      if (!filename || backendSource(filename.toString().split(path.sep).join("/"))) { bootstrapChanged = true; bootstrapRevision++; }
     });
     bootstrapWatch.on("error", (error) => { this.notice("fatal", { message: error.message }); void this.stop(); });
     this.watchers.push(bootstrapWatch);
-    await this.run("go", ["run", "./cmd/validate-dataset", path.join(this.resources, "data-pipeline")], { cwd: path.join(this.root, "backend-go"), signal: this.abort.signal });
-    const first = await this.buildGo({ signal: this.abort.signal });
+    const initial = { getRevision: () => bootstrapRevision, signal: this.abort.signal };
+    await buildInitialRevision({ ...initial, build: ({ signal }) => this.run("go", ["run", "./cmd/validate-dataset", path.join(this.resources, "data-pipeline")],
+      { cwd: path.join(this.root, "backend-go"), signal }).then(() => undefined), discard: async () => {} });
+    const first = await buildInitialRevision({ ...initial, build: (options) => this.buildGo(options), discard: (candidate) => fsp.rm(candidate, { force: true }),
+      onSuperseded: () => this.notice("go-build-superseded", { builds: this.builds }) });
+    bootstrapChanged = false;
     this.abort.signal.throwIfAborted(); await fsp.rename(first, path.join(this.resources, "atom-api"));
     await this.launchHost();
 

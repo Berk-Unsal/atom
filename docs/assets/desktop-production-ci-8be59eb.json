@@ -1,0 +1,3300 @@
+{
+  "head_commit": "8be59eb525f7060b467aa90a3143f7eba14ab65b",
+  "ci_merge_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+  "merge_parents": [
+    "495ce01a90486f1bbc025363f7726a78452ab617",
+    "8be59eb525f7060b467aa90a3143f7eba14ab65b"
+  ],
+  "quality_run": 42712669586,
+  "production_qualification_run": 42712670128,
+  "artifact_ids": {
+    "quality_mac": 13716338019,
+    "quality_linux": 13715439305,
+    "production_mac": 13717322518,
+    "production_linux": 13717441749
+  },
+  "platforms": {
+    "macos": {
+      "startup": {
+        "source_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "arm64",
+          "kernel": "24.6.0",
+          "cpu": "Apple M1 (Virtual)",
+          "logical_cpus": 3,
+          "memory_bytes": 7516192768,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "method": "20 paired fresh-profile launches and same-profile relaunches; OS file cache uncontrolled; no cache purge",
+        "samples": [
+          {
+            "index": 0,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 12536,
+            "launch_to_dataset_ready_ms": 11970,
+            "sidecar_start_to_dataset_ready_ms": 6040
+          },
+          {
+            "index": 0,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 6422,
+            "launch_to_dataset_ready_ms": 6081,
+            "sidecar_start_to_dataset_ready_ms": 5188
+          },
+          {
+            "index": 1,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5307,
+            "launch_to_dataset_ready_ms": 5083,
+            "sidecar_start_to_dataset_ready_ms": 4260
+          },
+          {
+            "index": 1,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4687,
+            "launch_to_dataset_ready_ms": 4447,
+            "sidecar_start_to_dataset_ready_ms": 3937
+          },
+          {
+            "index": 2,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5201,
+            "launch_to_dataset_ready_ms": 4840,
+            "sidecar_start_to_dataset_ready_ms": 4322
+          },
+          {
+            "index": 2,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5613,
+            "launch_to_dataset_ready_ms": 5361,
+            "sidecar_start_to_dataset_ready_ms": 4447
+          },
+          {
+            "index": 3,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4900,
+            "launch_to_dataset_ready_ms": 4634,
+            "sidecar_start_to_dataset_ready_ms": 4230
+          },
+          {
+            "index": 3,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5827,
+            "launch_to_dataset_ready_ms": 5398,
+            "sidecar_start_to_dataset_ready_ms": 4790
+          },
+          {
+            "index": 4,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 8680,
+            "launch_to_dataset_ready_ms": 8211,
+            "sidecar_start_to_dataset_ready_ms": 6376
+          },
+          {
+            "index": 4,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 6696,
+            "launch_to_dataset_ready_ms": 6275,
+            "sidecar_start_to_dataset_ready_ms": 5367
+          },
+          {
+            "index": 5,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 6428,
+            "launch_to_dataset_ready_ms": 5967,
+            "sidecar_start_to_dataset_ready_ms": 5129
+          },
+          {
+            "index": 5,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5156,
+            "launch_to_dataset_ready_ms": 4915,
+            "sidecar_start_to_dataset_ready_ms": 4179
+          },
+          {
+            "index": 6,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5446,
+            "launch_to_dataset_ready_ms": 5134,
+            "sidecar_start_to_dataset_ready_ms": 4529
+          },
+          {
+            "index": 6,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5645,
+            "launch_to_dataset_ready_ms": 5294,
+            "sidecar_start_to_dataset_ready_ms": 4486
+          },
+          {
+            "index": 7,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5247,
+            "launch_to_dataset_ready_ms": 4884,
+            "sidecar_start_to_dataset_ready_ms": 4118
+          },
+          {
+            "index": 7,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5309,
+            "launch_to_dataset_ready_ms": 5029,
+            "sidecar_start_to_dataset_ready_ms": 4372
+          },
+          {
+            "index": 8,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5682,
+            "launch_to_dataset_ready_ms": 5426,
+            "sidecar_start_to_dataset_ready_ms": 4721
+          },
+          {
+            "index": 8,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5094,
+            "launch_to_dataset_ready_ms": 4809,
+            "sidecar_start_to_dataset_ready_ms": 4332
+          },
+          {
+            "index": 9,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5815,
+            "launch_to_dataset_ready_ms": 5336,
+            "sidecar_start_to_dataset_ready_ms": 4670
+          },
+          {
+            "index": 9,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5261,
+            "launch_to_dataset_ready_ms": 5031,
+            "sidecar_start_to_dataset_ready_ms": 4387
+          },
+          {
+            "index": 10,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5087,
+            "launch_to_dataset_ready_ms": 4784,
+            "sidecar_start_to_dataset_ready_ms": 4354
+          },
+          {
+            "index": 10,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5461,
+            "launch_to_dataset_ready_ms": 5077,
+            "sidecar_start_to_dataset_ready_ms": 4368
+          },
+          {
+            "index": 11,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5705,
+            "launch_to_dataset_ready_ms": 5410,
+            "sidecar_start_to_dataset_ready_ms": 4710
+          },
+          {
+            "index": 11,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5174,
+            "launch_to_dataset_ready_ms": 4925,
+            "sidecar_start_to_dataset_ready_ms": 4356
+          },
+          {
+            "index": 12,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5326,
+            "launch_to_dataset_ready_ms": 5038,
+            "sidecar_start_to_dataset_ready_ms": 4554
+          },
+          {
+            "index": 12,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5629,
+            "launch_to_dataset_ready_ms": 5223,
+            "sidecar_start_to_dataset_ready_ms": 4654
+          },
+          {
+            "index": 13,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5716,
+            "launch_to_dataset_ready_ms": 5284,
+            "sidecar_start_to_dataset_ready_ms": 4555
+          },
+          {
+            "index": 13,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5645,
+            "launch_to_dataset_ready_ms": 5200,
+            "sidecar_start_to_dataset_ready_ms": 4669
+          },
+          {
+            "index": 14,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5328,
+            "launch_to_dataset_ready_ms": 5044,
+            "sidecar_start_to_dataset_ready_ms": 4482
+          },
+          {
+            "index": 14,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5509,
+            "launch_to_dataset_ready_ms": 5194,
+            "sidecar_start_to_dataset_ready_ms": 4669
+          },
+          {
+            "index": 15,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5841,
+            "launch_to_dataset_ready_ms": 5420,
+            "sidecar_start_to_dataset_ready_ms": 4972
+          },
+          {
+            "index": 15,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5457,
+            "launch_to_dataset_ready_ms": 5201,
+            "sidecar_start_to_dataset_ready_ms": 4622
+          },
+          {
+            "index": 16,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4707,
+            "launch_to_dataset_ready_ms": 4477,
+            "sidecar_start_to_dataset_ready_ms": 3953
+          },
+          {
+            "index": 16,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4358,
+            "launch_to_dataset_ready_ms": 4135,
+            "sidecar_start_to_dataset_ready_ms": 3804
+          },
+          {
+            "index": 17,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5245,
+            "launch_to_dataset_ready_ms": 4985,
+            "sidecar_start_to_dataset_ready_ms": 4457
+          },
+          {
+            "index": 17,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4672,
+            "launch_to_dataset_ready_ms": 4420,
+            "sidecar_start_to_dataset_ready_ms": 3928
+          },
+          {
+            "index": 18,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5246,
+            "launch_to_dataset_ready_ms": 4578,
+            "sidecar_start_to_dataset_ready_ms": 4052
+          },
+          {
+            "index": 18,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5219,
+            "launch_to_dataset_ready_ms": 5000,
+            "sidecar_start_to_dataset_ready_ms": 4415
+          },
+          {
+            "index": 19,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4618,
+            "launch_to_dataset_ready_ms": 4320,
+            "sidecar_start_to_dataset_ready_ms": 3817
+          },
+          {
+            "index": 19,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4793,
+            "launch_to_dataset_ready_ms": 4388,
+            "sidecar_start_to_dataset_ready_ms": 3862
+          }
+        ],
+        "resource_build_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "binary_sha256": "d5c25f4e1d50c59ceb1e3401cbddee5b4b01f24336f2b6a5371e6b63dc83de8c",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "current_sample": {
+          "index": 19,
+          "state": "same_profile_relaunch"
+        },
+        "last_application_exit": {
+          "code": 0,
+          "signal": null,
+          "time": "2026-11-09T22:40:38.096Z"
+        },
+        "startup": {
+          "fresh_profile": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                12536,
+                5307,
+                5201,
+                4900,
+                8680,
+                6428,
+                5446,
+                5247,
+                5682,
+                5815,
+                5087,
+                5705,
+                5326,
+                5716,
+                5328,
+                5841,
+                4707,
+                5245,
+                5246,
+                4618
+              ],
+              "median": 5327,
+              "p95": 8680,
+              "max": 12536
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                11970,
+                5083,
+                4840,
+                4634,
+                8211,
+                5967,
+                5134,
+                4884,
+                5426,
+                5336,
+                4784,
+                5410,
+                5038,
+                5284,
+                5044,
+                5420,
+                4477,
+                4985,
+                4578,
+                4320
+              ],
+              "median": 5063.5,
+              "p95": 8211,
+              "max": 11970
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                6040,
+                4260,
+                4322,
+                4230,
+                6376,
+                5129,
+                4529,
+                4118,
+                4721,
+                4670,
+                4354,
+                4710,
+                4554,
+                4555,
+                4482,
+                4972,
+                3953,
+                4457,
+                4052,
+                3817
+              ],
+              "median": 4505.5,
+              "p95": 6040,
+              "max": 6376
+            }
+          },
+          "same_profile_relaunch": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                6422,
+                4687,
+                5613,
+                5827,
+                6696,
+                5156,
+                5645,
+                5309,
+                5094,
+                5261,
+                5461,
+                5174,
+                5629,
+                5645,
+                5509,
+                5457,
+                4358,
+                4672,
+                5219,
+                4793
+              ],
+              "median": 5383,
+              "p95": 6422,
+              "max": 6696
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                6081,
+                4447,
+                5361,
+                5398,
+                6275,
+                4915,
+                5294,
+                5029,
+                4809,
+                5031,
+                5077,
+                4925,
+                5223,
+                5200,
+                5194,
+                5201,
+                4135,
+                4420,
+                5000,
+                4388
+              ],
+              "median": 5054,
+              "p95": 6081,
+              "max": 6275
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                5188,
+                3937,
+                4447,
+                4790,
+                5367,
+                4179,
+                4486,
+                4372,
+                4332,
+                4387,
+                4368,
+                4356,
+                4654,
+                4669,
+                4669,
+                4622,
+                3804,
+                3928,
+                4415,
+                3862
+              ],
+              "median": 4401,
+              "p95": 5188,
+              "max": 5367
+            }
+          }
+        },
+        "idle": {
+          "full_pack": {
+            "processes": [
+              {
+                "pid": 9647,
+                "parent_pid": 3600,
+                "rss_bytes": 180142080,
+                "executable": "Electron",
+                "pss_bytes": null
+              },
+              {
+                "pid": 9648,
+                "parent_pid": 9647,
+                "rss_bytes": 84901888,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 9649,
+                "parent_pid": 9647,
+                "rss_bytes": 41402368,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 9650,
+                "parent_pid": 9647,
+                "rss_bytes": 157827072,
+                "executable": "Electron Helper (Renderer)",
+                "pss_bytes": null
+              },
+              {
+                "pid": 9655,
+                "parent_pid": 9647,
+                "rss_bytes": 480575488,
+                "executable": "atom-api",
+                "pss_bytes": null
+              }
+            ],
+            "rss_bytes": 944848896,
+            "pss_bytes": null,
+            "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5"
+          },
+          "sample_pack": {
+            "processes": [
+              {
+                "pid": 11296,
+                "parent_pid": 3600,
+                "rss_bytes": 179896320,
+                "executable": "Electron",
+                "pss_bytes": null
+              },
+              {
+                "pid": 11301,
+                "parent_pid": 11296,
+                "rss_bytes": 81592320,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 11302,
+                "parent_pid": 11296,
+                "rss_bytes": 42418176,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 11303,
+                "parent_pid": 11296,
+                "rss_bytes": 143523840,
+                "executable": "Electron Helper (Renderer)",
+                "pss_bytes": null
+              },
+              {
+                "pid": 11304,
+                "parent_pid": 11296,
+                "rss_bytes": 14876672,
+                "executable": "atom-api",
+                "pss_bytes": null
+              }
+            ],
+            "rss_bytes": 462307328,
+            "pss_bytes": null,
+            "manifest_sha256": "d476596fa2945de417d0de0dcfbe428c193a913f47d969562590bf468d4b14e7"
+          },
+          "full_minus_sample_rss_bytes": 482541568
+        },
+        "budgets": {
+          "fresh_profile_launch_p95_10s": true,
+          "same_profile_launch_p95_5s": false,
+          "fresh_profile_sidecar_dataset_p95_8s": true,
+          "same_profile_sidecar_dataset_p95_4s": false,
+          "aggregate_idle_rss_500MiB": false
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      },
+      "rf": {
+        "source_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "arm64",
+          "kernel": "24.6.0",
+          "cpu": "Apple M1 (Virtual)",
+          "logical_cpus": 3,
+          "memory_bytes": 7516192768,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "comparisons": [
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 419.60000000009313,
+            "standalone_ms": 207.54183399999965
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 155.09999999997672,
+            "standalone_ms": 111.44908300000134
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 136.79999999993015,
+            "standalone_ms": 130.7905840000003
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 82.30000000004657,
+            "standalone_ms": 49.01145800000086
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 189.59999999997672,
+            "standalone_ms": 50.4409169999999
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 1692.0999999999767,
+            "standalone_ms": 1507.870583
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 962.9000000000233,
+            "standalone_ms": 1624.5658330000006
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 1374.2999999999302,
+            "standalone_ms": 1082.1144170000007
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 1135.2999999999302,
+            "standalone_ms": 1507.203166000003
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 1249.0999999999767,
+            "standalone_ms": 879.0166250000002
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 19710.400000000023,
+            "standalone_ms": 19968.783125
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 17656.900000000023,
+            "standalone_ms": 18587.335666
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 17669.900000000023,
+            "standalone_ms": 17425.141082999995
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 17295,
+            "standalone_ms": 18477.682583999995
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 17643.5,
+            "standalone_ms": 17792.242832999997
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "1668a52bc4cd4e4a33a24fc07663ca35d55b9adf4f3414bd6c44747ef0a20626",
+            "native_response_sha256": "54161700ee1eb72d21fdc246aa606e35ecae9e778670c3d41d9d6786d986fc4d",
+            "standalone_response_sha256": "54161700ee1eb72d21fdc246aa606e35ecae9e778670c3d41d9d6786d986fc4d",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 212,
+            "standalone_ms": 137.34245799999917
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 49.300000000046566,
+            "standalone_ms": 49.51654199999757
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "502173b668fc49ff774e1d65c6c69fc14b438516c76b24e1cf105aaba50e7ecc",
+            "native_response_sha256": "276e112e8e16a37ca23a51ccd7477ac93742c980e8aec36c2e3b1a1d8405fcb4",
+            "standalone_response_sha256": "276e112e8e16a37ca23a51ccd7477ac93742c980e8aec36c2e3b1a1d8405fcb4",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 19.800000000046566,
+            "standalone_ms": 18.688916000013705
+          }
+        ],
+        "timings": {
+          "/api/simulate": {
+            "native_ms": {
+              "samples": [
+                155.09999999997672,
+                136.79999999993015,
+                82.30000000004657,
+                189.59999999997672
+              ],
+              "median": 145.94999999995343,
+              "p95": 189.59999999997672,
+              "max": 189.59999999997672
+            },
+            "standalone_ms": {
+              "samples": [
+                111.44908300000134,
+                130.7905840000003,
+                49.01145800000086,
+                50.4409169999999
+              ],
+              "median": 80.94500000000062,
+              "p95": 130.7905840000003,
+              "max": 130.7905840000003
+            },
+            "absolute_median_difference_fraction": 0.8030761628260217,
+            "within_5_percent": false
+          },
+          "/api/evaluate-network": {
+            "native_ms": {
+              "samples": [
+                962.9000000000233,
+                1374.2999999999302,
+                1135.2999999999302,
+                1249.0999999999767
+              ],
+              "median": 1192.1999999999534,
+              "p95": 1374.2999999999302,
+              "max": 1374.2999999999302
+            },
+            "standalone_ms": {
+              "samples": [
+                1624.5658330000006,
+                1082.1144170000007,
+                1507.203166000003,
+                879.0166250000002
+              ],
+              "median": 1294.6587915000018,
+              "p95": 1624.5658330000006,
+              "max": 1624.5658330000006
+            },
+            "absolute_median_difference_fraction": 0.07913960973558043,
+            "within_5_percent": false
+          },
+          "/api/optimize-network": {
+            "native_ms": {
+              "samples": [
+                17656.900000000023,
+                17669.900000000023,
+                17295,
+                17643.5
+              ],
+              "median": 17650.20000000001,
+              "p95": 17669.900000000023,
+              "max": 17669.900000000023
+            },
+            "standalone_ms": {
+              "samples": [
+                18587.335666,
+                17425.141082999995,
+                18477.682583999995,
+                17792.242832999997
+              ],
+              "median": 18134.962708499996,
+              "p95": 18587.335666,
+              "max": 18587.335666
+            },
+            "absolute_median_difference_fraction": 0.02673083569522705,
+            "within_5_percent": true
+          }
+        },
+        "ui": {
+          "Evaluate Network": true,
+          "Optimize Network": true
+        },
+        "resource_build_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "binary_sha256": "d5c25f4e1d50c59ceb1e3401cbddee5b4b01f24336f2b6a5371e6b63dc83de8c",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "metadata_exact_equal": true,
+        "dataset": {
+          "id": "ankara-open-planning",
+          "version": "2026.07",
+          "hashes": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          }
+        },
+        "capabilities": [
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/recommend-sites",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/path-profile",
+            "status": "research_only",
+            "reason": "research_profile_only",
+            "note": "endpoint is available only as the existing research/planning profile"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/interference",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          }
+        ],
+        "fixture": {
+          "cell_ids": [
+            "LTE-35877",
+            "LTE-1221413",
+            "LTE-1221389",
+            "LTE-1221409",
+            "LTE-322850",
+            "LTE-322848",
+            "LTE-748049",
+            "LTE-322828"
+          ],
+          "selection": "Eight dataset towers nearest 32.85,39.92 by squared geographic distance, then ID; defaults unchanged",
+          "settings": {
+            "frequencyGHz": 28,
+            "propagationModelID": "urban_short_range",
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 100,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "optimization": {
+            "objectives": [
+              {
+                "id": "demand",
+                "weight": 50
+              },
+              {
+                "id": "residential",
+                "weight": 50
+              },
+              {
+                "id": "coverage",
+                "weight": 50
+              },
+              {
+                "id": "overlap",
+                "weight": 50
+              },
+              {
+                "id": "radio_quality",
+                "weight": 0
+              }
+            ],
+            "constraints": {}
+          },
+          "network_request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273"
+        },
+        "technology_simulation_parity": true,
+        "result": "FAIL",
+        "failure": "locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Propagation rays layer', exact: true })\n",
+        "failure_notices": [
+          "Ready"
+        ]
+      },
+      "development_loop": {
+        "source_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "arm64",
+          "kernel": "24.6.0",
+          "cpu": "Apple M1 (Virtual)",
+          "logical_cpus": 3,
+          "memory_bytes": 7516192768,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "fixture_build_commit": "f4898053912088b83a04ab97f4485962b1aa103e",
+        "hmr": {
+          "jsx": {
+            "samples_ms": [
+              210.7036250000001,
+              257.7375830000001,
+              231.14629199999945,
+              328.77137499999844,
+              338.7257499999996,
+              284.04029100000116,
+              199.67762500000026,
+              167.40633400000115,
+              198.77566599999773,
+              171.7103750000024,
+              162.00829100000192,
+              137.68245799999931,
+              180.18995800000266,
+              215.05704100000003,
+              300.9618750000009,
+              198.57304099999965,
+              170.6558330000007,
+              197.97645900000134,
+              198.0557919999992,
+              201.46616599999834
+            ],
+            "p95_ms": 328.77137499999844,
+            "max_ms": 338.7257499999996
+          },
+          "css": {
+            "samples_ms": [
+              119.83675000000221,
+              118.71454100000119,
+              146.6157920000005,
+              227.93545799999993,
+              244.58808399999907,
+              124.66912500000035,
+              138.97537499999817,
+              141.5590830000001,
+              131.7992919999997,
+              101.70362499999828,
+              124.66012499999852,
+              117.55970800000068,
+              129.578416999997,
+              103.16212499999892,
+              133.3697919999977,
+              116.71720799999821,
+              117.34195900000122,
+              120.87554199999795,
+              121.0167500000025,
+              117.91337500000009
+            ],
+            "p95_ms": 227.93545799999993,
+            "max_ms": 244.58808399999907
+          }
+        },
+        "current_edit": {
+          "kind": "css",
+          "index": 22
+        },
+        "hmr_no_go_rebuild_or_host_reload": true,
+        "failed_compile_preserved_last_good": true,
+        "warm_go_edit_to_ready_ms": 4900.123540999997,
+        "warm_go_compile_ms": 1150.9309170000015,
+        "warm_go_phases_ms": {
+          "compile": 1150.9309170000015,
+          "drain": 10.830749999997352,
+          "start_to_listener": 13.336416000001918,
+          "dataset_load": 3474.475125000001,
+          "dataset_to_ready": 70.63899999999921
+        },
+        "successful_swap_rejected_stale_generation": true,
+        "failed_shell_syntax_preserved_host": true,
+        "warm_shell_edit_to_ready_ms": 6026.034749999999,
+        "ctrl_c_reaped_owned_processes_and_removed_scratch": true,
+        "same_profile_relaunch_retained_workspace": true,
+        "edit_during_initial_build_was_applied": true,
+        "startup_cancellation_reaped_compiler": true,
+        "version_change_during_bootstrap_stopped_cleanly": true,
+        "occupied_vite_port_failed_without_takeover": true,
+        "console_hmr_messages": [
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx"
+        ],
+        "functional_result": "PASS",
+        "timing_budgets": {
+          "jsx_p95": {
+            "observed_ms": 328.77137499999844,
+            "budget_ms": 1000,
+            "passed": true
+          },
+          "css_p95": {
+            "observed_ms": 227.93545799999993,
+            "budget_ms": 1000,
+            "passed": true
+          },
+          "warm_go": {
+            "observed_ms": 4900.123540999997,
+            "budget_ms": 5000,
+            "passed": true
+          },
+          "warm_host": {
+            "observed_ms": 6026.034749999999,
+            "budget_ms": 10000,
+            "passed": true
+          }
+        },
+        "result": "PASS"
+      }
+    },
+    "ubuntu": {
+      "startup": {
+        "source_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "source_dirty": false,
+        "reference": {
+          "platform": "linux",
+          "architecture": "x64",
+          "kernel": "7.0.0-1017-azure",
+          "cpu": "AMD EPYC 7763 64-Core Processor",
+          "logical_cpus": 4,
+          "memory_bytes": 16760340480,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "method": "20 paired fresh-profile launches and same-profile relaunches; OS file cache uncontrolled; no cache purge",
+        "samples": [
+          {
+            "index": 0,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5597,
+            "launch_to_dataset_ready_ms": 5315,
+            "sidecar_start_to_dataset_ready_ms": 4648
+          },
+          {
+            "index": 0,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5139,
+            "launch_to_dataset_ready_ms": 4813,
+            "sidecar_start_to_dataset_ready_ms": 4548
+          },
+          {
+            "index": 1,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5200,
+            "launch_to_dataset_ready_ms": 4916,
+            "sidecar_start_to_dataset_ready_ms": 4634
+          },
+          {
+            "index": 1,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5101,
+            "launch_to_dataset_ready_ms": 4817,
+            "sidecar_start_to_dataset_ready_ms": 4567
+          },
+          {
+            "index": 2,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5134,
+            "launch_to_dataset_ready_ms": 4850,
+            "sidecar_start_to_dataset_ready_ms": 4595
+          },
+          {
+            "index": 2,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5078,
+            "launch_to_dataset_ready_ms": 4803,
+            "sidecar_start_to_dataset_ready_ms": 4534
+          },
+          {
+            "index": 3,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5076,
+            "launch_to_dataset_ready_ms": 4803,
+            "sidecar_start_to_dataset_ready_ms": 4548
+          },
+          {
+            "index": 3,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5091,
+            "launch_to_dataset_ready_ms": 4812,
+            "sidecar_start_to_dataset_ready_ms": 4540
+          },
+          {
+            "index": 4,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5129,
+            "launch_to_dataset_ready_ms": 4839,
+            "sidecar_start_to_dataset_ready_ms": 4558
+          },
+          {
+            "index": 4,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5105,
+            "launch_to_dataset_ready_ms": 4825,
+            "sidecar_start_to_dataset_ready_ms": 4567
+          },
+          {
+            "index": 5,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5072,
+            "launch_to_dataset_ready_ms": 4800,
+            "sidecar_start_to_dataset_ready_ms": 4536
+          },
+          {
+            "index": 5,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5084,
+            "launch_to_dataset_ready_ms": 4803,
+            "sidecar_start_to_dataset_ready_ms": 4543
+          },
+          {
+            "index": 6,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5070,
+            "launch_to_dataset_ready_ms": 4799,
+            "sidecar_start_to_dataset_ready_ms": 4550
+          },
+          {
+            "index": 6,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5093,
+            "launch_to_dataset_ready_ms": 4817,
+            "sidecar_start_to_dataset_ready_ms": 4567
+          },
+          {
+            "index": 7,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5083,
+            "launch_to_dataset_ready_ms": 4799,
+            "sidecar_start_to_dataset_ready_ms": 4544
+          },
+          {
+            "index": 7,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5087,
+            "launch_to_dataset_ready_ms": 4814,
+            "sidecar_start_to_dataset_ready_ms": 4550
+          },
+          {
+            "index": 8,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5127,
+            "launch_to_dataset_ready_ms": 4850,
+            "sidecar_start_to_dataset_ready_ms": 4580
+          },
+          {
+            "index": 8,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5052,
+            "launch_to_dataset_ready_ms": 4770,
+            "sidecar_start_to_dataset_ready_ms": 4527
+          },
+          {
+            "index": 9,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5112,
+            "launch_to_dataset_ready_ms": 4834,
+            "sidecar_start_to_dataset_ready_ms": 4583
+          },
+          {
+            "index": 9,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5071,
+            "launch_to_dataset_ready_ms": 4790,
+            "sidecar_start_to_dataset_ready_ms": 4545
+          },
+          {
+            "index": 10,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5058,
+            "launch_to_dataset_ready_ms": 4777,
+            "sidecar_start_to_dataset_ready_ms": 4529
+          },
+          {
+            "index": 10,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5173,
+            "launch_to_dataset_ready_ms": 4892,
+            "sidecar_start_to_dataset_ready_ms": 4632
+          },
+          {
+            "index": 11,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5094,
+            "launch_to_dataset_ready_ms": 4821,
+            "sidecar_start_to_dataset_ready_ms": 4549
+          },
+          {
+            "index": 11,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5268,
+            "launch_to_dataset_ready_ms": 4943,
+            "sidecar_start_to_dataset_ready_ms": 4689
+          },
+          {
+            "index": 12,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5321,
+            "launch_to_dataset_ready_ms": 5038,
+            "sidecar_start_to_dataset_ready_ms": 4750
+          },
+          {
+            "index": 12,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5051,
+            "launch_to_dataset_ready_ms": 4771,
+            "sidecar_start_to_dataset_ready_ms": 4513
+          },
+          {
+            "index": 13,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5085,
+            "launch_to_dataset_ready_ms": 4815,
+            "sidecar_start_to_dataset_ready_ms": 4555
+          },
+          {
+            "index": 13,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5090,
+            "launch_to_dataset_ready_ms": 4801,
+            "sidecar_start_to_dataset_ready_ms": 4543
+          },
+          {
+            "index": 14,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5131,
+            "launch_to_dataset_ready_ms": 4856,
+            "sidecar_start_to_dataset_ready_ms": 4593
+          },
+          {
+            "index": 14,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5097,
+            "launch_to_dataset_ready_ms": 4813,
+            "sidecar_start_to_dataset_ready_ms": 4563
+          },
+          {
+            "index": 15,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5078,
+            "launch_to_dataset_ready_ms": 4791,
+            "sidecar_start_to_dataset_ready_ms": 4527
+          },
+          {
+            "index": 15,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5052,
+            "launch_to_dataset_ready_ms": 4772,
+            "sidecar_start_to_dataset_ready_ms": 4524
+          },
+          {
+            "index": 16,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5073,
+            "launch_to_dataset_ready_ms": 4783,
+            "sidecar_start_to_dataset_ready_ms": 4527
+          },
+          {
+            "index": 16,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5087,
+            "launch_to_dataset_ready_ms": 4807,
+            "sidecar_start_to_dataset_ready_ms": 4544
+          },
+          {
+            "index": 17,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5096,
+            "launch_to_dataset_ready_ms": 4814,
+            "sidecar_start_to_dataset_ready_ms": 4562
+          },
+          {
+            "index": 17,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5155,
+            "launch_to_dataset_ready_ms": 4846,
+            "sidecar_start_to_dataset_ready_ms": 4593
+          },
+          {
+            "index": 18,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5081,
+            "launch_to_dataset_ready_ms": 4804,
+            "sidecar_start_to_dataset_ready_ms": 4549
+          },
+          {
+            "index": 18,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5053,
+            "launch_to_dataset_ready_ms": 4781,
+            "sidecar_start_to_dataset_ready_ms": 4545
+          },
+          {
+            "index": 19,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5077,
+            "launch_to_dataset_ready_ms": 4800,
+            "sidecar_start_to_dataset_ready_ms": 4546
+          },
+          {
+            "index": 19,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5048,
+            "launch_to_dataset_ready_ms": 4769,
+            "sidecar_start_to_dataset_ready_ms": 4511
+          }
+        ],
+        "resource_build_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "binary_sha256": "a5a0d3370b79946c47d2b1bda49ef241575d53cb0f2bc82f13fd72b5481cd198",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "current_sample": {
+          "index": 19,
+          "state": "same_profile_relaunch"
+        },
+        "last_application_exit": {
+          "code": 0,
+          "signal": null,
+          "time": "2026-11-09T22:38:35.420Z"
+        },
+        "startup": {
+          "fresh_profile": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                5597,
+                5200,
+                5134,
+                5076,
+                5129,
+                5072,
+                5070,
+                5083,
+                5127,
+                5112,
+                5058,
+                5094,
+                5321,
+                5085,
+                5131,
+                5078,
+                5073,
+                5096,
+                5081,
+                5077
+              ],
+              "median": 5089.5,
+              "p95": 5321,
+              "max": 5597
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                5315,
+                4916,
+                4850,
+                4803,
+                4839,
+                4800,
+                4799,
+                4799,
+                4850,
+                4834,
+                4777,
+                4821,
+                5038,
+                4815,
+                4856,
+                4791,
+                4783,
+                4814,
+                4804,
+                4800
+              ],
+              "median": 4814.5,
+              "p95": 5038,
+              "max": 5315
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                4648,
+                4634,
+                4595,
+                4548,
+                4558,
+                4536,
+                4550,
+                4544,
+                4580,
+                4583,
+                4529,
+                4549,
+                4750,
+                4555,
+                4593,
+                4527,
+                4527,
+                4562,
+                4549,
+                4546
+              ],
+              "median": 4552.5,
+              "p95": 4648,
+              "max": 4750
+            }
+          },
+          "same_profile_relaunch": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                5139,
+                5101,
+                5078,
+                5091,
+                5105,
+                5084,
+                5093,
+                5087,
+                5052,
+                5071,
+                5173,
+                5268,
+                5051,
+                5090,
+                5097,
+                5052,
+                5087,
+                5155,
+                5053,
+                5048
+              ],
+              "median": 5088.5,
+              "p95": 5173,
+              "max": 5268
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                4813,
+                4817,
+                4803,
+                4812,
+                4825,
+                4803,
+                4817,
+                4814,
+                4770,
+                4790,
+                4892,
+                4943,
+                4771,
+                4801,
+                4813,
+                4772,
+                4807,
+                4846,
+                4781,
+                4769
+              ],
+              "median": 4809.5,
+              "p95": 4892,
+              "max": 4943
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                4548,
+                4567,
+                4534,
+                4540,
+                4567,
+                4543,
+                4567,
+                4550,
+                4527,
+                4545,
+                4632,
+                4689,
+                4513,
+                4543,
+                4563,
+                4524,
+                4544,
+                4593,
+                4545,
+                4511
+              ],
+              "median": 4545,
+              "p95": 4632,
+              "max": 4689
+            }
+          }
+        },
+        "idle": {
+          "full_pack": {
+            "processes": [
+              {
+                "pid": 7283,
+                "parent_pid": 3338,
+                "rss_bytes": 196128768,
+                "executable": "electron",
+                "pss_bytes": 105846784
+              },
+              {
+                "pid": 7286,
+                "parent_pid": 7283,
+                "rss_bytes": 75583488,
+                "executable": "electron",
+                "pss_bytes": 18012160
+              },
+              {
+                "pid": 7287,
+                "parent_pid": 7283,
+                "rss_bytes": 76419072,
+                "executable": "electron",
+                "pss_bytes": 16293888
+              },
+              {
+                "pid": 7289,
+                "parent_pid": 7287,
+                "rss_bytes": 17072128,
+                "executable": "electron",
+                "pss_bytes": 4758528
+              },
+              {
+                "pid": 7314,
+                "parent_pid": 7286,
+                "rss_bytes": 168845312,
+                "executable": "electron",
+                "pss_bytes": 103546880
+              },
+              {
+                "pid": 7318,
+                "parent_pid": 7283,
+                "rss_bytes": 102068224,
+                "executable": "electron",
+                "pss_bytes": 33481728
+              },
+              {
+                "pid": 7322,
+                "parent_pid": 7289,
+                "rss_bytes": 189534208,
+                "executable": "electron",
+                "pss_bytes": 108882944
+              },
+              {
+                "pid": 7362,
+                "parent_pid": 7283,
+                "rss_bytes": 489320448,
+                "executable": "atom-api",
+                "pss_bytes": 487817216
+              }
+            ],
+            "rss_bytes": 1314971648,
+            "pss_bytes": 878640128,
+            "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5"
+          },
+          "sample_pack": {
+            "processes": [
+              {
+                "pid": 7421,
+                "parent_pid": 3338,
+                "rss_bytes": 196706304,
+                "executable": "electron",
+                "pss_bytes": 106779648
+              },
+              {
+                "pid": 7425,
+                "parent_pid": 7421,
+                "rss_bytes": 75350016,
+                "executable": "electron",
+                "pss_bytes": 17880064
+              },
+              {
+                "pid": 7426,
+                "parent_pid": 7421,
+                "rss_bytes": 76750848,
+                "executable": "electron",
+                "pss_bytes": 16435200
+              },
+              {
+                "pid": 7428,
+                "parent_pid": 7426,
+                "rss_bytes": 17096704,
+                "executable": "electron",
+                "pss_bytes": 4739072
+              },
+              {
+                "pid": 7454,
+                "parent_pid": 7425,
+                "rss_bytes": 172609536,
+                "executable": "electron",
+                "pss_bytes": 105423872
+              },
+              {
+                "pid": 7456,
+                "parent_pid": 7421,
+                "rss_bytes": 101593088,
+                "executable": "electron",
+                "pss_bytes": 33917952
+              },
+              {
+                "pid": 7465,
+                "parent_pid": 7428,
+                "rss_bytes": 190431232,
+                "executable": "electron",
+                "pss_bytes": 107726848
+              },
+              {
+                "pid": 7499,
+                "parent_pid": 7421,
+                "rss_bytes": 15736832,
+                "executable": "atom-api",
+                "pss_bytes": 14234624
+              }
+            ],
+            "rss_bytes": 846274560,
+            "pss_bytes": 407137280,
+            "manifest_sha256": "d476596fa2945de417d0de0dcfbe428c193a913f47d969562590bf468d4b14e7"
+          },
+          "full_minus_sample_rss_bytes": 468697088
+        },
+        "budgets": {
+          "fresh_profile_launch_p95_10s": true,
+          "same_profile_launch_p95_5s": false,
+          "fresh_profile_sidecar_dataset_p95_8s": true,
+          "same_profile_sidecar_dataset_p95_4s": false,
+          "aggregate_idle_rss_500MiB": false
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      },
+      "rf": {
+        "source_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "source_dirty": false,
+        "reference": {
+          "platform": "linux",
+          "architecture": "x64",
+          "kernel": "7.0.0-1017-azure",
+          "cpu": "AMD EPYC 7763 64-Core Processor",
+          "logical_cpus": 4,
+          "memory_bytes": 16760340480,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "comparisons": [
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 157.20000000001164,
+            "standalone_ms": 91.23208200000045
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 71.10000000003492,
+            "standalone_ms": 46.555969999999434
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 61.09999999997672,
+            "standalone_ms": 45.007031999999526
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 67.69999999995343,
+            "standalone_ms": 51.82406599999922
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 67.59999999997672,
+            "standalone_ms": 40.48793000000114
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 999.2000000000116,
+            "standalone_ms": 1076.990468
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 965,
+            "standalone_ms": 951.6212320000013
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 960.1000000000349,
+            "standalone_ms": 961.7995020000017
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 993,
+            "standalone_ms": 955.0375080000013
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 935.3999999999651,
+            "standalone_ms": 1007.5926129999971
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 17679.800000000047,
+            "standalone_ms": 17806.131564
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 17597.300000000047,
+            "standalone_ms": 17743.356033999997
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 17675.300000000047,
+            "standalone_ms": 17736.470986
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 17637.5,
+            "standalone_ms": 17732.770529
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 17593.900000000023,
+            "standalone_ms": 17770.99706200001
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "1668a52bc4cd4e4a33a24fc07663ca35d55b9adf4f3414bd6c44747ef0a20626",
+            "native_response_sha256": "59583f9c7f25d781ad257bf01fec42352bcef04c0ba954be56e5922496d27c7b",
+            "standalone_response_sha256": "59583f9c7f25d781ad257bf01fec42352bcef04c0ba954be56e5922496d27c7b",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 195.5,
+            "standalone_ms": 126.64279600000009
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 68.19999999995343,
+            "standalone_ms": 39.29354099999182
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "502173b668fc49ff774e1d65c6c69fc14b438516c76b24e1cf105aaba50e7ecc",
+            "native_response_sha256": "89047f7f50df6056b54eae62edd63edbfa127406e8a45711f27e9d6e6769ebfe",
+            "standalone_response_sha256": "89047f7f50df6056b54eae62edd63edbfa127406e8a45711f27e9d6e6769ebfe",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 29.099999999976717,
+            "standalone_ms": 22.093064999993658
+          }
+        ],
+        "timings": {
+          "/api/simulate": {
+            "native_ms": {
+              "samples": [
+                71.10000000003492,
+                61.09999999997672,
+                67.69999999995343,
+                67.59999999997672
+              ],
+              "median": 67.64999999996508,
+              "p95": 71.10000000003492,
+              "max": 71.10000000003492
+            },
+            "standalone_ms": {
+              "samples": [
+                46.555969999999434,
+                45.007031999999526,
+                51.82406599999922,
+                40.48793000000114
+              ],
+              "median": 45.78150099999948,
+              "p95": 51.82406599999922,
+              "max": 51.82406599999922
+            },
+            "absolute_median_difference_fraction": 0.47767107941624376,
+            "within_5_percent": false
+          },
+          "/api/evaluate-network": {
+            "native_ms": {
+              "samples": [
+                965,
+                960.1000000000349,
+                993,
+                935.3999999999651
+              ],
+              "median": 962.5500000000175,
+              "p95": 993,
+              "max": 993
+            },
+            "standalone_ms": {
+              "samples": [
+                951.6212320000013,
+                961.7995020000017,
+                955.0375080000013,
+                1007.5926129999971
+              ],
+              "median": 958.4185050000015,
+              "p95": 1007.5926129999971,
+              "max": 1007.5926129999971
+            },
+            "absolute_median_difference_fraction": 0.0043107421011407965,
+            "within_5_percent": true
+          },
+          "/api/optimize-network": {
+            "native_ms": {
+              "samples": [
+                17597.300000000047,
+                17675.300000000047,
+                17637.5,
+                17593.900000000023
+              ],
+              "median": 17617.400000000023,
+              "p95": 17675.300000000047,
+              "max": 17675.300000000047
+            },
+            "standalone_ms": {
+              "samples": [
+                17743.356033999997,
+                17736.470986,
+                17732.770529,
+                17770.99706200001
+              ],
+              "median": 17739.91351,
+              "p95": 17770.99706200001,
+              "max": 17770.99706200001
+            },
+            "absolute_median_difference_fraction": 0.006906093985797335,
+            "within_5_percent": true
+          }
+        },
+        "ui": {
+          "Evaluate Network": true,
+          "Optimize Network": true
+        },
+        "resource_build_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "binary_sha256": "a5a0d3370b79946c47d2b1bda49ef241575d53cb0f2bc82f13fd72b5481cd198",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "metadata_exact_equal": true,
+        "dataset": {
+          "id": "ankara-open-planning",
+          "version": "2026.07",
+          "hashes": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          }
+        },
+        "capabilities": [
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/recommend-sites",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/path-profile",
+            "status": "research_only",
+            "reason": "research_profile_only",
+            "note": "endpoint is available only as the existing research/planning profile"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/interference",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          }
+        ],
+        "fixture": {
+          "cell_ids": [
+            "LTE-35877",
+            "LTE-1221413",
+            "LTE-1221389",
+            "LTE-1221409",
+            "LTE-322850",
+            "LTE-322848",
+            "LTE-748049",
+            "LTE-322828"
+          ],
+          "selection": "Eight dataset towers nearest 32.85,39.92 by squared geographic distance, then ID; defaults unchanged",
+          "settings": {
+            "frequencyGHz": 28,
+            "propagationModelID": "urban_short_range",
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 100,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "optimization": {
+            "objectives": [
+              {
+                "id": "demand",
+                "weight": 50
+              },
+              {
+                "id": "residential",
+                "weight": 50
+              },
+              {
+                "id": "coverage",
+                "weight": 50
+              },
+              {
+                "id": "overlap",
+                "weight": 50
+              },
+              {
+                "id": "radio_quality",
+                "weight": 0
+              }
+            ],
+            "constraints": {}
+          },
+          "network_request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273"
+        },
+        "technology_simulation_parity": true,
+        "map": {
+          "method": "20 real pointer pan gestures with all eight result-ray layers; event timestamp to second animation frame is a presentation-latency proxy, not INP",
+          "frames": 304,
+          "elapsed_ms": 5099.899999999994,
+          "observed_fps": 59.41292966528762,
+          "frame_gap_ms": {
+            "samples": [
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.70000000001164,
+              16.699999999982538,
+              33.30000000001746,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.60000000000582,
+              16.79999999998836,
+              16.60000000000582,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              33.30000000001746,
+              16.699999999982538,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.70000000001164,
+              16.60000000000582,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.699999999982538,
+              16.70000000001164,
+              16.60000000000582,
+              16.599999999976717,
+              33.40000000002328,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.699999999982538,
+              16.70000000001164,
+              16.60000000000582,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.699999999982538,
+              16.60000000000582,
+              16.70000000001164,
+              16.599999999976717,
+              16.800000000017462,
+              16.60000000000582,
+              16.599999999976717,
+              16.70000000001164,
+              16.60000000000582,
+              16.79999999998836,
+              16.70000000001164,
+              16.5,
+              16.79999999998836,
+              16.60000000000582,
+              16.60000000000582,
+              16.800000000017462,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.599999999976717,
+              16.800000000046566,
+              16.599999999976717,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.599999999976717,
+              16.800000000046566,
+              16.599999999976717,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.600000000034925,
+              16.79999999998836,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.600000000034925,
+              16.699999999953434,
+              16.800000000046566,
+              16.599999999976717,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.800000000046566,
+              16.599999999976717,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.5,
+              16.79999999998836,
+              16.599999999976717,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.79999999998836,
+              16.599999999976717,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.70000000001164,
+              16.70000000001164,
+              16.5,
+              16.79999999998836,
+              16.70000000001164,
+              16.599999999976717,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.600000000034925,
+              16.79999999998836,
+              16.599999999976717,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.599999999976717,
+              16.79999999998836,
+              16.600000000034925,
+              16.699999999953434,
+              16.70000000001164,
+              16.70000000001164,
+              16.599999999976717,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.699999999953434,
+              16.70000000001164,
+              16.600000000034925,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.699999999953434,
+              16.600000000034925,
+              16.70000000001164,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.699999999953434,
+              16.70000000001164,
+              16.600000000034925,
+              16.599999999976717,
+              16.70000000001164,
+              16.70000000001164,
+              16.699999999953434,
+              16.70000000001164
+            ],
+            "median": 16.699999999982538,
+            "p95": 16.79999999998836,
+            "max": 33.40000000002328
+          },
+          "input_to_second_frame_ms": {
+            "samples": [
+              27.199999999982538,
+              45.89999999999418,
+              29.89999999999418,
+              29.79999999998836,
+              47,
+              29.399999999965075,
+              47.5,
+              30.899999999965075,
+              30.39999999999418,
+              30.70000000001164,
+              30.399999999965075,
+              30.000000000058208,
+              30.70000000001164,
+              30.70000000001164,
+              30.600000000034925,
+              30.100000000034925,
+              30.899999999965075,
+              30.90000000008149,
+              30.90000000008149,
+              30.29999999998836
+            ],
+            "median": 30.650000000023283,
+            "p95": 47,
+            "max": 47.5
+          },
+          "overlay_paths": 0,
+          "rays_on_canvas": [
+            {
+              "width": 1430,
+              "height": 976,
+              "painted_pixels": 41809,
+              "sha256": "0704c898efe21334c67a6f72a33e33245a265e93be58e4bb040123b07a3a72e7"
+            }
+          ],
+          "rays_off_canvas": [
+            {
+              "width": 1430,
+              "height": 976,
+              "painted_pixels": 3621,
+              "sha256": "1b57d78a21b829e5583fb85d5dc7fd1a7e0400bc9fd6744c9b2f40e8a9c084e3"
+            }
+          ],
+          "ray_drawing_verified_after_timing": true
+        },
+        "post_rf_process_tree": {
+          "processes": [
+            {
+              "pid": 7703,
+              "parent_pid": 7558,
+              "rss_bytes": 221331456,
+              "executable": "electron",
+              "pss_bytes": 131485696
+            },
+            {
+              "pid": 7706,
+              "parent_pid": 7703,
+              "rss_bytes": 75309056,
+              "executable": "electron",
+              "pss_bytes": 18096128
+            },
+            {
+              "pid": 7707,
+              "parent_pid": 7703,
+              "rss_bytes": 72568832,
+              "executable": "electron",
+              "pss_bytes": 15618048
+            },
+            {
+              "pid": 7709,
+              "parent_pid": 7707,
+              "rss_bytes": 15089664,
+              "executable": "electron",
+              "pss_bytes": 4400128
+            },
+            {
+              "pid": 7735,
+              "parent_pid": 7706,
+              "rss_bytes": 175349760,
+              "executable": "electron",
+              "pss_bytes": 107266048
+            },
+            {
+              "pid": 7738,
+              "parent_pid": 7703,
+              "rss_bytes": 101699584,
+              "executable": "electron",
+              "pss_bytes": 33456128
+            },
+            {
+              "pid": 7743,
+              "parent_pid": 7709,
+              "rss_bytes": 656703488,
+              "executable": "electron",
+              "pss_bytes": 575185920
+            },
+            {
+              "pid": 7775,
+              "parent_pid": 7703,
+              "rss_bytes": 845553664,
+              "executable": "atom-api",
+              "pss_bytes": 838064128
+            }
+          ],
+          "rss_bytes": 2163605504,
+          "pss_bytes": 1723572224
+        },
+        "budgets": {
+          "rf_medians_within_5_percent": false,
+          "eight_cell_map_30fps": true,
+          "input_p95_100ms": true
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      },
+      "development_loop": {
+        "source_commit": "d3a732aef24c45d593d3d122b07350d8b478f309",
+        "source_dirty": false,
+        "reference": {
+          "platform": "linux",
+          "architecture": "x64",
+          "kernel": "7.0.0-1017-azure",
+          "cpu": "AMD EPYC 7763 64-Core Processor",
+          "logical_cpus": 4,
+          "memory_bytes": 16760344576,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "fixture_build_commit": "b36b770a25ce058b79f328f017775cb8eb19a55c",
+        "hmr": {
+          "jsx": {
+            "samples_ms": [
+              166.56449499999871,
+              140.06292700000085,
+              180.9740729999994,
+              152.69835199999943,
+              148.628236999999,
+              148.45802299999923,
+              153.01097400000072,
+              138.2472400000006,
+              153.7793559999991,
+              138.62927900000068,
+              154.61014000000068,
+              139.6331859999991,
+              157.19830000000002,
+              132.4131759999982,
+              153.55772299999808,
+              154.75990900000033,
+              165.46009200000117,
+              138.9275749999979,
+              164.51754100000107,
+              147.973492000001
+            ],
+            "p95_ms": 166.56449499999871,
+            "max_ms": 180.9740729999994
+          },
+          "css": {
+            "samples_ms": [
+              117.85616400000072,
+              107.29605500000253,
+              109.33766200000173,
+              109.5554830000001,
+              129.38624899999922,
+              136.62400100000013,
+              108.84073500000159,
+              109.57989100000123,
+              109.88313199999902,
+              108.92929000000004,
+              117.26391499999954,
+              108.12125000000015,
+              110.27088100000037,
+              108.150276999997,
+              109.5212790000005,
+              108.72849900000074,
+              107.02777799999967,
+              111.20076999999947,
+              108.1058520000006,
+              109.06584799999837
+            ],
+            "p95_ms": 129.38624899999922,
+            "max_ms": 136.62400100000013
+          }
+        },
+        "current_edit": {
+          "kind": "css",
+          "index": 22
+        },
+        "hmr_no_go_rebuild_or_host_reload": true,
+        "failed_compile_preserved_last_good": true,
+        "warm_go_edit_to_ready_ms": 5378.656097000003,
+        "warm_go_compile_ms": 590.8361699999987,
+        "warm_go_phases_ms": {
+          "compile": 590.8361699999987,
+          "drain": 41.29855099999986,
+          "start_to_listener": 9.757669999999052,
+          "dataset_load": 4434.393453000001,
+          "dataset_to_ready": 141.79488800000036
+        },
+        "successful_swap_rejected_stale_generation": true,
+        "failed_shell_syntax_preserved_host": true,
+        "warm_shell_edit_to_ready_ms": 6338.860981999998,
+        "ctrl_c_reaped_owned_processes_and_removed_scratch": true,
+        "console_hmr_messages": [
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/styles.css",
+          "[vite] hot updated: /src/components/WorkspaceChrome.jsx"
+        ],
+        "visible_style": null,
+        "error": "Error: Development command exited: [desktop dev] main.go:1:1: expected 'package', found 'EOF'\n[desktop dev] stopped\n\n    at Object.wait (file:///home/runner/work/atom/atom/desktop/test/dev-loop.mjs:69:71)\n    at async file:///home/runner/work/atom/atom/desktop/test/dev-loop.mjs:195:22",
+        "output": "[desktop dev] main.go:1:1: expected 'package', found 'EOF'\n[desktop dev] stopped\n",
+        "events": [
+          {
+            "event": "vite-ready",
+            "pid": 4721,
+            "received_at_ms": 33840.996151
+          },
+          {
+            "event": "command-start",
+            "command": "go",
+            "pid": 4739,
+            "received_at_ms": 33920.414647
+          },
+          {
+            "event": "command-stop",
+            "command": "go",
+            "pid": 4739,
+            "received_at_ms": 38394.533986
+          },
+          {
+            "event": "go-build-start",
+            "builds": 1,
+            "received_at_ms": 38395.851889
+          },
+          {
+            "event": "command-start",
+            "command": "go",
+            "pid": 4769,
+            "received_at_ms": 38397.594255
+          },
+          {
+            "event": "command-stop",
+            "command": "go",
+            "pid": 4769,
+            "received_at_ms": 38447.136814
+          },
+          {
+            "event": "stopped",
+            "received_at_ms": 38471.341602
+          }
+        ]
+      }
+    }
+  }
+}

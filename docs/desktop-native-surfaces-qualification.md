@@ -1,6 +1,6 @@
 # Production native chooser qualification
 
-Status: follow-up implementation for #154, #156, #158 and #161; hosted native evidence is pending. This qualifies the production app rather than treating the accepted #148 spike as proof for a different application build.
+Status: follow-up implementation for #154, #156, #158 and #161; the scoped production chooser flow now passes in both hosted native sessions. This qualifies the production app rather than treating the accepted #148 spike as proof for a different application build.
 
 ## Method
 
@@ -22,6 +22,12 @@ These are disposable headless sessions. They do not qualify a graphical package-
 
 Both sessions in run `42881510735` complete the seven actual GTK project/report chooser actions, including file identity, retained Markdown hash and PDF cancellation. The final ordinary-Quit check fails. Run `42882559930` then confirms an older associated Project becomes dirty when shared report/domain operations add its previously implicit description, tags and inventory metadata; the active imported Project is clean. This is a production normalization issue rather than a failed chooser response.
 
-Native file preparation now materializes that existing compatibility metadata in the target Project through the existing ordered recovery queue before capturing its portable content-hash baseline. It preserves drafts, existing Scenario/Version count and timestamps, does not run RF, and is idempotent on subsequent preparation. A regression fails on the prior implementation and passes with the fix; actual changed content still changes the portable bytes. The shared schema/serializer and size limits are unchanged. Hosted verification is pending.
+Native file preparation now materializes that existing compatibility metadata in the target Project through the existing ordered recovery queue before capturing its portable content-hash baseline. It preserves drafts, existing Scenario/Version count and timestamps, does not run RF, and is idempotent on subsequent preparation. A regression fails on the prior implementation and passes with the fix; actual changed content still changes the portable bytes. The shared schema/serializer and size limits are unchanged. Hosted verification passes below.
 
 The first difference diagnostic accidentally retained expanded inventory values. Both owned artifacts from run `42882559930` (`13794997540`, `13793924362`) were removed; the API confirms no artifacts remain for that run. Diagnostic differences now include only bounded paths, types, lengths and SHA-256, with regressions preventing source rows from appearing in their output. Native files/reports and default layers remain excluded from uploads.
+
+## Verified production flow
+
+[Run 42885067397](https://github.com/Berk-Unsal/atom/actions/runs/42885067397) passes both X11 and forced native Wayland on exact execution `874f91ef50d5507a7866b3da9039ee9116b65683`, PR head `c9c2e8d`. Both installed apps complete all seven real chooser actions and ordinary Quit with owned-child cleanup. The two associated Projects are clean and the original Project has no serialized differences after report/domain operations. Exactly one explicit Sector RF request occurs; file/report operations add none. Markdown hashes match retained artifacts, PDF Save produces bytes and cancellation preserves retained artifacts and existing PDF bytes.
+
+The [raw scoped record](assets/desktop-native-surfaces-ci.json) binds source, both evidence artifact IDs, native widget actions, hashes and outcomes without copied source rows or generated reports. Local validation is 796 frontend tests/lint, 157 host tests, nine Python tests and 20 docs tests. The original performance, Print, clean-machine, data and release gates remain open. The full Quality workflow is assessed separately.

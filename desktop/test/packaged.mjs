@@ -44,6 +44,17 @@ async function until(predicate, message) {
   while (Date.now() < deadline) { if (await predicate()) return; await sleep(50); }
   throw new Error(message);
 }
+async function cleanAssociation() {
+  const expected = await fs.stat(projectFile).catch(() => null);
+  if (!expected) return false;
+  const states = await page.evaluate(async () => (await window.atomDesktop.getProjectFileState()).value);
+  for (const state of states) {
+    if (!state.path || state.dirty) continue;
+    const actual = await fs.stat(state.path).catch(() => null);
+    if (actual && actual.dev === expected.dev && actual.ino === expected.ino) return true;
+  }
+  return false;
+}
 async function launch() {
   app = await launchNative({ executablePath: executable, cwd: home, args: [], env, chromiumSandbox: true, timeout: 60_000 });
   page = await app.firstWindow(); await page.waitForLoadState("domcontentloaded");
@@ -85,16 +96,13 @@ try {
   const pdf = await fs.readFile(pdfFile); assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
   result.pdf = { bytes: pdf.length, sha256: sha256(pdf) };
   await app.evaluate(({ dialog, Menu }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); Menu.getApplicationMenu().getMenuItemById("atom-project-save-as").click(); }, projectFile);
-  await until(async () => {
-    const states = await page.evaluate(async () => (await window.atomDesktop.getProjectFileState()).value);
-    return states.some((state) => state.path === projectFile && !state.dirty);
-  }, "Portable Save did not establish a clean association");
+  await until(cleanAssociation, "Portable Save did not establish a clean association");
   assert.equal(JSON.parse(await fs.readFile(projectFile, "utf8")).schemaVersion, 3);
   await ordinaryQuit();
   await launch();
   await page.getByRole("button", { name: /^Project menu,/ }).click();
   await page.getByText(/Saved to Türkçe package.atom-project.json/).waitFor();
-  assert.ok((await page.evaluate(async () => (await window.atomDesktop.getProjectFileState()).value)).some((state) => state.path === projectFile && !state.dirty));
+  assert.ok(await cleanAssociation());
   await page.keyboard.press("Escape");
   await ordinaryQuit();
   assert.deepEqual(inventory(relocated).map(({ mode: _mode, ...row }) => row), before);

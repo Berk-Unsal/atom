@@ -14,7 +14,9 @@ const { exportProjectFile } = await import("../../frontend-react/src/utils/proje
 const desktop = path.resolve(import.meta.dirname, "..");
 const root = path.dirname(desktop);
 const result = { ...sourceIdentity(root), mode: "production packaged host; native Save responses supplied by test, actual Print surface not qualified", rf_posts: [] };
-assert.equal(result.source_dirty, false);
+const diagnose = process.argv.includes("--diagnose");
+result.qualification = !diagnose;
+if (!diagnose) assert.equal(result.source_dirty, false);
 const version = (await fs.readFile(path.join(root, "VERSION"), "utf8")).trim();
 const packageRoot = path.join(desktop, "build/packages", `atom-${version}-${process.platform}-${process.arch}-internal-unsigned`);
 const metadata = JSON.parse(await fs.readFile(path.join(packageRoot, "package.json"), "utf8"));
@@ -33,7 +35,27 @@ delete env.ELECTRON_RUN_AS_NODE;
 const expectedPaths = nativePaths({ packaged: true, home, env });
 const projectFile = path.join(scratch, "Türkçe package.atom-project.json");
 const pdfFile = path.join(scratch, "Package report — çığ.pdf");
-let app; let page;
+let app; let page; let savedProject;
+async function projectDifferences() {
+  const restored = await page.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open("atom-planning-workspace", 1);
+    request.onerror = () => reject(new Error("Cannot inspect private qualification workspace"));
+    request.onsuccess = () => {
+      const db = request.result; const read = db.transaction("workspace").objectStore("workspace").get("current");
+      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace.projects.find((project) => project.id === workspace.activeProjectId)); };
+      read.onerror = () => { db.close(); reject(new Error("Cannot read qualification workspace")); };
+    };
+  }));
+  const current = JSON.parse(exportProjectFile(restored));
+  const changed = [];
+  function compare(before, after, key = "") {
+    if (JSON.stringify(before) === JSON.stringify(after)) return;
+    if (before && after && typeof before === "object" && typeof after === "object") {
+      for (const name of new Set([...Object.keys(before), ...Object.keys(after)])) compare(before[name], after[name], key + "/" + name);
+    } else changed.push({ path: key, before, after });
+  }
+  compare(savedProject, current); return changed.slice(0, 30);
+}
 async function permissions(directory, writable) {
   const stat = await fs.lstat(directory); if (stat.isSymbolicLink()) return;
   if (writable) await fs.chmod(directory, stat.mode | 0o700);
@@ -59,6 +81,7 @@ async function cleanAssociation() {
 async function launch() {
   app = await launchNative({ executablePath: executable, cwd: home, args: [], env, chromiumSandbox: true, timeout: 60_000 });
   page = await app.firstWindow(); await page.waitForLoadState("domcontentloaded");
+  page.setDefaultTimeout(30_000);
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));
@@ -117,25 +140,8 @@ try {
   await ordinaryQuit();
   await launch();
   await page.getByRole("button", { name: /^Project menu,/ }).click();
-  const savedProject = JSON.parse(await fs.readFile(projectFile, "utf8"));
-  const restored = await page.evaluate(() => new Promise((resolve, reject) => {
-    const request = indexedDB.open("atom-planning-workspace", 1);
-    request.onerror = () => reject(new Error("Cannot inspect private qualification workspace"));
-    request.onsuccess = () => {
-      const db = request.result; const read = db.transaction("workspace").objectStore("workspace").get("current");
-      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace.projects.find((project) => project.id === workspace.activeProjectId)); };
-      read.onerror = () => { db.close(); reject(new Error("Cannot read qualification workspace")); };
-    };
-  }));
-  const restoredProject = JSON.parse(exportProjectFile(restored));
-  const changed = [];
-  function differences(before, after, key = "") {
-    if (JSON.stringify(before) === JSON.stringify(after)) return;
-    if (before && after && typeof before === "object" && typeof after === "object") {
-      for (const name of new Set([...Object.keys(before), ...Object.keys(after)])) differences(before[name], after[name], key + "/" + name);
-    } else changed.push({ path: key, before, after });
-  }
-  differences(savedProject, restoredProject); result.restored_project_differences = changed.slice(0, 30);
+  savedProject = JSON.parse(await fs.readFile(projectFile, "utf8"));
+  result.restored_project_differences = await projectDifferences();
   await page.getByText(/Saved to Türkçe package.atom-project.json/).waitFor();
   assert.ok(await cleanAssociation());
   await page.keyboard.press("Escape");
@@ -144,9 +150,10 @@ try {
   assert.deepEqual(result.rf_posts, ["/api/analyze-sector"]);
   result.relaunch_preserved_version_file_association_and_profile = true;
   result.bundle_bytes_and_links_unchanged = true;
-  result.owned_processes_exited = true; result.result = "PASS";
+  result.owned_processes_exited = true; result.result = diagnose ? "DIAGNOSTIC_ONLY" : "PASS";
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
+  if (savedProject) result.restored_project_differences = await projectDifferences().catch(() => null);
   await page?.screenshot({ path: path.join(desktop, "test-results/package-failed.png") }).catch(() => {});
   throw error;
 } finally {

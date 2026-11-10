@@ -36,5 +36,7 @@ test("Debian control has runtime dependencies and canonical version without dev 
   assert.match(value, /Version: 0.13.1\n/); assert.match(value, /Installed-Size: 3\n/); assert.match(value, /Architecture: amd64/);
   assert.match(value, /xdg-desktop-portal-gnome/); assert.match(value, /apparmor \(>= 4.0\)/);
   assert.doesNotMatch(value, /nodejs|golang|docker|build-essential/);
+  const candidate = control({ version: "0.13.1", dependencies: ["libc6 (>= 2.39)"], installedBytes: 2049, candidate: true });
+  assert.match(candidate, /Description: A.T.O.M telecom planning\n/); assert.doesNotMatch(candidate, /internal unsigned/);
   assert.throws(() => control({ version: "0.13.1\nInjected: yes", dependencies: ["libc6"], installedBytes: 1 }), /Invalid/);
 });

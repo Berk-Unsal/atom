@@ -47,5 +47,6 @@ try {
 finally {
   if (application) await application.close().catch(() => {});
   await fs.writeFile(path.join(directory, "signed-smoke.json"), JSON.stringify(result, null, 2) + "\n");
+  await fs.writeFile(path.join(directory, `atom-${receipt.version}-darwin-${receipt.arch}.smoke.json`), JSON.stringify(result, null, 2) + "\n");
   await fs.rm(scratch, { recursive: true, force: true });
 }

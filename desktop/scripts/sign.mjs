@@ -6,6 +6,7 @@ import os from "node:os";
 import { createRequire } from "node:module";
 import { spawnSync } from "node:child_process";
 import { environmentProtection } from "./authorize-signing.mjs";
+import { exportMetadata } from "./candidate-metadata.mjs";
 const require = createRequire(import.meta.url);
 const { inventory, hash, dataApproval } = require("../lib/package-contract.cjs");
 const { validateAuthorization, validateCIContext, validateDeveloperIdentity, entitlementsFor, validateNotary, validateSignature } = require("../lib/signing-contract.cjs");
@@ -52,6 +53,7 @@ validateCIContext(process.env);
 if (process.platform !== "darwin" || process.arch !== metadata.arch) throw new Error("Sign and qualify each architecture on its native macOS runner");
 const identity = validateAuthorization(authorization, { version, source_commit: metadata.commit });
 if (!dataApproved || metadata.data_redistribution_approved !== true) throw new Error("Exact bundled-data approval is required in both the source package and signing policy before any Apple upload");
+if (metadata.notices_complete !== true) throw new Error("Complete runtime notices are required before signing or Apple upload");
 await environmentProtection();
 const credentials = consumeCredentials(process.env);
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-private-signing-"));
@@ -59,6 +61,7 @@ let keychain;
 const output = path.join(desktop, "build/signed-candidates", `atom-${version}-darwin-${metadata.arch}`);
 const receipt = { ...plan, certificate_sha1: identity.certificateSHA1, team_id: identity.teamID, notarization: [], signatures: [], verification: {}, trust: "unsigned-incomplete" };
 await fs.mkdir(output, { recursive: true });
+Object.assign(receipt, await exportMetadata(resourceRoot, output, { version, source_commit: metadata.commit, platform: "darwin", arch: metadata.arch }));
 const run = (command, args) => {
   const result = spawnSync(command, args, { encoding: "utf8", maxBuffer: 2 * 1024 * 1024 });
   if (result.status !== 0 || result.error) throw new Error(`${path.basename(command)} failed during candidate signing/verification`);
@@ -112,8 +115,8 @@ try {
   receipt.verification.app_staple_and_deep_signature = true;
   const volume = path.join(scratch, "volume"); await fs.mkdir(volume);
   await fs.cp(app, path.join(volume, "A.T.O.M.app"), { recursive: true, verbatimSymlinks: true }); await fs.symlink("/Applications", path.join(volume, "Applications"));
-  const dmg = path.join(output, `atom-${version}-darwin-${metadata.arch}-signed-candidate.dmg`);
-  run("/usr/bin/hdiutil", ["create", "-ov", "-format", "UDZO", "-fs", "HFS+", "-volname", `A.T.O.M ${version} candidate`, "-srcfolder", volume, dmg]);
+  const dmg = path.join(output, `atom-${version}-darwin-${metadata.arch}.dmg`);
+  run("/usr/bin/hdiutil", ["create", "-ov", "-format", "UDZO", "-fs", "HFS+", "-volname", `A.T.O.M ${version}`, "-srcfolder", volume, dmg]);
   run("/usr/bin/codesign", ["--force", "--sign", identity.certificateSHA1, "--keychain", keychain.keychain, "--timestamp", dmg]);
   await notarize(dmg, "dmg");
   run("/usr/bin/xcrun", ["stapler", "staple", dmg]); run("/usr/bin/xcrun", ["stapler", "validate", dmg]);
@@ -122,7 +125,7 @@ try {
   run("/usr/sbin/spctl", ["--assess", "--type", "execute", "--verbose=4", app]);
   run("/usr/sbin/spctl", ["--assess", "--type", "open", "--context", "context:primary-signature", "--verbose=4", dmg]);
   receipt.verification.app_and_dmg_gatekeeper = true;
-  const zip = path.join(output, `atom-${version}-darwin-${metadata.arch}-signed-candidate.zip`);
+  const zip = path.join(output, `atom-${version}-darwin-${metadata.arch}.zip`);
   run("/usr/bin/ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", app, zip]);
   receipt.final_app_inventory_sha256 = hash(JSON.stringify(inventory(app), null, 2) + "\n");
   receipt.artifacts = [];
@@ -133,6 +136,7 @@ try {
 finally {
   keychain?.cleanup(); credentials.p12.fill(0); credentials.notary.fill(0);
   await fs.writeFile(path.join(output, "signing.json"), JSON.stringify(receipt, null, 2) + "\n");
+  await fs.writeFile(path.join(output, `atom-${version}-darwin-${metadata.arch}.signing.json`), JSON.stringify(receipt, null, 2) + "\n");
   await fs.rm(scratch, { recursive: true, force: true });
 }
 console.log(JSON.stringify(receipt, null, 2));

@@ -38,6 +38,7 @@ jobs:
       - run: python3 -m unittest scripts/check_supply_chain_test.py scripts/check_workflow_action_pins_test.py
       - run: python3 scripts/generate_policy.py --check
       - run: python3 -m unittest scripts/generate_policy_test.py
+      - run: python3 -m unittest discover -s desktop/test -p '*_test.py'
 
   backend:
     runs-on: ubuntu-latest

@@ -34,9 +34,9 @@ function dependencyFloor(packageName, version) {
   if (!/^[a-z0-9][a-z0-9+.-]+$/.test(name) || !/^[0-9][0-9A-Za-z.+:~\-]*$/.test(version)) throw new Error("Invalid installed Debian package metadata");
   return `${name} (>= ${version})`;
 }
-function control({ version, dependencies, installedBytes }) {
+function control({ version, dependencies, installedBytes, candidate = false }) {
   if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.+~-]+)?$/.test(version)) throw new Error("Invalid canonical package version");
   if (!dependencies.length || dependencies.some((item) => /[\r\n]/.test(item))) throw new Error("Invalid runtime dependency list");
-  return `Package: atom-planner\nVersion: ${version}\nSection: science\nPriority: optional\nArchitecture: amd64\nMaintainer: A.T.O.M contributors <noreply@github.com>\nInstalled-Size: ${Math.ceil(installedBytes / 1024)}\nDepends: ${[...new Set([...dependencies, ...DYNAMIC_PACKAGES])].sort().join(", ")}\nHomepage: https://github.com/Berk-Unsal/atom\nDescription: A.T.O.M telecom planning (internal unsigned candidate)\n Shared React/Go planning product with an Electron desktop host.\n Public distribution and supported-environment qualification remain gated.\n`;
+  return `Package: atom-planner\nVersion: ${version}\nSection: science\nPriority: optional\nArchitecture: amd64\nMaintainer: A.T.O.M contributors <noreply@github.com>\nInstalled-Size: ${Math.ceil(installedBytes / 1024)}\nDepends: ${[...new Set([...dependencies, ...DYNAMIC_PACKAGES])].sort().join(", ")}\nHomepage: https://github.com/Berk-Unsal/atom\nDescription: A.T.O.M telecom planning${candidate ? "" : " (internal unsigned candidate)"}\n Shared React/Go planning product with an Electron desktop host.\n${candidate ? "" : " Public distribution and supported-environment qualification remain gated.\n"}`;
 }
 module.exports = { assertUbuntu, linkedLibraries, dependencyFloor, control, DYNAMIC_PACKAGES, runCommand, normalizeInstalledModes };

@@ -63,7 +63,10 @@ def find_dialog(applications, pid, title, api):
 
 
 def activate(node):
-    action = node.queryAction()
+    try:
+        action = node.queryAction()
+    except NotImplementedError:
+        return False
     for index in range(action.nActions):
         if action.getName(index) in ("click", "press", "activate"):
             if not action.doAction(index):
@@ -87,7 +90,8 @@ def set_save_path(dialog, target, api):
     return True
 
 
-def select_open_path(dialog, target, api):
+def select_open_path(dialog, target, api, visited=None):
+    visited = set() if visited is None else visited
     for node in matching(dialog, lambda node: node.name == "Files" and node.getRole() in (api.ROLE_TABLE, api.ROLE_TREE_TABLE)):
         try:
             table = node.queryTable()
@@ -106,6 +110,18 @@ def select_open_path(dialog, target, api):
                     return table.isRowSelected(row) and any(child.name == target.name for child in descendants(current))
             except READ_ERRORS:
                 continue
+        if str(target.parent) not in visited:
+            for row in range(count):
+                try:
+                    cell = table.getAccessibleAt(row, 0)
+                    parent_visible = any(child.name == target.parent.name for child in descendants(cell))
+                except READ_ERRORS:
+                    continue
+                if parent_visible:
+                    for child in descendants(cell):
+                        if ready(child, api) and activate(child):
+                            visited.add(str(target.parent))
+                            return False
     # GTK's location entry is a real chooser widget, not a supplied response.
     for node in matching(dialog, lambda node: node.getRole() == api.ROLE_TEXT and ready(node, api) and node.name.strip(" :").casefold() in ("location", "file name", "name")):
         if not node.queryEditableText().setTextContents(str(target)):
@@ -152,6 +168,7 @@ def main():
     deadline = time.monotonic() + 25
     context = GLib.MainContext.default()
     selected = args.action == "cancel"
+    visited = set()
     last_tree = []
     while time.monotonic() < deadline:
         os.kill(args.pid, 0)
@@ -161,7 +178,7 @@ def main():
         if dialog is not None:
             last_tree = snapshot(dialog)
             if not selected:
-                selected = set_save_path(dialog, target, pyatspi) if args.action == "save" else select_open_path(dialog, target, pyatspi)
+                selected = set_save_path(dialog, target, pyatspi) if args.action == "save" else select_open_path(dialog, target, pyatspi, visited)
                 # Let GTK's filename validation and directory traversal settle.
                 time.sleep(0.2)
                 continue

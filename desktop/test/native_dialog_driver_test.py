@@ -41,6 +41,28 @@ class Node:
 
 
 class NativeDriverTest(unittest.TestCase):
+    def test_open_navigates_the_visible_parent_folder_before_selecting_the_file(self):
+        class FolderRow(Node):
+            def doAction(self, _index):
+                files.in_folder = True
+                self.clicked = True
+                return True
+        class FileList(Node):
+            nRows = 1
+            in_folder = False
+            selected = False
+            def queryTable(self): return self
+            def getAccessibleAt(self, _row, _column):
+                return Node("cell", [Node("expected.json")]) if self.in_folder else folder
+            def isRowSelected(self, _row): return self.selected
+            def addRowSelection(self, _row): self.selected = True
+        folder = FolderRow("cell", [Node("Documents")])
+        files = FileList("Files", role="table")
+        chooser = Node("chooser", [files]); target = Path("/tmp/Documents/expected.json")
+        self.assertFalse(driver.select_open_path(chooser, target, API))
+        self.assertTrue(folder.clicked)
+        self.assertTrue(driver.select_open_path(chooser, target, API))
+
     def test_open_rechecks_file_identity_after_row_selection_changes(self):
         class FileList(Node):
             nRows = 1

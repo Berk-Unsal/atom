@@ -80,7 +80,11 @@ async function completeProjectDialog() {
 }
 try {
   const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin" }; delete env.ELECTRON_RUN_AS_NODE;
-  application = await launchNative({ executablePath: executable, cwd: documents, args: result.session === "wayland" ? ["--ozone-platform=wayland"] : [], env, chromiumSandbox: true, timeout: 60_000 });
+  // Chromium defers ATK bridge initialization to Aura. Enable accessibility
+  // explicitly for this OS-widget test, independently of performance suites.
+  application = await launchNative({ executablePath: executable, cwd: documents,
+    args: ["--force-renderer-accessibility", ...(result.session === "wayland" ? ["--ozone-platform=wayland"] : [])], env, chromiumSandbox: true, timeout: 60_000 });
+  result.accessibility_explicitly_enabled_for_native_widget_test = true;
   page = await application.firstWindow(); page.setDefaultTimeout(30_000); await page.waitForLoadState("domcontentloaded");
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor(); await waitForRuntime(page, (status) => status.state === "ready");

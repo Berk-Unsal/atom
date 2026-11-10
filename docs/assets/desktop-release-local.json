@@ -1,0 +1,86 @@
+{
+  "source_commit": "cc418d4f86fe616b192ed24070c6684ead2d8f21",
+  "source_clean_before_build": true,
+  "scope": "Local macOS arm64 internal unsigned package; automated Save responses; not clean macOS 14, signed/quarantined/offline or public-release qualification.",
+  "package": {
+    "schema": 1,
+    "version": "0.13.1",
+    "commit": "cc418d4f86fe616b192ed24070c6684ead2d8f21",
+    "source_dirty": false,
+    "platform": "darwin",
+    "arch": "arm64",
+    "shell": "electron",
+    "shell_version": "44.10.2",
+    "bundle_id": "io.github.berk-unsal.atom",
+    "trust": "internal-unsigned",
+    "public_distribution": false,
+    "data_redistribution_approved": false,
+    "binary_upload_permitted": false,
+    "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+    "data_layer_sha256": {
+      "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+      "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+    },
+    "notices_complete": true,
+    "sbom_sha256": "278f29dfa5e14263d8ba8892ec8f16305cfe78164a011c38f57edd6601bfbda4",
+    "license_index_sha256": "84d23293437a001a0328900a6156fc18b4491dce9f573e5276af4c19bcebe3f5",
+    "file_manifest_sha256": "c23827d88112fac839bf7be17a2faca276d765a835ada7578c3bb14c087c2713",
+    "unpacked_bytes": 464507144,
+    "native_architectures": {
+      "Contents/Frameworks/A.T.O.M Helper (GPU).app/Contents/MacOS/A.T.O.M Helper (GPU)": "arm64",
+      "Contents/Frameworks/A.T.O.M Helper (Plugin).app/Contents/MacOS/A.T.O.M Helper (Plugin)": "arm64",
+      "Contents/Frameworks/A.T.O.M Helper (Renderer).app/Contents/MacOS/A.T.O.M Helper (Renderer)": "arm64",
+      "Contents/Frameworks/A.T.O.M Helper.app/Contents/MacOS/A.T.O.M Helper": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/app_shim_loader": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib": "arm64",
+      "Contents/Frameworks/Mantle.framework/Versions/A/Mantle": "arm64",
+      "Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC": "arm64",
+      "Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt": "arm64",
+      "Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel": "arm64",
+      "Contents/MacOS/atom-desktop": "arm64",
+      "Contents/Resources/atom-api": "arm64"
+    },
+    "artifacts": [
+      {
+        "file": "atom-0.13.1-darwin-arm64-internal-unsigned.zip",
+        "bytes": 154523418,
+        "sha256": "c2efabc936aec8b1ed90b0cf16db85e4a75e27eda6750b14bd621ceef541cc65"
+      },
+      {
+        "file": "atom-0.13.1-darwin-arm64-internal-unsigned.dmg",
+        "bytes": 172020749,
+        "sha256": "e092756bb171f6adfc987378684e67ec5a21f84c6df05ca2b229da56a9b17053"
+      }
+    ],
+    "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+  },
+  "runtime_inventory": {
+    "components": 35,
+    "notice_ecosystem_counts": {
+      "npm": 9,
+      "go": 22
+    },
+    "notices_complete": true,
+    "missing_notices": [],
+    "schema_validation": "Official CycloneDX 1.5 schema with installed Ajv; standard URI/date formats checked; optional extended IRI/IDN formats ignored."
+  },
+  "native": {
+    "source_commit": "cc418d4f86fe616b192ed24070c6684ead2d8f21",
+    "result": "PASS",
+    "pdf": {
+      "bytes": 639733,
+      "sha256": "40138c3d3c47d4318fc278b60240776e79bc071f3baa2f9fdceef033177f831d"
+    },
+    "restored_project_differences": [],
+    "relaunch_preserved_version_file_association_and_profile": true,
+    "bundle_bytes_and_links_unchanged": true,
+    "owned_processes_exited": true
+  },
+  "host_tests": 153,
+  "extraction_tests": 2,
+  "documentation_tests": 20,
+  "binary_uploaded": false
+}

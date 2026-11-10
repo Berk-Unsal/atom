@@ -1,6 +1,6 @@
 # Desktop release integration and remaining qualification
 
-Status: #162 implementation in progress. No public desktop release, rights approval, signing identity or minimum-OS acceptance is established by this document. Root `VERSION` remains the sole product version. The existing tag-triggered container/release-announcement workflow is unchanged.
+Status: #162 implementation draft prepared. No public desktop release, rights approval, signing identity or minimum-OS acceptance is established by this document. Root `VERSION` remains the sole product version. The existing tag-triggered container/release-announcement workflow is unchanged.
 
 ## Runtime notices and SBOM
 
@@ -37,3 +37,9 @@ Implementation uses GitHub's documented [immutable Actions artifact identity/dig
 Original #158 memory, warm-build and RF budget results remain review failures until addressed or explicitly revised with evidence. No limit was silently raised. Configured-printer Print, actual production chooser surfaces on Ubuntu, clean macOS 14/Ubuntu GNOME installation, Developer ID/Apple acceptance, downloaded/quarantined/offline tests, exact-data approval, provider access and dependency-license review remain open. See [production qualification](desktop-production-qualification.md), [macOS signing](desktop-signing-qualification.md), [Ubuntu installed-package evidence](desktop-ubuntu-package-qualification.md) and [installation/manual-update instructions](desktop-installation.md).
 
 No Windows support, automatic updater, file association, release date or public distribution promise is introduced.
+
+## Frozen local evidence
+
+Clean `cc418d4f86fe616b192ed24070c6684ead2d8f21` builds and packages a real native arm64 ZIP/DMG with complete notices and 35 runtime SBOM components (nine npm packages and 22 linked Go modules, plus application/vendor/standard-library entries). The production bundle passes Sector → Version → Report/PDF → portable Save → ordinary Quit/relaunch with zero restored-project differences, unchanged bundle bytes and owned-process cleanup. ZIP is 154,523,418 bytes and DMG is 172,020,749 bytes; both remain internal unsigned and were not uploaded. [Raw local record](assets/desktop-release-local.json) binds checksums and source.
+
+All 153 host regressions, two extraction tests, 20 docs tests, VERSION/action pins, actionlint 1.7.12 and desktop npm audit pass. The generated SBOM passes the official CycloneDX 1.5 structural schema with installed Ajv; optional extended IRI/IDN formats are not checked. No frontend or backend application/RF implementation changed in this release integration. Native integration CI is separate from this local record.

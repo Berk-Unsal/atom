@@ -3,8 +3,25 @@ import { createProjectWorkspace, createScenario, datasetReference, duplicateProj
 import { createRun } from "../domain/run.js";
 import { implementsRepositoryContract } from "./contract.js";
 import LocalRepository from "./localRepository.js";
+import sample from "../../../examples/ankara-sample.atom-project.json";
 
 describe("LocalRepository", () => {
+  it.each([1, 2, 3])("prepares native metadata without rewriting schema %s scenario snapshots", (schemaVersion) => {
+    const project = importProjectFile(JSON.stringify({ ...sample, schemaVersion }));
+    const before = structuredClone(project);
+    const repository = new LocalRepository();
+    const prepared = repository.prepareProjectFile(project);
+    expect(prepared.scenarios).toEqual(before.scenarios);
+    expect(prepared.scenarios).toBe(project.scenarios);
+    expect(prepared.draft).toBe(project.draft);
+    expect(prepared.activeScenarioId).toBe(project.activeScenarioId);
+    expect(prepared.datasetRef).toBe(project.datasetRef);
+    expect(project).toEqual(before);
+    expect(repository.prepareProjectFile(prepared)).toBe(prepared);
+    expect(importProjectFile(exportProjectFile(prepared)).scenarios.map(({ plan, request }) => ({ plan, request })))
+      .toEqual(before.scenarios.map(({ plan, request }) => ({ plan, request })));
+  });
+
   it("implements the domain repository contract over ProjectV2 compatibility storage", async () => {
     let workspace = createProjectWorkspace({ id: "ankara", version: "2026.07", hashes: { towers: "abc" } });
     const project = workspace.projects[0];

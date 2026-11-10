@@ -491,7 +491,12 @@ export class LocalRepository {
     // becomes the content-hash baseline. Later domain/report operations must
     // not make an untouched legacy Project appear edited merely by doing this.
     const workspace = { schemaVersion: 2, activeProjectId: project.id, projects: [project] };
-    const normalized = domainToWorkspace(workspaceToDomain(workspace), workspace).projects[0];
+    const compatibility = domainToWorkspace(workspaceToDomain(workspace), workspace).projects[0];
+    // Only Project metadata belongs to this preparation. A compatibility
+    // round-trip also expands legacy Scenario plans/revisions; native Save
+    // must preserve those snapshots and their original request bytes.
+    const normalized = { ...project, description: compatibility.description,
+      tags: compatibility.tags, domain: compatibility.domain };
     return JSON.stringify(normalized) === JSON.stringify(project) ? project : normalized;
   }
 

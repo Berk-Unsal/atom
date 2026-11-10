@@ -10,6 +10,7 @@ spec.loader.exec_module(driver)
 class API:
     STATE_SHOWING, STATE_ENABLED, STATE_SENSITIVE, STATE_EDITABLE = range(4)
     ROLE_TEXT, ROLE_PUSH_BUTTON = "text", "button"
+    ROLE_TABLE, ROLE_TREE_TABLE = "table", "tree table"
 
 
 class Node:
@@ -40,6 +41,20 @@ class Node:
 
 
 class NativeDriverTest(unittest.TestCase):
+    def test_open_rechecks_file_identity_after_row_selection_changes(self):
+        class FileList(Node):
+            nRows = 1
+            selected = False
+            current_name = "expected.json"
+            def queryTable(self): return self
+            def getAccessibleAt(self, _row, _column): return Node("cell", [Node(self.current_name)])
+            def isRowSelected(self, _row): return self.selected
+            def addRowSelection(self, _row):
+                self.selected = True
+                self.current_name = "different.json"
+        files = FileList("Files", role="table")
+        self.assertFalse(driver.select_open_path(Node("chooser", [files]), Path("/tmp/expected.json"), API))
+
     def test_expired_children_do_not_destroy_the_owned_dialog_observation(self):
         class Expired(Node):
             def getRoleName(self): raise RuntimeError("Accessible no longer exists")

@@ -88,25 +88,32 @@ def set_save_path(dialog, target, api):
 
 
 def select_open_path(dialog, target, api):
-    for node in descendants(dialog):
-        if node.name == "Files" and node.getRole() in (api.ROLE_TABLE, api.ROLE_TREE_TABLE):
+    for node in matching(dialog, lambda node: node.name == "Files" and node.getRole() in (api.ROLE_TABLE, api.ROLE_TREE_TABLE)):
+        try:
             table = node.queryTable()
-            for row in range(min(table.nRows, 1000)):
+            count = min(table.nRows, 1000)
+        except READ_ERRORS:
+            continue
+        for row in range(count):
+            try:
                 cell = table.getAccessibleAt(row, 0)
                 if any(child.name == target.name for child in descendants(cell)):
                     if not table.isRowSelected(row):
                         table.addRowSelection(row)
-                    return table.isRowSelected(row)
+                    # A refresh/sort may replace a row while selection settles.
+                    # Never accept a different file at the old row position.
+                    current = table.getAccessibleAt(row, 0)
+                    return table.isRowSelected(row) and any(child.name == target.name for child in descendants(current))
+            except READ_ERRORS:
+                continue
     # GTK's location entry is a real chooser widget, not a supplied response.
-    for node in descendants(dialog):
-        if node.getRole() == api.ROLE_TEXT and ready(node, api) and node.name.strip(" :").casefold() in ("location", "file name", "name"):
-            if not node.queryEditableText().setTextContents(str(target)):
-                raise RuntimeError("Native location entry refused text")
-            return node.queryText().getText(0, -1) == str(target)
-    for node in descendants(dialog):
-        if ready(node, api) and node.name.replace("_", "").casefold() in ("type a file name", "enter location"):
-            activate(node)
-            break
+    for node in matching(dialog, lambda node: node.getRole() == api.ROLE_TEXT and ready(node, api) and node.name.strip(" :").casefold() in ("location", "file name", "name")):
+        if not node.queryEditableText().setTextContents(str(target)):
+            raise RuntimeError("Native location entry refused text")
+        return node.queryText().getText(0, -1) == str(target)
+    for node in matching(dialog, lambda node: ready(node, api) and node.name.replace("_", "").casefold() in ("type a file name", "enter location")):
+        activate(node)
+        break
     return False
 
 

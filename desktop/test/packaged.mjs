@@ -76,17 +76,19 @@ async function ordinaryQuit() {
   assert.equal(processes.processes.filter((row) => row.executable === "atom-api").length, 1);
   // Detect an unexpected dirty prompt without leaving unattended CI blocked
   // in an OS sheet. Keep Editing is safe; failure cleanup retains recovery.
+  let prompt = false; let stderr = "";
+  const observe = (chunk) => { stderr = (stderr + chunk.toString()).slice(-256); if (stderr.includes("ATOM_PACKAGE_UNEXPECTED_DIRTY_PROMPT")) prompt = true; };
+  app.process().stderr.on("data", observe);
   await app.evaluate(({ app, dialog }) => {
-    globalThis.__packageQuitPrompt = false;
-    dialog.showMessageBox = async () => { globalThis.__packageQuitPrompt = true; return { response: 0 }; };
+    dialog.showMessageBox = async () => { process.stderr.write("ATOM_PACKAGE_UNEXPECTED_DIRTY_PROMPT\n"); return { response: 0 }; };
     app.quit();
   });
-  await until(async () => {
-    if (app.process().exitCode !== null) return true;
-    assert.equal(await app.evaluate(() => globalThis.__packageQuitPrompt), false, "Clean ordinary Quit unexpectedly asked about unsaved files");
-    return false;
-  }, "Ordinary Quit did not exit");
-  await app.close(); app = null;
+  let timer;
+  try {
+    await Promise.race([app.close(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(prompt ? "Clean ordinary Quit unexpectedly asked about unsaved files" : "Ordinary Quit did not exit")), 15_000); })]);
+    assert.equal(prompt, false, "Clean ordinary Quit unexpectedly asked about unsaved files");
+  } finally { clearTimeout(timer); app.process().stderr.off("data", observe); }
+  app = null;
   await assertExited(processes.processes.map((row) => row.pid));
 }
 try {
@@ -149,7 +151,7 @@ try {
 } finally {
   await fs.mkdir(path.dirname(output), { recursive: true }); await fs.writeFile(output, JSON.stringify(result, null, 2) + "\n");
   if (app) {
-    await app.evaluate(({ dialog }) => { dialog.showMessageBox = async () => ({ response: 1 }); }).catch(() => {});
+    await app.evaluate(({ app, dialog }) => { dialog.showMessageBox = async () => ({ response: 1 }); app.quit(); }).catch(() => {});
     await app.close().catch(() => {});
   }
   await permissions(relocated, true).catch(() => {}); await fs.rm(scratch, { recursive: true, force: true });

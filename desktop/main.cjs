@@ -29,6 +29,7 @@ const { createDiagnosticActions, notifyRuntime } = require("./lib/diagnostic-act
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
 app.setName("A.T.O.M");
+if (process.platform === "linux") app.setDesktopName("io.github.berk-unsal.atom.desktop");
 app.enableSandbox();
 protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, codeCache: true } },
   { scheme: REPORT_SCHEME, privileges: { standard: true, secure: true, stream: true } }]);
@@ -115,7 +116,13 @@ async function launch() {
   let rendererLoaded = false;
   window.webContents.on("did-finish-load", () => {
     rendererLoaded = true;
-    if (!quitting && window && !window.isDestroyed() && isTrustedDocument(window.webContents.getURL())) backend.setUIReady(true);
+    if (!quitting && window && !window.isDestroyed() && isTrustedDocument(window.webContents.getURL())) {
+      // A loaded hidden native window can stop receiving initial frame
+      // callbacks on Wayland. Do not make first visibility depend solely on
+      // ready-to-show; respect an explicit minimize while loading.
+      if (!window.isVisible() && !window.isMinimized()) window.show();
+      backend.setUIReady(true);
+    }
   });
   window.webContents.on("render-process-gone", (_event, details) => {
     backend.setUIReady(false);

@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+case "${1:-}" in
+  remove|purge)
+    if [ -f /etc/apparmor.d/atom-planner ] && command -v aa-enabled >/dev/null 2>&1 && aa-enabled; then
+      apparmor_parser -R /etc/apparmor.d/atom-planner
+    fi
+    ;;
+esac
+# Durable profile, data, documents and caches are never removed by this package.

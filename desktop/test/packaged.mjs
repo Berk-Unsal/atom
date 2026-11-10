@@ -15,6 +15,7 @@ const desktop = path.resolve(import.meta.dirname, "..");
 const root = path.dirname(desktop);
 const result = { ...sourceIdentity(root), mode: "production packaged host; native Save responses supplied by test, actual Print surface not qualified", rf_posts: [] };
 const diagnose = process.argv.includes("--diagnose");
+const installed = process.argv.includes("--installed");
 result.qualification = !diagnose;
 if (!diagnose) assert.equal(result.source_dirty, false);
 const version = (await fs.readFile(path.join(root, "VERSION"), "utf8")).trim();
@@ -22,12 +23,19 @@ const packageRoot = path.join(desktop, "build/packages", `atom-${version}-${proc
 const metadata = JSON.parse(await fs.readFile(path.join(packageRoot, "package.json"), "utf8"));
 assert.equal(metadata.commit, result.source_commit); assert.equal(metadata.version, version);
 result.package = metadata;
-const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-package-smoke-"));
+const scratch = installed ? process.env.ATOM_DEB_QUALIFICATION_ROOT : await fs.mkdtemp(path.join(os.tmpdir(), "atom-package-smoke-"));
+if (installed) {
+  assert.equal(process.platform, "linux"); assert.equal(process.env.GITHUB_ACTIONS, "true");
+  assert.ok(scratch && path.basename(scratch).startsWith("atom-deb-install-") && path.dirname(scratch) === os.tmpdir());
+  const stat = await fs.lstat(scratch); assert.equal(stat.isDirectory() && !stat.isSymbolicLink(), true);
+  assert.equal(stat.uid, process.getuid()); assert.equal(stat.mode & 0o777, 0o700);
+}
 const home = path.join(scratch, "Native home — çığ spaces");
-const relocated = path.join(scratch, "Outside repository — çığ spaces", process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M");
+const relocated = installed ? "/opt/atom-planner" : path.join(scratch, "Outside repository — çığ spaces", process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M");
 const executable = path.join(relocated, process.platform === "darwin" ? "Contents/MacOS/atom-desktop" : "atom-desktop");
 const originalBundle = path.join(packageRoot, process.platform === "darwin" ? "A.T.O.M.app" : "A.T.O.M-linux-x64");
 const output = path.join(desktop, "test-results/packaged.json");
+await fs.mkdir(path.dirname(output), { recursive: true });
 const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin", XDG_DATA_HOME: path.join(home, "data"), XDG_CONFIG_HOME: path.join(home, "config"),
   XDG_CACHE_HOME: path.join(home, "cache"), XDG_STATE_HOME: path.join(home, "state"),
   ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "must-not-use"), ATOM_DESKTOP_TEST_RESOURCES: "/nonexistent", ATOM_DESKTOP_DEV_SERVER: "http://127.0.0.1:1" };
@@ -35,17 +43,22 @@ delete env.ELECTRON_RUN_AS_NODE;
 const expectedPaths = nativePaths({ packaged: true, home, env });
 const projectFile = path.join(scratch, "Türkçe package.atom-project.json");
 const pdfFile = path.join(scratch, "Package report — çığ.pdf");
-let app; let page; let savedProject;
-async function projectDifferences() {
-  const restored = await page.evaluate(() => new Promise((resolve, reject) => {
+let app; let page; let savedProject; let launchNumber = 0;
+result.api_responses = []; result.renderer_errors = [];
+const bounded = (rows, row) => { rows.push(row); if (rows.length > 100) rows.shift(); };
+async function readActiveProject() {
+  return page.evaluate(() => new Promise((resolve, reject) => {
     const request = indexedDB.open("atom-planning-workspace", 1);
     request.onerror = () => reject(new Error("Cannot inspect private qualification workspace"));
     request.onsuccess = () => {
       const db = request.result; const read = db.transaction("workspace").objectStore("workspace").get("current");
-      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace.projects.find((project) => project.id === workspace.activeProjectId)); };
+      read.onsuccess = () => { const workspace = read.result; db.close(); resolve(workspace?.projects?.find((project) => project.id === workspace.activeProjectId) ?? null); };
       read.onerror = () => { db.close(); reject(new Error("Cannot read qualification workspace")); };
     };
   }));
+}
+async function projectDifferences() {
+  const restored = await readActiveProject();
   const current = JSON.parse(exportProjectFile(restored));
   const changed = [];
   function compare(before, after, key = "") {
@@ -79,11 +92,22 @@ async function cleanAssociation() {
   return false;
 }
 async function launch() {
-  app = await launchNative({ executablePath: executable, cwd: home, args: [], env, chromiumSandbox: true, timeout: 60_000 });
-  page = await app.firstWindow(); await page.waitForLoadState("domcontentloaded");
+  launchNumber++;
+  const args = installed && process.env.ATOM_DEB_DISPLAY_SESSION === "wayland" ? ["--ozone-platform=wayland"] : [];
+  app = await launchNative({ executablePath: executable, cwd: home, args, env, chromiumSandbox: true, timeout: 60_000 });
+  page = await app.firstWindow();
+  page.on("pageerror", (error) => bounded(result.renderer_errors, { launch: launchNumber, message: error.message.slice(0, 1000) }));
+  page.on("response", (response) => {
+    if (response.url().startsWith("app://atom/api/")) bounded(result.api_responses, { launch: launchNumber, method: response.request().method(), path: new URL(response.url()).pathname, status: response.status() });
+  });
+  page.on("requestfailed", (request) => {
+    if (request.url().startsWith("app://atom/api/")) bounded(result.api_responses, { launch: launchNumber, method: request.method(), path: new URL(request.url()).pathname, failure: request.failure()?.errorText });
+  });
+  await page.waitForLoadState("domcontentloaded");
   page.setDefaultTimeout(30_000);
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
+  await until(async () => app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().some((window) => window.webContents.getURL() === "app://atom/" && window.isVisible())), "Loaded native window remained hidden");
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));
   await waitForRuntime(page, (runtime) => runtime.state === "ready");
   assert.equal(page.url(), "app://atom/");
@@ -117,22 +141,42 @@ async function ordinaryQuit() {
 }
 try {
   await fs.mkdir(home, { recursive: true, mode: 0o700 });
-  await fs.mkdir(path.dirname(relocated), { recursive: true });
-  await fs.cp(originalBundle, relocated, { recursive: true, verbatimSymlinks: true });
+  if (!installed) {
+    await fs.mkdir(path.dirname(relocated), { recursive: true });
+    await fs.cp(originalBundle, relocated, { recursive: true, verbatimSymlinks: true });
+  }
   const before = inventory(relocated).map(({ mode: _mode, ...row }) => row);
-  await permissions(relocated, false);
-  await launch(); result.readonly_relocated_production_bundle_launched = true;
+  if (!installed) await permissions(relocated, false);
+  else { assert.notEqual(process.getuid(), 0); assert.equal(await fs.access(executable, 2).then(() => true, () => false), false); }
+  await launch();
+  result.readonly_relocated_production_bundle_launched = !installed;
+  result.installed_root_owned_bundle_launched = installed;
+  result.display_session = installed ? process.env.ATOM_DEB_DISPLAY_SESSION : null;
+  const existingProject = await readActiveProject();
+  const existingScenario = existingProject?.scenarios?.find((scenario) => scenario.id === existingProject.activeScenarioId);
+  const existingRevision = existingScenario?.domain?.current_revision_id ?? null;
+  if (existingRevision) await page.getByText(`Version ${existingScenario.domain.revision}`, { exact: true }).first().waitFor();
   const sector = page.waitForResponse((response) => response.url().endsWith("/api/analyze-sector") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Run Sector", exact: true }).click(); assert.equal((await sector).status(), 200);
   await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });
-  await page.getByRole("button", { name: /^Project menu,/ }).click(); await page.getByRole("button", { name: "Save Version", exact: true }).click();
-  await page.getByText("Version saved", { exact: true }).waitFor(); await page.keyboard.press("Escape");
+  if (!existingRevision) {
+    await page.getByRole("button", { name: /^Project menu,/ }).click(); await page.getByRole("button", { name: "Save Version", exact: true }).click();
+    await page.getByText("Version saved", { exact: true }).waitFor(); await page.keyboard.press("Escape");
+  } else {
+    // A new Run of unchanged saved inputs remains bound to that Version.
+    // Do not create Version 2 and demand the immutable Version-1 Run be moved.
+    result.preserved_existing_version_for_its_new_run = existingRevision;
+  }
   await page.getByRole("button", { name: "Review workspace", exact: true }).click(); await page.locator("#stage-tool-review-report").click();
   await page.locator(".report-source-lineage").filter({ hasText: "Runs: Simulation Run" }).first().waitFor();
-  await app.evaluate(({ dialog }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); }, pdfFile);
+  const previousPDF = await fs.readFile(pdfFile).catch(() => null);
+  await app.evaluate(({ dialog }, file) => { globalThis.__packageReportChooserCalls = 0; dialog.showSaveDialog = async () => { globalThis.__packageReportChooserCalls++; return { canceled: false, filePath: file }; }; }, pdfFile);
   await page.getByRole("button", { name: "Save PDF", exact: true }).click();
+  await until(async () => app.evaluate(() => globalThis.__packageReportChooserCalls === 1), "The current PDF export did not request its destination");
+  await until(async () => page.getByRole("button", { name: "Save PDF", exact: true }).isEnabled(), "The current PDF export did not finish");
   await until(async () => Boolean(await fs.stat(pdfFile).catch(() => null)), "Packaged report PDF was not saved");
   const pdf = await fs.readFile(pdfFile); assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
+  if (previousPDF) assert.notEqual(sha256(pdf), sha256(previousPDF), "The explicit new-Run report export did not replace the previous phase's PDF");
   result.pdf = { bytes: pdf.length, sha256: sha256(pdf) };
   await app.evaluate(({ dialog, Menu }, file) => { dialog.showSaveDialog = async () => ({ canceled: false, filePath: file }); Menu.getApplicationMenu().getMenuItemById("atom-project-save-as").click(); }, projectFile);
   await until(cleanAssociation, "Portable Save did not establish a clean association");
@@ -153,8 +197,40 @@ try {
   result.owned_processes_exited = true; result.result = diagnose ? "DIAGNOSTIC_ONLY" : "PASS";
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
+  result.window_state = await app?.evaluate(({ BrowserWindow, screen }) => ({ windows: BrowserWindow.getAllWindows().map((window) => ({ visible: window.isVisible(), minimized: window.isMinimized(),
+    bounds: window.getBounds(), url: window.webContents.getURL(), loading: window.webContents.isLoading() })), work_area: screen.getPrimaryDisplay().workArea })).catch(() => null);
+  const diagnostic = page?.evaluate(async () => {
+    const runtime = await window.atomDesktop.getRuntime();
+    const probes = [];
+    for (const endpoint of ["/api/meta", "/api/towers"]) {
+      try {
+        const response = await fetch(endpoint, { headers: { "x-atom-client": "1", "x-atom-runtime-generation": runtime.generation }, signal: AbortSignal.timeout(2000) });
+        const json = await response.json(); probes.push({ endpoint, status: response.status, features: json.features?.length, error_code: json.error?.code });
+      } catch (error) { probes.push({ endpoint, failure: error.name }); }
+    }
+    return { runtime, probes, run_state: document.querySelector(".run-state")?.textContent,
+      report_lineage: [...document.querySelectorAll(".report-source-lineage")].map((element) => element.textContent),
+      primary_disabled: document.querySelector(".command-run-button")?.disabled, visibility_state: document.visibilityState,
+      alerts: [...document.querySelectorAll('[role="alert"]')].map((element) => element.textContent.slice(0, 1000)),
+      project_menu: [...document.querySelectorAll("button")].find((button) => button.getAttribute("aria-label")?.startsWith("Project menu,"))?.getAttribute("aria-label") };
+  });
+  let timer;
+  try { result.failure_diagnostics = await Promise.race([diagnostic, new Promise((resolve) => { timer = setTimeout(() => resolve({ unavailable: "bounded renderer diagnostic timeout" }), 6000); })]); }
+  catch { result.failure_diagnostics = { unavailable: "renderer closed or unavailable" }; }
+  finally { clearTimeout(timer); }
+  result.failure_logs = {};
+  for (const component of ["host", "backend"]) {
+    const log = await fs.readFile(path.join(expectedPaths.logs, `${component}.log`), "utf8").catch(() => "");
+    result.failure_logs[component] = log.trim().split("\n").filter(Boolean).slice(-30).map((line) => { try { return JSON.parse(line); } catch { return { malformed: true }; } });
+  }
   if (savedProject) result.restored_project_differences = await projectDifferences().catch(() => null);
-  await page?.screenshot({ path: path.join(desktop, "test-results/package-failed.png") }).catch(() => {});
+  if (result.window_state?.windows?.some((window) => window.url === "app://atom/" && !window.visible && !window.minimized && !window.loading)) {
+    // Diagnostic only: retain FAIL even if manually mapping a loaded hidden
+    // window releases rendering. No production bypass or automatic RF retry.
+    await app.evaluate(({ BrowserWindow }) => { for (const window of BrowserWindow.getAllWindows()) if (window.webContents.getURL() === "app://atom/") window.show(); }).catch(() => {});
+    result.show_loaded_window_diagnostic = await page.evaluate(() => ({ visibility: document.visibilityState, primary_disabled: document.querySelector(".command-run-button")?.disabled })).catch(() => null);
+  }
+  await page?.screenshot({ path: path.join(desktop, "test-results/package-failed.png"), timeout: 5000 }).catch((error) => { result.screenshot_failure = error.message.slice(0, 500); });
   throw error;
 } finally {
   await fs.mkdir(path.dirname(output), { recursive: true }); await fs.writeFile(output, JSON.stringify(result, null, 2) + "\n");
@@ -162,6 +238,6 @@ try {
     await app.evaluate(({ app, dialog }) => { dialog.showMessageBox = async () => ({ response: 1 }); app.quit(); }).catch(() => {});
     await app.close().catch(() => {});
   }
-  await permissions(relocated, true).catch(() => {}); await fs.rm(scratch, { recursive: true, force: true });
+  if (!installed) { await permissions(relocated, true).catch(() => {}); await fs.rm(scratch, { recursive: true, force: true }); }
 }
 console.log(JSON.stringify(result, null, 2));

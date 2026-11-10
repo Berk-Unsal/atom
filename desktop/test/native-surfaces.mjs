@@ -85,6 +85,12 @@ try {
   application = await launchNative({ executablePath: executable, cwd: documents,
     args: ["--force-renderer-accessibility", ...(result.session === "wayland" ? ["--ozone-platform=wayland"] : [])], env, chromiumSandbox: true, timeout: 60_000 });
   result.accessibility_explicitly_enabled_for_native_widget_test = true;
+  result.accessibility = await application.evaluate(({ app }) => {
+    app.setAccessibilitySupportEnabled(true);
+    return { enabled: app.accessibilitySupportEnabled, renderer_flag: app.commandLine.hasSwitch("force-renderer-accessibility"),
+      gtk_modules: process.env.GTK_MODULES, no_at_bridge: process.env.NO_AT_BRIDGE ?? null };
+  });
+  assert.equal(result.accessibility.enabled, true);
   page = await application.firstWindow(); page.setDefaultTimeout(30_000); await page.waitForLoadState("domcontentloaded");
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor(); await waitForRuntime(page, (status) => status.state === "ready");

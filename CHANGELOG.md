@@ -6,6 +6,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add an opt-in protected macOS signing/notarization candidate recipe with exact-source/data authorization, minimal per-file entitlements, temporary credential handling and signature/stapling/Gatekeeper verification. Public trust and distribution require external approval and qualification.
+
 - Add native architecture-specific internal desktop package assembly, macOS ZIP/DMG recipes, byte/permission inventories and a production-bundle relocation/read-only smoke. Public distribution and default-data upload remain gated.
 
 - Add native dataset folder/manifest selection, canonical Go validation, managed copy/reference registration, explicit moved-reference recovery and persistent selection without changing project dataset identities or RF contracts.

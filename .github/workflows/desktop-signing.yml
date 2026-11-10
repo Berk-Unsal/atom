@@ -1,0 +1,114 @@
+name: Trusted macOS desktop candidate
+
+# This workflow is deliberately manual. It never runs signing on PR code.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing vVERSION tag identifying the exact approved source
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: desktop-trusted-signing
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      source_commit: ${{ steps.authorize.outputs.source_commit }}
+      version: ${{ steps.authorize.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - id: authorize
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATOM_SIGN_TAG: ${{ inputs.tag }}
+        run: node desktop/scripts/authorize-signing.mjs
+
+  sign:
+    name: Reviewed signing (${{ matrix.arch }})
+    needs: authorize
+    runs-on: ${{ matrix.os }}
+    environment: desktop-signing
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            arch: arm64
+          - os: macos-15-intel
+            arch: x64
+    steps:
+      # Signing tools/policy come from the protected workflow commit. Product
+      # code is pinned independently to the already-approved exact source.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: policy
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: source
+          ref: ${{ needs.authorize.outputs.source_commit }}
+          persist-credentials: false
+          lfs: true
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: source/backend-go/go.mod
+          cache-dependency-path: source/backend-go/go.sum
+      - run: npm ci --prefix source/frontend-react
+      - run: npm ci --prefix source/desktop
+      - run: npm run build --prefix source/desktop
+      - run: npm run package --prefix source/desktop
+      - run: npm run test:package --prefix source/desktop
+      - name: Install trusted signing tools without dependency scripts
+        run: npm ci --ignore-scripts --prefix policy/desktop
+      - name: Sign, notarize, staple and verify the exact candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_DIRECTORY: ${{ github.workspace }}/source/desktop/build/packages/atom-${{ needs.authorize.outputs.version }}-darwin-${{ matrix.arch }}-internal-unsigned
+          ATOM_DEVELOPER_ID_P12_BASE64: ${{ secrets.ATOM_DEVELOPER_ID_P12_BASE64 }}
+          ATOM_DEVELOPER_ID_PASSWORD: ${{ secrets.ATOM_DEVELOPER_ID_PASSWORD }}
+          ATOM_NOTARY_KEY_BASE64: ${{ secrets.ATOM_NOTARY_KEY_BASE64 }}
+          ATOM_NOTARY_KEY_ID: ${{ secrets.ATOM_NOTARY_KEY_ID }}
+          ATOM_NOTARY_ISSUER_ID: ${{ secrets.ATOM_NOTARY_ISSUER_ID }}
+        run: node policy/desktop/scripts/sign.mjs --execute "$PACKAGE_DIRECTORY"
+      - name: Launch the final signed archive with the native sandbox
+        env:
+          CANDIDATE_DIRECTORY: ${{ github.workspace }}/policy/desktop/build/signed-candidates/atom-${{ needs.authorize.outputs.version }}-darwin-${{ matrix.arch }}
+        run: node policy/desktop/test/signed-smoke.mjs "$CANDIDATE_DIRECTORY"
+      # Data is uploaded only after exact-hash approval, protected signing,
+      # Apple acceptance, stapling, Gatekeeper and the signed launch succeed.
+      # These are candidates; publication still requires #162 release gates.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: notarized-candidate-${{ needs.authorize.outputs.version }}-${{ matrix.arch }}
+          path: policy/desktop/build/signed-candidates/**
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: signing-diagnostics-${{ matrix.arch }}
+          path: |
+            policy/desktop/build/signed-candidates/*/signing.json
+            policy/desktop/build/signed-candidates/*/notarization-*.json
+            policy/desktop/build/signed-candidates/*/signed-smoke.json
+          if-no-files-found: warn
+          retention-days: 14

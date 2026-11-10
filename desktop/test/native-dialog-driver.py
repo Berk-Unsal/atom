@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import time
 
+READ_ERRORS = (RuntimeError, AttributeError)
 
 def descendants(root, limit=768):
     queue = [root]
@@ -17,8 +18,29 @@ def descendants(root, limit=768):
         yield node
         try:
             queue.extend(node)
-        except (RuntimeError, AttributeError):
+        except READ_ERRORS:
             continue
+
+
+def matching(root, predicate):
+    for node in descendants(root):
+        try:
+            if predicate(node):
+                yield node
+        except READ_ERRORS:
+            # GTK recreates accessible file-list children during validation.
+            # A stale observation is not permission to replay an action.
+            continue
+
+
+def snapshot(root):
+    rows = []
+    for node in descendants(root):
+        try:
+            rows.append({"name": node.name, "role": node.getRoleName()})
+        except READ_ERRORS:
+            continue
+    return rows
 
 
 def ready(node, api):
@@ -28,12 +50,15 @@ def ready(node, api):
 
 def find_dialog(applications, pid, title, api):
     for application in applications:
-        if application.get_process_id() != pid:
+        try:
+            owned = application.get_process_id() == pid
+        except READ_ERRORS:
+            continue
+        if not owned:
             continue
         application.clear_cache()
-        for node in descendants(application):
-            if node.name == title and ready(node, api):
-                return node
+        for node in matching(application, lambda node: node.name == title and ready(node, api)):
+            return node
     return None
 
 
@@ -48,8 +73,8 @@ def activate(node):
 
 
 def set_save_path(dialog, target, api):
-    entries = [node for node in descendants(dialog) if node.getRole() == api.ROLE_TEXT
-               and ready(node, api) and node.getState().contains(api.STATE_EDITABLE)]
+    entries = list(matching(dialog, lambda node: node.getRole() == api.ROLE_TEXT
+                            and ready(node, api) and node.getState().contains(api.STATE_EDITABLE)))
     named = [node for node in entries if node.name.replace("_", "").strip(" :").casefold() in ("name", "file name", "filename", "save as")]
     candidates = named or (entries if len(entries) == 1 else [])
     if len(candidates) != 1:
@@ -87,16 +112,19 @@ def select_open_path(dialog, target, api):
 
 def accept(dialog, operation, api):
     names = {"save": {"save"}, "open": {"open", "select"}, "cancel": {"cancel"}}[operation]
-    for node in descendants(dialog):
-        if node.getRole() == api.ROLE_PUSH_BUTTON and node.name.replace("_", "").casefold() in names and ready(node, api):
-            if activate(node):
-                return node.name
+    for node in matching(dialog, lambda node: node.getRole() == api.ROLE_PUSH_BUTTON and node.name.replace("_", "").casefold() in names and ready(node, api)):
+        # The native action can immediately destroy this accessible object.
+        label = node.name
+        if activate(node):
+            return label
     return None
 
 
 def main():
+    global READ_ERRORS
     import pyatspi
     from gi.repository import GLib
+    READ_ERRORS = (*READ_ERRORS, GLib.Error)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pid", type=int, required=True)
     parser.add_argument("--title", required=True)
@@ -124,7 +152,7 @@ def main():
             context.iteration(False)
         dialog = find_dialog(pyatspi.Registry.getDesktop(0), args.pid, args.title, pyatspi)
         if dialog is not None:
-            last_tree = [{"name": node.name, "role": node.getRoleName()} for node in descendants(dialog)]
+            last_tree = snapshot(dialog)
             if not selected:
                 selected = set_save_path(dialog, target, pyatspi) if args.action == "save" else select_open_path(dialog, target, pyatspi)
                 # Let GTK's filename validation and directory traversal settle.

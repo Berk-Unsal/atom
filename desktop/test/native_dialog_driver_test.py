@@ -24,6 +24,7 @@ class Node:
     def getState(self): return self
     def contains(self, _flag): return self.visible
     def getRole(self): return self.role
+    def getRoleName(self): return self.role
     def queryEditableText(self): return self
     def queryText(self): return self
     def setTextContents(self, text):
@@ -39,6 +40,20 @@ class Node:
 
 
 class NativeDriverTest(unittest.TestCase):
+    def test_expired_children_do_not_destroy_the_owned_dialog_observation(self):
+        class Expired(Node):
+            def getRoleName(self): raise RuntimeError("Accessible no longer exists")
+        root = Node("chooser", [Expired("old row"), Node("current row")])
+        self.assertEqual(driver.snapshot(root), [{"name": "chooser", "role": "dialog"}, {"name": "current row", "role": "dialog"}])
+    def test_accept_does_not_read_a_widget_after_its_action_destroys_it(self):
+        class ClosingButton(Node):
+            def __getattribute__(self, name):
+                if name == "name" and object.__getattribute__(self, "clicked"):
+                    raise RuntimeError("Accessible no longer exists")
+                return super().__getattribute__(name)
+        button = ClosingButton("_Cancel", role="button")
+        self.assertEqual(driver.accept(Node("chooser", [button]), "cancel", API), "_Cancel")
+
     def test_only_the_exact_portal_pid_title_and_visible_dialog_is_selected(self):
         unrelated = Node("app", [Node("Save A.T.O.M project")], pid=9)
         hidden = Node("Save A.T.O.M project", visible=False)

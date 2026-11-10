@@ -12,6 +12,21 @@ dialogs = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(dialogs)
 
 
+def find_print_dialog(applications, pid, api):
+    for app in applications:
+        try:
+            if app.get_process_id() != pid:
+                continue
+            app.clear_cache()
+        except dialogs.READ_ERRORS:
+            continue
+        for node in dialogs.matching(app, lambda node: node.name == "Print"
+                                     and node.getRole() in (api.ROLE_DIALOG, api.ROLE_FRAME)
+                                     and dialogs.ready(node, api)):
+            return node
+    return None
+
+
 def main():
     import pyatspi
     from gi.repository import GLib
@@ -40,7 +55,7 @@ def main():
                 apps.append({"pid": app.get_process_id(), "name": app.name})
             except dialogs.READ_ERRORS:
                 continue
-        dialog = dialogs.find_dialog(desktop, args.pid, "Print", pyatspi)
+        dialog = find_print_dialog(desktop, args.pid, pyatspi)
         if dialog is not None:
             last_tree = dialogs.snapshot(dialog)
             label = args.action

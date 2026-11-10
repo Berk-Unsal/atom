@@ -66,6 +66,7 @@ jobs:
           name: desktop-production-qualification-${{ matrix.os }}
           path: |
             desktop/test-results/startup-budget.json
+            desktop/test-results/startup-failed.png
             desktop/test-results/rf-parity.json
             desktop/test-results/qualification-eight-cell-map.png
             desktop/test-results/qualification-failed.png

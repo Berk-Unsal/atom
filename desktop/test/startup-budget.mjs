@@ -7,6 +7,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { launchNative } from "./native-launch.mjs";
 import { waitForRuntime } from "./runtime-wait.mjs";
+import { startupDiagnostics } from "./startup-diagnostics.mjs";
 import { sourceIdentity, distribution, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 
 const require = createRequire(import.meta.url);
@@ -26,6 +27,7 @@ await fs.mkdir(path.dirname(output), { recursive: true });
 const checkpoint = () => fs.writeFile(output, JSON.stringify(result, null, 2) + "\n");
 let application;
 let currentProfile;
+let currentPage;
 async function launch(profile, resourceRoot = resources) {
   currentProfile = profile;
   const started = Date.now();
@@ -34,7 +36,9 @@ async function launch(profile, resourceRoot = resources) {
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   const nativeProcess = application.process();
   nativeProcess.once("exit", (code, signal) => { result.last_application_exit = { code, signal, time: new Date().toISOString() }; });
-  const page = await application.firstWindow();
+  const page = await application.firstWindow(); currentPage = page;
+  result.current_renderer_errors = [];
+  page.on("pageerror", (error) => { if (result.current_renderer_errors.length < 20) result.current_renderer_errors.push(String(error.message).slice(0, 1000)); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));
   await waitForRuntime(page, (status) => status.state === "ready" && status.readiness.ui && status.readiness.dataset);
@@ -100,6 +104,10 @@ try {
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
   result.failure_diagnostics = {};
+  if (application && currentPage) {
+    result.failure_diagnostics.native = await startupDiagnostics(application, currentPage);
+    await currentPage.screenshot({ path: path.join(desktop, "test-results/startup-failed.png"), timeout: 5000 }).catch(() => {});
+  }
   if (currentProfile) for (const component of ["host", "backend"]) {
     const contents = await fs.readFile(path.join(currentProfile, `native-state/logs/${component}.log`), "utf8").catch(() => "");
     result.failure_diagnostics[component] = contents.trim().split("\n").filter(Boolean).slice(-40).map(JSON.parse);

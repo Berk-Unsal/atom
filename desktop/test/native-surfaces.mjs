@@ -14,6 +14,7 @@ import { exportProjectFile } from "../../frontend-react/src/utils/projectStore.j
 import { sourceIdentity, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 const require = createRequire(import.meta.url);
 const { inventory } = require("../lib/package-contract.cjs");
+const { changeSummary } = require("./surface-diagnostics.cjs");
 const run = promisify(execFile);
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/native-surfaces.json");
@@ -124,14 +125,7 @@ try {
   result.file_status_before_quit = await fileState();
   const originalAfterImport = (await project(true)).find((row) => row.id === projectBeforeCancel.id);
   const oldFile = JSON.parse(exportProjectFile(projectBeforeCancel)); const currentFile = JSON.parse(exportProjectFile(originalAfterImport));
-  result.original_project_changes = [];
-  function compare(left, right, key = "") {
-    if (JSON.stringify(left) === JSON.stringify(right)) return;
-    if (left && right && typeof left === "object" && typeof right === "object") {
-      for (const name of new Set([...Object.keys(left), ...Object.keys(right)])) compare(left[name], right[name], `${key}/${name}`);
-    } else if (result.original_project_changes.length < 30) result.original_project_changes.push({ path: key, before: left, after: right });
-  }
-  compare(oldFile, currentFile);
+  result.original_project_changes = changeSummary(oldFile, currentFile);
   assert.ok(result.file_status_before_quit.filter((row) => row.path).every((row) => !row.dirty), "Every associated project must be clean before ordinary Quit");
   const processes = await processTree(application.process().pid); await application.evaluate(({ app }) => app.quit());
   let timer; try { await Promise.race([application.close(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("Ordinary native Quit did not finish")), 15_000); })]); } finally { clearTimeout(timer); }

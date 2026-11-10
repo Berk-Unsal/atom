@@ -49,9 +49,18 @@ async function drive(action, title, target) {
 }
 async function command(id) { await application.evaluate(({ Menu }, commandId) => Menu.getApplicationMenu().getMenuItemById(commandId).click(), id); }
 async function printAction(action) {
-  const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/native-print-driver.py"), "--pid", String(application.process().pid), "--action", action],
-    { timeout: 40_000, maxBuffer: 128 * 1024 });
-  const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
+  try {
+    const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/native-print-driver.py"), "--pid", String(application.process().pid), "--action", action],
+      { timeout: 40_000, maxBuffer: 128 * 1024 });
+    const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
+  } catch (error) {
+    try {
+      const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/mutter-capture.py"), "--output", path.join(desktop, "test-results", `native-print-${action}.png`)],
+        { timeout: 35_000, maxBuffer: 64 * 1024 });
+      result.print_failure_compositor = JSON.parse(stdout.trim());
+    } catch (captureError) { result.print_capture_failure = captureError.message; }
+    throw error;
+  }
 }
 async function queueJobs(completed = false) {
   return (await run("lpstat", ["-W", completed ? "completed" : "all", "-o", "AtomQualification"])).stdout.trim();

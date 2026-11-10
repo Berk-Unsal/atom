@@ -84,7 +84,13 @@ try {
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "profile") }; delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   if (process.argv.includes("--compact")) await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1024, 768));
-  page = await application.firstWindow(); await waitForRuntime(page, (state) => state.state === "ready");
+  page = await application.firstWindow();
+  // The preload can answer runtime IPC before the initial document transition
+  // has settled. Observe the actual app UI before evaluating renderer state.
+  await page.waitForURL("app://atom/", { timeout: 60_000 });
+  await page.waitForLoadState("domcontentloaded");
+  await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
+  await waitForRuntime(page, (state) => state.state === "ready");
   result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
   result.reference.work_area = await application.evaluate(({ screen }) => screen.getPrimaryDisplay().workArea);
   const nativeMeta = await nativeRequest("/api/meta"); const standaloneMeta = await standaloneRequest("/api/meta");

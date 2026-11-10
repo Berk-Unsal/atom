@@ -27,7 +27,14 @@ const output = path.join(desktop, "test-results/deb-installed.json");
 const result = { source_commit: metadata.commit, platform: "linux", arch: "x64", display_session: process.env.ATOM_DEB_DISPLAY_SESSION,
   fixture: "Previous Debian package version only; app source/VERSION remain current. Tests apt upgrade dispatch, not a real historical product migration.", phases: [] };
 const apt = (args) => run("sudo", ["env", "DEBIAN_FRONTEND=noninteractive", "apt-get", "-y", "--no-install-recommends", ...args], { stdio: "inherit" });
-const durable = () => inventory(home).filter((row) => !row.path.includes("/cache/") && !row.path.includes("/Library/Caches/")).map(({ mode: _mode, ...row }) => row);
+async function durable() {
+  const profile = inventory(home).filter((row) => !row.path.includes("/cache/") && !row.path.includes("/Library/Caches/")).map(({ mode: _mode, ...row }) => row);
+  const documents = [];
+  for (const name of ["Türkçe package.atom-project.json", "Package report — çığ.pdf"]) {
+    const bytes = await fs.readFile(path.join(scratch, name)); documents.push({ file: name, sha256: hash(bytes), bytes: bytes.length });
+  }
+  return { profile, documents };
+}
 async function smoke(phase) {
   run(process.execPath, [path.join(desktop, "test/packaged.mjs"), "--installed"], { stdio: "inherit", env: { ...process.env, ATOM_DEB_QUALIFICATION_ROOT: scratch } });
   const native = JSON.parse(await fs.readFile(path.join(desktop, "test-results/packaged.json"), "utf8"));
@@ -48,17 +55,17 @@ try {
   assert.equal(await fs.stat("/opt/atom-planner/chrome-sandbox").then(() => true, () => false), false);
   assert.match(run("sudo", ["cat", "/sys/kernel/security/apparmor/profiles"]), /atom-planner \(unconfined\)/);
   await smoke("installed previous-package-version fixture");
-  const beforeUpgrade = durable();
+  const beforeUpgrade = await durable();
   apt(["install", candidate]);
   assert.equal(run("dpkg-query", ["-W", "-f=${Version}", "atom-planner"]), version);
-  assert.deepEqual(durable(), beforeUpgrade, "apt upgrade must not touch native user data or files");
+  assert.deepEqual(await durable(), beforeUpgrade, "apt upgrade must not touch native user data or files");
   await smoke("upgraded current candidate");
-  const beforeRemoval = durable();
+  const beforeRemoval = await durable();
   apt(["remove", "atom-planner"]); installed = false;
-  assert.deepEqual(durable(), beforeRemoval, "Removal must preserve native user data and files");
+  assert.deepEqual(await durable(), beforeRemoval, "Removal must preserve native user data and files");
   assert.equal(await fs.stat("/opt/atom-planner/atom-desktop").then(() => true, () => false), false);
   apt(["purge", "atom-planner"]);
-  assert.deepEqual(durable(), beforeRemoval, "Purge must preserve native user data and files");
+  assert.deepEqual(await durable(), beforeRemoval, "Purge must preserve native user data and files");
   result.apt_upgrade_remove_purge_preserved_user_bytes = true; result.result = "PASS";
 } catch (error) { result.result = "FAIL"; result.failure = error.message; throw error; }
 finally {

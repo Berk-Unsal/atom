@@ -6,6 +6,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add native architecture-specific internal desktop package assembly, macOS ZIP/DMG recipes, byte/permission inventories and a production-bundle relocation/read-only smoke. Public distribution and default-data upload remain gated.
+
 - Add native dataset folder/manifest selection, canonical Go validation, managed copy/reference registration, explicit moved-reference recovery and persistent selection without changing project dataset identities or RF contracts.
 - Save shared reports and review packages through native dialogs and render Print/PDF in a scriptless isolated surface, preserving retained bytes/hashes and shared report lineage.
 - Add dialog-approved native project Open, Save, Save As and Export Copy through the shared portable-project format, with atomic replacement, external-edit conflicts, per-project file status and a save-before-quit choice separate from recovery autosave and Save Version.
@@ -19,6 +21,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Add reproducible Ubuntu X11/Wayland native project-dialog qualification through the real GTK desktop portal, including Turkish paths, file identity and byte checks, and Save/Open cancellation.
 
 ### Fixed
+
+- Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.
 
 - Refresh native content-hash status after the first project Save so unchanged bytes become clean without another edit or RF run.
 - Keep the desktop development bootstrap alive when an observed source edit supersedes a compiler input, discarding partial-write outputs and surfacing genuine current-source failures.

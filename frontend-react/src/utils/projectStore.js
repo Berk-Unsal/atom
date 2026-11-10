@@ -4,6 +4,7 @@ import { validateScenarioRevision } from "../domain/scenario.js";
 import { validateRun } from "../domain/run.js";
 import { validateInventoryRevision } from "../domain/inventory.js";
 import { validateReportDefinition } from "../domain/report.js";
+import { normalizePlanInventoryDefaults } from "./planInventoryDefaults.js";
 
 export const PROJECT_SCHEMA_VERSION = 2;
 export const PROJECT_FILE_SCHEMA_VERSION = 3;
@@ -122,10 +123,7 @@ function planInputsForScenarioIdentity(plan) {
   // inventory with these existing defaults. Their explicit representation is
   // not an input edit; compare both sides with the same defaults while keeping
   // all actual profile, identity, provenance and coordinate changes visible.
-  if (Array.isArray(inputs.inventory)) inputs.inventory = inputs.inventory.map((cell) => cell && typeof cell === "object"
-    ? { ...cell, rfProfile: cell.rfProfile ?? {}, sourceKey: cell.sourceKey ?? cell.id }
-    : cell);
-  return inputs;
+  return normalizePlanInventoryDefaults(inputs);
 }
 
 function equalPlanInputs(left, right) {

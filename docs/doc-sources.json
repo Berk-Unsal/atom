@@ -106,6 +106,14 @@
       "classification": "HISTORICAL AUDIT / QUALIFICATION",
       "reason": "Frozen-source production native/CI or actual OS-surface evidence; failed budgets, interrupted probes and observed defects remain explicit."
     },
+    "docs/assets/desktop-package-ci.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Frozen native arm64/Intel package CI evidence; original source, trust, data and clean-machine limits retained."
+    },
+    "docs/assets/desktop-package-macos.json": {
+      "classification": "HISTORICAL AUDIT / QUALIFICATION",
+      "reason": "Frozen clean native package build/smoke measurements; not clean-machine, signing or public distribution approval."
+    },
     "docs/assets/desktop-production-ci-8be59eb.json": {
       "classification": "HISTORICAL AUDIT / QUALIFICATION",
       "reason": "Frozen-source production native/CI or actual OS-surface evidence; failed budgets, interrupted probes and observed defects remain explicit."
@@ -2101,6 +2109,10 @@
     "docs/desktop-diagnostics-qualification.md": {
       "classification": "HISTORICAL AUDIT / QUALIFICATION",
       "reason": "Scoped implementation, visual, regression or operational evidence; original limits/measurements preserved."
+    },
+    "docs/desktop-packaging-qualification.md": {
+      "classification": "INTERNAL DESIGN",
+      "reason": "Native package assembly and qualification work in progress; not public distribution or support approval."
     },
     "docs/desktop-production-qualification.md": {
       "classification": "INTERNAL DESIGN",

@@ -1,0 +1,76 @@
+{
+  "source_commit": "797f199eb010f0a81cc8d99bc8b3524ca553d007",
+  "source_dirty": false,
+  "reference": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "kernel": "27.2.0",
+    "cpu": "Apple M4",
+    "logical_cpus": 10,
+    "memory_bytes": 25769803776,
+    "node": "v24.22.2",
+    "electron": "44.10.2"
+  },
+  "mode": "production packaged host; native Save responses supplied by test, actual Print surface not qualified",
+  "rf_posts": [
+    "/api/analyze-sector"
+  ],
+  "qualification": true,
+  "package": {
+    "schema": 1,
+    "version": "0.13.1",
+    "commit": "797f199eb010f0a81cc8d99bc8b3524ca553d007",
+    "source_dirty": false,
+    "platform": "darwin",
+    "arch": "arm64",
+    "shell": "electron",
+    "shell_version": "44.10.2",
+    "bundle_id": "io.github.berk-unsal.atom",
+    "trust": "internal-unsigned",
+    "public_distribution": false,
+    "data_redistribution_approved": false,
+    "binary_upload_permitted": false,
+    "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+    "data_layer_sha256": {
+      "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+      "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+    },
+    "file_manifest_sha256": "10f934e37ee81535733ef280acdedfa0e3ffacc0113211b72efd55a1f2a71447",
+    "unpacked_bytes": 464268591,
+    "native_architectures": {
+      "Contents/Frameworks/A.T.O.M Helper (GPU).app/Contents/MacOS/A.T.O.M Helper (GPU)": "arm64",
+      "Contents/Frameworks/A.T.O.M Helper (Plugin).app/Contents/MacOS/A.T.O.M Helper (Plugin)": "arm64",
+      "Contents/Frameworks/A.T.O.M Helper (Renderer).app/Contents/MacOS/A.T.O.M Helper (Renderer)": "arm64",
+      "Contents/Frameworks/A.T.O.M Helper.app/Contents/MacOS/A.T.O.M Helper": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/app_shim_loader": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib": "arm64",
+      "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib": "arm64",
+      "Contents/Frameworks/Mantle.framework/Versions/A/Mantle": "arm64",
+      "Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC": "arm64",
+      "Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt": "arm64",
+      "Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel": "arm64",
+      "Contents/MacOS/atom-desktop": "arm64",
+      "Contents/Resources/atom-api": "arm64"
+    },
+    "artifacts": [
+      {
+        "file": "atom-0.13.1-darwin-arm64-internal-unsigned.zip",
+        "bytes": 154392641,
+        "sha256": "e6f524d34a428d4b634d11e11f5bdefacb615f42bc652626111865888a13343f"
+      }
+    ],
+    "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+  },
+  "readonly_relocated_production_bundle_launched": true,
+  "pdf": {
+    "bytes": 639502,
+    "sha256": "a4a7bfc561d48dcc9c3d2dc8624b419f1b796155f9d2cc5dd85360f7fee935d8"
+  },
+  "restored_project_differences": [],
+  "relaunch_preserved_version_file_association_and_profile": true,
+  "bundle_bytes_and_links_unchanged": true,
+  "owned_processes_exited": true,
+  "result": "PASS"
+}

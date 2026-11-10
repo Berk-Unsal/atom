@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { stageDatasetPack } = require("../lib/resources.cjs");
+const { productionEnvironment } = require("../lib/package-contract.cjs");
 const desktop = path.resolve(__dirname, "..");
 const root = path.dirname(desktop);
 const resources = path.join(desktop, "build/resources");
@@ -14,7 +15,7 @@ const commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding:
 // Local unsigned resources only. No installers or public data distribution.
 fs.rmSync(staging, { recursive: true, force: true });
 fs.mkdirSync(staging, { recursive: true });
-execFileSync(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"], { cwd: path.join(root, "frontend-react"), stdio: "inherit" });
+execFileSync(process.execPath, [path.join(__dirname, "vite-production.mjs")], { cwd: root, env: productionEnvironment(process.env), stdio: "inherit" });
 execFileSync("go", ["build", "-trimpath", "-ldflags", `-X main.appVersion=${version} -X main.buildCommit=${commit}`, "-o", path.join(staging, "atom-api"), "."],
   { cwd: path.join(root, "backend-go"), stdio: "inherit" });
 fs.cpSync(path.join(root, "frontend-react/dist"), path.join(staging, "dist"), { recursive: true });

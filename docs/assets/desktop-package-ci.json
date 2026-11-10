@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "run_id": 42820832099,
+  "run_url": "https://github.com/Berk-Unsal/atom/actions/runs/42820832099",
+  "pr_head": "797f199eb010f0a81cc8d99bc8b3524ca553d007",
+  "execution_commit": "ad8508ac59217f2fab92fbea01d2b4c2c2f2f754",
+  "artifacts": {
+    "arm64": {
+      "artifact_id": 13768105160,
+      "native_smoke": {
+        "source_commit": "ad8508ac59217f2fab92fbea01d2b4c2c2f2f754",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "arm64",
+          "kernel": "24.6.0",
+          "cpu": "Apple M1 (Virtual)",
+          "logical_cpus": 3,
+          "memory_bytes": 7516192768,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "mode": "production packaged host; native Save responses supplied by test, actual Print surface not qualified",
+        "rf_posts": [
+          "/api/analyze-sector"
+        ],
+        "qualification": true,
+        "package": {
+          "schema": 1,
+          "version": "0.13.1",
+          "commit": "ad8508ac59217f2fab92fbea01d2b4c2c2f2f754",
+          "source_dirty": false,
+          "platform": "darwin",
+          "arch": "arm64",
+          "shell": "electron",
+          "shell_version": "44.10.2",
+          "bundle_id": "io.github.berk-unsal.atom",
+          "trust": "internal-unsigned",
+          "public_distribution": false,
+          "data_redistribution_approved": false,
+          "binary_upload_permitted": false,
+          "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+          "data_layer_sha256": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          },
+          "file_manifest_sha256": "988a4af72d22089e0f3acc378b6617e9be0fa2f0b2553f83d8bf63313927f047",
+          "unpacked_bytes": 464268591,
+          "native_architectures": {
+            "Contents/Frameworks/A.T.O.M Helper (GPU).app/Contents/MacOS/A.T.O.M Helper (GPU)": "arm64",
+            "Contents/Frameworks/A.T.O.M Helper (Plugin).app/Contents/MacOS/A.T.O.M Helper (Plugin)": "arm64",
+            "Contents/Frameworks/A.T.O.M Helper (Renderer).app/Contents/MacOS/A.T.O.M Helper (Renderer)": "arm64",
+            "Contents/Frameworks/A.T.O.M Helper.app/Contents/MacOS/A.T.O.M Helper": "arm64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework": "arm64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/app_shim_loader": "arm64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler": "arm64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib": "arm64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib": "arm64",
+            "Contents/Frameworks/Mantle.framework/Versions/A/Mantle": "arm64",
+            "Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC": "arm64",
+            "Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt": "arm64",
+            "Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel": "arm64",
+            "Contents/MacOS/atom-desktop": "arm64",
+            "Contents/Resources/atom-api": "arm64"
+          },
+          "artifacts": [
+            {
+              "file": "atom-0.13.1-darwin-arm64-internal-unsigned.zip",
+              "bytes": 154049092,
+              "sha256": "f58a58d8529c25a273d4387d641bbc554ac9e473c3f3904bf4dd50de1847dd38"
+            },
+            {
+              "file": "atom-0.13.1-darwin-arm64-internal-unsigned.dmg",
+              "bytes": 171842228,
+              "sha256": "b98073e113d7ee8fdc7c1ecd3b3f2c144f080b49cec5c97db0707fa9ec737bdf"
+            }
+          ],
+          "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+        },
+        "readonly_relocated_production_bundle_launched": true,
+        "pdf": {
+          "bytes": 639723,
+          "sha256": "e828e65b2c905dc195f61f4b576143fa27c350df5f4311a32be231533c3901da"
+        },
+        "restored_project_differences": [],
+        "relaunch_preserved_version_file_association_and_profile": true,
+        "bundle_bytes_and_links_unchanged": true,
+        "owned_processes_exited": true,
+        "result": "PASS"
+      }
+    },
+    "x64": {
+      "artifact_id": 13766992200,
+      "native_smoke": {
+        "source_commit": "ad8508ac59217f2fab92fbea01d2b4c2c2f2f754",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "x64",
+          "kernel": "24.6.0",
+          "cpu": "Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz",
+          "logical_cpus": 4,
+          "memory_bytes": 15032385536,
+          "node": "v24.19.0",
+          "electron": "44.10.2"
+        },
+        "mode": "production packaged host; native Save responses supplied by test, actual Print surface not qualified",
+        "rf_posts": [
+          "/api/analyze-sector"
+        ],
+        "qualification": true,
+        "package": {
+          "schema": 1,
+          "version": "0.13.1",
+          "commit": "ad8508ac59217f2fab92fbea01d2b4c2c2f2f754",
+          "source_dirty": false,
+          "platform": "darwin",
+          "arch": "x64",
+          "shell": "electron",
+          "shell_version": "44.10.2",
+          "bundle_id": "io.github.berk-unsal.atom",
+          "trust": "internal-unsigned",
+          "public_distribution": false,
+          "data_redistribution_approved": false,
+          "binary_upload_permitted": false,
+          "data_manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+          "data_layer_sha256": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          },
+          "file_manifest_sha256": "08aecbd49fe44e4c91109af816a2567b3498d0cb165628155f9b106796e0181c",
+          "unpacked_bytes": 469583515,
+          "native_architectures": {
+            "Contents/Frameworks/A.T.O.M Helper (GPU).app/Contents/MacOS/A.T.O.M Helper (GPU)": "x86_64",
+            "Contents/Frameworks/A.T.O.M Helper (Plugin).app/Contents/MacOS/A.T.O.M Helper (Plugin)": "x86_64",
+            "Contents/Frameworks/A.T.O.M Helper (Renderer).app/Contents/MacOS/A.T.O.M Helper (Renderer)": "x86_64",
+            "Contents/Frameworks/A.T.O.M Helper.app/Contents/MacOS/A.T.O.M Helper": "x86_64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework": "x86_64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/app_shim_loader": "x86_64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Helpers/chrome_crashpad_handler": "x86_64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libffmpeg.dylib": "x86_64",
+            "Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries/libvk_swiftshader.dylib": "x86_64",
+            "Contents/Frameworks/Mantle.framework/Versions/A/Mantle": "x86_64",
+            "Contents/Frameworks/ReactiveObjC.framework/Versions/A/ReactiveObjC": "x86_64",
+            "Contents/Frameworks/Squirrel.framework/Versions/A/Resources/ShipIt": "x86_64",
+            "Contents/Frameworks/Squirrel.framework/Versions/A/Squirrel": "x86_64",
+            "Contents/MacOS/atom-desktop": "x86_64",
+            "Contents/Resources/atom-api": "x86_64"
+          },
+          "artifacts": [
+            {
+              "file": "atom-0.13.1-darwin-x64-internal-unsigned.zip",
+              "bytes": 158950815,
+              "sha256": "832f7e40ce26614972ba3c4943c84d2d90d00dcfc3891d33629f6db195d99ed8"
+            },
+            {
+              "file": "atom-0.13.1-darwin-x64-internal-unsigned.dmg",
+              "bytes": 178047414,
+              "sha256": "7a6f14951ba7e8c656b9a1b0192671f23a8df9b01382de4c220eddf4cc748109"
+            }
+          ],
+          "qualification": "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate"
+        },
+        "readonly_relocated_production_bundle_launched": true,
+        "pdf": {
+          "bytes": 639739,
+          "sha256": "4ccb8239e1ed95dc602fa94bb8882e7c90942f762e2c3011131ad245966cad93"
+        },
+        "restored_project_differences": [],
+        "relaunch_preserved_version_file_association_and_profile": true,
+        "bundle_bytes_and_links_unchanged": true,
+        "owned_processes_exited": true,
+        "result": "PASS"
+      }
+    }
+  },
+  "scope": "Native hosted package assembly and production smoke; no clean-machine, public support, data redistribution or signing approval."
+}

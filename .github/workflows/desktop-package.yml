@@ -1,0 +1,61 @@
+name: Desktop package assembly
+
+on:
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'backend-go/**'
+      - 'frontend-react/**'
+      - 'icon/**'
+      - 'VERSION'
+      - 'scripts/desktop-package.sh'
+      - '.github/workflows/desktop-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: Internal package (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          lfs: true
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: backend-go/go.mod
+          cache-dependency-path: backend-go/go.sum
+      - run: npm ci --prefix frontend-react
+      - run: npm ci --prefix desktop
+      - run: npm run build --prefix desktop
+      - run: npm run package --prefix desktop -- --dmg
+      - run: npm run test:package --prefix desktop
+      # No binary/data upload: the exact default pack's approval is pending.
+      # Diagnostics and cryptographic inventories contain no dataset bytes.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: desktop-package-evidence-${{ matrix.os }}
+          path: |
+            desktop/build/packages/*/package.json
+            desktop/build/packages/*/files.json
+            desktop/build/packages/*/SHA256SUMS
+            desktop/test-results/packaged.json
+            desktop/test-results/package-failed.png
+          if-no-files-found: warn
+          retention-days: 30

@@ -154,9 +154,14 @@ try {
     if (files.length !== 1) return false; printFile = path.join(printerDirectory, files[0]); return (await fs.stat(printFile)).size > 0;
   }, "Local virtual printer did not produce one PDF", 60_000);
   const printed = await fs.readFile(printFile); assert.equal(printed.subarray(0, 5).toString(), "%PDF-");
+  result.real_print_completed_local_job = { bytes: printed.length, sha256: sha256(printed) };
+  await run("pdftoppm", ["-f", "1", "-singlefile", "-scale-to-x", "1400", "-scale-to-y", "-1", "-png", printFile,
+    path.join(desktop, "test-results/native-print-output")], { timeout: 20_000 });
+  result.printed_fonts = (await run("pdffonts", [printFile], { timeout: 10_000 })).stdout;
   const text = (await run("pdftotext", [printFile, "-"])).stdout;
-  assert.match(text, /Çankaya Ağ Planı/); assert.match(text, /Simulation Run/);
-  result.real_print_completed_local_job = { bytes: printed.length, sha256: sha256(printed), retained_project_and_run_text: true };
+  result.printed_text = { characters: text.length, sha256: sha256(text), project_label_recovered: text.includes("Çankaya Ağ Planı"), run_label_recovered: text.includes("Simulation Run") };
+  assert.ok(result.printed_text.project_label_recovered && result.printed_text.run_label_recovered, "Printed PDF extraction did not recover the Project and Run labels; inspect the bounded first-page raster and font diagnostics");
+  result.real_print_completed_local_job.retained_project_and_run_text = true;
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
   result.file_status_before_quit = await fileState();

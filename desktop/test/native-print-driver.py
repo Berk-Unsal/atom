@@ -111,7 +111,7 @@ def click_compositor(point, pid):
     if os.environ["ATOM_DEB_DISPLAY_SESSION"] == "x11":
         def command(*arguments):
             return subprocess.run(["xdotool", *arguments], capture_output=True, text=True, check=True, timeout=10).stdout.strip()
-        windows = command("search", "--onlyvisible", "--pid", str(pid), "--name", "^Print$").splitlines()
+        windows = command("search", "--all", "--onlyvisible", "--pid", str(pid), "--name", "^Print$").splitlines()
         if len(windows) != 1 or command("getwindowname", windows[0]) != "Print" or command("getwindowpid", windows[0]) != str(pid):
             raise RuntimeError("X11 Print must be the uniquely visible owned native window")
         geometry = dict(line.split("=", 1) for line in command("getwindowgeometry", "--shell", windows[0]).splitlines() if "=" in line)

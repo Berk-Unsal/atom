@@ -27,7 +27,7 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
-- Build both Go services and container builders with Go 1.26.11 to address GO-2026-6859 in the HTTP server standard library.
+- Build both Go services and container builders with Go 1.26.11 for GO-2026-6859, update the backend HTML dependency to golang.org/x/net 0.62.0 for CVE-2026-78661/97045, and remove the adapter’s unused x/net dependency.
 
 - Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.
 

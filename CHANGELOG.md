@@ -6,7 +6,10 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Bundle exact-version runtime dependency notices and a CycloneDX SBOM, add protected native candidate workflows and fail-closed exact-byte desktop release promotion, and document manual installation/updates while qualification and redistribution approvals remain pending.
+
 - Add Ubuntu 24.04 x86_64 internal .deb assembly, measured ELF dependency metadata, desktop identity and per-app sandbox policy, with separate X11/Wayland install/upgrade/removal qualification. Public Linux support and data distribution remain gated.
+- Add an opt-in protected macOS signing/notarization candidate recipe with exact-source/data authorization, minimal per-file entitlements, temporary credential handling and signature/stapling/Gatekeeper verification. Public trust and distribution require external approval and qualification.
 
 - Add native architecture-specific internal desktop package assembly, macOS ZIP/DMG recipes, byte/permission inventories and a production-bundle relocation/read-only smoke. Public distribution and default-data upload remain gated.
 
@@ -23,6 +26,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 - Add reproducible Ubuntu X11/Wayland native project-dialog qualification through the real GTK desktop portal, including Turkish paths, file identity and byte checks, and Save/Open cancellation.
 
 ### Fixed
+
+- Build both Go services and container builders with Go 1.26.11 for GO-2026-6859, update the backend HTML dependency to golang.org/x/net 0.62.0 for CVE-2026-78661/97045, and remove the adapter’s unused x/net dependency.
 
 - Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.
 

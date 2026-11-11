@@ -37,10 +37,11 @@ try {
   const source = path.join(scratch, "source"); await fs.mkdir(source);
   for (const name of HOST_NAMES) await fs.cp(path.join(desktop, name), path.join(source, name), { recursive: true });
   await fs.writeFile(path.join(source, "package.json"), JSON.stringify({ name: "atom-desktop", version, main: "main.cjs", license: "MIT", description: "A.T.O.M telecom planning", author: "A.T.O.M contributors" }));
-  const licenses = path.join(scratch, "licenses"); await fs.mkdir(licenses);
-  await fs.copyFile(path.join(root, "LICENSE"), path.join(licenses, "A.T.O.M-MIT.txt"));
-  await fs.copyFile(path.join(desktop, "data-redistribution.json"), path.join(licenses, "dataset-review.json"));
-  await fs.copyFile(path.join(root, "docs/desktop-data-redistribution-review.md"), path.join(licenses, "dataset-review.md"));
+  const licenses = path.join(scratch, "licenses");
+  command(process.execPath, [path.join(desktop, "scripts/licenses.mjs"), resources, licenses]);
+  const licenseIndex = JSON.parse(await fs.readFile(path.join(licenses, "license-index.json"), "utf8"));
+  const sbomSHA256 = hash(await fs.readFile(path.join(licenses, "sbom.cdx.json")));
+  const licenseIndexSHA256 = hash(await fs.readFile(path.join(licenses, "license-index.json")));
   const [packed] = await packager({ dir: source, name: "A.T.O.M", executableName: "atom-desktop", out: path.join(scratch, "output"),
     platform: process.platform, arch: process.arch, electronVersion: info.shellVersion, appVersion: version, buildVersion: version,
     appBundleId: BUNDLE_ID, helperBundleId: `${BUNDLE_ID}.helper`, appCategoryType: "public.app-category.utilities",
@@ -50,11 +51,11 @@ try {
     extraResource: [...RESOURCE_NAMES.map((name) => path.join(resources, name)), licenses], quiet: false });
   const bundle = process.platform === "darwin" ? path.join(packed, "A.T.O.M.app") : packed;
   const resourceRoot = path.join(bundle, process.platform === "darwin" ? "Contents/Resources" : "resources");
-  // Electron's archive places its license notices beside the .app, so keep
-  // those notices inside the relocated app as well.
+  // Ensure the notices collected from the installed pinned Electron match
+  // the actual vendor archive used by packager.
   for (const name of ["LICENSE", "LICENSES.chromium.html"]) {
     const notice = path.join(packed, name);
-    await fs.copyFile(notice, path.join(resourceRoot, "licenses", `Electron-${name}`));
+    if (hash(await fs.readFile(notice)) !== hash(await fs.readFile(path.join(resourceRoot, "licenses", `Electron-${name}`)))) throw new Error("Electron vendor notices differ from the pinned runtime");
   }
   const executable = path.join(bundle, process.platform === "darwin" ? "Contents/MacOS/atom-desktop" : "atom-desktop");
   await fs.chmod(path.join(resourceRoot, "atom-api"), 0o755);
@@ -77,6 +78,7 @@ try {
   }
   await fs.rm(destination, { recursive: true, force: true }); await fs.mkdir(destination);
   const installedBundle = path.join(destination, path.basename(bundle)); await fs.rename(bundle, installedBundle);
+  for (const name of ["sbom.cdx.json", "license-index.json"]) await fs.copyFile(path.join(licenses, name), path.join(destination, `atom-${version}-${target}.${name}`));
   const files = JSON.stringify(rows, null, 2) + "\n";
   await fs.writeFile(path.join(destination, "files.json"), files);
   const archive = path.join(destination, basename + (process.platform === "darwin" ? ".zip" : ".tar.gz"));
@@ -95,7 +97,8 @@ try {
   for (const file of artifacts) { const bytes = await fs.readFile(file); artifactRows.push({ file: path.basename(file), bytes: bytes.length, sha256: hash(bytes) }); }
   const metadata = { schema: 1, version, commit, source_dirty: false, platform: process.platform, arch: process.arch, shell: "electron", shell_version: info.shellVersion,
     bundle_id: BUNDLE_ID, trust: "internal-unsigned", public_distribution: false, data_redistribution_approved: approved,
-    binary_upload_permitted: approved, data_manifest_sha256: hash(manifestBytes), data_layer_sha256: layerHashes,
+    binary_upload_permitted: approved && licenseIndex.notices_complete, data_manifest_sha256: hash(manifestBytes), data_layer_sha256: layerHashes,
+    notices_complete: licenseIndex.notices_complete, sbom_sha256: sbomSHA256, license_index_sha256: licenseIndexSHA256,
     file_manifest_sha256: hash(files), unpacked_bytes: rows.reduce((sum, row) => sum + (row.bytes || 0), 0), native_architectures: nativeArchitectures, artifacts: artifactRows,
     qualification: "Build evidence only; native launch, clean-machine, signing and public-release gates remain separate" };
   await fs.writeFile(path.join(destination, "package.json"), JSON.stringify(metadata, null, 2) + "\n");

@@ -6,7 +6,8 @@ const { assertUbuntu, linkedLibraries, dependencyFloor, control, runCommand, nor
 const { inventory, hash } = require("../lib/package-contract.cjs");
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const run = (command, args, options = {}) => runCommand(command, args, { cwd: root, ...options });
-if (process.argv.length !== 2) throw new Error("Usage: node desktop/scripts/deb.mjs");
+const candidate = process.argv[2] === "--candidate";
+if (process.argv.length !== (candidate ? 3 : 2)) throw new Error("Usage: node desktop/scripts/deb.mjs [--candidate]");
 if (process.platform !== "linux") throw new Error("Build the .deb natively on updated Ubuntu 24.04 x86_64");
 const os = assertUbuntu({ platform: process.platform, arch: process.arch, dpkgArch: run("dpkg", ["--print-architecture"]), release: await fs.readFile("/etc/os-release", "utf8") });
 const version = (await fs.readFile(path.join(root, "VERSION"), "utf8")).trim();
@@ -63,7 +64,7 @@ try {
   for (const name of ["postinst", "postrm"]) await copy(path.join(desktop, "linux", name), path.join(debian, name), 0o755);
   await fs.writeFile(path.join(debian, "conffiles"), "/etc/apparmor.d/atom-planner\n");
   const rows = inventory(scratch);
-  const body = control({ version, dependencies: [...dependencies], installedBytes: rows.reduce((sum, row) => sum + (row.bytes || 0), 0) });
+  const body = control({ version, dependencies: [...dependencies], installedBytes: rows.reduce((sum, row) => sum + (row.bytes || 0), 0), candidate });
   await fs.writeFile(path.join(debian, "control"), body);
   // Packager's private staging root can be 0700. dpkg installs it as root, so
   // normalize public software traversal/read modes before root ownership is
@@ -71,10 +72,10 @@ try {
   normalizeInstalledModes(scratch);
   run("desktop-file-validate", [path.join(scratch, "usr/share/applications/io.github.berk-unsal.atom.desktop")]);
   run("sh", ["-n", path.join(debian, "postinst")]); run("sh", ["-n", path.join(debian, "postrm")]);
-  const destination = path.join(packageRoot, `atom-${version}-linux-x64-internal-unsigned.deb`);
+  const destination = path.join(packageRoot, `atom-${version}-linux-x64${candidate ? "" : "-internal-unsigned"}.deb`);
   run("dpkg-deb", ["--root-owner-group", "--build", scratch, destination]);
   const bytes = await fs.readFile(destination);
-  const result = { schema: 1, commit, version, platform: "linux", arch: "x64", os, shell_version: packaged.shell_version, trust: "internal-unsigned",
+  const result = { schema: 1, commit, version, platform: "linux", arch: "x64", os, shell_version: packaged.shell_version, trust: candidate ? "linux-package-candidate" : "internal-unsigned", public_distribution: false,
     data_redistribution_approved: packaged.data_redistribution_approved, binary_upload_permitted: packaged.binary_upload_permitted,
     artifact: { file: path.basename(destination), bytes: bytes.length, sha256: hash(bytes) }, control: body, elf_dependencies: linked,
     dependency_policy: "All resolved system ELF owners require at least the installed Ubuntu build version; explicit dlopen/portal packages are additional. Other distributions are unqualified.",

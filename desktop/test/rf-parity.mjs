@@ -8,6 +8,7 @@ import { createRequire } from "node:module";
 import { once } from "node:events";
 import { launchNative } from "./native-launch.mjs";
 import { waitForRuntime } from "./runtime-wait.mjs";
+import { startupDiagnostics } from "./startup-diagnostics.mjs";
 import { sourceIdentity, distribution, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 import { DEFAULT_SIMULATION } from "../../frontend-react/src/generated/policy.js";
 import { createDefaultOptimizationConfig } from "../../frontend-react/src/utils/optimizationConfig.js";
@@ -15,9 +16,11 @@ import { buildSimulationPayload, buildNetworkOptimizationPayload } from "../../f
 import { createProjectWorkspace, updateProjectDraft, exportProjectFile, datasetReference } from "../../frontend-react/src/utils/projectStore.js";
 
 const require = createRequire(import.meta.url);
+const { observeAdmission, admissionWait } = require("./rf-admission.cjs");
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const resources = path.join(desktop, "build/resources"); const evidence = path.join(desktop, "test-results");
-const result = { ...sourceIdentity(root), comparisons: [], timings: {}, ui: {} };
+const result = { ...sourceIdentity(root), comparisons: [], timings: {}, ui: {}, admission_waits: [],
+  sampling: { warmup_pairs_per_endpoint: 1, timed_pairs_per_endpoint: 20, transport_order: "alternating; sequential RF requests" } };
 const build = JSON.parse(await fs.readFile(path.join(resources, "build-info.json"), "utf8"));
 assert.equal(build.commit, result.source_commit, "Rebuild resources for the measured source");
 assert.equal(result.source_dirty, false, "Qualify committed clean source");
@@ -26,6 +29,7 @@ result.manifest_sha256 = sha256(await fs.readFile(path.join(resources, "data-pip
 await fs.mkdir(evidence, { recursive: true });
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-rf-parity-"));
 let application; let standalone; let page; let base; let lastReset = 0;
+const admission = { native: null, standalone: null };
 const checkpoint = () => fs.writeFile(path.join(evidence, "rf-parity.json"), JSON.stringify(result, null, 2) + "\n");
 const nativeRequest = (endpoint, payload, headers = {}, method) => page.evaluate(async ({ endpoint, payload, extra, method }) => {
   const runtime = await window.atomDesktop.getRuntime();
@@ -35,7 +39,8 @@ const nativeRequest = (endpoint, payload, headers = {}, method) => page.evaluate
     body: payload ? JSON.stringify(payload) : undefined, signal: AbortSignal.timeout(90_000) });
   const text = await response.text();
   return { status: response.status, text, milliseconds: performance.now() - started,
-    workflow: response.headers.get("RF-Workflow-ID"), reset: Number(response.headers.get("RateLimit-Reset")), limit: Number(response.headers.get("RateLimit-Limit")) };
+    workflow: response.headers.get("RF-Workflow-ID"), reset: Number(response.headers.get("RateLimit-Reset")), limit: Number(response.headers.get("RateLimit-Limit")),
+    remaining: response.headers.get("RateLimit-Remaining"), followupRemaining: response.headers.get("RF-Followup-Remaining") };
 }, { endpoint, payload, extra: headers, method });
 async function standaloneRequest(endpoint, payload, headers = {}, method) {
   const started = performance.now();
@@ -44,7 +49,8 @@ async function standaloneRequest(endpoint, payload, headers = {}, method) {
     signal: AbortSignal.timeout(90_000), redirect: "error" });
   const text = await response.text();
   return { status: response.status, text, milliseconds: performance.now() - started,
-    workflow: response.headers.get("RF-Workflow-ID"), reset: Number(response.headers.get("RateLimit-Reset")), limit: Number(response.headers.get("RateLimit-Limit")) };
+    workflow: response.headers.get("RF-Workflow-ID"), reset: Number(response.headers.get("RateLimit-Reset")), limit: Number(response.headers.get("RateLimit-Limit")),
+    remaining: response.headers.get("RateLimit-Remaining"), followupRemaining: response.headers.get("RF-Followup-Remaining") };
 }
 async function compare(endpoint, payload, index, expectedStatus = 200) {
   const headers = /\/(evaluate|optimize)-network$/.test(endpoint) ? { "RF-Workflow": "network-maps-v1" } : {};
@@ -52,16 +58,26 @@ async function compare(endpoint, payload, index, expectedStatus = 200) {
   const replies = {};
   for (const kind of index % 2 ? ["native", "standalone"] : ["standalone", "native"]) {
     const request = kind === "native" ? nativeRequest : standaloneRequest;
+    const children = headers["RF-Workflow"] ? payload.towers.length : 0;
+    const waiting = admissionWait(admission[kind], children, Date.now());
+    if (waiting > 0) {
+      result.admission_waits.push({ transport: kind, endpoint, milliseconds: waiting });
+      console.log(`Waiting ${waiting} ms for observed ${kind} RF admission before ${endpoint}`);
+      const until = Date.now() + waiting;
+      while (Date.now() < until) await sleep(Math.min(1000, until - Date.now()));
+    }
     const response = await request(endpoint, payload, headers); replies[kind] = response;
     assert.equal(response.status, expectedStatus, `${kind} ${endpoint}: ${response.text.slice(0, 200)}`);
+    admission[kind] = observeAdmission(response, Date.now());
     if (response.workflow) {
       const cleanup = await request("/api/rf-workflows", null, { "RF-Workflow-ID": response.workflow }, "DELETE");
       assert.ok(cleanup.status === 200 || cleanup.status === 204, "Release unused ordinary workflow reservation");
+      admission[kind] = observeAdmission(cleanup, Date.now());
     }
   }
   assert.deepEqual(JSON.parse(replies.native.text), JSON.parse(replies.standalone.text), `${endpoint}: exact deterministic output/order mismatch`);
   assert.equal(replies.native.limit, 20); assert.equal(replies.standalone.limit, 20);
-  lastReset = Date.now() + Math.max(replies.native.reset, replies.standalone.reset) * 1000;
+  lastReset = Math.max(admission.native.resetAt, admission.standalone.resetAt);
   result.comparisons.push({ endpoint, request_sha256: sha256(JSON.stringify(payload)), native_response_sha256: sha256(replies.native.text),
     standalone_response_sha256: sha256(replies.standalone.text), status: expectedStatus, exact_json_equal: true, index,
     native_ms: replies.native.milliseconds, standalone_ms: replies.standalone.milliseconds });
@@ -83,10 +99,20 @@ try {
   assert.ok(base, "Owned standalone process must bind loopback");
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "profile") }; delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
-  if (process.argv.includes("--compact")) await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1024, 768));
-  page = await application.firstWindow(); await waitForRuntime(page, (state) => state.state === "ready");
+  const viewport = process.argv.includes("--compact") ? [1024, 768] : [1440, 900];
+  await application.evaluate(({ BrowserWindow }, size) => BrowserWindow.getAllWindows()[0].setContentSize(...size), viewport);
+  page = await application.firstWindow();
+  // The preload can answer runtime IPC before the initial document transition
+  // has settled. Observe the actual app UI before evaluating renderer state.
+  await page.waitForURL("app://atom/", { timeout: 60_000 });
+  await page.waitForLoadState("domcontentloaded");
+  await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
+  await waitForRuntime(page, (state) => state.state === "ready");
   result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
   result.reference.work_area = await application.evaluate(({ screen }) => screen.getPrimaryDisplay().workArea);
+  await page.waitForFunction(([width, height]) => innerWidth === width && innerHeight === height, viewport);
+  result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
+  assert.deepEqual([result.reference.viewport.width, result.reference.viewport.height], viewport, "Measure the requested content viewport, excluding native window chrome");
   const nativeMeta = await nativeRequest("/api/meta"); const standaloneMeta = await standaloneRequest("/api/meta");
   assert.equal(nativeMeta.status, 200); assert.equal(standaloneMeta.status, 200);
   assert.deepEqual(JSON.parse(nativeMeta.text), JSON.parse(standaloneMeta.text));
@@ -103,14 +129,16 @@ try {
   const network = buildNetworkOptimizationPayload(cells, settings, {}, optimization);
   const simulation = buildSimulationPayload(cells[0], settings);
   result.fixture = { cell_ids: cells.map((cell) => cell.id), selection: "Eight dataset towers nearest 32.85,39.92 by squared geographic distance, then ID; defaults unchanged", settings, optimization, network_request_sha256: sha256(JSON.stringify(network)) };
-  // 15 RF roots, including one warm-up per endpoint; every unused workflow
-  // reservation is closed through the ordinary API. No limit override/retry.
+  // One warm-up and 20 timed pairs per endpoint, as required by D11. Every
+  // unused workflow reservation is closed; observed quota exhaustion is paced
+  // before the next RF request. No limit override or failed-request retry.
   for (const [endpoint, payload] of [["/api/simulate", simulation], ["/api/evaluate-network", network], ["/api/optimize-network", network]]) {
     const native = []; const standalone = [];
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index <= 20; index++) {
       const replies = await compare(endpoint, payload, index);
       if (index > 0) { native.push(replies.native.milliseconds); standalone.push(replies.standalone.milliseconds); }
     }
+    assert.equal(native.length, 20); assert.equal(standalone.length, 20);
     const nativeStats = distribution(native); const standaloneStats = distribution(standalone);
     const difference = Math.abs(nativeStats.median / standaloneStats.median - 1);
     result.timings[endpoint] = { native_ms: nativeStats, standalone_ms: standaloneStats, absolute_median_difference_fraction: difference, within_5_percent: difference <= 0.05 };
@@ -203,6 +231,7 @@ try {
   await application.evaluate(({ app }) => app.quit()); await application.close(); application = null; await assertExited(owned);
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
+  if (application && page) result.failure_diagnostics = await startupDiagnostics(application, page);
   await page?.screenshot({ path: path.join(evidence, "qualification-failed.png") }).catch(() => {});
   result.failure_notices = await page?.locator('[role="alert"], .run-state').allTextContents().catch(() => []);
   throw error;

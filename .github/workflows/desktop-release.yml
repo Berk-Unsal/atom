@@ -1,0 +1,51 @@
+name: Reviewed desktop release promotion
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing vVERSION release whose exact desktop candidates are approved
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: desktop-publication
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Verify gates, source, candidate provenance and exact final bytes without write permission
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATOM_RELEASE_TAG: ${{ inputs.tag }}
+        run: node desktop/scripts/release.mjs --check
+  publish:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: desktop-publication
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Reverify and promote approved bytes without rebuilding or replacing assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATOM_RELEASE_TAG: ${{ inputs.tag }}
+        run: node desktop/scripts/release.mjs --publish

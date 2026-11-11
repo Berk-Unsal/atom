@@ -65,6 +65,8 @@ jobs:
             desktop/build/packages/*/deb.json
             desktop/build/packages/*/files.json
             desktop/build/packages/*/SHA256SUMS
+            desktop/build/packages/*/*.sbom.cdx.json
+            desktop/build/packages/*/*.license-index.json
             desktop/test-results/deb-installed.json
             desktop/test-results/packaged.json
             desktop/test-results/package-failed.png

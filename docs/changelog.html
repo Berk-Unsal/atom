@@ -155,10 +155,20 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>.</p>
 href="https://github.com/Berk-Unsal/atom/compare/v0.13.1...HEAD">Unreleased</a></h2>
 <h3 id="added">Added</h3>
 <ul>
+<li><p>Bundle exact-version runtime dependency notices and a CycloneDX
+SBOM, add protected native candidate workflows and fail-closed
+exact-byte desktop release promotion, and document manual
+installation/updates while qualification and redistribution approvals
+remain pending.</p></li>
 <li><p>Add Ubuntu 24.04 x86_64 internal .deb assembly, measured ELF
 dependency metadata, desktop identity and per-app sandbox policy, with
 separate X11/Wayland install/upgrade/removal qualification. Public Linux
 support and data distribution remain gated.</p></li>
+<li><p>Add an opt-in protected macOS signing/notarization candidate
+recipe with exact-source/data authorization, minimal per-file
+entitlements, temporary credential handling and
+signature/stapling/Gatekeeper verification. Public trust and
+distribution require external approval and qualification.</p></li>
 <li><p>Add native architecture-specific internal desktop package
 assembly, macOS ZIP/DMG recipes, byte/permission inventories and a
 production-bundle relocation/read-only smoke. Public distribution and
@@ -207,6 +217,10 @@ cancellation.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li><p>Build both Go services and container builders with Go 1.26.11 for
+GO-2026-6859, update the backend HTML dependency to golang.org/x/net
+0.62.0 for CVE-2026-78661/97045, and remove the adapter’s unused x/net
+dependency.</p></li>
 <li><p>Keep a saved native project clean across restoration when domain
 metadata only makes existing Cell RF/source defaults explicit, while
 preserving dirty status for actual input edits.</p></li>

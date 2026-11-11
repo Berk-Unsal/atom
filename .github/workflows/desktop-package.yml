@@ -55,6 +55,8 @@ jobs:
             desktop/build/packages/*/package.json
             desktop/build/packages/*/files.json
             desktop/build/packages/*/SHA256SUMS
+            desktop/build/packages/*/*.sbom.cdx.json
+            desktop/build/packages/*/*.license-index.json
             desktop/test-results/packaged.json
             desktop/test-results/package-failed.png
           if-no-files-found: warn

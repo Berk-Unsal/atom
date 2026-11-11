@@ -10,6 +10,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Build both Go services and container builders with Go 1.26.11 to address GO-2026-6859 in the HTTP server standard library.
+
 - Refresh both production Alpine image pins to 3.24.4 with zlib 1.3.2-r1 for CVE-2026-85091, and check the built images' zlib security floor in CI.
 
 ## [0.13.1] - 2026-10-27

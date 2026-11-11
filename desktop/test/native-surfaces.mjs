@@ -101,6 +101,7 @@ try {
   const saved = await fs.readFile(projectFile); assert.equal(JSON.parse(saved).schemaVersion, 3); const savedIdentity = await fs.stat(projectFile);
   assert.ok(savedIdentity.size > 0); result.saved_project = { bytes: saved.length, sha256: sha256(saved), path_characters: projectFile.length };
   const stateBeforeCancel = await fileState(); const projectBeforeCancel = await project();
+  result.initial_save_workspace_changes = changeSummary(JSON.parse(saved), JSON.parse(exportProjectFile(projectBeforeCancel)));
   assert.equal(sha256(Buffer.from(exportProjectFile(projectBeforeCancel))), sha256(saved), "The saved file must match the persisted original snapshot");
   assert.ok(projectBeforeCancel.scenarios.some((scenario) => !scenario.domain), "The original file must retain an unexpanded legacy Scenario for the unrelated-save regression");
   result.original_file_contains_legacy_scenario_without_domain_metadata = true;

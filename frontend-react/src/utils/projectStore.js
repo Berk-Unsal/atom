@@ -381,7 +381,7 @@ function compactWorkspace(workspace) {
       ...project,
       scenarios: project.scenarios.map((scenario) => retained.has(`${project.id}:${scenario.id}`)
         ? { ...scenario, artifacts: compactScenarioArtifacts(scenario.artifacts) }
-        : { ...scenario, artifacts: null, requiresRerun: Boolean(scenario.artifacts) }),
+        : scenario.artifacts ? { ...scenario, artifacts: null, requiresRerun: true } : scenario),
     })),
   };
 }

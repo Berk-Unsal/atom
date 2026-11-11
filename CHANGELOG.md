@@ -27,6 +27,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Preserve untouched legacy Project/Scenario bytes when another Project's details, report or new Version is saved, while retaining genuine domain edits and existing portable-file semantics.
+
 - Prepare existing project compatibility metadata before native portable Save, keeping untouched files clean when later report/domain operations materialize defaults without creating a planning Version or running RF.
 
 - Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.

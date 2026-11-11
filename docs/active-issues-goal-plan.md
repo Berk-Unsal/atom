@@ -1,6 +1,6 @@
 # Active GitHub issues: execution goal
 
-Snapshot: 2026-11-08, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
+Snapshot: 2026-11-11, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
 20 open issues; pull requests are inventoried separately and are not counted as issues.
 
 ## Goal and completion rule
@@ -78,3 +78,5 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 - #154/#156/#158/#161 production-chooser follow-up: [PR #203](https://github.com/Berk-Unsal/atom/pull/203) adds actual installed GTK Open/Save/Cancel and report Save/Cancel in X11/native Wayland. It reproduces and fixes a metadata-only false-dirty state in an older saved Project. Run `42885067397` passes both full chooser-to-Quit flows on `874f91e` from head `c9c2e8d`: all seven actual widget actions, exact file/retained-Markdown checks, PDF cancellation, both associated Projects clean and owned-child cleanup, with one explicit Sector request only. [Scoped evidence](desktop-native-surfaces-qualification.md) leaves Print, clean machines and performance/rights gates open. Local checks: 796 frontend, 157 host, nine Python and 20 docs tests.
 
 - #154 compatibility follow-up: broad Quality run `42885067659` detects that the initial #203 metadata preparation also expands legacy Scenario plans. Preparation is narrowed to Project metadata; the existing native round-trip assertions stay intact. Three real-example schema regressions fail before the correction and pass after it; 799 frontend tests/lint pass. Corrected head `2b889b7` passes both actual chooser-to-Quit sessions in run `42888151982` (execution `a401ef7`) and both macOS/Ubuntu strict native project-file suites in `42888151974`. Ubuntu's desktop job passes; macOS retains its independent development-loop timing failure.
+
+- #154 shared-workspace follow-up: nine new schema 1/2/3 regressions reproduce untouched legacy Project bytes changing when another Project's details, report or new Version is saved. PR #203 now preserves exact unchanged Project states during repository projection while retaining genuine edits, including in-place edits. All 809 frontend tests, lint and build pass locally. The expanded nine-dialog native flow asserts an actual unexpanded legacy Scenario and exact original portable bytes; hosted qualification is pending.

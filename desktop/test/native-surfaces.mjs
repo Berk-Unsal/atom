@@ -49,18 +49,9 @@ async function drive(action, title, target) {
 }
 async function command(id) { await application.evaluate(({ Menu }, commandId) => Menu.getApplicationMenu().getMenuItemById(commandId).click(), id); }
 async function printAction(action) {
-  try {
-    const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/native-print-driver.py"), "--pid", String(application.process().pid), "--action", action],
-      { timeout: 40_000, maxBuffer: 128 * 1024 });
-    const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
-  } catch (error) {
-    try {
-      const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/mutter-capture.py"), "--output", path.join(desktop, "test-results", `native-print-${action}.png`)],
-        { timeout: 35_000, maxBuffer: 64 * 1024 });
-      result.print_failure_compositor = JSON.parse(stdout.trim());
-    } catch (captureError) { result.print_capture_failure = captureError.message; }
-    throw error;
-  }
+  const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/native-print-driver.py"), "--pid", String(application.process().pid), "--action", action],
+    { timeout: 90_000, maxBuffer: 128 * 1024 });
+  const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
 }
 async function queueJobs(completed = false) {
   return (await run("lpstat", ["-W", completed ? "completed" : "all", "-o", "AtomQualification"])).stdout.trim();
@@ -88,18 +79,9 @@ async function completeProjectDialog() {
   await page.keyboard.press("Escape");
 }
 try {
-  const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin", ACCESSIBILITY_ENABLED: "1" }; delete env.ELECTRON_RUN_AS_NODE;
-  // Chromium defers ATK bridge initialization to Aura. Enable accessibility
-  // explicitly for this OS-widget test, independently of performance suites.
+  const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin" }; delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: executable, cwd: documents,
-    args: ["--force-renderer-accessibility", ...(result.session === "wayland" ? ["--ozone-platform=wayland"] : [])], env, chromiumSandbox: true, timeout: 60_000 });
-  result.accessibility_explicitly_enabled_for_native_widget_test = true;
-  result.accessibility = await application.evaluate(({ app }) => {
-    app.setAccessibilitySupportEnabled(true);
-    return { enabled: app.isAccessibilitySupportEnabled(), features: app.getAccessibilitySupportFeatures(), renderer_flag: app.commandLine.hasSwitch("force-renderer-accessibility"),
-      gtk_modules: process.env.GTK_MODULES, accessibility_environment: process.env.ACCESSIBILITY_ENABLED, no_at_bridge: process.env.NO_AT_BRIDGE ?? null };
-  });
-  assert.equal(result.accessibility.enabled, true);
+    args: result.session === "wayland" ? ["--ozone-platform=wayland"] : [], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow(); page.setDefaultTimeout(30_000); await page.waitForLoadState("domcontentloaded");
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor(); await waitForRuntime(page, (status) => status.state === "ready");

@@ -1,5 +1,5 @@
-// Actual production file-chooser widgets, never supplied dialog responses.
-// Restricted to the installed app and an owned portal on a disposable VM.
+// Actual production file/Print widgets, never supplied OS dialog responses.
+// Restricted to the installed app and owned services on a disposable VM.
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -19,7 +19,7 @@ const run = promisify(execFile);
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/native-surfaces.json");
 const result = { ...sourceIdentity(root), platform: process.platform, arch: process.arch, session: process.env.ATOM_DEB_DISPLAY_SESSION,
-  scope: "Installed production app; real GTK file and Print widgets via AT-SPI, local CUPS-PDF queue; no chooser response or Electron dialog method replacement. Headless session, not graphical installer or physical printer qualification.", dialogs: [], rf_posts: [] };
+  scope: "Installed production app; GTK file choosers via AT-SPI, Print controls via owned compositor pixels/native input and a local CUPS-PDF queue; no chooser response or Electron dialog method replacement. Headless session, not graphical installer or physical printer qualification.", dialogs: [], rf_posts: [] };
 assert.equal(process.env.GITHUB_ACTIONS, "true"); assert.equal(process.platform, "linux"); assert.notEqual(process.getuid(), 0);
 assert.equal(result.source_dirty, false);
 const scratch = process.env.ATOM_NATIVE_SURFACE_ROOT; const home = process.env.ATOM_NATIVE_SURFACE_HOME; const documents = process.env.ATOM_NATIVE_SURFACE_DOCUMENTS;

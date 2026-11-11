@@ -71,9 +71,14 @@ if changed == .success, let configuration = configuration {
 record["configuration_result"] = changed.rawValue
 RunLoop.current.run(until: Date().addingTimeInterval(1.0))
 let after = visibleFrame(display)
-record["after_visible_frame"] = after
+record["appkit_cached_visible_frame_after"] = after
 if let current = CGDisplayCopyDisplayMode(display) { record["after_mode"] = dimensions(current) }
-let sufficient = changed == .success && after["width", default: 0] >= 1440 && after["height", default: 0] >= 950
+// NSScreen can retain the pre-change geometry in this short-lived CLI. Query
+// WindowServer's live display bounds; Electron separately asserts its actual
+// 1440x900 content viewport during qualification.
+let bounds = CGDisplayBounds(display)
+record["after_display_bounds"] = ["width": bounds.width, "height": bounds.height]
+let sufficient = changed == .success && bounds.width >= 1600 && bounds.height >= 1080
 record["result"] = sufficient ? "PASS" : "DISPLAY_CONFIGURATION_INSUFFICIENT"
 write(record)
 exit(sufficient ? 0 : 1)

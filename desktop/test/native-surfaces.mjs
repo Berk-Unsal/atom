@@ -101,6 +101,7 @@ try {
   const saved = await fs.readFile(projectFile); assert.equal(JSON.parse(saved).schemaVersion, 3); const savedIdentity = await fs.stat(projectFile);
   assert.ok(savedIdentity.size > 0); result.saved_project = { bytes: saved.length, sha256: sha256(saved), path_characters: projectFile.length };
   const stateBeforeCancel = await fileState(); const projectBeforeCancel = await project();
+  assert.equal(sha256(Buffer.from(exportProjectFile(projectBeforeCancel))), sha256(saved), "The saved file must match the persisted original snapshot");
   assert.ok(projectBeforeCancel.scenarios.some((scenario) => !scenario.domain), "The original file must retain an unexpanded legacy Scenario for the unrelated-save regression");
   result.original_file_contains_legacy_scenario_without_domain_metadata = true;
   const canceledProject = path.join(documents, "Cancelled — must not exist.atom-project.json");
@@ -139,8 +140,13 @@ try {
   result.report_cancellation_preserved_retained_artifacts_and_saved_pdf = true;
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
+  // Sync first marks uncached snapshots unverified, then hashes all associated
+  // Projects asynchronously. The active cached hash can settle before legacy
+  // inactive Projects; observe completion without changing or saving them.
+  await until(async () => (await fileState()).filter((row) => row.path).every((row) => !row.dirty), "Every associated project must finish hashing clean before ordinary Quit");
   result.file_status_before_quit = await fileState();
   const originalAfterImport = (await project(true)).find((row) => row.id === projectBeforeCancel.id);
+  assert.equal(exportProjectFile(originalAfterImport), exportProjectFile(projectBeforeCancel), "Unrelated saves must preserve the exact original portable bytes, including key order");
   const oldFile = JSON.parse(exportProjectFile(projectBeforeCancel)); const currentFile = JSON.parse(exportProjectFile(originalAfterImport));
   result.original_project_changes = changeSummary(oldFile, currentFile);
   assert.deepEqual(result.original_project_changes, [], "Unrelated Version/report persistence must preserve the original portable Project exactly");

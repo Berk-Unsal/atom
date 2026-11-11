@@ -123,6 +123,9 @@ try {
   await page.getByRole("button", { name: "Save PDF", exact: true }).click(); await drive("save", "Save A.T.O.M report", pdfFile);
   await until(() => page.getByRole("button", { name: "Save PDF", exact: true }).isEnabled(), "PDF export did not finish");
   const pdf = await fs.readFile(pdfFile); assert.equal(pdf.subarray(0, 5).toString(), "%PDF-"); result.pdf = { bytes: pdf.length, sha256: sha256(pdf) };
+  const savedPDFText = (await run("pdftotext", [pdfFile, "-"])).stdout;
+  assert.ok(savedPDFText.includes("Çankaya Ağ Planı") && savedPDFText.includes("Simulation Run"), "Native Save PDF must retain Unicode Project and Run text");
+  result.saved_pdf_unicode_text_preserved = true;
   const retainedBeforeCancel = await artifacts(); const canceledPDF = path.join(documents, "Cancelled — must not exist.pdf");
   await page.getByRole("button", { name: "Save PDF", exact: true }).click(); await drive("cancel", "Save A.T.O.M report", canceledPDF);
   await until(() => page.getByRole("button", { name: "Save PDF", exact: true }).isEnabled(), "PDF cancellation did not finish");
@@ -160,8 +163,16 @@ try {
   result.printed_fonts = (await run("pdffonts", [printFile], { timeout: 10_000 })).stdout;
   const text = (await run("pdftotext", [printFile, "-"])).stdout;
   result.printed_text = { characters: text.length, sha256: sha256(text), project_label_recovered: text.includes("Çankaya Ağ Planı"), run_label_recovered: text.includes("Simulation Run") };
-  assert.ok(result.printed_text.project_label_recovered && result.printed_text.run_label_recovered, "Printed PDF extraction did not recover the Project and Run labels; inspect the bounded first-page raster and font diagnostics");
-  result.real_print_completed_local_job.retained_project_and_run_text = true;
+  // The CUPS-PDF PostScript conversion uses embedded Type 3 custom fonts whose
+  // extracted Unicode differs from their rendered glyphs. Qualify actual paper
+  // output through its raster; native Save PDF retains its separate text check.
+  const visualText = (await run("tesseract", [path.join(desktop, "test-results/native-print-output.png"), "stdout", "--psm", "3"], { timeout: 20_000 })).stdout;
+  const folded = visualText.normalize("NFKD").replace(/\p{M}/gu, "").replaceAll("ı", "i").toLowerCase().replace(/\s+/g, " ");
+  result.printed_visual = { characters: visualText.length, sha256: sha256(visualText),
+    project_label_recovered: folded.includes("cankaya ag plani"), run_label_recovered: folded.includes("simulation run"), report_title_recovered: folded.includes("planning report") };
+  assert.ok(result.printed_visual.project_label_recovered && result.printed_visual.run_label_recovered && result.printed_visual.report_title_recovered,
+    "Rendered print output must visibly retain the Project, Run and report labels");
+  result.real_print_completed_local_job.rendered_project_and_run_labels = true;
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
   result.file_status_before_quit = await fileState();

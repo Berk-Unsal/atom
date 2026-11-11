@@ -15,10 +15,10 @@ def normalized(text):
     return "".join(char for char in text.casefold() if char.isalpha())
 
 
-def parse_words(tsv, offset=(0, 0), scale=1, blue_region=None):
+def parse_words(tsv, offset=(0, 0), scale=1, blue_region=None, minimum_confidence=60):
     words = []
     for row in csv.DictReader(io.StringIO(tsv), delimiter="\t"):
-        if row.get("level") != "5" or not row.get("text", "").strip() or float(row["conf"]) < 60:
+        if row.get("level") != "5" or not row.get("text", "").strip() or float(row["conf"]) < minimum_confidence:
             continue
         words.append({"text": row["text"].strip(), "left": offset[0] + int(row["left"]) / scale,
                       "top": offset[1] + int(row["top"]) / scale, "width": int(row["width"]) / scale,
@@ -66,7 +66,8 @@ def identify_print_widgets(words):
     cancel = matching("cancel")
     queue = [word for word in matching("atomqualification") if word.get("blue_region") is not None]
     if len(cancel) != 1 or len(queue) != 1:
-        raise RuntimeError("Print requires one Cancel control and one visibly selected local queue")
+        highlighted_labels = [word["text"][:60] for word in words if word.get("blue_region") is not None]
+        raise RuntimeError(f"Print requires one Cancel control and one visibly selected local queue: cancel_count={len(cancel)} queue_count={len(queue)} highlighted_labels={json.dumps(highlighted_labels)}")
     cancel, queue = cancel[0], queue[0]
     general = [word for word in matching("general") if word["top"] < queue["top"]]
     printer = [word for word in matching("printer") if word["top"] < queue["top"]]
@@ -102,11 +103,23 @@ def inspect_pixels(file, scratch):
             crop = crop.resize((crop.width * 2, crop.height * 2))
             cropped_file = Path(temporary) / f"highlight-{index}.png"
             crop.save(cropped_file)
-            words.extend(parse_words(ocr(cropped_file, 7), region[:2], 2, region))
+            words.extend(parse_words(ocr(cropped_file, 7), region[:2], 2, region, minimum_confidence=40))
     return identify_print_widgets(words)
 
 
-def click_compositor(point):
+def click_compositor(point, pid):
+    if os.environ["ATOM_DEB_DISPLAY_SESSION"] == "x11":
+        def command(*arguments):
+            return subprocess.run(["xdotool", *arguments], capture_output=True, text=True, check=True, timeout=10).stdout.strip()
+        windows = command("search", "--onlyvisible", "--pid", str(pid), "--name", "^Print$").splitlines()
+        if len(windows) != 1 or command("getwindowname", windows[0]) != "Print" or command("getwindowpid", windows[0]) != str(pid):
+            raise RuntimeError("X11 Print must be the uniquely visible owned native window")
+        geometry = dict(line.split("=", 1) for line in command("getwindowgeometry", "--shell", windows[0]).splitlines() if "=" in line)
+        x, y, width, height = (int(geometry[key]) for key in ("X", "Y", "WIDTH", "HEIGHT"))
+        if not (x <= point[0] < x + width and y <= point[1] < y + height):
+            raise RuntimeError("Observed Print control escaped its owned X11 window")
+        command("mousemove", "--sync", str(round(point[0])), str(round(point[1])), "click", "1")
+        return "X11 owned native window and real XTest pointer click"
     from gi.repository import Gio, GLib
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     service = "org.gnome.Mutter.RemoteDesktop"
@@ -125,6 +138,7 @@ def click_compositor(point):
         call("NotifyPointerButton", GLib.Variant("(ib)", (0x110, False)))
     finally:
         call("Stop")
+    return "Native Wayland Mutter RemoteDesktop pointer click"
 
 
 def main():
@@ -162,9 +176,9 @@ def main():
         raise RuntimeError(f"Native Print pixels did not become unambiguous: {last_error}")
     target = widgets[args.action]
     os.kill(args.pid, 0)
-    click_compositor(center(target))
+    input_method = click_compositor(center(target), args.pid)
     print(json.dumps({"pid": args.pid, "title": "Print", "operation": args.action, "button": target["text"],
-                      "method": "Observed compositor pixels, OCR bounds and real Mutter pointer click", "native_widgets_only": True,
+                      "method": "Observed compositor pixels and OCR bounds", "input_method": input_method, "native_widgets_only": True,
                       "capture": capture, "widgets": widgets}))
 
 

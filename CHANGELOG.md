@@ -27,6 +27,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Build both Go services and container builders with Go 1.26.11 to address GO-2026-6859 in the HTTP server standard library.
+
 - Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.
 
 - Refresh native content-hash status after the first project Save so unchanged bytes become clean without another edit or RF run.

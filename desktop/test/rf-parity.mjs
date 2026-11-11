@@ -8,6 +8,7 @@ import { createRequire } from "node:module";
 import { once } from "node:events";
 import { launchNative } from "./native-launch.mjs";
 import { waitForRuntime } from "./runtime-wait.mjs";
+import { startupDiagnostics } from "./startup-diagnostics.mjs";
 import { sourceIdentity, distribution, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 import { DEFAULT_SIMULATION } from "../../frontend-react/src/generated/policy.js";
 import { createDefaultOptimizationConfig } from "../../frontend-react/src/utils/optimizationConfig.js";
@@ -107,10 +108,11 @@ try {
   await page.waitForLoadState("domcontentloaded");
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   await waitForRuntime(page, (state) => state.state === "ready");
+  result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
+  result.reference.work_area = await application.evaluate(({ screen }) => screen.getPrimaryDisplay().workArea);
   await page.waitForFunction(([width, height]) => innerWidth === width && innerHeight === height, viewport);
   result.reference.viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight, device_pixel_ratio: devicePixelRatio }));
   assert.deepEqual([result.reference.viewport.width, result.reference.viewport.height], viewport, "Measure the requested content viewport, excluding native window chrome");
-  result.reference.work_area = await application.evaluate(({ screen }) => screen.getPrimaryDisplay().workArea);
   const nativeMeta = await nativeRequest("/api/meta"); const standaloneMeta = await standaloneRequest("/api/meta");
   assert.equal(nativeMeta.status, 200); assert.equal(standaloneMeta.status, 200);
   assert.deepEqual(JSON.parse(nativeMeta.text), JSON.parse(standaloneMeta.text));
@@ -229,6 +231,7 @@ try {
   await application.evaluate(({ app }) => app.quit()); await application.close(); application = null; await assertExited(owned);
 } catch (error) {
   result.result = "FAIL"; result.failure = error.message;
+  if (application && page) result.failure_diagnostics = await startupDiagnostics(application, page);
   await page?.screenshot({ path: path.join(evidence, "qualification-failed.png") }).catch(() => {});
   result.failure_notices = await page?.locator('[role="alert"], .run-state').allTextContents().catch(() => []);
   throw error;

@@ -40,6 +40,11 @@ jobs:
       - run: npm ci --prefix frontend-react
       - run: npm ci --prefix desktop
       - run: npm run build --prefix desktop
+      - name: Prepare an advertised macOS display mode for the required viewport
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p desktop/test-results
+          swift desktop/test/macos-display.swift > desktop/test-results/macos-display.json
       - name: Prepare sandboxed Ubuntu graphical session
         if: runner.os == 'Linux'
         run: |
@@ -66,6 +71,7 @@ jobs:
           name: desktop-production-qualification-${{ matrix.os }}
           path: |
             desktop/test-results/startup-budget.json
+            desktop/test-results/macos-display.json
             desktop/test-results/startup-failed.png
             desktop/test-results/rf-parity.json
             desktop/test-results/qualification-eight-cell-map.png

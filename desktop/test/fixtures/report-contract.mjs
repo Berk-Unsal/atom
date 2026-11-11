@@ -4,6 +4,7 @@ import { buildPlanningReport, renderHtmlReport, renderMarkdownReport } from "../
 import { downloadReportBytes, printReportHtml } from "../../../frontend-react/src/utils/reportArtifactDownload.js";
 import LocalArtifactStore from "../../../frontend-react/src/repository/artifactStore.js";
 import LocalRepository from "../../../frontend-react/src/repository/localRepository.js";
+import LocalRunHistoryRepository from "../../../frontend-react/src/repository/runHistoryRepository.js";
 import { canonicalSerialize } from "../../../frontend-react/src/domain/serialization.js";
 import { sha256Hex } from "../../../frontend-react/src/utils/sha256.js";
 
@@ -45,6 +46,7 @@ export async function retained() {
     return { metadata: stored.metadata, bytes: Array.from(stored.bytes) };
   }));
 }
+export function rawRuns() { return new LocalRunHistoryRepository().listRuns(); }
 export async function workspaceDiffs() {
   const workspace = await new LocalRepository().loadWorkspace();
   const project = workspace.projects.find((candidate) => candidate.id === workspace.activeProjectId);

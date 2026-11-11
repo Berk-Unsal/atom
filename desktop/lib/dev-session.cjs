@@ -7,11 +7,11 @@ const crypto = require("node:crypto");
 const { fork, execFileSync } = require("node:child_process");
 const { EventEmitter } = require("node:events");
 const { stageDatasetPack } = require("./resources.cjs");
-const { RebuildQueue } = require("./rebuild-queue.cjs");
+const { RebuildQueue, buildInitialRevision } = require("./rebuild-queue.cjs");
 const { DevHost } = require("./dev-host.cjs");
 const { runOwned, stopOwned } = require("./dev-process.cjs");
 
-const HOST_LIBRARIES = new Set(["sidecar.cjs", "router.cjs", "policy.cjs", "routes.cjs", "recovery.cjs", "window-state.cjs", "report-surface.cjs", "dev-control.cjs", "native-paths.cjs", "settings-store.cjs", "project-file-io.cjs", "project-files.cjs", "project-file-bridge.cjs", "project-file-close.cjs", "project-file-shortcuts.cjs", "portable-file-io.cjs", "report-files.cjs", "report-file-bridge.cjs", "dataset-source.cjs", "dataset-registry.cjs", "dataset-bridge.cjs", "dataset-activation.cjs"]);
+const HOST_LIBRARIES = new Set(["sidecar.cjs", "router.cjs", "policy.cjs", "routes.cjs", "recovery.cjs", "window-state.cjs", "report-surface.cjs", "dev-control.cjs", "native-paths.cjs", "settings-store.cjs", "project-file-io.cjs", "project-files.cjs", "project-file-bridge.cjs", "project-file-close.cjs", "project-file-shortcuts.cjs", "portable-file-io.cjs", "report-files.cjs", "report-file-bridge.cjs", "dataset-source.cjs", "dataset-registry.cjs", "dataset-bridge.cjs", "dataset-activation.cjs", "diagnostic-logs.cjs", "diagnostic-actions.cjs"]);
 const backendSource = (file) => ["go.mod", "go.sum"].includes(file) || (file.endsWith(".go") && !file.endsWith("_test.go") && !file.startsWith("vendor/"));
 const privateDirectory = async (directory) => {
   await fsp.mkdir(directory, { recursive: true, mode: 0o700 });
@@ -134,13 +134,18 @@ class DevSession extends EventEmitter {
     // Remember edits made during the first cold build/launch as well as warm
     // edits. Install the normal watcher before removing this bootstrap watch.
     let bootstrapChanged = false;
+    let bootstrapRevision = 0;
     const bootstrapWatch = fs.watch(path.join(this.root, "backend-go"), { recursive: true }, (_kind, filename) => {
-      if (!filename || backendSource(filename.toString().split(path.sep).join("/"))) bootstrapChanged = true;
+      if (!filename || backendSource(filename.toString().split(path.sep).join("/"))) { bootstrapChanged = true; bootstrapRevision++; }
     });
     bootstrapWatch.on("error", (error) => { this.notice("fatal", { message: error.message }); void this.stop(); });
     this.watchers.push(bootstrapWatch);
-    await this.run("go", ["run", "./cmd/validate-dataset", path.join(this.resources, "data-pipeline")], { cwd: path.join(this.root, "backend-go"), signal: this.abort.signal });
-    const first = await this.buildGo({ signal: this.abort.signal });
+    const initial = { getRevision: () => bootstrapRevision, signal: this.abort.signal };
+    await buildInitialRevision({ ...initial, build: ({ signal }) => this.run("go", ["run", "./cmd/validate-dataset", path.join(this.resources, "data-pipeline")],
+      { cwd: path.join(this.root, "backend-go"), signal }).then(() => undefined), discard: async () => {} });
+    const first = await buildInitialRevision({ ...initial, build: (options) => this.buildGo(options), discard: (candidate) => fsp.rm(candidate, { force: true }),
+      onSuperseded: () => this.notice("go-build-superseded", { builds: this.builds }) });
+    bootstrapChanged = false;
     this.abort.signal.throwIfAborted(); await fsp.rename(first, path.join(this.resources, "atom-api"));
     await this.launchHost();
 

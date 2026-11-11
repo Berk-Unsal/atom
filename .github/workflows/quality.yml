@@ -185,6 +185,12 @@ jobs:
       - name: Native Ubuntu X11 dataset packs
         if: runner.os == 'Linux' && !cancelled()
         run: xvfb-run -a dbus-run-session -- npm run test:datasets --prefix desktop
+      - name: Native macOS diagnostics
+        if: runner.os == 'macOS' && !cancelled()
+        run: npm run test:diagnostics --prefix desktop
+      - name: Native Ubuntu X11 diagnostics
+        if: runner.os == 'Linux' && !cancelled()
+        run: xvfb-run -a dbus-run-session -- npm run test:diagnostics --prefix desktop
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -207,7 +213,7 @@ jobs:
           cache: npm
           cache-dependency-path: frontend-react/package-lock.json
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
 
   data-pipeline:

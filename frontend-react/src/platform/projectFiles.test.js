@@ -14,6 +14,17 @@ function fixture() {
 }
 
 describe("native project-file action path", () => {
+  it("marks the first Save clean without a subsequent edit or React render", async () => {
+    const f = fixture(); let rows = []; let savedHash = null;
+    const statuses = () => rows.map((row) => ({ id: row.id, path: savedHash ? "/chosen/first.json" : null, dirty: row.revision !== savedHash }));
+    f.files.sync.mockImplementation(async (next) => { rows = next; return statuses(); });
+    f.files.status.mockImplementation(async () => statuses());
+    f.files.save.mockImplementation(async (payload) => { savedHash = payload.revision; return { saved: true, path: "/chosen/first.json" }; });
+    await f.controller.sync([f.project], f.context());
+    await f.controller.execute("saveAs");
+    expect(f.updates.filter((change) => change.statuses).at(-1).statuses).toEqual([{ id: f.project.id, path: "/chosen/first.json", dirty: false }]);
+    expect(f.context().projects[0]).toBe(f.project);
+  });
   it("cancels Open without import/association and rejects invalid input before activation", async () => {
     const f = fixture();
     expect((await f.controller.execute("open")).canceled).toBe(true);

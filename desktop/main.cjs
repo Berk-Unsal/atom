@@ -23,6 +23,8 @@ const { registerReportFiles } = require("./lib/report-file-bridge.cjs");
 const { DatasetRegistry } = require("./lib/dataset-registry.cjs");
 const { registerDatasets } = require("./lib/dataset-bridge.cjs");
 const { activateDataset } = require("./lib/dataset-activation.cjs");
+const { DiagnosticLogs, safeReason } = require("./lib/diagnostic-logs.cjs");
+const { createDiagnosticActions, notifyRuntime } = require("./lib/diagnostic-actions.cjs");
 
 const resources = app.isPackaged ? process.resourcesPath : path.resolve(process.env.ATOM_DESKTOP_TEST_RESOURCES || path.join(__dirname, "build/resources"));
 const devServer = app.isPackaged ? "" : process.env.ATOM_DESKTOP_DEV_SERVER || "";
@@ -52,11 +54,14 @@ let quitIntent = false;
 let supervisorQuitting = false;
 let quitting = false;
 let stopped = false;
+let logs;
+let diagnostics;
 const openExternal = async (url) => { try { await shell.openExternal(url); } catch { /* Browser launch failure never opens content in the app. */ } };
 
 async function launch() {
   if (storageError) throw storageError;
   const info = JSON.parse(fs.readFileSync(path.join(resources, "build-info.json"), "utf8"));
+  logs.setBuild(info); logs.record("host", "build");
   app.setAboutPanelOptions({ applicationName: "A.T.O.M", applicationVersion: info.version,
     version: `${info.commit} · Electron ${process.versions.electron} · ${process.platform}/${process.arch}`,
     iconPath: path.join(resources, "atom.png"), copyright: "A.T.O.M contributors" });
@@ -88,7 +93,8 @@ async function launch() {
     settings.save({ ...settings.value, preferences: { ...settings.value.preferences, lastVersion: info.version } });
   } catch (error) { storageError = error; throw error; }
   backend = new Sidecar({ executable: path.join(resources, "atom-api"), datasetDir: selectedDataset, datasetRegistry: registryFile,
-    distDir: path.join(resources, "dist"), version: info.version, commit: info.commit });
+    distDir: path.join(resources, "dist"), version: info.version, commit: info.commit,
+    diagnostics: (event, fields) => logs.record("backend", event, fields) });
   devControl = createDevControl({ isPackaged: app.isPackaged, enabled: process.env.ATOM_DESKTOP_DEV_CONTROL, devServer,
     restart: () => backend.restart(), snapshot: () => backend.snapshot(), quit: () => { supervisorQuitting = true; if (!quitting) quitIntent = false; app.quit(); } });
   protocol.handle("app", createRouter({ distDir: path.join(resources, "dist"), sidecar: backend, devServer }));
@@ -103,13 +109,29 @@ async function launch() {
   window.once("ready-to-show", () => window.show());
   window.on("close", (event) => {
     if (!stopped) { event.preventDefault(); app.quit(); return; }
-    if (!writeGeometry(geometryFile, window.getNormalBounds())) dialog.showErrorBox("Window layout was not saved", "The native state directory could not be written. Existing workspace and report stores were not reset. Check available disk space and directory permissions before the next launch.");
+    if (!writeGeometry(geometryFile, window.getNormalBounds())) { logs.record("host", "layout-write-failed"); dialog.showErrorBox("Window layout was not saved", "The native state directory could not be written. Existing workspace and report stores were not reset. Check available disk space and directory permissions before the next launch."); }
   });
   window.on("closed", () => { backend.setUIReady(false); window = null; if (!quitting) quitIntent = false; app.quit(); });
-  window.webContents.on("render-process-gone", () => backend.setUIReady(false));
+  let rendererLoaded = false;
+  window.webContents.on("did-finish-load", () => {
+    rendererLoaded = true;
+    if (!quitting && window && !window.isDestroyed() && isTrustedDocument(window.webContents.getURL())) backend.setUIReady(true);
+  });
+  window.webContents.on("render-process-gone", (_event, details) => {
+    backend.setUIReady(false);
+    logs.record("host", "renderer-gone", { reason: safeReason(details.reason), generation: backend.snapshot().generation });
+    if (!quitting) void diagnostics.renderer(details.reason).catch(() => app.quit());
+  });
+  window.webContents.on("did-fail-load", (_event, code, _description, _url, isMainFrame) => {
+    if (isMainFrame && code !== -3) {
+      backend.setUIReady(false);
+      logs.record("host", "renderer-load-failed", { reason: "resources", generation: backend.snapshot().generation });
+      if (rendererLoaded && !quitting) void diagnostics.renderer("resources").catch(() => app.quit());
+    }
+  });
   backend.on("status", (status) => {
     devControl?.publish(status);
-    if (window && !window.isDestroyed()) window.webContents.send("atom:runtime-status", status);
+    notifyRuntime(window, status);
   });
   ipcMain.handle("atom:runtime", (event) => { assertMainFrame(event, window); return backend.snapshot(); });
   ipcMain.handle("atom:info", (event) => {
@@ -166,6 +188,7 @@ async function launch() {
     { label: "View", submenu: [{ role: "resetZoom" }, { role: "zoomIn" }, { role: "zoomOut" }, { type: "separator" }, { role: "togglefullscreen" }] },
     { role: "windowMenu" },
     { role: "help", submenu: [{ label: "A.T.O.M documentation", click: () => void openExternal("https://berk-unsal.github.io/atom/") },
+      { id: "atom-open-logs", label: "Open Logs", click: () => { void diagnostics.openLogs().catch(() => {}); } },
       { id: "atom-restart-service", label: "Restart planning service…", click: () => { void recover().catch(() => {}); } },
       ...(process.platform === "darwin" ? [] : [{ label: "About A.T.O.M", click: () => app.showAboutPanel() }])] },
   ]));
@@ -179,10 +202,17 @@ async function launch() {
 if (!storageError && !app.requestSingleInstanceLock()) {
   app.quit();
 } else {
+  logs = new DiagnosticLogs({ directory: storage?.logs, debug: !app.isPackaged });
+  logs.record("host", "host-start", { fallback: logs.status().fallback });
+  diagnostics = createDiagnosticActions({ logs, openPath: (directory) => shell.openPath(directory),
+    showMessageBox: (...args) => dialog.showMessageBox(...args), getWindow: () => window,
+    relaunch: () => app.relaunch(), quit: () => app.quit() });
   if (!storageError) {
-    try { storage = prepareNativePaths(storage); app.setAppLogsPath(storage.logs); }
+    try { storage = prepareNativePaths(storage, fs, { prepareLogs: false }); }
     catch (error) { storageError = error; }
   }
+  if (logs.status().directory) try { app.setAppLogsPath(logs.status().directory); } catch { /* Our structured sink remains authoritative. */ }
+  app.on("will-quit", () => logs.record("host", "host-stop"));
   app.on("will-quit", () => { try { if (storage?.runtime) fs.rmSync(storage.runtime, { recursive: true, force: true }); } catch { /* Disposable runtime cleanup must not reset persistent storage or block quitting. */ } });
   app.on("second-instance", () => {
     if (!window) return;
@@ -214,11 +244,7 @@ if (!storageError && !app.requestSingleInstanceLock()) {
   });
   app.whenReady().then(launch).catch(async (error) => {
     if (quitting) return;
-    const storageFailure = Boolean(storageError);
-    await dialog.showMessageBox({ type: "error", title: "A.T.O.M could not start", message: storageFailure ? "Desktop storage or resources could not be opened safely." : "Local desktop resources are missing or invalid.",
-      detail: storageFailure
-        ? `Existing projects are preserved. Storage: ${storage?.config || "configured native directories"}. ${String(error?.code || error?.message || "Storage unavailable").slice(0, 1000)}. Check XDG paths, private directory permissions and disk space. Back up corrupt/newer settings and repair them explicitly before retrying; no store is reset automatically.`
-        : "Run npm run build in desktop, then start the application again. Existing projects are preserved." });
-    app.quit();
+    try { await diagnostics.startup(error, Boolean(storageError)); }
+    catch { app.quit(); }
   });
 }

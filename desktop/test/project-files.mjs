@@ -62,6 +62,13 @@ try {
   assert.equal(await application.evaluate(() => globalThis.__nativeFiles.calls.length), 0);
   await command("open"); await until(async () => await application.evaluate(() => globalThis.__nativeFiles.calls.length) === 1, "Open command did not reach native dialog");
   assert.equal((await state())[0].id, originalId);
+  await readyMenu();
+  const fresh = path.join(scratch, "Fresh project before RF.atom-project.json");
+  await choice("save", { canceled: false, filePath: fresh }); await command("save-as"); await fileSaved(fresh);
+  await until(async () => (await state()).find((row) => row.id === originalId)?.dirty === false, "First Save must become clean without another edit or RF run");
+  const freshProject = JSON.parse(await fs.readFile(fresh, "utf8"));
+  assert.equal(freshProject.project.scenarios.length, 0); assert.deepEqual(posts, []);
+  result.fresh_project_first_save_became_clean_without_edit_version_or_rf = true;
   const sector = page.waitForResponse((response) => response.url().endsWith("/api/analyze-sector") && response.request().method() === "POST");
   await page.keyboard.press("Escape"); await page.getByRole("button", { name: "Run Sector", exact: true }).click();
   assert.equal((await sector).status(), 200); await page.locator(".run-state").filter({ hasText: /^Ready$/ }).waitFor({ timeout: 120_000 });

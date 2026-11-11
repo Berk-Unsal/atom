@@ -201,6 +201,47 @@ describe("useRunExecution", () => {
     expect(result.current.state.currentResultRun).toBeNull();
   });
 
+  it("keeps a cleared dataset result detached when its history write completes later", async () => {
+    let release; let saving; let heldID;
+    const blocked = new Promise((resolve) => { release = resolve; });
+    const entered = new Promise((resolve) => { saving = resolve; });
+    const history = createHistory({ saveRun: async (run) => {
+      if (run.run_id === heldID && run.status === "succeeded") { saving(); await blocked; }
+      return run;
+    } });
+    const { result } = renderHook(() => useRunExecution({ activeProject: project, activeScenario: scenario, appMeta, runHistory: history, settings }));
+    let started; let finishing; let historical;
+    await act(async () => { started = await result.current.actions.beginRun({ request: optimizationRequest, runType: "optimization" }); });
+    heldID = started.running.run_id;
+    await act(async () => { finishing = result.current.actions.finishRun({ request: optimizationRequest, response: optimizationResponse, running: started.running }); await entered; });
+    act(() => result.current.actions.clearCurrentResult());
+    await act(async () => { release(); historical = await finishing; });
+    expect(historical.status).toBe("succeeded");
+    expect(result.current.state.currentResultRun).toBeNull();
+    act(() => result.current.actions.selectParetoSolution("public-pareto-beta"));
+    expect(history.updateRunLifecycle).not.toHaveBeenCalled();
+  });
+
+  it("does not revive a cleared optimization from a late Pareto history update", async () => {
+    let release;
+    const blocked = new Promise((resolve) => { release = resolve; });
+    const history = createHistory({ updateRunLifecycle: async (id, changes) => {
+      await blocked;
+      return { run_id: id, run_type: "optimization", status: "succeeded", ...changes };
+    } });
+    const { result } = renderHook(() => useRunExecution({ activeProject: project, activeScenario: scenario, appMeta, runHistory: history, settings }));
+    await act(async () => {
+      const started = await result.current.actions.beginRun({ request: optimizationRequest, runType: "optimization" });
+      await result.current.actions.finishRun({ request: optimizationRequest, response: optimizationResponse, running: started.running });
+    });
+    act(() => result.current.actions.selectParetoSolution("public-pareto-beta"));
+    act(() => result.current.actions.clearCurrentResult());
+    await act(async () => { release(); await blocked; });
+    act(() => result.current.actions.selectParetoSolution("public-pareto-alpha"));
+    expect(history.updateRunLifecycle).toHaveBeenCalledTimes(1);
+    expect(result.current.state.currentResultRun).toBeNull();
+  });
+
   it("does not let a duplicate old completion replace the latest result", async () => {
     const history = createHistory();
     const { result } = renderHook(() => useRunExecution({ activeProject: project, activeScenario: scenario, appMeta, runHistory: history, settings }));

@@ -78,7 +78,7 @@ try {
   for (const entry of ["main.cjs", "preload.cjs", "lib", "package.json"]) await fs.cp(path.join(desktop, entry), path.join(appDirectory, entry), { recursive: true });
   // Fail unattended qualification promptly if startup shows its recovery
   // dialog; do not leave a native modal waiting forever in test cleanup.
-  await fs.writeFile(path.join(appDirectory, "storage-test-bootstrap.cjs"), 'const { dialog } = require("electron"); dialog.showMessageBox = async (options) => { if (process.env.ATOM_STORAGE_FAILURE_FILE) require("node:fs").writeFileSync(process.env.ATOM_STORAGE_FAILURE_FILE, JSON.stringify(options), { mode: 0o600 }); console.error("STORAGE_STARTUP_FAILURE", options.message, options.detail); return { response: 0 }; }; require("./main.cjs");\n');
+  await fs.writeFile(path.join(appDirectory, "storage-test-bootstrap.cjs"), 'const { dialog } = require("electron"); dialog.showMessageBox = async (options) => { if (process.env.ATOM_STORAGE_FAILURE_FILE) require("node:fs").writeFileSync(process.env.ATOM_STORAGE_FAILURE_FILE, JSON.stringify(options), { mode: 0o600 }); console.error("STORAGE_STARTUP_FAILURE", options.message, options.detail); return { response: options.cancelId ?? 0 }; }; require("./main.cjs");\n');
   const manifest = JSON.parse(await fs.readFile(path.join(appDirectory, "package.json"), "utf8"));
   await fs.writeFile(path.join(appDirectory, "package.json"), JSON.stringify({ ...manifest, main: "storage-test-bootstrap.cjs" }));
   await fs.cp(path.join(desktop, "build/resources"), resources, { recursive: true });
@@ -93,6 +93,18 @@ try {
   assert.equal(await fs.stat(env.ATOM_DESKTOP_TEST_PROFILE).then(() => true, () => false), false);
   const firstRuntime = await page.evaluate(() => window.atomDesktop.getRuntime());
   const firstPort = privatePort();
+  // Rename through the live application rather than writing behind its state:
+  // an in-flight canonical autosave can legitimately overwrite a test-only
+  // direct repository mutation before reload.
+  await page.getByRole("button", { name: /^Project menu,/ }).click();
+  await page.getByRole("textbox", { name: "Project name", exact: true }).fill("Durable Ankara — çığ workspace");
+  await page.getByRole("button", { name: "Save project name", exact: true }).click();
+  await page.keyboard.press("Escape");
+  const renameDeadline = Date.now() + 30_000;
+  while (await page.evaluate(async () => (await import("/assets/storage-contract.js")).projectName()) !== "Durable Ankara — çığ workspace") {
+    if (Date.now() >= renameDeadline) throw new Error("Actual project rename did not persist");
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
   const seeded = await page.evaluate(async () => (await import("/assets/storage-contract.js")).seed());
   const first = await inspect(); assert.equal(first.hash, seeded.hash); assert.match(first.html, /Türkçe report/);
   await page.reload();

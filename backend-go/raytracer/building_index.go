@@ -137,12 +137,19 @@ func LoadBuildingIndexFromGeoJSON(path string) (*BuildingIndex, BuildingIndexSta
 			if arrayErr != nil || arrayStart != json.Delim('[') {
 				return nil, BuildingIndexStats{SourcePath: path}, errors.New("GeoJSON features must be an array")
 			}
+			var decoded feature
 			for decoder.More() {
-				var feature feature
-				if err := decoder.Decode(&feature); err != nil {
+				// Decoding into a map retains keys that are absent from the next
+				// object. Reset semantic fields while reusing temporary storage;
+				// appendFeatureFootprints owns its output tags and vertices.
+				decoded.ID = nil
+				clear(decoded.Properties)
+				decoded.Geometry.Type = ""
+				decoded.Geometry.Coordinates = decoded.Geometry.Coordinates[:0]
+				if err := decoder.Decode(&decoded); err != nil {
 					return nil, BuildingIndexStats{SourcePath: path}, err
 				}
-				footprints = appendFeatureFootprints(footprints, feature, featureIndex)
+				footprints = appendFeatureFootprints(footprints, decoded, featureIndex)
 				featureIndex++
 			}
 			if _, err := decoder.Token(); err != nil {

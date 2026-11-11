@@ -1822,6 +1822,7 @@ export default function App() {
 			const response = platform.capabilities.nativeDatasets ? await platform.datasets.activate(datasetID)
 				: await postJSON("/api/datasets/switch", { id: datasetID }, "Dataset switch failed");
 			clearSpatialContext();
+			clearCurrentResultRun();
 			restoredProjectRef.current = null;
 			setWorkspaceRestored(false);
 			requests.cancel("rf");
@@ -1857,7 +1858,7 @@ export default function App() {
 			setIsSwitchingDataset(false);
 			return { error: requestError.message };
 		}
-	}, [clearRenderedAnalysis, clearSpatialContext, installedDatasets.active_id, isSwitchingDataset, requests, resetNetworkArtifacts]);
+	}, [clearCurrentResultRun, clearRenderedAnalysis, clearSpatialContext, installedDatasets.active_id, isSwitchingDataset, requests, resetNetworkArtifacts]);
 
   const updateSettings = useCallback((nextSettings) => {
     invalidatePlanResults();

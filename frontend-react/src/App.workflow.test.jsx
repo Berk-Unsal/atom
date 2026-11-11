@@ -1911,11 +1911,14 @@ describe("App planning workflow", () => {
         activeID = body.id;
         return Promise.resolve({ status: "active", dataset: { id: body.id, name: "Second pack" } });
       }
+      if (path === "/api/analyze-sector") return Promise.resolve({ simulation: simulationPayload, coverage_gaps: gapPayload });
       return Promise.resolve(simulationPayload);
     });
 
     render(<App />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Run Sector" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Run Sector" }));
+    await waitFor(() => expect(screen.getByText("Ready", { selector: ".run-state" })).toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "Review workspace" }));
     openWorkspaceTool("Data");
     fireEvent.click(screen.getByText(/^Dataset details/));
@@ -1927,6 +1930,7 @@ describe("App planning workflow", () => {
       "Dataset switch failed",
     ));
     await waitFor(() => expect(screen.getByRole("button", { name: /Second pack.*Active/i })).toBeDisabled());
+    await waitFor(() => expect(screen.getByText("Run needed", { selector: ".run-state" })).toBeInTheDocument());
   });
 
   it("shows a consistent global recovery state when RF capacity is busy", async () => {

@@ -68,7 +68,17 @@ export function createProjectFileController({ files, getContext: externalContext
     if (result.associated !== false && mode !== "export") associated.add(project.id);
     publish({ message: result.warning || `${mode === "export" ? "Exported a copy to" : "Saved project to"} ${result.path}`,
       error: false, recovery: null });
-    try { await status(); }
+    try {
+      // First association changes the host's revision authority from a cheap
+      // unassociated timestamp to the shared serialized content hash. React
+      // need not render again after a successful Save. Use the latest context
+      // so an edit made while the chooser was open remains dirty.
+      if (result.associated !== false && mode !== "export") {
+        const latest = getContext();
+        await synchronize(latest.projects, latest);
+      }
+      await status();
+    }
     catch {
       const warning = result.warning || "The project file was saved, but its status could not refresh. Keep the chosen path and retry status before quitting.";
       publish({ message: warning, error: false });

@@ -161,3 +161,16 @@ there is no pan/zoom bot, area prefetch or offline tile distribution.
 The pending exact-hash [data review](../docs/desktop-data-redistribution-review.md)
 is not a redistribution approval. Native validation establishes pack integrity,
 not source rights. Public packaging retains that maintainer gate.
+
+## Diagnostic records
+
+The host persists only a fixed structured lifecycle schema. Native log events
+never serialize raw exception messages, stderr, request URLs/bodies, projects,
+reports, tokens or absolute user paths. Version/commit, platform/architecture,
+generation, readiness flags, known failure codes and bounded counters are
+allowlisted. Debug source builds add byte counts, not arbitrary message text.
+Private in-memory stderr capture remains bounded and is never persisted or sent
+to the renderer. The Open Logs action accepts no renderer path or IPC request;
+it opens only the logger's actual current private directory. Rotation and
+fallback reject symlinks, hardlinks, nonregular files and unsafe permissions.
+The app never uploads logs or implicitly resets a failed storage directory.

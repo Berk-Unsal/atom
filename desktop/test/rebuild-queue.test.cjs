@@ -1,8 +1,41 @@
 "use strict";
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { RebuildQueue } = require("../lib/rebuild-queue.cjs");
+const { RebuildQueue, buildInitialRevision } = require("../lib/rebuild-queue.cjs");
 const deferred = () => { let resolve; const promise = new Promise((done) => { resolve = done; }); return { promise, resolve }; };
+
+test("initial compilation retries an observed partial write instead of exiting", async () => {
+  let revision = 0; let builds = 0;
+  const entered = deferred(); const release = deferred();
+  const building = buildInitialRevision({ debounce: 1, getRevision: () => revision, signal: new AbortController().signal,
+    build: async () => { if (++builds === 1) { entered.resolve(); await release.promise; throw new Error("expected package, found EOF"); } return "latest"; }, discard: async () => {} });
+  await entered.promise; revision++; release.resolve();
+  assert.equal(await building, "latest"); assert.equal(builds, 2);
+});
+
+test("initial compilation surfaces a genuine current-source error without retry", async () => {
+  const failure = new Error("invalid Go source"); let builds = 0;
+  await assert.rejects(buildInitialRevision({ getRevision: () => 0, signal: new AbortController().signal,
+    build: async () => { builds++; throw failure; }, discard: async () => {} }), failure);
+  assert.equal(builds, 1);
+});
+
+test("initial compilation discards a successful output superseded by an edit", async () => {
+  let revision = 0; let builds = 0; const discarded = [];
+  const entered = deferred(); const release = deferred();
+  const building = buildInitialRevision({ debounce: 1, getRevision: () => revision, signal: new AbortController().signal,
+    build: async () => { if (++builds === 1) { entered.resolve(); await release.promise; return "old"; } return "current"; }, discard: async (value) => discarded.push(value) });
+  await entered.promise; revision++; release.resolve();
+  assert.equal(await building, "current"); assert.deepEqual(discarded, ["old"]);
+});
+
+test("shutdown discards an initial output and never retries its changed source", async () => {
+  const controller = new AbortController(); const entered = deferred(); const release = deferred(); const discarded = [];
+  const building = buildInitialRevision({ getRevision: () => 0, signal: controller.signal,
+    build: async () => { entered.resolve(); await release.promise; return "stopping"; }, discard: async (value) => discarded.push(value) });
+  await entered.promise; controller.abort(); release.resolve();
+  await assert.rejects(building, { name: "AbortError" }); assert.deepEqual(discarded, ["stopping"]);
+});
 
 test("failed compilation preserves the last good service and a later edit can recover", async () => {
   let service = "last-good"; let calls = 0; const failures = [];

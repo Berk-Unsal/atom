@@ -1,0 +1,4606 @@
+{
+  "schema": 1,
+  "run_id": 42891428154,
+  "url": "https://github.com/Berk-Unsal/atom/actions/runs/42891428154",
+  "pr_head": "8536da4c9ab6098db5e8229a51feede429444300",
+  "source_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+  "scope": "Twenty warmed RF pairs per endpoint and forty startup samples per target; original budget failures and smaller recorded viewports remain explicit. Not physical RF accuracy or full display/hardware acceptance.",
+  "targets": [
+    {
+      "target": "macos-15",
+      "evidence_artifact_id": 13798919114,
+      "rf": {
+        "source_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "arm64",
+          "kernel": "24.6.0",
+          "cpu": "Apple M1 (Virtual)",
+          "logical_cpus": 3,
+          "memory_bytes": 7516192768,
+          "node": "v24.22.2",
+          "viewport": {
+            "width": 1024,
+            "height": 653,
+            "device_pixel_ratio": 1
+          },
+          "work_area": {
+            "x": 0,
+            "y": 25,
+            "width": 1024,
+            "height": 684
+          },
+          "electron": "44.10.2"
+        },
+        "comparisons": [
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 356.4000000000233,
+            "standalone_ms": 253.19341600000007
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 242.60000000003492,
+            "standalone_ms": 83.19954200000029
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 116.60000000003492,
+            "standalone_ms": 529.4988749999993
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 67.5,
+            "standalone_ms": 49.776583999999275
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 62.90000000002328,
+            "standalone_ms": 51.60704199999964
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 5,
+            "native_ms": 59.59999999997672,
+            "standalone_ms": 27.444083000002138
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 6,
+            "native_ms": 83.39999999996508,
+            "standalone_ms": 31.08929200000057
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 7,
+            "native_ms": 60.90000000002328,
+            "standalone_ms": 46.33562499999971
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 8,
+            "native_ms": 94.29999999998836,
+            "standalone_ms": 64.85729100000026
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 9,
+            "native_ms": 63.899999999965075,
+            "standalone_ms": 60.93491600000198
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 10,
+            "native_ms": 77.70000000001164,
+            "standalone_ms": 62.576750000000175
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 11,
+            "native_ms": 79.59999999997672,
+            "standalone_ms": 70.87387500000114
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 12,
+            "native_ms": 422.80000000004657,
+            "standalone_ms": 213.21158300000025
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 13,
+            "native_ms": 62,
+            "standalone_ms": 93.38887500000055
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 14,
+            "native_ms": 77.90000000002328,
+            "standalone_ms": 49.84729199999856
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 15,
+            "native_ms": 41.5,
+            "standalone_ms": 48.51379199999792
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 16,
+            "native_ms": 52.29999999998836,
+            "standalone_ms": 53.58558400000038
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 17,
+            "native_ms": 47.40000000002328,
+            "standalone_ms": 45.42449999999735
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 18,
+            "native_ms": 45.29999999998836,
+            "standalone_ms": 37.0638340000005
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 19,
+            "native_ms": 42.5,
+            "standalone_ms": 49.12066700000287
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 20,
+            "native_ms": 98.80000000004657,
+            "standalone_ms": 130.34037499999977
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 1712.4000000000233,
+            "standalone_ms": 1334.8317499999976
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 998.7999999999302,
+            "standalone_ms": 1558.5565840000054
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 1295.6000000000931,
+            "standalone_ms": 1173.9248329999973
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 965.5,
+            "standalone_ms": 1342.880667000005
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 1326.9000000000233,
+            "standalone_ms": 766.8375420000084
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 5,
+            "native_ms": 1313.9000000000233,
+            "standalone_ms": 1573.2078750000073
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 6,
+            "native_ms": 1522,
+            "standalone_ms": 957.6448749999981
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 7,
+            "native_ms": 862.5,
+            "standalone_ms": 1132.9819160000043
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 8,
+            "native_ms": 1333.8999999999069,
+            "standalone_ms": 891.8814580000035
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 9,
+            "native_ms": 1002,
+            "standalone_ms": 1299.2300830000022
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 10,
+            "native_ms": 1307.6999999999534,
+            "standalone_ms": 945.5696660000103
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 11,
+            "native_ms": 923.9000000000233,
+            "standalone_ms": 1149.5326669999922
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 12,
+            "native_ms": 1232.7000000000698,
+            "standalone_ms": 848.3479160000134
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 13,
+            "native_ms": 908.4000000000233,
+            "standalone_ms": 1219.7461250000051
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 14,
+            "native_ms": 1344.5999999999767,
+            "standalone_ms": 972.12950000001
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 15,
+            "native_ms": 1012.5999999999767,
+            "standalone_ms": 1269.1589999999997
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 16,
+            "native_ms": 1225.0999999999767,
+            "standalone_ms": 858.9467920000025
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 17,
+            "native_ms": 757.4000000000233,
+            "standalone_ms": 1064.2593750000087
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 18,
+            "native_ms": 997.2999999999302,
+            "standalone_ms": 799.3416250000009
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 19,
+            "native_ms": 1280.0999999999767,
+            "standalone_ms": 1206.8689579999773
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "standalone_response_sha256": "a77a847b4854b45a649aa71fdfb74eda02aa8ef1437450c07968dcc9d22806fd",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 20,
+            "native_ms": 1008.3000000000466,
+            "standalone_ms": 730.9252500000002
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 19134.099999999977,
+            "standalone_ms": 17055.779416999983
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 15021.5,
+            "standalone_ms": 19024.607707999996
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 18307.5,
+            "standalone_ms": 23118.65404199998
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 15689.900000000023,
+            "standalone_ms": 15280.218416999967
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 17066.900000000023,
+            "standalone_ms": 16842.93979100004
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 5,
+            "native_ms": 15454.400000000023,
+            "standalone_ms": 17367.178917000012
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 6,
+            "native_ms": 15287.899999999907,
+            "standalone_ms": 17121.154666999995
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 7,
+            "native_ms": 15190.099999999977,
+            "standalone_ms": 13787.409207999997
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 8,
+            "native_ms": 16353.599999999977,
+            "standalone_ms": 15678.24550000002
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 9,
+            "native_ms": 15862.099999999977,
+            "standalone_ms": 16220.21345900005
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 10,
+            "native_ms": 14655.300000000047,
+            "standalone_ms": 14041.469374999986
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 11,
+            "native_ms": 16298.800000000047,
+            "standalone_ms": 16371.510874999978
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 12,
+            "native_ms": 20770.699999999953,
+            "standalone_ms": 22310.235083999927
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 13,
+            "native_ms": 18236.899999999907,
+            "standalone_ms": 20403.109083000105
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 14,
+            "native_ms": 16344.600000000093,
+            "standalone_ms": 16591.307792000007
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 15,
+            "native_ms": 16004.300000000047,
+            "standalone_ms": 15173.438792000059
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 16,
+            "native_ms": 15545.800000000047,
+            "standalone_ms": 15405.365125000011
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 17,
+            "native_ms": 14780.800000000047,
+            "standalone_ms": 15586.355666999938
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 18,
+            "native_ms": 15870.59999999986,
+            "standalone_ms": 14643.16862500005
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 19,
+            "native_ms": 15206.09999999986,
+            "standalone_ms": 15482.082834
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "standalone_response_sha256": "b94df1ee76159436d927d046d9470cb8574b29844660ec20c1aa84798e92e181",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 20,
+            "native_ms": 14740,
+            "standalone_ms": 15154.048500000034
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "1668a52bc4cd4e4a33a24fc07663ca35d55b9adf4f3414bd6c44747ef0a20626",
+            "native_response_sha256": "54161700ee1eb72d21fdc246aa606e35ecae9e778670c3d41d9d6786d986fc4d",
+            "standalone_response_sha256": "54161700ee1eb72d21fdc246aa606e35ecae9e778670c3d41d9d6786d986fc4d",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 244.70000000018626,
+            "standalone_ms": 109.0078340000473
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "standalone_response_sha256": "72064e1cdd1ede139e9f9a3dc7c1f8fb2ebc20ba4f6e60e2f6c0af515a115812",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 107.69999999995343,
+            "standalone_ms": 96.20941599993967
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "502173b668fc49ff774e1d65c6c69fc14b438516c76b24e1cf105aaba50e7ecc",
+            "native_response_sha256": "276e112e8e16a37ca23a51ccd7477ac93742c980e8aec36c2e3b1a1d8405fcb4",
+            "standalone_response_sha256": "276e112e8e16a37ca23a51ccd7477ac93742c980e8aec36c2e3b1a1d8405fcb4",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 47.699999999953434,
+            "standalone_ms": 38.559041999978945
+          }
+        ],
+        "timings": {
+          "/api/simulate": {
+            "native_ms": {
+              "samples": [
+                242.60000000003492,
+                116.60000000003492,
+                67.5,
+                62.90000000002328,
+                59.59999999997672,
+                83.39999999996508,
+                60.90000000002328,
+                94.29999999998836,
+                63.899999999965075,
+                77.70000000001164,
+                79.59999999997672,
+                422.80000000004657,
+                62,
+                77.90000000002328,
+                41.5,
+                52.29999999998836,
+                47.40000000002328,
+                45.29999999998836,
+                42.5,
+                98.80000000004657
+              ],
+              "median": 65.69999999998254,
+              "p95": 242.60000000003492,
+              "max": 422.80000000004657
+            },
+            "standalone_ms": {
+              "samples": [
+                83.19954200000029,
+                529.4988749999993,
+                49.776583999999275,
+                51.60704199999964,
+                27.444083000002138,
+                31.08929200000057,
+                46.33562499999971,
+                64.85729100000026,
+                60.93491600000198,
+                62.576750000000175,
+                70.87387500000114,
+                213.21158300000025,
+                93.38887500000055,
+                49.84729199999856,
+                48.51379199999792,
+                53.58558400000038,
+                45.42449999999735,
+                37.0638340000005,
+                49.12066700000287,
+                130.34037499999977
+              ],
+              "median": 52.59631300000001,
+              "p95": 213.21158300000025,
+              "max": 529.4988749999993
+            },
+            "absolute_median_difference_fraction": 0.2491369879858789,
+            "within_5_percent": false
+          },
+          "/api/evaluate-network": {
+            "native_ms": {
+              "samples": [
+                998.7999999999302,
+                1295.6000000000931,
+                965.5,
+                1326.9000000000233,
+                1313.9000000000233,
+                1522,
+                862.5,
+                1333.8999999999069,
+                1002,
+                1307.6999999999534,
+                923.9000000000233,
+                1232.7000000000698,
+                908.4000000000233,
+                1344.5999999999767,
+                1012.5999999999767,
+                1225.0999999999767,
+                757.4000000000233,
+                997.2999999999302,
+                1280.0999999999767,
+                1008.3000000000466
+              ],
+              "median": 1118.8499999999767,
+              "p95": 1344.5999999999767,
+              "max": 1522
+            },
+            "standalone_ms": {
+              "samples": [
+                1558.5565840000054,
+                1173.9248329999973,
+                1342.880667000005,
+                766.8375420000084,
+                1573.2078750000073,
+                957.6448749999981,
+                1132.9819160000043,
+                891.8814580000035,
+                1299.2300830000022,
+                945.5696660000103,
+                1149.5326669999922,
+                848.3479160000134,
+                1219.7461250000051,
+                972.12950000001,
+                1269.1589999999997,
+                858.9467920000025,
+                1064.2593750000087,
+                799.3416250000009,
+                1206.8689579999773,
+                730.9252500000002
+              ],
+              "median": 1098.6206455000065,
+              "p95": 1558.5565840000054,
+              "max": 1573.2078750000073
+            },
+            "absolute_median_difference_fraction": 0.01841341192961421,
+            "within_5_percent": true
+          },
+          "/api/optimize-network": {
+            "native_ms": {
+              "samples": [
+                15021.5,
+                18307.5,
+                15689.900000000023,
+                17066.900000000023,
+                15454.400000000023,
+                15287.899999999907,
+                15190.099999999977,
+                16353.599999999977,
+                15862.099999999977,
+                14655.300000000047,
+                16298.800000000047,
+                20770.699999999953,
+                18236.899999999907,
+                16344.600000000093,
+                16004.300000000047,
+                15545.800000000047,
+                14780.800000000047,
+                15870.59999999986,
+                15206.09999999986,
+                14740
+              ],
+              "median": 15776,
+              "p95": 18307.5,
+              "max": 20770.699999999953
+            },
+            "standalone_ms": {
+              "samples": [
+                19024.607707999996,
+                23118.65404199998,
+                15280.218416999967,
+                16842.93979100004,
+                17367.178917000012,
+                17121.154666999995,
+                13787.409207999997,
+                15678.24550000002,
+                16220.21345900005,
+                14041.469374999986,
+                16371.510874999978,
+                22310.235083999927,
+                20403.109083000105,
+                16591.307792000007,
+                15173.438792000059,
+                15405.365125000011,
+                15586.355666999938,
+                14643.16862500005,
+                15482.082834,
+                15154.048500000034
+              ],
+              "median": 15949.229479500034,
+              "p95": 22310.235083999927,
+              "max": 23118.65404199998
+            },
+            "absolute_median_difference_fraction": 0.01086130710719857,
+            "within_5_percent": true
+          }
+        },
+        "ui": {
+          "Evaluate Network": true,
+          "Optimize Network": true
+        },
+        "admission_waits": [
+          {
+            "transport": "standalone",
+            "endpoint": "/api/simulate",
+            "milliseconds": 53971
+          },
+          {
+            "transport": "native",
+            "endpoint": "/api/evaluate-network",
+            "milliseconds": 16998
+          }
+        ],
+        "sampling": {
+          "warmup_pairs_per_endpoint": 1,
+          "timed_pairs_per_endpoint": 20,
+          "transport_order": "alternating; sequential RF requests"
+        },
+        "resource_build_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "binary_sha256": "e75f94974eade2ff8807e6c57efcce0a14b4b145fa619e0b09ca99990cfba482",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "metadata_exact_equal": true,
+        "dataset": {
+          "id": "ankara-open-planning",
+          "version": "2026.07",
+          "hashes": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          }
+        },
+        "capabilities": [
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/recommend-sites",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/path-profile",
+            "status": "research_only",
+            "reason": "research_profile_only",
+            "note": "endpoint is available only as the existing research/planning profile"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/interference",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          }
+        ],
+        "fixture": {
+          "cell_ids": [
+            "LTE-35877",
+            "LTE-1221413",
+            "LTE-1221389",
+            "LTE-1221409",
+            "LTE-322850",
+            "LTE-322848",
+            "LTE-748049",
+            "LTE-322828"
+          ],
+          "selection": "Eight dataset towers nearest 32.85,39.92 by squared geographic distance, then ID; defaults unchanged",
+          "settings": {
+            "frequencyGHz": 28,
+            "propagationModelID": "urban_short_range",
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 100,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "optimization": {
+            "objectives": [
+              {
+                "id": "demand",
+                "weight": 50
+              },
+              {
+                "id": "residential",
+                "weight": 50
+              },
+              {
+                "id": "coverage",
+                "weight": 50
+              },
+              {
+                "id": "overlap",
+                "weight": 50
+              },
+              {
+                "id": "radio_quality",
+                "weight": 0
+              }
+            ],
+            "constraints": {}
+          },
+          "network_request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273"
+        },
+        "technology_simulation_parity": true,
+        "map": {
+          "method": "20 real pointer pan gestures with all eight result-ray layers; animation-frame cadence is a render-scheduling proxy, not a physical-display presentation count; event timestamp to second animation frame is a presentation-latency proxy, not INP",
+          "frames": 263,
+          "elapsed_ms": 4414.599999999977,
+          "observed_fps": 59.348525347710186,
+          "frame_gap_ms": {
+            "samples": [
+              15.5,
+              18.20000000006985,
+              16.29999999993015,
+              17.20000000006985,
+              16.79999999993015,
+              16.300000000046566,
+              14.79999999993015,
+              18.600000000093132,
+              16.79999999993015,
+              16.800000000046566,
+              16.5,
+              16.599999999976717,
+              16.800000000046566,
+              30.699999999953434,
+              19.099999999976717,
+              16.5,
+              17.300000000046566,
+              13.79999999993015,
+              21,
+              13.300000000046566,
+              17.800000000046566,
+              16.899999999906868,
+              16.800000000046566,
+              16.5,
+              17.300000000046566,
+              17.5,
+              14.899999999906868,
+              16.300000000046566,
+              16.5,
+              16.900000000023283,
+              16.699999999953434,
+              16.900000000023283,
+              17.099999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.800000000046566,
+              16.699999999953434,
+              16.599999999976717,
+              16.5,
+              16.20000000006985,
+              16.29999999993015,
+              15.800000000046566,
+              18.099999999976717,
+              17,
+              16.400000000023283,
+              17.29999999993015,
+              16.400000000023283,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.900000000023283,
+              31.099999999976717,
+              18.199999999953434,
+              17.100000000093132,
+              14.199999999953434,
+              17.099999999976717,
+              18.70000000006985,
+              15.899999999906868,
+              17.400000000023283,
+              16.900000000023283,
+              16,
+              17.699999999953434,
+              16.400000000023283,
+              14.800000000046566,
+              18.699999999953434,
+              15.800000000046566,
+              16.79999999993015,
+              17.100000000093132,
+              16.099999999976717,
+              16.900000000023283,
+              17.099999999976717,
+              16.599999999976717,
+              17,
+              16.5,
+              14,
+              18.699999999953434,
+              15.800000000046566,
+              15.400000000023283,
+              17.599999999976717,
+              17.199999999953434,
+              17.20000000006985,
+              14.79999999993015,
+              16.600000000093132,
+              19.099999999976717,
+              16.599999999976717,
+              16.699999999953434,
+              16.600000000093132,
+              17.29999999993015,
+              19.20000000006985,
+              13.599999999976717,
+              16.79999999993015,
+              16.20000000006985,
+              17,
+              16.29999999993015,
+              17.400000000023283,
+              15.800000000046566,
+              15.699999999953434,
+              18.20000000006985,
+              16.599999999976717,
+              16.400000000023283,
+              17,
+              19.899999999906868,
+              13.100000000093132,
+              16.599999999976717,
+              16,
+              17.699999999953434,
+              16.800000000046566,
+              16.400000000023283,
+              16.79999999993015,
+              14.800000000046566,
+              18.099999999976717,
+              16.800000000046566,
+              16.899999999906868,
+              16.300000000046566,
+              17.099999999976717,
+              17.800000000046566,
+              16.400000000023283,
+              15.699999999953434,
+              16.800000000046566,
+              15.599999999976717,
+              17.699999999953434,
+              16.5,
+              16.599999999976717,
+              16.800000000046566,
+              17.099999999976717,
+              16.300000000046566,
+              16.599999999976717,
+              16.5,
+              17.199999999953434,
+              16.600000000093132,
+              15.099999999976717,
+              17.400000000023283,
+              16.5,
+              15.29999999993015,
+              16.599999999976717,
+              17.20000000006985,
+              15.79999999993015,
+              19,
+              19.600000000093132,
+              14.399999999906868,
+              16.70000000006985,
+              18.5,
+              14.199999999953434,
+              16.400000000023283,
+              16.699999999953434,
+              17.100000000093132,
+              16.099999999976717,
+              16.79999999993015,
+              17.100000000093132,
+              16.599999999976717,
+              18.79999999993015,
+              14.100000000093132,
+              15,
+              18.899999999906868,
+              16,
+              16.600000000093132,
+              16.79999999993015,
+              18.099999999976717,
+              15.70000000006985,
+              30.79999999993015,
+              17.70000000006985,
+              17.5,
+              16.699999999953434,
+              15.400000000023283,
+              18.099999999976717,
+              15.300000000046566,
+              16,
+              18.599999999976717,
+              14.900000000023283,
+              16.400000000023283,
+              18.699999999953434,
+              14.800000000046566,
+              18.5,
+              17.399999999906868,
+              14.400000000023283,
+              17,
+              16,
+              18.800000000046566,
+              14.900000000023283,
+              18.29999999993015,
+              16.70000000006985,
+              16.5,
+              16.29999999993015,
+              17.5,
+              16.300000000046566,
+              16.699999999953434,
+              16.5,
+              14.900000000023283,
+              17,
+              16.699999999953434,
+              18.20000000006985,
+              14.699999999953434,
+              18.800000000046566,
+              14.5,
+              18.599999999976717,
+              17,
+              16.5,
+              15.699999999953434,
+              17.70000000006985,
+              16.900000000023283,
+              16.399999999906868,
+              16.20000000006985,
+              15.199999999953434,
+              18.099999999976717,
+              17.100000000093132,
+              16.5,
+              16.899999999906868,
+              17.300000000046566,
+              16.699999999953434,
+              16.5,
+              16,
+              17,
+              17.100000000093132,
+              16.199999999953434,
+              16.5,
+              16.900000000023283,
+              16.29999999993015,
+              17.20000000006985,
+              18.900000000023283,
+              16.899999999906868,
+              14.20000000006985,
+              16.29999999993015,
+              17.20000000006985,
+              16,
+              14.79999999993015,
+              19.800000000046566,
+              16.199999999953434,
+              16.20000000006985,
+              17.29999999993015,
+              16.70000000006985,
+              15.599999999976717,
+              17.400000000023283,
+              15.599999999976717,
+              17.199999999953434,
+              16.900000000023283,
+              16.5,
+              14.599999999976717,
+              19,
+              16.70000000006985,
+              16.599999999976717,
+              16.400000000023283,
+              16.5,
+              17.5,
+              16.29999999993015,
+              17,
+              16,
+              16.70000000006985,
+              17.099999999976717,
+              16.199999999953434,
+              16.900000000023283,
+              19.70000000006985,
+              17.099999999976717,
+              13.099999999976717,
+              16.800000000046566,
+              16.899999999906868,
+              15.20000000006985,
+              15.900000000023283,
+              18.699999999953434,
+              16.099999999976717,
+              15.70000000006985,
+              16.399999999906868,
+              16
+            ],
+            "median": 16.699999999953434,
+            "p95": 18.900000000023283,
+            "max": 31.099999999976717
+          },
+          "input_to_second_frame_ms": {
+            "samples": [
+              29.099999999976717,
+              30.999999999883585,
+              30.499999999883585,
+              30.899999999906868,
+              28.199999999953434,
+              31.300000000046566,
+              31.999999999883585,
+              30.999999999883585,
+              29.099999999976717,
+              26.70000000006985,
+              27.699999999953434,
+              31.300000000046566,
+              32.0999999998603,
+              30.5,
+              30.70000000006985,
+              30.300000000046566,
+              30.699999999953434,
+              27.799999999813735,
+              26.799999999813735,
+              27.099999999976717
+            ],
+            "median": 30.499999999941792,
+            "p95": 31.999999999883585,
+            "max": 32.0999999998603
+          },
+          "overlay_paths": 0,
+          "rays_on_canvas": [
+            {
+              "width": 1123,
+              "height": 712,
+              "painted_pixels": 12369,
+              "sha256": "3887d1970e1548def4adc80ece263399746c5913e179d3248ec251fdbd50c6de"
+            }
+          ],
+          "rays_off_canvas": [
+            {
+              "width": 1123,
+              "height": 712,
+              "painted_pixels": 2839,
+              "sha256": "1cbbd34b34d834f28f87f39252a9393d9e066cf4250ab862c7b95b3515e0170d"
+            }
+          ],
+          "ray_drawing_verified_after_timing": true
+        },
+        "post_rf_process_tree": {
+          "processes": [
+            {
+              "pid": 11406,
+              "parent_pid": 9310,
+              "rss_bytes": 163315712,
+              "executable": "Electron",
+              "pss_bytes": null
+            },
+            {
+              "pid": 11409,
+              "parent_pid": 11406,
+              "rss_bytes": 83705856,
+              "executable": "Electron Helper",
+              "pss_bytes": null
+            },
+            {
+              "pid": 11410,
+              "parent_pid": 11406,
+              "rss_bytes": 28884992,
+              "executable": "Electron Helper",
+              "pss_bytes": null
+            },
+            {
+              "pid": 11411,
+              "parent_pid": 11406,
+              "rss_bytes": 619020288,
+              "executable": "Electron Helper (Renderer)",
+              "pss_bytes": null
+            },
+            {
+              "pid": 11413,
+              "parent_pid": 11406,
+              "rss_bytes": 832716800,
+              "executable": "atom-api",
+              "pss_bytes": null
+            }
+          ],
+          "rss_bytes": 1727643648,
+          "pss_bytes": null
+        },
+        "budgets": {
+          "rf_medians_within_5_percent": false,
+          "eight_cell_map_30fps": true,
+          "input_p95_100ms": true
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      },
+      "startup": {
+        "source_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "source_dirty": false,
+        "reference": {
+          "platform": "darwin",
+          "architecture": "arm64",
+          "kernel": "24.6.0",
+          "cpu": "Apple M1 (Virtual)",
+          "logical_cpus": 3,
+          "memory_bytes": 7516192768,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "method": "20 paired fresh-profile launches and same-profile relaunches; OS file cache uncontrolled; no cache purge",
+        "samples": [
+          {
+            "index": 0,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 10711,
+            "launch_to_dataset_ready_ms": 10411,
+            "sidecar_start_to_dataset_ready_ms": 6804
+          },
+          {
+            "index": 0,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5220,
+            "launch_to_dataset_ready_ms": 4894,
+            "sidecar_start_to_dataset_ready_ms": 4333
+          },
+          {
+            "index": 1,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5029,
+            "launch_to_dataset_ready_ms": 4687,
+            "sidecar_start_to_dataset_ready_ms": 4084
+          },
+          {
+            "index": 1,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4888,
+            "launch_to_dataset_ready_ms": 4557,
+            "sidecar_start_to_dataset_ready_ms": 4036
+          },
+          {
+            "index": 2,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 6950,
+            "launch_to_dataset_ready_ms": 6222,
+            "sidecar_start_to_dataset_ready_ms": 5312
+          },
+          {
+            "index": 2,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4221,
+            "launch_to_dataset_ready_ms": 4062,
+            "sidecar_start_to_dataset_ready_ms": 3551
+          },
+          {
+            "index": 3,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5021,
+            "launch_to_dataset_ready_ms": 4559,
+            "sidecar_start_to_dataset_ready_ms": 3971
+          },
+          {
+            "index": 3,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5213,
+            "launch_to_dataset_ready_ms": 4959,
+            "sidecar_start_to_dataset_ready_ms": 4404
+          },
+          {
+            "index": 4,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4129,
+            "launch_to_dataset_ready_ms": 3926,
+            "sidecar_start_to_dataset_ready_ms": 3488
+          },
+          {
+            "index": 4,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4567,
+            "launch_to_dataset_ready_ms": 4152,
+            "sidecar_start_to_dataset_ready_ms": 3661
+          },
+          {
+            "index": 5,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4797,
+            "launch_to_dataset_ready_ms": 4590,
+            "sidecar_start_to_dataset_ready_ms": 4087
+          },
+          {
+            "index": 5,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4258,
+            "launch_to_dataset_ready_ms": 4062,
+            "sidecar_start_to_dataset_ready_ms": 3698
+          },
+          {
+            "index": 6,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4084,
+            "launch_to_dataset_ready_ms": 3861,
+            "sidecar_start_to_dataset_ready_ms": 3429
+          },
+          {
+            "index": 6,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 3790,
+            "launch_to_dataset_ready_ms": 3590,
+            "sidecar_start_to_dataset_ready_ms": 3176
+          },
+          {
+            "index": 7,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4535,
+            "launch_to_dataset_ready_ms": 4242,
+            "sidecar_start_to_dataset_ready_ms": 3838
+          },
+          {
+            "index": 7,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4273,
+            "launch_to_dataset_ready_ms": 4074,
+            "sidecar_start_to_dataset_ready_ms": 3577
+          },
+          {
+            "index": 8,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4320,
+            "launch_to_dataset_ready_ms": 4134,
+            "sidecar_start_to_dataset_ready_ms": 3879
+          },
+          {
+            "index": 8,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 3857,
+            "launch_to_dataset_ready_ms": 3679,
+            "sidecar_start_to_dataset_ready_ms": 3218
+          },
+          {
+            "index": 9,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 3875,
+            "launch_to_dataset_ready_ms": 3682,
+            "sidecar_start_to_dataset_ready_ms": 3323
+          },
+          {
+            "index": 9,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4292,
+            "launch_to_dataset_ready_ms": 4025,
+            "sidecar_start_to_dataset_ready_ms": 3640
+          },
+          {
+            "index": 10,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4071,
+            "launch_to_dataset_ready_ms": 3878,
+            "sidecar_start_to_dataset_ready_ms": 3495
+          },
+          {
+            "index": 10,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4703,
+            "launch_to_dataset_ready_ms": 4504,
+            "sidecar_start_to_dataset_ready_ms": 4035
+          },
+          {
+            "index": 11,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 3939,
+            "launch_to_dataset_ready_ms": 3757,
+            "sidecar_start_to_dataset_ready_ms": 3350
+          },
+          {
+            "index": 11,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 3586,
+            "launch_to_dataset_ready_ms": 3366,
+            "sidecar_start_to_dataset_ready_ms": 3090
+          },
+          {
+            "index": 12,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 3906,
+            "launch_to_dataset_ready_ms": 3718,
+            "sidecar_start_to_dataset_ready_ms": 3398
+          },
+          {
+            "index": 12,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 3762,
+            "launch_to_dataset_ready_ms": 3570,
+            "sidecar_start_to_dataset_ready_ms": 3240
+          },
+          {
+            "index": 13,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 3703,
+            "launch_to_dataset_ready_ms": 3502,
+            "sidecar_start_to_dataset_ready_ms": 3149
+          },
+          {
+            "index": 13,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4683,
+            "launch_to_dataset_ready_ms": 4466,
+            "sidecar_start_to_dataset_ready_ms": 4027
+          },
+          {
+            "index": 14,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 6052,
+            "launch_to_dataset_ready_ms": 5709,
+            "sidecar_start_to_dataset_ready_ms": 5230
+          },
+          {
+            "index": 14,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4819,
+            "launch_to_dataset_ready_ms": 4466,
+            "sidecar_start_to_dataset_ready_ms": 3984
+          },
+          {
+            "index": 15,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5396,
+            "launch_to_dataset_ready_ms": 5051,
+            "sidecar_start_to_dataset_ready_ms": 4508
+          },
+          {
+            "index": 15,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4793,
+            "launch_to_dataset_ready_ms": 4520,
+            "sidecar_start_to_dataset_ready_ms": 3881
+          },
+          {
+            "index": 16,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4487,
+            "launch_to_dataset_ready_ms": 4281,
+            "sidecar_start_to_dataset_ready_ms": 3674
+          },
+          {
+            "index": 16,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 4682,
+            "launch_to_dataset_ready_ms": 4430,
+            "sidecar_start_to_dataset_ready_ms": 3862
+          },
+          {
+            "index": 17,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4556,
+            "launch_to_dataset_ready_ms": 4251,
+            "sidecar_start_to_dataset_ready_ms": 3789
+          },
+          {
+            "index": 17,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5198,
+            "launch_to_dataset_ready_ms": 4965,
+            "sidecar_start_to_dataset_ready_ms": 4380
+          },
+          {
+            "index": 18,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 4940,
+            "launch_to_dataset_ready_ms": 4686,
+            "sidecar_start_to_dataset_ready_ms": 4208
+          },
+          {
+            "index": 18,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5037,
+            "launch_to_dataset_ready_ms": 4812,
+            "sidecar_start_to_dataset_ready_ms": 4219
+          },
+          {
+            "index": 19,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5258,
+            "launch_to_dataset_ready_ms": 4992,
+            "sidecar_start_to_dataset_ready_ms": 4509
+          },
+          {
+            "index": 19,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5491,
+            "launch_to_dataset_ready_ms": 5201,
+            "sidecar_start_to_dataset_ready_ms": 4631
+          }
+        ],
+        "resource_build_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "binary_sha256": "e75f94974eade2ff8807e6c57efcce0a14b4b145fa619e0b09ca99990cfba482",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "current_sample": {
+          "index": 19,
+          "state": "same_profile_relaunch"
+        },
+        "current_renderer_errors": [],
+        "last_application_exit": {
+          "code": 0,
+          "signal": null,
+          "time": "2026-11-10T20:10:39.306Z"
+        },
+        "startup": {
+          "fresh_profile": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                10711,
+                5029,
+                6950,
+                5021,
+                4129,
+                4797,
+                4084,
+                4535,
+                4320,
+                3875,
+                4071,
+                3939,
+                3906,
+                3703,
+                6052,
+                5396,
+                4487,
+                4556,
+                4940,
+                5258
+              ],
+              "median": 4545.5,
+              "p95": 6950,
+              "max": 10711
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                10411,
+                4687,
+                6222,
+                4559,
+                3926,
+                4590,
+                3861,
+                4242,
+                4134,
+                3682,
+                3878,
+                3757,
+                3718,
+                3502,
+                5709,
+                5051,
+                4281,
+                4251,
+                4686,
+                4992
+              ],
+              "median": 4266,
+              "p95": 6222,
+              "max": 10411
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                6804,
+                4084,
+                5312,
+                3971,
+                3488,
+                4087,
+                3429,
+                3838,
+                3879,
+                3323,
+                3495,
+                3350,
+                3398,
+                3149,
+                5230,
+                4508,
+                3674,
+                3789,
+                4208,
+                4509
+              ],
+              "median": 3858.5,
+              "p95": 5312,
+              "max": 6804
+            }
+          },
+          "same_profile_relaunch": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                5220,
+                4888,
+                4221,
+                5213,
+                4567,
+                4258,
+                3790,
+                4273,
+                3857,
+                4292,
+                4703,
+                3586,
+                3762,
+                4683,
+                4819,
+                4793,
+                4682,
+                5198,
+                5037,
+                5491
+              ],
+              "median": 4682.5,
+              "p95": 5220,
+              "max": 5491
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                4894,
+                4557,
+                4062,
+                4959,
+                4152,
+                4062,
+                3590,
+                4074,
+                3679,
+                4025,
+                4504,
+                3366,
+                3570,
+                4466,
+                4466,
+                4520,
+                4430,
+                4965,
+                4812,
+                5201
+              ],
+              "median": 4448,
+              "p95": 4965,
+              "max": 5201
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                4333,
+                4036,
+                3551,
+                4404,
+                3661,
+                3698,
+                3176,
+                3577,
+                3218,
+                3640,
+                4035,
+                3090,
+                3240,
+                4027,
+                3984,
+                3881,
+                3862,
+                4380,
+                4219,
+                4631
+              ],
+              "median": 3871.5,
+              "p95": 4404,
+              "max": 4631
+            }
+          }
+        },
+        "idle": {
+          "full_pack": {
+            "processes": [
+              {
+                "pid": 6561,
+                "parent_pid": 2094,
+                "rss_bytes": 170393600,
+                "executable": "Electron",
+                "pss_bytes": null
+              },
+              {
+                "pid": 6562,
+                "parent_pid": 6561,
+                "rss_bytes": 79413248,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 6563,
+                "parent_pid": 6561,
+                "rss_bytes": 38748160,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 6565,
+                "parent_pid": 6561,
+                "rss_bytes": 157057024,
+                "executable": "Electron Helper (Renderer)",
+                "pss_bytes": null
+              },
+              {
+                "pid": 6568,
+                "parent_pid": 6561,
+                "rss_bytes": 486817792,
+                "executable": "atom-api",
+                "pss_bytes": null
+              }
+            ],
+            "rss_bytes": 932429824,
+            "pss_bytes": null,
+            "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5"
+          },
+          "sample_pack": {
+            "processes": [
+              {
+                "pid": 8041,
+                "parent_pid": 2094,
+                "rss_bytes": 179699712,
+                "executable": "Electron",
+                "pss_bytes": null
+              },
+              {
+                "pid": 8083,
+                "parent_pid": 8041,
+                "rss_bytes": 86245376,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 8084,
+                "parent_pid": 8041,
+                "rss_bytes": 42074112,
+                "executable": "Electron Helper",
+                "pss_bytes": null
+              },
+              {
+                "pid": 8085,
+                "parent_pid": 8041,
+                "rss_bytes": 144048128,
+                "executable": "Electron Helper (Renderer)",
+                "pss_bytes": null
+              },
+              {
+                "pid": 8087,
+                "parent_pid": 8041,
+                "rss_bytes": 14794752,
+                "executable": "atom-api",
+                "pss_bytes": null
+              }
+            ],
+            "rss_bytes": 466862080,
+            "pss_bytes": null,
+            "manifest_sha256": "d476596fa2945de417d0de0dcfbe428c193a913f47d969562590bf468d4b14e7"
+          },
+          "full_minus_sample_rss_bytes": 465567744
+        },
+        "budgets": {
+          "fresh_profile_launch_p95_10s": true,
+          "same_profile_launch_p95_5s": false,
+          "fresh_profile_sidecar_dataset_p95_8s": true,
+          "same_profile_sidecar_dataset_p95_4s": false,
+          "aggregate_idle_rss_500MiB": false
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      }
+    },
+    {
+      "target": "ubuntu-24.04",
+      "evidence_artifact_id": 13798914970,
+      "rf": {
+        "source_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "source_dirty": false,
+        "reference": {
+          "platform": "linux",
+          "architecture": "x64",
+          "kernel": "7.0.0-1017-azure",
+          "cpu": "AMD EPYC 7763 64-Core Processor",
+          "logical_cpus": 4,
+          "memory_bytes": 16760344576,
+          "node": "v24.22.2",
+          "viewport": {
+            "width": 1280,
+            "height": 873,
+            "device_pixel_ratio": 1
+          },
+          "work_area": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 1024
+          },
+          "electron": "44.10.2"
+        },
+        "comparisons": [
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 103.40000000002328,
+            "standalone_ms": 87.75171599999885
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 82.20000000001164,
+            "standalone_ms": 48.965495000000374
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 76.5,
+            "standalone_ms": 61.06770100000176
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 69.60000000003492,
+            "standalone_ms": 48.25158499999998
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 66.30000000004657,
+            "standalone_ms": 50.849927999999636
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 5,
+            "native_ms": 65.90000000002328,
+            "standalone_ms": 42.37075200000072
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 6,
+            "native_ms": 144.5,
+            "standalone_ms": 114.41873699999996
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 7,
+            "native_ms": 67.5,
+            "standalone_ms": 38.98890399999982
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 8,
+            "native_ms": 58.29999999998836,
+            "standalone_ms": 37.97378800000115
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 9,
+            "native_ms": 72.59999999997672,
+            "standalone_ms": 37.3245509999997
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 10,
+            "native_ms": 79.20000000001164,
+            "standalone_ms": 35.72408799999903
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 11,
+            "native_ms": 59.800000000046566,
+            "standalone_ms": 39.54140099999859
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 12,
+            "native_ms": 59.800000000046566,
+            "standalone_ms": 36.80145899999843
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 13,
+            "native_ms": 65.29999999998836,
+            "standalone_ms": 39.097907999999734
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 14,
+            "native_ms": 87.70000000001164,
+            "standalone_ms": 39.85468800000126
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 15,
+            "native_ms": 62.5,
+            "standalone_ms": 41.93140399999902
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 16,
+            "native_ms": 62.899999999965075,
+            "standalone_ms": 42.11748400000033
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 17,
+            "native_ms": 123,
+            "standalone_ms": 85.47525899999891
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 18,
+            "native_ms": 68.19999999995343,
+            "standalone_ms": 35.243656000000556
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 19,
+            "native_ms": 56.70000000001164,
+            "standalone_ms": 35.57569800000056
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 20,
+            "native_ms": 72.90000000002328,
+            "standalone_ms": 40.004117000004044
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 984,
+            "standalone_ms": 979.1931849999964
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 965.5,
+            "standalone_ms": 986.9685229999886
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 975.2000000000698,
+            "standalone_ms": 983.6819680000044
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 992.8000000000466,
+            "standalone_ms": 993.5386890000082
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 1011,
+            "standalone_ms": 977.1357560000033
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 5,
+            "native_ms": 979.9000000000233,
+            "standalone_ms": 1000.2722050000011
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 6,
+            "native_ms": 981.7000000000698,
+            "standalone_ms": 995.7528939999902
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 7,
+            "native_ms": 974.1999999999534,
+            "standalone_ms": 966.569816999996
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 8,
+            "native_ms": 973.2000000000698,
+            "standalone_ms": 977.0095160000055
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 9,
+            "native_ms": 969.0999999999767,
+            "standalone_ms": 964.2051219999994
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 10,
+            "native_ms": 966.5999999999767,
+            "standalone_ms": 964.5141710000025
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 11,
+            "native_ms": 1010.5,
+            "standalone_ms": 1009.8793930000102
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 12,
+            "native_ms": 975.9000000000233,
+            "standalone_ms": 986.094517000005
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 13,
+            "native_ms": 970.5999999999767,
+            "standalone_ms": 970.1504939999868
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 14,
+            "native_ms": 966.7000000000698,
+            "standalone_ms": 958.4281699999992
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 15,
+            "native_ms": 959.5,
+            "standalone_ms": 973.6735519999929
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 16,
+            "native_ms": 966,
+            "standalone_ms": 974.2058130000078
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 17,
+            "native_ms": 1012.5,
+            "standalone_ms": 992.8470200000011
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 18,
+            "native_ms": 962.2999999999302,
+            "standalone_ms": 1016.6213830000052
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 19,
+            "native_ms": 967.1000000000931,
+            "standalone_ms": 982.9508949999872
+          },
+          {
+            "endpoint": "/api/evaluate-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "standalone_response_sha256": "83ad0ccd1b61298b4bf3a77dbea9c0859239186ecc9da8aa2ce32da00a230166",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 20,
+            "native_ms": 976.7999999999302,
+            "standalone_ms": 969.3230910000275
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 17959.100000000093,
+            "standalone_ms": 18102.588290999993
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 1,
+            "native_ms": 18064.599999999977,
+            "standalone_ms": 18017.18685
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 2,
+            "native_ms": 17877.899999999907,
+            "standalone_ms": 17957.287222999992
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 3,
+            "native_ms": 18016.100000000093,
+            "standalone_ms": 17995.154207999993
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 4,
+            "native_ms": 17964.400000000023,
+            "standalone_ms": 17957.423592999985
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 5,
+            "native_ms": 17930.20000000007,
+            "standalone_ms": 17999.181398999994
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 6,
+            "native_ms": 18001.20000000007,
+            "standalone_ms": 17985.56183000002
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 7,
+            "native_ms": 17958.400000000023,
+            "standalone_ms": 18145.432149
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 8,
+            "native_ms": 17888.29999999993,
+            "standalone_ms": 17996.004139999975
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 9,
+            "native_ms": 17941.20000000007,
+            "standalone_ms": 17925.153830000025
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 10,
+            "native_ms": 18009.50000000006,
+            "standalone_ms": 18002.84379700001
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 11,
+            "native_ms": 17977.699999999953,
+            "standalone_ms": 18012.15039899992
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 12,
+            "native_ms": 17958.09999999986,
+            "standalone_ms": 17904.827629000065
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 13,
+            "native_ms": 17963,
+            "standalone_ms": 18010.12139600003
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 14,
+            "native_ms": 17983.40000000014,
+            "standalone_ms": 18019.53932500002
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 15,
+            "native_ms": 17932.5,
+            "standalone_ms": 17889.555026000016
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 16,
+            "native_ms": 17919.899999999907,
+            "standalone_ms": 17959.557774000103
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 17,
+            "native_ms": 17969.59999999986,
+            "standalone_ms": 17996.905847000075
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 18,
+            "native_ms": 18104,
+            "standalone_ms": 17962.202672999934
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 19,
+            "native_ms": 18020.199999999953,
+            "standalone_ms": 17843.184987999965
+          },
+          {
+            "endpoint": "/api/optimize-network",
+            "request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273",
+            "native_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "standalone_response_sha256": "0a9eb87eaef6fb928b3240d4d1e86e87aee7bb6171aa1586aad2e94ff7fbc147",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 20,
+            "native_ms": 17912.199999999953,
+            "standalone_ms": 18021.625805999967
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "1668a52bc4cd4e4a33a24fc07663ca35d55b9adf4f3414bd6c44747ef0a20626",
+            "native_response_sha256": "59583f9c7f25d781ad257bf01fec42352bcef04c0ba954be56e5922496d27c7b",
+            "standalone_response_sha256": "59583f9c7f25d781ad257bf01fec42352bcef04c0ba954be56e5922496d27c7b",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 142.5,
+            "standalone_ms": 63.02587200002745
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "5ca3d11655bfb3d70b5b35337b5af564d70584f2e40955c1268eba992475313a",
+            "native_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "standalone_response_sha256": "30e29a2c1fe02f5f2b4161e49f7e97d54fc32d098e897fadd6dd61bd763b6b18",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 118,
+            "standalone_ms": 57.850455999956466
+          },
+          {
+            "endpoint": "/api/simulate",
+            "request_sha256": "502173b668fc49ff774e1d65c6c69fc14b438516c76b24e1cf105aaba50e7ecc",
+            "native_response_sha256": "89047f7f50df6056b54eae62edd63edbfa127406e8a45711f27e9d6e6769ebfe",
+            "standalone_response_sha256": "89047f7f50df6056b54eae62edd63edbfa127406e8a45711f27e9d6e6769ebfe",
+            "status": 200,
+            "exact_json_equal": true,
+            "index": 0,
+            "native_ms": 29.199999999953434,
+            "standalone_ms": 21.680109999957494
+          }
+        ],
+        "timings": {
+          "/api/simulate": {
+            "native_ms": {
+              "samples": [
+                82.20000000001164,
+                76.5,
+                69.60000000003492,
+                66.30000000004657,
+                65.90000000002328,
+                144.5,
+                67.5,
+                58.29999999998836,
+                72.59999999997672,
+                79.20000000001164,
+                59.800000000046566,
+                59.800000000046566,
+                65.29999999998836,
+                87.70000000001164,
+                62.5,
+                62.899999999965075,
+                123,
+                68.19999999995343,
+                56.70000000001164,
+                72.90000000002328
+              ],
+              "median": 67.84999999997672,
+              "p95": 123,
+              "max": 144.5
+            },
+            "standalone_ms": {
+              "samples": [
+                48.965495000000374,
+                61.06770100000176,
+                48.25158499999998,
+                50.849927999999636,
+                42.37075200000072,
+                114.41873699999996,
+                38.98890399999982,
+                37.97378800000115,
+                37.3245509999997,
+                35.72408799999903,
+                39.54140099999859,
+                36.80145899999843,
+                39.097907999999734,
+                39.85468800000126,
+                41.93140399999902,
+                42.11748400000033,
+                85.47525899999891,
+                35.243656000000556,
+                35.57569800000056,
+                40.004117000004044
+              ],
+              "median": 39.92940250000265,
+              "p95": 85.47525899999891,
+              "max": 114.41873699999996
+            },
+            "absolute_median_difference_fraction": 0.6992490684019679,
+            "within_5_percent": false
+          },
+          "/api/evaluate-network": {
+            "native_ms": {
+              "samples": [
+                965.5,
+                975.2000000000698,
+                992.8000000000466,
+                1011,
+                979.9000000000233,
+                981.7000000000698,
+                974.1999999999534,
+                973.2000000000698,
+                969.0999999999767,
+                966.5999999999767,
+                1010.5,
+                975.9000000000233,
+                970.5999999999767,
+                966.7000000000698,
+                959.5,
+                966,
+                1012.5,
+                962.2999999999302,
+                967.1000000000931,
+                976.7999999999302
+              ],
+              "median": 973.7000000000116,
+              "p95": 1011,
+              "max": 1012.5
+            },
+            "standalone_ms": {
+              "samples": [
+                986.9685229999886,
+                983.6819680000044,
+                993.5386890000082,
+                977.1357560000033,
+                1000.2722050000011,
+                995.7528939999902,
+                966.569816999996,
+                977.0095160000055,
+                964.2051219999994,
+                964.5141710000025,
+                1009.8793930000102,
+                986.094517000005,
+                970.1504939999868,
+                958.4281699999992,
+                973.6735519999929,
+                974.2058130000078,
+                992.8470200000011,
+                1016.6213830000052,
+                982.9508949999872,
+                969.3230910000275
+              ],
+              "median": 980.0433254999953,
+              "p95": 1009.8793930000102,
+              "max": 1016.6213830000052
+            },
+            "absolute_median_difference_fraction": 0.006472494975410803,
+            "within_5_percent": true
+          },
+          "/api/optimize-network": {
+            "native_ms": {
+              "samples": [
+                18064.599999999977,
+                17877.899999999907,
+                18016.100000000093,
+                17964.400000000023,
+                17930.20000000007,
+                18001.20000000007,
+                17958.400000000023,
+                17888.29999999993,
+                17941.20000000007,
+                18009.50000000006,
+                17977.699999999953,
+                17958.09999999986,
+                17963,
+                17983.40000000014,
+                17932.5,
+                17919.899999999907,
+                17969.59999999986,
+                18104,
+                18020.199999999953,
+                17912.199999999953
+              ],
+              "median": 17963.70000000001,
+              "p95": 18064.599999999977,
+              "max": 18104
+            },
+            "standalone_ms": {
+              "samples": [
+                18017.18685,
+                17957.287222999992,
+                17995.154207999993,
+                17957.423592999985,
+                17999.181398999994,
+                17985.56183000002,
+                18145.432149,
+                17996.004139999975,
+                17925.153830000025,
+                18002.84379700001,
+                18012.15039899992,
+                17904.827629000065,
+                18010.12139600003,
+                18019.53932500002,
+                17889.555026000016,
+                17959.557774000103,
+                17996.905847000075,
+                17962.202672999934,
+                17843.184987999965,
+                18021.625805999967
+              ],
+              "median": 17995.579173999984,
+              "p95": 18021.625805999967,
+              "max": 18145.432149
+            },
+            "absolute_median_difference_fraction": 0.0017715003052545253,
+            "within_5_percent": true
+          }
+        },
+        "ui": {
+          "Evaluate Network": true,
+          "Optimize Network": true
+        },
+        "admission_waits": [
+          {
+            "transport": "standalone",
+            "endpoint": "/api/simulate",
+            "milliseconds": 54971
+          },
+          {
+            "transport": "native",
+            "endpoint": "/api/simulate",
+            "milliseconds": 924
+          },
+          {
+            "transport": "native",
+            "endpoint": "/api/evaluate-network",
+            "milliseconds": 23999
+          }
+        ],
+        "sampling": {
+          "warmup_pairs_per_endpoint": 1,
+          "timed_pairs_per_endpoint": 20,
+          "transport_order": "alternating; sequential RF requests"
+        },
+        "resource_build_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "binary_sha256": "c6e48e64d9a70a9c4c17b57f698ce60e78fcbad75c75453ede73e61e414f4787",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "metadata_exact_equal": true,
+        "dataset": {
+          "id": "ankara-open-planning",
+          "version": "2026.07",
+          "hashes": {
+            "ankara_5g_nodes.geojson": "c460c254d8748df52305d141b2f5e5147757a00b9d0581d8670084aa29ee3bd8",
+            "ankara_buildings.geojson": "d952a853b1146fe4e4136c2d8bac1b8e2c7152b33d78b0d9f82399350bfd50fc"
+          }
+        },
+        "capabilities": [
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/analyze-sector",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/simulate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-surface",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-azimuth",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/optimize-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/evaluate-network",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/coverage-gaps",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/explain-network-cell",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/recommend-sites",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/recommend-sites",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/path-profile",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/path-profile",
+            "status": "research_only",
+            "reason": "research_profile_only",
+            "note": "endpoint is available only as the existing research/planning profile"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/interference",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/interference",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          },
+          {
+            "technology": "4g",
+            "frequency_ghz": 2.6,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "5g",
+            "frequency_ghz": 28,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "supported",
+            "reason": "accepted_by_current_validation",
+            "note": "current deterministic engine accepts the technology at this endpoint"
+          },
+          {
+            "technology": "6g",
+            "frequency_ghz": 140,
+            "endpoint": "/api/measurements/evaluate",
+            "status": "unsupported",
+            "reason": "unsupported_endpoint",
+            "note": "endpoint validation deliberately excludes this technology"
+          }
+        ],
+        "fixture": {
+          "cell_ids": [
+            "LTE-35877",
+            "LTE-1221413",
+            "LTE-1221389",
+            "LTE-1221409",
+            "LTE-322850",
+            "LTE-322848",
+            "LTE-748049",
+            "LTE-322828"
+          ],
+          "selection": "Eight dataset towers nearest 32.85,39.92 by squared geographic distance, then ID; defaults unchanged",
+          "settings": {
+            "frequencyGHz": 28,
+            "propagationModelID": "urban_short_range",
+            "txPowerDbm": 30,
+            "rayCount": 120,
+            "radiusMeters": 400,
+            "azimuthDeg": 90,
+            "beamWidthDeg": 120,
+            "interferenceBandwidthMHz": 100,
+            "cellLoadPct": 70,
+            "reuseFactor": 1,
+            "noiseFigureDb": 7,
+            "sampleSpacingMeters": 40,
+            "calibrationOffsetDb": 0
+          },
+          "optimization": {
+            "objectives": [
+              {
+                "id": "demand",
+                "weight": 50
+              },
+              {
+                "id": "residential",
+                "weight": 50
+              },
+              {
+                "id": "coverage",
+                "weight": 50
+              },
+              {
+                "id": "overlap",
+                "weight": 50
+              },
+              {
+                "id": "radio_quality",
+                "weight": 0
+              }
+            ],
+            "constraints": {}
+          },
+          "network_request_sha256": "0f438b339acba40d61c727ca8edadab00f9fd3af8784632a0bfa529d255db273"
+        },
+        "technology_simulation_parity": true,
+        "map": {
+          "method": "20 real pointer pan gestures with all eight result-ray layers; animation-frame cadence is a render-scheduling proxy, not a physical-display presentation count; event timestamp to second animation frame is a presentation-latency proxy, not INP",
+          "frames": 289,
+          "elapsed_ms": 5083.033999999985,
+          "observed_fps": 56.659074088428454,
+          "frame_gap_ms": {
+            "samples": [
+              16.633999999961816,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.800000000046566,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              33.40000000002328,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              33.40000000002328,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              33.29999999993015,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              33.29999999993015,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.800000000046566,
+              16.5,
+              33.39999999990687,
+              16.70000000006985,
+              16.599999999976717,
+              16.800000000046566,
+              16.5,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.600000000093132,
+              33.39999999990687,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.5,
+              16.70000000006985,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.600000000093132,
+              16.79999999993015,
+              16.599999999976717,
+              16.600000000093132,
+              33.39999999990687,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.599999999976717,
+              16.800000000046566,
+              16.599999999976717,
+              16.599999999976717,
+              16.70000000006985,
+              33.29999999993015,
+              16.70000000006985,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.5,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.699999999953434,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              33.199999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              33.39999999990687,
+              16.600000000093132,
+              16.699999999953434,
+              16.699999999953434,
+              16.600000000093132,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              33.300000000046566,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.699999999953434,
+              16.600000000093132,
+              33.29999999993015,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              33.300000000046566,
+              16.599999999976717,
+              16.79999999993015,
+              16.600000000093132,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.79999999993015,
+              16.600000000093132,
+              16.599999999976717,
+              16.79999999993015,
+              16.600000000093132,
+              16.599999999976717,
+              33.29999999993015,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              33.29999999993015,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              33.29999999993015,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.800000000046566,
+              16.599999999976717,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              33.29999999993015,
+              16.70000000006985,
+              16.599999999976717,
+              16.699999999953434,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.599999999976717,
+              16.70000000006985,
+              16.699999999953434,
+              16.70000000006985,
+              16.599999999976717,
+              16.599999999976717
+            ],
+            "median": 16.699999999953434,
+            "p95": 33.29999999993015,
+            "max": 33.40000000002328
+          },
+          "input_to_second_frame_ms": {
+            "samples": [
+              26.5,
+              45.699999999953434,
+              46.39999999990687,
+              46.5,
+              46.299999999813735,
+              46.0999999998603,
+              45.89999999990687,
+              29.69999999983702,
+              47.199999999953434,
+              46.499999999883585,
+              46.19999999983702,
+              46.199999999953434,
+              30.199999999953434,
+              46.59999999997672,
+              30.0999999998603,
+              29.599999999976717,
+              47.19999999983702,
+              46.19999999983702,
+              30.599999999976717,
+              46.5999999998603
+            ],
+            "median": 46.19999999983702,
+            "p95": 47.19999999983702,
+            "max": 47.199999999953434
+          },
+          "overlay_paths": 0,
+          "rays_on_canvas": [
+            {
+              "width": 1430,
+              "height": 976,
+              "painted_pixels": 41809,
+              "sha256": "0704c898efe21334c67a6f72a33e33245a265e93be58e4bb040123b07a3a72e7"
+            }
+          ],
+          "rays_off_canvas": [
+            {
+              "width": 1430,
+              "height": 976,
+              "painted_pixels": 3621,
+              "sha256": "1b57d78a21b829e5583fb85d5dc7fd1a7e0400bc9fd6744c9b2f40e8a9c084e3"
+            }
+          ],
+          "ray_drawing_verified_after_timing": true
+        },
+        "post_rf_process_tree": {
+          "processes": [
+            {
+              "pid": 7786,
+              "parent_pid": 7640,
+              "rss_bytes": 221581312,
+              "executable": "electron",
+              "pss_bytes": 130622464
+            },
+            {
+              "pid": 7789,
+              "parent_pid": 7786,
+              "rss_bytes": 71897088,
+              "executable": "electron",
+              "pss_bytes": 17330176
+            },
+            {
+              "pid": 7790,
+              "parent_pid": 7786,
+              "rss_bytes": 76591104,
+              "executable": "electron",
+              "pss_bytes": 16588800
+            },
+            {
+              "pid": 7792,
+              "parent_pid": 7790,
+              "rss_bytes": 16982016,
+              "executable": "electron",
+              "pss_bytes": 4825088
+            },
+            {
+              "pid": 7818,
+              "parent_pid": 7789,
+              "rss_bytes": 175419392,
+              "executable": "electron",
+              "pss_bytes": 107727872
+            },
+            {
+              "pid": 7821,
+              "parent_pid": 7786,
+              "rss_bytes": 102215680,
+              "executable": "electron",
+              "pss_bytes": 33846272
+            },
+            {
+              "pid": 7826,
+              "parent_pid": 7792,
+              "rss_bytes": 715816960,
+              "executable": "electron",
+              "pss_bytes": 629894144
+            },
+            {
+              "pid": 7864,
+              "parent_pid": 7786,
+              "rss_bytes": 861822976,
+              "executable": "atom-api",
+              "pss_bytes": 854269952
+            }
+          ],
+          "rss_bytes": 2242326528,
+          "pss_bytes": 1795104768
+        },
+        "budgets": {
+          "rf_medians_within_5_percent": false,
+          "eight_cell_map_30fps": true,
+          "input_p95_100ms": true
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      },
+      "startup": {
+        "source_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "source_dirty": false,
+        "reference": {
+          "platform": "linux",
+          "architecture": "x64",
+          "kernel": "7.0.0-1017-azure",
+          "cpu": "AMD EPYC 7763 64-Core Processor",
+          "logical_cpus": 4,
+          "memory_bytes": 16760344576,
+          "node": "v24.22.2",
+          "electron": "44.10.2"
+        },
+        "method": "20 paired fresh-profile launches and same-profile relaunches; OS file cache uncontrolled; no cache purge",
+        "samples": [
+          {
+            "index": 0,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5494,
+            "launch_to_dataset_ready_ms": 5200,
+            "sidecar_start_to_dataset_ready_ms": 4727
+          },
+          {
+            "index": 0,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5125,
+            "launch_to_dataset_ready_ms": 4830,
+            "sidecar_start_to_dataset_ready_ms": 4578
+          },
+          {
+            "index": 1,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5165,
+            "launch_to_dataset_ready_ms": 4869,
+            "sidecar_start_to_dataset_ready_ms": 4614
+          },
+          {
+            "index": 1,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5149,
+            "launch_to_dataset_ready_ms": 4861,
+            "sidecar_start_to_dataset_ready_ms": 4606
+          },
+          {
+            "index": 2,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5173,
+            "launch_to_dataset_ready_ms": 4874,
+            "sidecar_start_to_dataset_ready_ms": 4605
+          },
+          {
+            "index": 2,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5190,
+            "launch_to_dataset_ready_ms": 4890,
+            "sidecar_start_to_dataset_ready_ms": 4623
+          },
+          {
+            "index": 3,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5202,
+            "launch_to_dataset_ready_ms": 4910,
+            "sidecar_start_to_dataset_ready_ms": 4637
+          },
+          {
+            "index": 3,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5171,
+            "launch_to_dataset_ready_ms": 4868,
+            "sidecar_start_to_dataset_ready_ms": 4610
+          },
+          {
+            "index": 4,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5206,
+            "launch_to_dataset_ready_ms": 4872,
+            "sidecar_start_to_dataset_ready_ms": 4600
+          },
+          {
+            "index": 4,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5187,
+            "launch_to_dataset_ready_ms": 4884,
+            "sidecar_start_to_dataset_ready_ms": 4631
+          },
+          {
+            "index": 5,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5142,
+            "launch_to_dataset_ready_ms": 4861,
+            "sidecar_start_to_dataset_ready_ms": 4601
+          },
+          {
+            "index": 5,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5149,
+            "launch_to_dataset_ready_ms": 4859,
+            "sidecar_start_to_dataset_ready_ms": 4582
+          },
+          {
+            "index": 6,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5158,
+            "launch_to_dataset_ready_ms": 4873,
+            "sidecar_start_to_dataset_ready_ms": 4609
+          },
+          {
+            "index": 6,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5182,
+            "launch_to_dataset_ready_ms": 4884,
+            "sidecar_start_to_dataset_ready_ms": 4601
+          },
+          {
+            "index": 7,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5199,
+            "launch_to_dataset_ready_ms": 4899,
+            "sidecar_start_to_dataset_ready_ms": 4625
+          },
+          {
+            "index": 7,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5185,
+            "launch_to_dataset_ready_ms": 4886,
+            "sidecar_start_to_dataset_ready_ms": 4634
+          },
+          {
+            "index": 8,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5158,
+            "launch_to_dataset_ready_ms": 4873,
+            "sidecar_start_to_dataset_ready_ms": 4610
+          },
+          {
+            "index": 8,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5214,
+            "launch_to_dataset_ready_ms": 4926,
+            "sidecar_start_to_dataset_ready_ms": 4666
+          },
+          {
+            "index": 9,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5163,
+            "launch_to_dataset_ready_ms": 4874,
+            "sidecar_start_to_dataset_ready_ms": 4604
+          },
+          {
+            "index": 9,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5173,
+            "launch_to_dataset_ready_ms": 4878,
+            "sidecar_start_to_dataset_ready_ms": 4610
+          },
+          {
+            "index": 10,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5183,
+            "launch_to_dataset_ready_ms": 4892,
+            "sidecar_start_to_dataset_ready_ms": 4620
+          },
+          {
+            "index": 10,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5150,
+            "launch_to_dataset_ready_ms": 4868,
+            "sidecar_start_to_dataset_ready_ms": 4597
+          },
+          {
+            "index": 11,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5145,
+            "launch_to_dataset_ready_ms": 4850,
+            "sidecar_start_to_dataset_ready_ms": 4593
+          },
+          {
+            "index": 11,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5180,
+            "launch_to_dataset_ready_ms": 4885,
+            "sidecar_start_to_dataset_ready_ms": 4628
+          },
+          {
+            "index": 12,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5158,
+            "launch_to_dataset_ready_ms": 4872,
+            "sidecar_start_to_dataset_ready_ms": 4599
+          },
+          {
+            "index": 12,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5189,
+            "launch_to_dataset_ready_ms": 4894,
+            "sidecar_start_to_dataset_ready_ms": 4635
+          },
+          {
+            "index": 13,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5170,
+            "launch_to_dataset_ready_ms": 4869,
+            "sidecar_start_to_dataset_ready_ms": 4595
+          },
+          {
+            "index": 13,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5163,
+            "launch_to_dataset_ready_ms": 4870,
+            "sidecar_start_to_dataset_ready_ms": 4593
+          },
+          {
+            "index": 14,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5194,
+            "launch_to_dataset_ready_ms": 4898,
+            "sidecar_start_to_dataset_ready_ms": 4634
+          },
+          {
+            "index": 14,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5149,
+            "launch_to_dataset_ready_ms": 4848,
+            "sidecar_start_to_dataset_ready_ms": 4587
+          },
+          {
+            "index": 15,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5225,
+            "launch_to_dataset_ready_ms": 4894,
+            "sidecar_start_to_dataset_ready_ms": 4624
+          },
+          {
+            "index": 15,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5280,
+            "launch_to_dataset_ready_ms": 4916,
+            "sidecar_start_to_dataset_ready_ms": 4662
+          },
+          {
+            "index": 16,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5290,
+            "launch_to_dataset_ready_ms": 5004,
+            "sidecar_start_to_dataset_ready_ms": 4734
+          },
+          {
+            "index": 16,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5216,
+            "launch_to_dataset_ready_ms": 4915,
+            "sidecar_start_to_dataset_ready_ms": 4652
+          },
+          {
+            "index": 17,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5231,
+            "launch_to_dataset_ready_ms": 4934,
+            "sidecar_start_to_dataset_ready_ms": 4670
+          },
+          {
+            "index": 17,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5152,
+            "launch_to_dataset_ready_ms": 4867,
+            "sidecar_start_to_dataset_ready_ms": 4599
+          },
+          {
+            "index": 18,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5197,
+            "launch_to_dataset_ready_ms": 4913,
+            "sidecar_start_to_dataset_ready_ms": 4633
+          },
+          {
+            "index": 18,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5165,
+            "launch_to_dataset_ready_ms": 4866,
+            "sidecar_start_to_dataset_ready_ms": 4598
+          },
+          {
+            "index": 19,
+            "state": "fresh_profile",
+            "launch_to_plannable_ms": 5143,
+            "launch_to_dataset_ready_ms": 4854,
+            "sidecar_start_to_dataset_ready_ms": 4582
+          },
+          {
+            "index": 19,
+            "state": "same_profile_relaunch",
+            "launch_to_plannable_ms": 5186,
+            "launch_to_dataset_ready_ms": 4898,
+            "sidecar_start_to_dataset_ready_ms": 4630
+          }
+        ],
+        "resource_build_commit": "22bacfc9cd109fe5688311511e2bbc3554577184",
+        "binary_sha256": "c6e48e64d9a70a9c4c17b57f698ce60e78fcbad75c75453ede73e61e414f4787",
+        "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+        "current_sample": {
+          "index": 19,
+          "state": "same_profile_relaunch"
+        },
+        "current_renderer_errors": [],
+        "last_application_exit": {
+          "code": 0,
+          "signal": null,
+          "time": "2026-11-10T20:10:11.726Z"
+        },
+        "startup": {
+          "fresh_profile": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                5494,
+                5165,
+                5173,
+                5202,
+                5206,
+                5142,
+                5158,
+                5199,
+                5158,
+                5163,
+                5183,
+                5145,
+                5158,
+                5170,
+                5194,
+                5225,
+                5290,
+                5231,
+                5197,
+                5143
+              ],
+              "median": 5178,
+              "p95": 5290,
+              "max": 5494
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                5200,
+                4869,
+                4874,
+                4910,
+                4872,
+                4861,
+                4873,
+                4899,
+                4873,
+                4874,
+                4892,
+                4850,
+                4872,
+                4869,
+                4898,
+                4894,
+                5004,
+                4934,
+                4913,
+                4854
+              ],
+              "median": 4874,
+              "p95": 5004,
+              "max": 5200
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                4727,
+                4614,
+                4605,
+                4637,
+                4600,
+                4601,
+                4609,
+                4625,
+                4610,
+                4604,
+                4620,
+                4593,
+                4599,
+                4595,
+                4634,
+                4624,
+                4734,
+                4670,
+                4633,
+                4582
+              ],
+              "median": 4612,
+              "p95": 4727,
+              "max": 4734
+            }
+          },
+          "same_profile_relaunch": {
+            "launch_to_plannable_ms": {
+              "samples": [
+                5125,
+                5149,
+                5190,
+                5171,
+                5187,
+                5149,
+                5182,
+                5185,
+                5214,
+                5173,
+                5150,
+                5180,
+                5189,
+                5163,
+                5149,
+                5280,
+                5216,
+                5152,
+                5165,
+                5186
+              ],
+              "median": 5176.5,
+              "p95": 5216,
+              "max": 5280
+            },
+            "launch_to_dataset_ready_ms": {
+              "samples": [
+                4830,
+                4861,
+                4890,
+                4868,
+                4884,
+                4859,
+                4884,
+                4886,
+                4926,
+                4878,
+                4868,
+                4885,
+                4894,
+                4870,
+                4848,
+                4916,
+                4915,
+                4867,
+                4866,
+                4898
+              ],
+              "median": 4881,
+              "p95": 4916,
+              "max": 4926
+            },
+            "sidecar_start_to_dataset_ready_ms": {
+              "samples": [
+                4578,
+                4606,
+                4623,
+                4610,
+                4631,
+                4582,
+                4601,
+                4634,
+                4666,
+                4610,
+                4597,
+                4628,
+                4635,
+                4593,
+                4587,
+                4662,
+                4652,
+                4599,
+                4598,
+                4630
+              ],
+              "median": 4610,
+              "p95": 4662,
+              "max": 4666
+            }
+          }
+        },
+        "idle": {
+          "full_pack": {
+            "processes": [
+              {
+                "pid": 7327,
+                "parent_pid": 3359,
+                "rss_bytes": 196755456,
+                "executable": "electron",
+                "pss_bytes": 105877504
+              },
+              {
+                "pid": 7330,
+                "parent_pid": 7327,
+                "rss_bytes": 75554816,
+                "executable": "electron",
+                "pss_bytes": 17787904
+              },
+              {
+                "pid": 7331,
+                "parent_pid": 7327,
+                "rss_bytes": 76177408,
+                "executable": "electron",
+                "pss_bytes": 16044032
+              },
+              {
+                "pid": 7333,
+                "parent_pid": 7331,
+                "rss_bytes": 16650240,
+                "executable": "electron",
+                "pss_bytes": 4659200
+              },
+              {
+                "pid": 7360,
+                "parent_pid": 7330,
+                "rss_bytes": 172576768,
+                "executable": "electron",
+                "pss_bytes": 105371648
+              },
+              {
+                "pid": 7362,
+                "parent_pid": 7327,
+                "rss_bytes": 102219776,
+                "executable": "electron",
+                "pss_bytes": 33683456
+              },
+              {
+                "pid": 7371,
+                "parent_pid": 7333,
+                "rss_bytes": 195588096,
+                "executable": "electron",
+                "pss_bytes": 113019904
+              },
+              {
+                "pid": 7400,
+                "parent_pid": 7327,
+                "rss_bytes": 449081344,
+                "executable": "atom-api",
+                "pss_bytes": 447578112
+              }
+            ],
+            "rss_bytes": 1284603904,
+            "pss_bytes": 844021760,
+            "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5"
+          },
+          "sample_pack": {
+            "processes": [
+              {
+                "pid": 7497,
+                "parent_pid": 3359,
+                "rss_bytes": 196493312,
+                "executable": "electron",
+                "pss_bytes": 107107328
+              },
+              {
+                "pid": 7500,
+                "parent_pid": 7497,
+                "rss_bytes": 75509760,
+                "executable": "electron",
+                "pss_bytes": 18007040
+              },
+              {
+                "pid": 7501,
+                "parent_pid": 7497,
+                "rss_bytes": 76304384,
+                "executable": "electron",
+                "pss_bytes": 16447488
+              },
+              {
+                "pid": 7503,
+                "parent_pid": 7501,
+                "rss_bytes": 16961536,
+                "executable": "electron",
+                "pss_bytes": 4754432
+              },
+              {
+                "pid": 7527,
+                "parent_pid": 7500,
+                "rss_bytes": 172929024,
+                "executable": "electron",
+                "pss_bytes": 105878528
+              },
+              {
+                "pid": 7531,
+                "parent_pid": 7497,
+                "rss_bytes": 102297600,
+                "executable": "electron",
+                "pss_bytes": 33942528
+              },
+              {
+                "pid": 7538,
+                "parent_pid": 7503,
+                "rss_bytes": 189313024,
+                "executable": "electron",
+                "pss_bytes": 107177984
+              },
+              {
+                "pid": 7572,
+                "parent_pid": 7497,
+                "rss_bytes": 15589376,
+                "executable": "atom-api",
+                "pss_bytes": 14087168
+              }
+            ],
+            "rss_bytes": 845398016,
+            "pss_bytes": 407402496,
+            "manifest_sha256": "d476596fa2945de417d0de0dcfbe428c193a913f47d969562590bf468d4b14e7"
+          },
+          "full_minus_sample_rss_bytes": 439205888
+        },
+        "budgets": {
+          "fresh_profile_launch_p95_10s": true,
+          "same_profile_launch_p95_5s": false,
+          "fresh_profile_sidecar_dataset_p95_8s": true,
+          "same_profile_sidecar_dataset_p95_4s": false,
+          "aggregate_idle_rss_500MiB": false
+        },
+        "result": "BUDGET_REVIEW_REQUIRED"
+      }
+    }
+  ]
+}

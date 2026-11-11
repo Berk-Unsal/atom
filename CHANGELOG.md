@@ -27,7 +27,13 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Fixed
 
+- Preserve uncached legacy Scenario bytes during recovery compaction and retain rerun flags after cache eviction, preventing native file baselines from becoming dirty after later recovery reads.
+
+- Preserve untouched legacy Project/Scenario bytes when another Project's details, report or new Version is saved, while retaining genuine domain edits and existing portable-file semantics.
+
 - Prepare existing project compatibility metadata before native portable Save, keeping untouched files clean when later report/domain operations materialize defaults without creating a planning Version or running RF.
+
+- Build both Go services and container builders with Go 1.26.11 for GO-2026-6859, update the backend HTML dependency to golang.org/x/net 0.62.0 for CVE-2026-78661/97045, and remove the adapter’s unused x/net dependency.
 
 - Keep a saved native project clean across restoration when domain metadata only makes existing Cell RF/source defaults explicit, while preserving dirty status for actual input edits.
 

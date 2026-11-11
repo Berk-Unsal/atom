@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createProjectWorkspace,
   createScenario,
+  compactProjectWorkspace,
   duplicateProjectData,
   exportProjectFile,
   importProjectFile,
@@ -18,6 +19,31 @@ import {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("projectStore", () => {
+  it.each([undefined, false, true])("preserves uncached legacy Scenario bytes and rerun state %s through recovery compaction", (requiresRerun) => {
+    const workspace = createProjectWorkspace(null);
+    const scenario = createScenario("Legacy", { plan: { settings: { txPowerDbm: 30 } }, artifacts: null });
+    if (requiresRerun !== undefined) scenario.requiresRerun = requiresRerun;
+    workspace.projects[0].scenarios.push(scenario);
+    const before = exportProjectFile(workspace.projects[0]);
+    const compacted = compactProjectWorkspace(workspace);
+    expect(exportProjectFile(compacted.projects[0])).toBe(before);
+    expect(exportProjectFile(compactProjectWorkspace(compacted).projects[0])).toBe(before);
+  });
+
+  it("keeps an evicted Scenario marked for rerun through repeated compaction", () => {
+    const workspace = createProjectWorkspace(null);
+    workspace.projects[0].scenarios = Array.from({ length: 6 }, (_, index) => ({
+      ...createScenario(`Cached ${index}`, { plan: {}, artifacts: { simulation: { stats: { rays: 1 } } } }),
+      updatedAt: `2026-11-11T10:00:0${index}.000Z`,
+    }));
+    const compacted = compactProjectWorkspace(workspace);
+    expect(compacted.projects[0].scenarios[0].artifacts).toBeNull();
+    expect(compacted.projects[0].scenarios[0].requiresRerun).toBe(true);
+    expect(compacted.projects[0].scenarios.slice(1).every((scenario) => scenario.artifacts)).toBe(true);
+    expect(compactProjectWorkspace(compacted).projects[0].scenarios[0].requiresRerun).toBe(true);
+    expect(workspace.projects[0].scenarios[0].artifacts).toBeTruthy();
+  });
+
   it("round-trips an exported project with a new imported id", () => {
     const workspace = createProjectWorkspace({ id: "ankara", version: "1", hashes: { towers: "abc" } });
     const project = workspace.projects[0];

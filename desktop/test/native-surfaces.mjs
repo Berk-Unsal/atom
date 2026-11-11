@@ -10,7 +10,7 @@ import { createRequire } from "node:module";
 import { launchNative } from "./native-launch.mjs";
 import { waitForRuntime } from "./runtime-wait.mjs";
 import { startupDiagnostics } from "./startup-diagnostics.mjs";
-import { exportProjectFile } from "../../frontend-react/src/utils/projectStore.js";
+import { createScenario, exportProjectFile } from "../../frontend-react/src/utils/projectStore.js";
 import { sourceIdentity, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 const require = createRequire(import.meta.url);
 const { inventory } = require("../lib/package-contract.cjs");
@@ -88,6 +88,24 @@ try {
   const info = await page.evaluate(() => window.atomDesktop.getInfo()); assert.equal(info.commit, result.source_commit); assert.equal(info.rendererSandboxed, true);
   assert.equal(await application.evaluate(({ app }) => app.isPackaged), true);
   await page.getByRole("button", { name: /^Project menu,/ }).click();
+  await until(() => page.getByRole("button", { name: "Save As", exact: true }).isEnabled(), "Initial project working plan did not finish restoring");
+  await page.keyboard.press("Escape");
+  // Capture actual current inputs through Export Copy, then open a supported
+  // legacy file whose saved Scenario has no shared-domain metadata. Later
+  // report/Version persistence in its imported copy must not dirty this file.
+  const seedFile = path.join(documents, "Current planning inputs.atom-project.json");
+  await command("atom-project-export"); await drive("save", "Export project copy", seedFile); await completeProjectDialog();
+  const seed = JSON.parse(await fs.readFile(seedFile, "utf8"));
+  assert.ok(seed.project.draft?.plan);
+  const legacyScenario = createScenario("Legacy portable Scenario", { plan: seed.project.draft.plan, request: null, summary: {}, artifacts: null });
+  delete legacyScenario.domain;
+  const legacyProject = { ...seed.project, scenarios: [legacyScenario], activeScenarioId: legacyScenario.id };
+  delete legacyProject.domain;
+  const legacyFile = path.join(documents, "Legacy Scenario — çığ.atom-project.json");
+  await fs.writeFile(legacyFile, JSON.stringify({ schemaVersion: 2, project: legacyProject }));
+  await command("atom-project-open"); await drive("open", "Open A.T.O.M project", legacyFile); await completeProjectDialog();
+  await until(async () => (await project()).scenarios.length === 1, "Real legacy Open did not persist its Scenario");
+  await page.getByRole("button", { name: /^Project menu,/ }).click();
   await page.getByRole("textbox", { name: "Project name", exact: true }).fill("Çankaya Ağ Planı — çığ");
   await page.getByRole("button", { name: "Save project name", exact: true }).click(); await page.keyboard.press("Escape");
   await command("atom-project-save-as"); await drive("save", "Save A.T.O.M project", projectFile); await completeProjectDialog();
@@ -95,6 +113,10 @@ try {
   const saved = await fs.readFile(projectFile); assert.equal(JSON.parse(saved).schemaVersion, 3); const savedIdentity = await fs.stat(projectFile);
   assert.ok(savedIdentity.size > 0); result.saved_project = { bytes: saved.length, sha256: sha256(saved), path_characters: projectFile.length };
   const stateBeforeCancel = await fileState(); const projectBeforeCancel = await project();
+  result.initial_save_workspace_changes = changeSummary(JSON.parse(saved), JSON.parse(exportProjectFile(projectBeforeCancel)));
+  assert.equal(sha256(Buffer.from(exportProjectFile(projectBeforeCancel))), sha256(saved), "The saved file must match the persisted original snapshot");
+  assert.ok(projectBeforeCancel.scenarios.some((scenario) => !scenario.domain), "The original file must retain an unexpanded legacy Scenario for the unrelated-save regression");
+  result.original_file_contains_legacy_scenario_without_domain_metadata = true;
   const canceledProject = path.join(documents, "Cancelled — must not exist.atom-project.json");
   await command("atom-project-save-as"); await drive("cancel", "Save A.T.O.M project", canceledProject); await completeProjectDialog();
   await command("atom-project-open"); await drive("cancel", "Open A.T.O.M project", projectFile); await completeProjectDialog();
@@ -175,10 +197,16 @@ try {
   result.real_print_completed_local_job.rendered_project_and_run_labels = true;
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
+  // Sync first marks uncached snapshots unverified, then hashes all associated
+  // Projects asynchronously. The active cached hash can settle before legacy
+  // inactive Projects; observe completion without changing or saving them.
+  await until(async () => (await fileState()).filter((row) => row.path).every((row) => !row.dirty), "Every associated project must finish hashing clean before ordinary Quit");
   result.file_status_before_quit = await fileState();
   const originalAfterImport = (await project(true)).find((row) => row.id === projectBeforeCancel.id);
+  assert.equal(exportProjectFile(originalAfterImport), exportProjectFile(projectBeforeCancel), "Unrelated saves must preserve the exact original portable bytes, including key order");
   const oldFile = JSON.parse(exportProjectFile(projectBeforeCancel)); const currentFile = JSON.parse(exportProjectFile(originalAfterImport));
   result.original_project_changes = changeSummary(oldFile, currentFile);
+  assert.deepEqual(result.original_project_changes, [], "Unrelated Version/report persistence must preserve the original portable Project exactly");
   assert.ok(result.file_status_before_quit.filter((row) => row.path).every((row) => !row.dirty), "Every associated project must be clean before ordinary Quit");
   const processes = await processTree(application.process().pid); await application.evaluate(({ app }) => app.quit());
   let timer; try { await Promise.race([application.close(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("Ordinary native Quit did not finish")), 15_000); })]); } finally { clearTimeout(timer); }

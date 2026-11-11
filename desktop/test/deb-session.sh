@@ -13,10 +13,14 @@ dbus-update-activation-environment XDG_RUNTIME_DIR
 unset ELECTRON_RUN_AS_NODE
 compositor_pid=
 portal_pid=
+pipewire_pid=
+wireplumber_pid=
 surface_root=
 cleanup() {
   if [ -n "$portal_pid" ]; then kill "$portal_pid" 2>/dev/null || true; wait "$portal_pid" 2>/dev/null || true; fi
   if [ -n "$compositor_pid" ]; then kill "$compositor_pid" 2>/dev/null || true; wait "$compositor_pid" 2>/dev/null || true; fi
+  if [ -n "$wireplumber_pid" ]; then kill "$wireplumber_pid" 2>/dev/null || true; wait "$wireplumber_pid" 2>/dev/null || true; fi
+  if [ -n "$pipewire_pid" ]; then kill "$pipewire_pid" 2>/dev/null || true; wait "$pipewire_pid" 2>/dev/null || true; fi
   cleanup_deb_runtime "$XDG_RUNTIME_DIR"
   if [ -n "$surface_root" ]; then rm -rf -- "$surface_root"; fi
 }
@@ -39,6 +43,16 @@ if [ "$suite" = dialogs ]; then
   printf 'XDG_DOCUMENTS_DIR="%s"\n' "$ATOM_NATIVE_SURFACE_DOCUMENTS" >"$XDG_CONFIG_HOME/user-dirs.dirs"
   gsettings set org.gnome.desktop.interface toolkit-accessibility true
   dbus-update-activation-environment "HOME=$ATOM_NATIVE_SURFACE_HOME" XDG_CONFIG_HOME XDG_DATA_HOME XDG_CACHE_HOME XDG_STATE_HOME XDG_CURRENT_DESKTOP GTK_MODULES LANG LC_ALL
+  pipewire >"$ATOM_DESKTOP_ROOT/test-results/native-pipewire.log" 2>&1 &
+  pipewire_pid=$!
+  for attempt in $(seq 1 100); do
+    [ ! -S "$XDG_RUNTIME_DIR/pipewire-0" ] || break
+    kill -0 "$pipewire_pid" 2>/dev/null || exit 1
+    sleep 0.1
+  done
+  [ -S "$XDG_RUNTIME_DIR/pipewire-0" ] || exit 1
+  wireplumber >"$ATOM_DESKTOP_ROOT/test-results/native-wireplumber.log" 2>&1 &
+  wireplumber_pid=$!
 fi
 if [ "$session" = wayland ]; then
   unset DISPLAY
@@ -61,6 +75,7 @@ else
   dbus-update-activation-environment GDK_BACKEND DISPLAY XDG_SESSION_TYPE
 fi
 if [ "$suite" = dialogs ]; then
+  export ATOM_NATIVE_COMPOSITOR_PID="$compositor_pid"
   HOME="$ATOM_NATIVE_SURFACE_HOME" /usr/libexec/xdg-desktop-portal-gtk --replace --verbose >"$ATOM_DESKTOP_ROOT/test-results/native-dialog-portal.log" 2>&1 &
   portal_pid=$!
   export ATOM_NATIVE_DIALOG_PID="$portal_pid"

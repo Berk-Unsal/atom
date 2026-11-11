@@ -1,5 +1,5 @@
-// Actual production file-chooser widgets, never supplied dialog responses.
-// Restricted to the installed app and an owned portal on a disposable VM.
+// Actual production file/Print widgets, never supplied OS dialog responses.
+// Restricted to the installed app and owned services on a disposable VM.
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -19,7 +19,7 @@ const run = promisify(execFile);
 const desktop = path.resolve(import.meta.dirname, ".."); const root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/native-surfaces.json");
 const result = { ...sourceIdentity(root), platform: process.platform, arch: process.arch, session: process.env.ATOM_DEB_DISPLAY_SESSION,
-  scope: "Installed production app; real owned GTK portal widgets via AT-SPI; no chooser response or Electron dialog method replacement. Headless session, not graphical installer or physical Print qualification.", dialogs: [], rf_posts: [] };
+  scope: "Installed production app; GTK file choosers via AT-SPI, Print controls via owned compositor pixels/native input and a local CUPS-PDF queue; no chooser response or Electron dialog method replacement. Headless session, not graphical installer or physical printer qualification.", dialogs: [], rf_posts: [] };
 assert.equal(process.env.GITHUB_ACTIONS, "true"); assert.equal(process.platform, "linux"); assert.notEqual(process.getuid(), 0);
 assert.equal(result.source_dirty, false);
 const scratch = process.env.ATOM_NATIVE_SURFACE_ROOT; const home = process.env.ATOM_NATIVE_SURFACE_HOME; const documents = process.env.ATOM_NATIVE_SURFACE_DOCUMENTS;
@@ -48,6 +48,14 @@ async function drive(action, title, target) {
   const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
 }
 async function command(id) { await application.evaluate(({ Menu }, commandId) => Menu.getApplicationMenu().getMenuItemById(commandId).click(), id); }
+async function printAction(action) {
+  const { stdout } = await run("/usr/bin/python3", [path.join(desktop, "test/native-print-driver.py"), "--pid", String(application.process().pid), "--action", action],
+    { timeout: 90_000, maxBuffer: 128 * 1024 });
+  const trace = JSON.parse(stdout.trim()); assert.equal(trace.native_widgets_only, true); result.dialogs.push(trace);
+}
+async function queueJobs(completed = false) {
+  return (await run("lpstat", ["-W", completed ? "completed" : "all", "-o", "AtomQualification"])).stdout.trim();
+}
 async function fileState() { const receipt = await page.evaluate(() => window.atomDesktop.getProjectFileState()); assert.equal(receipt.ok, true); return receipt.value; }
 async function project(all = false) {
   return page.evaluate((all) => new Promise((resolve, reject) => {
@@ -72,7 +80,8 @@ async function completeProjectDialog() {
 }
 try {
   const env = { ...process.env, HOME: home, PATH: "/usr/bin:/bin" }; delete env.ELECTRON_RUN_AS_NODE;
-  application = await launchNative({ executablePath: executable, cwd: documents, args: result.session === "wayland" ? ["--ozone-platform=wayland"] : [], env, chromiumSandbox: true, timeout: 60_000 });
+  application = await launchNative({ executablePath: executable, cwd: documents,
+    args: result.session === "wayland" ? ["--ozone-platform=wayland"] : [], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow(); page.setDefaultTimeout(30_000); await page.waitForLoadState("domcontentloaded");
   page.on("request", (request) => { if (request.method() === "POST" && request.url().startsWith("app://atom/api/")) result.rf_posts.push(new URL(request.url()).pathname); });
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor(); await waitForRuntime(page, (status) => status.state === "ready");
@@ -136,12 +145,56 @@ try {
   await page.getByRole("button", { name: "Save PDF", exact: true }).click(); await drive("save", "Save A.T.O.M report", pdfFile);
   await until(() => page.getByRole("button", { name: "Save PDF", exact: true }).isEnabled(), "PDF export did not finish");
   const pdf = await fs.readFile(pdfFile); assert.equal(pdf.subarray(0, 5).toString(), "%PDF-"); result.pdf = { bytes: pdf.length, sha256: sha256(pdf) };
+  const savedPDFText = (await run("pdftotext", [pdfFile, "-"])).stdout;
+  assert.ok(savedPDFText.includes("Çankaya Ağ Planı") && savedPDFText.includes("Simulation Run"), "Native Save PDF must retain Unicode Project and Run text");
+  result.saved_pdf_unicode_text_preserved = true;
   const retainedBeforeCancel = await artifacts(); const canceledPDF = path.join(documents, "Cancelled — must not exist.pdf");
   await page.getByRole("button", { name: "Save PDF", exact: true }).click(); await drive("cancel", "Save A.T.O.M report", canceledPDF);
   await until(() => page.getByRole("button", { name: "Save PDF", exact: true }).isEnabled(), "PDF cancellation did not finish");
   const afterCancel = await artifacts(); for (const artifact of retainedBeforeCancel) assert.ok(afterCancel.some((row) => row.artifact_id === artifact.artifact_id && row.content_hash === artifact.content_hash));
   assert.equal(await fs.stat(canceledPDF).then(() => true, () => false), false); assert.equal(sha256(await fs.readFile(pdfFile)), sha256(pdf));
   result.report_cancellation_preserved_retained_artifacts_and_saved_pdf = true;
+  const printers = await application.evaluate(async ({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.getPrintersAsync());
+  const printer = printers.find((row) => row.name === "AtomQualification");
+  assert.ok(printer, "The installed app must enumerate the real local virtual printer");
+  // Electron 44 PrinterInfo has no isDefault property. Independently observe
+  // the real CUPS default rather than treating a removed API field as evidence.
+  const defaultPrinter = (await run("lpstat", ["-d"])).stdout.trim();
+  assert.equal(defaultPrinter, "system default destination: AtomQualification");
+  result.printer = { name: printer.name, cups_default: defaultPrinter, state: printer.options?.["printer-state"] };
+  const jobsBefore = await queueJobs(); assert.equal(jobsBefore, "");
+  const printArtifacts = await artifacts();
+  await page.getByRole("button", { name: "Print", exact: true }).click(); await printAction("cancel");
+  await until(() => page.getByRole("button", { name: "Print", exact: true }).isEnabled(), "Real Print cancellation did not return");
+  assert.equal(await queueJobs(), jobsBefore); assert.equal(sha256(await fs.readFile(pdfFile)), sha256(pdf));
+  for (const artifact of printArtifacts) assert.ok((await artifacts()).some((row) => row.artifact_id === artifact.artifact_id && row.content_hash === artifact.content_hash));
+  result.real_print_cancel_preserved_artifacts_pdf_and_queue = true;
+  const printerDirectory = path.join(os.userInfo().homedir, "PDF");
+  const beforePrint = new Set(await fs.readdir(printerDirectory).catch((error) => { if (error.code === "ENOENT") return []; throw error; }));
+  await page.getByRole("button", { name: "Print", exact: true }).click(); await printAction("print");
+  await until(() => page.getByRole("button", { name: "Print", exact: true }).isEnabled(), "Real Print submission did not return");
+  await until(async () => (await queueJobs(true)).split("\n").filter(Boolean).length === 1, "CUPS did not complete exactly one report job", 60_000);
+  let printFile;
+  await until(async () => { const files = (await fs.readdir(printerDirectory).catch(() => [])).filter((file) => !beforePrint.has(file) && file.endsWith(".pdf"));
+    if (files.length !== 1) return false; printFile = path.join(printerDirectory, files[0]); return (await fs.stat(printFile)).size > 0;
+  }, "Local virtual printer did not produce one PDF", 60_000);
+  const printed = await fs.readFile(printFile); assert.equal(printed.subarray(0, 5).toString(), "%PDF-");
+  result.real_print_completed_local_job = { bytes: printed.length, sha256: sha256(printed) };
+  await run("pdftoppm", ["-f", "1", "-singlefile", "-scale-to-x", "1400", "-scale-to-y", "-1", "-png", printFile,
+    path.join(desktop, "test-results/native-print-output")], { timeout: 20_000 });
+  result.printed_fonts = (await run("pdffonts", [printFile], { timeout: 10_000 })).stdout;
+  const text = (await run("pdftotext", [printFile, "-"])).stdout;
+  result.printed_text = { characters: text.length, sha256: sha256(text), project_label_recovered: text.includes("Çankaya Ağ Planı"), run_label_recovered: text.includes("Simulation Run") };
+  // The CUPS-PDF PostScript conversion uses embedded Type 3 custom fonts whose
+  // extracted Unicode differs from their rendered glyphs. Qualify actual paper
+  // output through its raster; native Save PDF retains its separate text check.
+  const visualText = (await run("tesseract", [path.join(desktop, "test-results/native-print-output.png"), "stdout", "--psm", "3"], { timeout: 20_000 })).stdout;
+  const folded = visualText.normalize("NFKD").replace(/\p{M}/gu, "").replaceAll("ı", "i").toLowerCase().replace(/\s+/g, " ");
+  result.printed_visual = { characters: visualText.length, sha256: sha256(visualText),
+    project_label_recovered: folded.includes("cankaya ag plani"), run_label_recovered: folded.includes("simulation run"), report_title_recovered: folded.includes("planning report") };
+  assert.ok(result.printed_visual.project_label_recovered && result.printed_visual.run_label_recovered && result.printed_visual.report_title_recovered,
+    "Rendered print output must visibly retain the Project, Run and report labels");
+  result.real_print_completed_local_job.rendered_project_and_run_labels = true;
   // Imported files remain a copy until explicit Save; use the established path.
   await command("atom-project-save"); await completeProjectDialog(); await until(cleanSaved, "Final Save did not leave a clean association");
   // Sync first marks uncached snapshots unverified, then hashes all associated

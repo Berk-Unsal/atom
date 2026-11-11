@@ -11,6 +11,7 @@ import {
 import { validateReportDefinition } from "../domain/report.js";
 import { canonicalSerialize } from "../domain/serialization.js";
 import { workspaceToDomain, domainToWorkspace } from "./projectCompatibility.js";
+import { captureProjectStates, preserveUnchangedProjects } from "./workspaceProjection.js";
 import { implementsRepositoryContract } from "./contract.js";
 import { normalizeRepositoryError, RepositoryError } from "./errors.js";
 
@@ -19,12 +20,25 @@ export class LocalRepository {
     this.store = store;
     this.datasetRef = datasetRef;
     this.domain = null;
+    this.domainBaselines = new WeakMap();
+  }
+
+  rememberWorkspace(workspace) {
+    this.domain = workspaceToDomain(workspace);
+    if (this.domain.compatibility_workspace && typeof this.domain.compatibility_workspace === "object") {
+      this.domainBaselines.set(this.domain.compatibility_workspace, captureProjectStates(this.domain));
+    }
+  }
+
+  projectWorkspace(domain) {
+    return preserveUnchangedProjects(domainToWorkspace(domain, domain.compatibility_workspace), domain,
+      this.domainBaselines.get(domain.compatibility_workspace));
   }
 
   async loadWorkspace(datasetRef = this.datasetRef) {
     try {
       const workspace = await this.store.loadProjectWorkspace(datasetRef);
-      this.domain = workspaceToDomain(workspace);
+      this.rememberWorkspace(workspace);
       return workspace;
     } catch (error) {
       throw normalizeRepositoryError(error, "persistence_failed");
@@ -37,7 +51,7 @@ export class LocalRepository {
       return {
         workspace: queued.workspace,
         saved: queued.saved.then((saved) => {
-          this.domain = workspaceToDomain(saved);
+          this.rememberWorkspace(saved);
           return saved;
         }).catch((error) => {
           throw normalizeRepositoryError(error, "persistence_failed");
@@ -65,9 +79,9 @@ export class LocalRepository {
 
   async saveDomainWithWorkspace(domain) {
     if (!domain || typeof domain !== "object") throw new RepositoryError("invalid_entity", "Domain workspace is required");
-    const workspace = domainToWorkspace(domain, domain.compatibility_workspace);
+    const workspace = this.projectWorkspace(domain);
     const savedWorkspace = await this.saveWorkspace(workspace);
-    this.domain = workspaceToDomain(savedWorkspace);
+    this.rememberWorkspace(savedWorkspace);
     return { domain: this.domain, workspace: savedWorkspace };
   }
 
@@ -156,7 +170,7 @@ export class LocalRepository {
       scenarios: domain.scenarios.map((candidate) => candidate.scenario_id === sourceScenario.scenario_id ? nextScenario : candidate),
       scenario_revisions: revisions,
     };
-    const workspace = domainToWorkspace(nextDomain, domain.compatibility_workspace);
+    const workspace = this.projectWorkspace(nextDomain);
     const nextWorkspace = replaceLegacyScenario(workspace, project, sourceScenario, {
       ...cloneDomainValue(legacySource),
       ...cloneDomainValue(snapshot),
@@ -484,6 +498,20 @@ export class LocalRepository {
 
   exportProjectFile(project) {
     return this.store.exportProjectFile(project);
+  }
+
+  prepareProjectFile(project) {
+    // Materialize the existing compatibility metadata before a native file
+    // becomes the content-hash baseline. Later domain/report operations must
+    // not make an untouched legacy Project appear edited merely by doing this.
+    const workspace = { schemaVersion: 2, activeProjectId: project.id, projects: [project] };
+    const compatibility = domainToWorkspace(workspaceToDomain(workspace), workspace).projects[0];
+    // Only Project metadata belongs to this preparation. A compatibility
+    // round-trip also expands legacy Scenario plans/revisions; native Save
+    // must preserve those snapshots and their original request bytes.
+    const normalized = { ...project, description: compatibility.description,
+      tags: compatibility.tags, domain: compatibility.domain };
+    return JSON.stringify(normalized) === JSON.stringify(project) ? project : normalized;
   }
 
   importProjectFile(text) {

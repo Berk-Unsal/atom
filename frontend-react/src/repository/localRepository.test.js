@@ -1,10 +1,80 @@
 import { describe, expect, it } from "vitest";
 import { createProjectWorkspace, createScenario, datasetReference, duplicateProjectData, exportProjectFile, importProjectFile, isDatasetCompatible, updateProjectDraft } from "../utils/projectStore.js";
 import { createRun } from "../domain/run.js";
+import { createReportDefinition } from "../domain/report.js";
+import * as projectStore from "../utils/projectStore.js";
 import { implementsRepositoryContract } from "./contract.js";
 import LocalRepository from "./localRepository.js";
+import sample from "../../../examples/ankara-sample.atom-project.json";
 
 describe("LocalRepository", () => {
+  it("does not discard an in-place domain edit as unchanged", async () => {
+    let workspace = createProjectWorkspace(null);
+    const repository = new LocalRepository({ store: { ...projectStore,
+      loadProjectWorkspace: async () => structuredClone(workspace),
+      queueProjectWorkspaceSave: (next) => { workspace = structuredClone(next); return { workspace: next, saved: Promise.resolve(next) }; },
+    } });
+    const domain = await repository.loadDomain();
+    domain.projects[0].name = "Actual in-place edit";
+    await repository.saveDomain(domain);
+    expect(workspace.projects[0].name).toBe("Actual in-place edit");
+  });
+
+  it.each([1, 2, 3].flatMap((schema) => ["project", "report", "version"].map((operation) => [schema, operation])))("preserves a saved schema %s Project when another Project's %s is saved", async (schema, operation) => {
+      const legacy = new LocalRepository().prepareProjectFile(importProjectFile(JSON.stringify({ ...sample, schemaVersion: schema })));
+      let workspace = createProjectWorkspace(null);
+      const otherId = workspace.activeProjectId;
+      const otherScenario = createScenario("Other Scenario", { plan: { settings: { frequencyGHz: 28 } }, request: null, summary: {}, artifacts: null });
+      workspace.projects[0].scenarios.push(otherScenario);
+      workspace.projects[0].activeScenarioId = otherScenario.id;
+      workspace.projects.unshift(legacy);
+      const repository = new LocalRepository({ store: { ...projectStore,
+        loadProjectWorkspace: async () => structuredClone(workspace),
+        queueProjectWorkspaceSave: (next) => { workspace = structuredClone(next); return { workspace: next, saved: Promise.resolve(next) }; },
+      } });
+      const before = exportProjectFile(legacy);
+      const domain = await repository.loadDomain();
+      const other = domain.projects.find((project) => project.project_id === otherId);
+      if (operation === "project") {
+        await repository.saveProject({ ...other, name: "Actual change in another Project" });
+        expect(workspace.projects.find((project) => project.id === otherId).name).toBe("Actual change in another Project");
+      } else if (operation === "report") {
+        const report = createReportDefinition({ project_id: otherId, source_kind: "live_compatibility" });
+        await repository.saveReportDefinitionWithWorkspace(report);
+        expect(workspace.projects.find((project) => project.id === otherId).domain.report_definitions.map((row) => row.report_id)).toEqual([report.report_id]);
+      } else {
+        await repository.saveScenarioVersion({ projectId: otherId, scenarioId: otherScenario.id,
+          snapshot: { name: "Other Version edit", plan: { settings: { frequencyGHz: 28, txPowerDbm: 31 } } } });
+        expect(workspace.projects.find((project) => project.id === otherId).scenarios[0].domain.revision).toBe(2);
+      }
+      const untouched = workspace.projects.find((project) => project.id === legacy.id);
+      expect(exportProjectFile(untouched)).toBe(before);
+      expect(untouched.scenarios).toEqual(legacy.scenarios);
+      expect(workspace.activeProjectId).toBe(otherId);
+      const current = await repository.loadDomain();
+      const scenario = current.scenarios.find((row) => row.project_id === legacy.id);
+      await repository.saveScenario({ ...scenario, name: "Actual legacy Scenario edit" });
+      const edited = workspace.projects.find((project) => project.id === legacy.id);
+      expect(edited.scenarios[0].name).toBe("Actual legacy Scenario edit");
+      expect(exportProjectFile(edited)).not.toBe(before);
+    });
+
+  it.each([1, 2, 3])("prepares native metadata without rewriting schema %s scenario snapshots", (schemaVersion) => {
+    const project = importProjectFile(JSON.stringify({ ...sample, schemaVersion }));
+    const before = structuredClone(project);
+    const repository = new LocalRepository();
+    const prepared = repository.prepareProjectFile(project);
+    expect(prepared.scenarios).toEqual(before.scenarios);
+    expect(prepared.scenarios).toBe(project.scenarios);
+    expect(prepared.draft).toBe(project.draft);
+    expect(prepared.activeScenarioId).toBe(project.activeScenarioId);
+    expect(prepared.datasetRef).toBe(project.datasetRef);
+    expect(project).toEqual(before);
+    expect(repository.prepareProjectFile(prepared)).toBe(prepared);
+    expect(importProjectFile(exportProjectFile(prepared)).scenarios.map(({ plan, request }) => ({ plan, request })))
+      .toEqual(before.scenarios.map(({ plan, request }) => ({ plan, request })));
+  });
+
   it("implements the domain repository contract over ProjectV2 compatibility storage", async () => {
     let workspace = createProjectWorkspace({ id: "ankara", version: "2026.07", hashes: { towers: "abc" } });
     const project = workspace.projects[0];

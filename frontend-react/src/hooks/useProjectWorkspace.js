@@ -290,9 +290,14 @@ export default function useProjectWorkspace(meta) {
     }
     let saved;
     if (draft) {
-      saved = updateProject(projectId, (project) => repository.updateProjectDraft({
+      saved = updateProject(projectId, (project) => repository.prepareProjectFile(repository.updateProjectDraft({
         ...project, datasetRef: project.datasetRef ?? repository.datasetReference(meta),
-      }, draft));
+      }, draft)));
+    } else {
+      const current = workspaceRef.current.projects.find((candidate) => candidate.id === projectId);
+      const prepared = repository.prepareProjectFile(current);
+      if (prepared !== current) saved = commit((workspace) => ({ ...workspace,
+        projects: workspace.projects.map((project) => project.id === projectId ? prepared : project) }));
     }
     // Capture before awaiting persistence: later input/history updates must not
     // change the snapshot or make an older completed Save appear current.
@@ -302,7 +307,7 @@ export default function useProjectWorkspace(meta) {
     // Still allow a portable file to rescue the current in-memory work.
     await saved?.catch(() => {});
     return project;
-  }, [meta, repository, updateProject]);
+  }, [commit, meta, repository, updateProject]);
 
   return {
     activeProject,

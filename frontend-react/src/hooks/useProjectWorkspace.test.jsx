@@ -36,6 +36,7 @@ vi.mock("../utils/projectStore.js", async (importOriginal) => {
 
 import useProjectWorkspace from "./useProjectWorkspace.js";
 import LocalRepository from "../repository/localRepository.js";
+import { domainToWorkspace, workspaceToDomain } from "../repository/projectCompatibility.js";
 
 afterEach(() => {
   persistence.snapshots.length = 0;
@@ -47,6 +48,27 @@ afterEach(() => {
 });
 
 describe("useProjectWorkspace", () => {
+  it("prepares stable portable metadata before a later shared-domain operation without creating a Version", async () => {
+    const { result } = renderHook(() => useProjectWorkspace(null));
+    await waitFor(() => expect(result.current.loaded).toBe(true));
+    const original = result.current.activeProject;
+    let prepared;
+    await act(async () => { prepared = await result.current.prepareProjectFile(original.id); });
+    const before = exportProjectFile(prepared);
+    const materialized = domainToWorkspace(workspaceToDomain(result.current.workspace));
+    expect(exportProjectFile(materialized.projects.find((project) => project.id === original.id))).toBe(before);
+    expect(prepared.scenarios).toHaveLength(original.scenarios.length);
+    expect(prepared.activeScenarioId).toBe(original.activeScenarioId);
+    expect(prepared.draft).toEqual(original.draft);
+    expect(prepared.createdAt).toBe(original.createdAt);
+    expect(prepared.updatedAt).toBe(original.updatedAt);
+    const savedRevision = persistence.revision;
+    await act(async () => { await result.current.prepareProjectFile(original.id); });
+    expect(persistence.revision).toBe(savedRevision);
+    await act(async () => { result.current.renameProject("Actual file edit"); await persistence.queue; });
+    expect(exportProjectFile(result.current.activeProject)).not.toBe(before);
+  });
+
   it("validates Open before flushing and preserves the previous project's pending draft before activation", async () => {
     const { result } = renderHook(() => useProjectWorkspace(null));
     await waitFor(() => expect(result.current.loaded).toBe(true));

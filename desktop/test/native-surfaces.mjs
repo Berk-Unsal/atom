@@ -78,6 +78,9 @@ try {
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor(); await waitForRuntime(page, (status) => status.state === "ready");
   const info = await page.evaluate(() => window.atomDesktop.getInfo()); assert.equal(info.commit, result.source_commit); assert.equal(info.rendererSandboxed, true);
   assert.equal(await application.evaluate(({ app }) => app.isPackaged), true);
+  await page.getByRole("button", { name: /^Project menu,/ }).click();
+  await until(() => page.getByRole("button", { name: "Save As", exact: true }).isEnabled(), "Initial project working plan did not finish restoring");
+  await page.keyboard.press("Escape");
   // Capture actual current inputs through Export Copy, then open a supported
   // legacy file whose saved Scenario has no shared-domain metadata. Later
   // report/Version persistence in its imported copy must not dirty this file.

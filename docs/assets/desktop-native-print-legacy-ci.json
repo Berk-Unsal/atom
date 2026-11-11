@@ -1,0 +1,455 @@
+{
+  "schema": 1,
+  "run_id": 43011513941,
+  "url": "https://github.com/Berk-Unsal/atom/actions/runs/43011513941",
+  "pr_head": "c9083c54462a2adfc6765eee1d06c4d7d4278d5f",
+  "source_commit": "d61b0b748f88f34a0bddce6698a361a5d15ed959",
+  "scope": "Installed production app with the patched Go/dependency graph; actual GTK file dialogs, unexpanded legacy Scenario and exact initial/final portable bytes, ordinary Quit and owned-process cleanup. Also actual configured local Print Cancel/Print and readable output. Headless native sessions, not clean GNOME, macOS Print, physical-printer or release acceptance.",
+  "source_rows_or_binary_files_uploaded": false,
+  "targets": [
+    {
+      "session": "x11",
+      "evidence_artifact_id": 13851440963,
+      "source_commit": "d61b0b748f88f34a0bddce6698a361a5d15ed959",
+      "reference": {
+        "platform": "linux",
+        "architecture": "x64",
+        "kernel": "7.0.0-1017-azure",
+        "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+        "logical_cpus": 4,
+        "memory_bytes": 16759304192,
+        "node": "v24.22.2"
+      },
+      "result": "PASS",
+      "saved_project": {
+        "bytes": 270782,
+        "sha256": "759b9fe437ba713f026bb0c7287618fc20ff7abb3caffc17810d389794879d5a",
+        "path_characters": 141
+      },
+      "project_save_open_cancellation_preserved_workspace_bytes_and_association": true,
+      "opened_same_file_identity_and_bytes": true,
+      "markdown_saved_exact_retained_hash": {
+        "bytes": 14515,
+        "sha256": "dfbd89bef8b9c090300b841e7bca7aa6d928e62bd45449a16dda559ea5dee202"
+      },
+      "pdf": {
+        "bytes": 362344,
+        "sha256": "7e194be0d0114689e6628b62f2163d65faeb617c3fdb8c9f57b764e86aa2ecac"
+      },
+      "report_cancellation_preserved_retained_artifacts_and_saved_pdf": true,
+      "ordinary_quit_and_owned_process_cleanup": true,
+      "rf_posts": [
+        "/api/analyze-sector"
+      ],
+      "initial_save_workspace_changes": [],
+      "original_project_changes": [],
+      "original_file_contains_legacy_scenario_without_domain_metadata": true,
+      "saved_pdf_unicode_text_preserved": true,
+      "printer": {
+        "name": "AtomQualification",
+        "cups_default": "system default destination: AtomQualification",
+        "state": "3"
+      },
+      "real_print_cancel_preserved_artifacts_pdf_and_queue": true,
+      "real_print_completed_local_job": {
+        "bytes": 346432,
+        "sha256": "19f181eeb019dffd37469f8e8d0927d2e7b259158378d0e8b970c3b86d2c77c7",
+        "rendered_project_and_run_labels": true
+      },
+      "printed_text": {
+        "characters": 13214,
+        "sha256": "348c86e10118da5c9164271c01c6e23dd6b216fb2b6594c87cf4583dc845d89e",
+        "project_label_recovered": false,
+        "run_label_recovered": false
+      },
+      "printed_visual": {
+        "characters": 948,
+        "sha256": "455b808b4086f6882d51ab70e6ae494e9202e24dbe0c4499c5872505e6a758f1",
+        "project_label_recovered": true,
+        "run_label_recovered": true,
+        "report_title_recovered": true
+      },
+      "dialogs": [
+        {
+          "title": "Export project copy",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "open",
+          "button": "Select",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M project",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M project",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "open",
+          "button": "Select",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Print",
+          "operation": "cancel",
+          "button": "Cancel",
+          "method": "Observed compositor pixels and OCR bounds",
+          "input_method": "X11 owned native window and real XTest pointer click",
+          "native_widgets_only": true,
+          "capture": {
+            "method": "Mutter ScreenCast/PipeWire compositor pixels",
+            "width": 1440,
+            "height": 900,
+            "bytes": 131939,
+            "sha256": "aceab8410f8d6055b16abbdb5902fdbe5896fcf165d1af1469f879557ffad1b0",
+            "file": "native-print-cancel.png"
+          },
+          "widgets": {
+            "cancel": {
+              "text": "Cancel",
+              "left": 469,
+              "top": 517,
+              "width": 42,
+              "height": 11,
+              "blue_region": null
+            },
+            "print": {
+              "text": "Print",
+              "left": 566,
+              "top": 519,
+              "width": 29,
+              "height": 9,
+              "blue_region": null
+            },
+            "queue": {
+              "text": "Atomqualification",
+              "left": 46,
+              "top": 140,
+              "width": 116,
+              "height": 13,
+              "blue_region": [
+                13,
+                135,
+                622,
+                158
+              ]
+            }
+          }
+        },
+        {
+          "title": "Print",
+          "operation": "print",
+          "button": "Print",
+          "method": "Observed compositor pixels and OCR bounds",
+          "input_method": "X11 owned native window and real XTest pointer click",
+          "native_widgets_only": true,
+          "capture": {
+            "method": "Mutter ScreenCast/PipeWire compositor pixels",
+            "width": 1440,
+            "height": 900,
+            "bytes": 131900,
+            "sha256": "6542430a2dac97c0282f5482b26736f725087152d98398be48ec62e37aee0372",
+            "file": "native-print-print.png"
+          },
+          "widgets": {
+            "cancel": {
+              "text": "Cancel",
+              "left": 469,
+              "top": 517,
+              "width": 42,
+              "height": 11,
+              "blue_region": null
+            },
+            "print": {
+              "text": "Print",
+              "left": 566,
+              "top": 519,
+              "width": 29,
+              "height": 9,
+              "blue_region": null
+            },
+            "queue": {
+              "text": "Atomqualification",
+              "left": 46,
+              "top": 140,
+              "width": 116,
+              "height": 13,
+              "blue_region": [
+                13,
+                135,
+                622,
+                158
+              ]
+            }
+          }
+        }
+      ],
+      "associated_project_dirty_flags": [
+        false,
+        false
+      ]
+    },
+    {
+      "session": "wayland",
+      "evidence_artifact_id": 13850822370,
+      "source_commit": "d61b0b748f88f34a0bddce6698a361a5d15ed959",
+      "reference": {
+        "platform": "linux",
+        "architecture": "x64",
+        "kernel": "7.0.0-1017-azure",
+        "cpu": "AMD EPYC 9V45 96-Core Processor",
+        "logical_cpus": 4,
+        "memory_bytes": 16760344576,
+        "node": "v24.22.2"
+      },
+      "result": "PASS",
+      "saved_project": {
+        "bytes": 270782,
+        "sha256": "cb167167df2e124af6eb31c63cb5ca31e0fdb1e048a07e5249071e26964ec512",
+        "path_characters": 141
+      },
+      "project_save_open_cancellation_preserved_workspace_bytes_and_association": true,
+      "opened_same_file_identity_and_bytes": true,
+      "markdown_saved_exact_retained_hash": {
+        "bytes": 14515,
+        "sha256": "088bf24fe1aed55d683f4e432825f891588cc3de9dbc7e5deb25d8ef1868eefd"
+      },
+      "pdf": {
+        "bytes": 362366,
+        "sha256": "974db3725713553c5f502194b495f94699cdb32573860e2acecf8a49b3f3bda0"
+      },
+      "report_cancellation_preserved_retained_artifacts_and_saved_pdf": true,
+      "ordinary_quit_and_owned_process_cleanup": true,
+      "rf_posts": [
+        "/api/analyze-sector"
+      ],
+      "initial_save_workspace_changes": [],
+      "original_project_changes": [],
+      "original_file_contains_legacy_scenario_without_domain_metadata": true,
+      "saved_pdf_unicode_text_preserved": true,
+      "printer": {
+        "name": "AtomQualification",
+        "cups_default": "system default destination: AtomQualification",
+        "state": "3"
+      },
+      "real_print_cancel_preserved_artifacts_pdf_and_queue": true,
+      "real_print_completed_local_job": {
+        "bytes": 346354,
+        "sha256": "30d92d034e9f8dc3e762dd276ce8587bb85560fccf90a3654e3a8b327f60b050",
+        "rendered_project_and_run_labels": true
+      },
+      "printed_text": {
+        "characters": 13219,
+        "sha256": "05bd8a871a14e5e630b934a8929e81d93bf3aca73f99663b649e5403f9781f00",
+        "project_label_recovered": false,
+        "run_label_recovered": false
+      },
+      "printed_visual": {
+        "characters": 948,
+        "sha256": "e3dd79ba846760a52ccbde992c255cd87be9eb7b5801de69d61a33cca068a1b0",
+        "project_label_recovered": true,
+        "run_label_recovered": true,
+        "report_title_recovered": true
+      },
+      "dialogs": [
+        {
+          "title": "Export project copy",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "open",
+          "button": "Select",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M project",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M project",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Open A.T.O.M project",
+          "operation": "open",
+          "button": "Select",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "save",
+          "button": "Save",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Save A.T.O.M report",
+          "operation": "cancel",
+          "button": "Cancel",
+          "native_widgets_only": true
+        },
+        {
+          "title": "Print",
+          "operation": "cancel",
+          "button": "Cancel",
+          "method": "Observed compositor pixels and OCR bounds",
+          "input_method": "Native Wayland Mutter RemoteDesktop pointer click",
+          "native_widgets_only": true,
+          "capture": {
+            "method": "Mutter ScreenCast/PipeWire compositor pixels",
+            "width": 1440,
+            "height": 900,
+            "bytes": 152562,
+            "sha256": "f6ee4487996ffc2b0ddbe684c341291fc890479f355ce75f2065cc8f9fb2ce4b",
+            "file": "native-print-cancel.png"
+          },
+          "widgets": {
+            "cancel": {
+              "text": "Cancel",
+              "left": 399,
+              "top": 215,
+              "width": 47,
+              "height": 11,
+              "blue_region": null
+            },
+            "print": {
+              "text": "Print",
+              "left": 1000,
+              "top": 215,
+              "width": 32,
+              "height": 11,
+              "blue_region": [
+                975,
+                204,
+                1058,
+                238
+              ]
+            },
+            "queue": {
+              "text": "AtomQualification",
+              "left": 421,
+              "top": 350,
+              "width": 130,
+              "height": 13,
+              "blue_region": [
+                388,
+                344,
+                1051,
+                368
+              ]
+            }
+          }
+        },
+        {
+          "title": "Print",
+          "operation": "print",
+          "button": "Print",
+          "method": "Observed compositor pixels and OCR bounds",
+          "input_method": "Native Wayland Mutter RemoteDesktop pointer click",
+          "native_widgets_only": true,
+          "capture": {
+            "method": "Mutter ScreenCast/PipeWire compositor pixels",
+            "width": 1440,
+            "height": 900,
+            "bytes": 139222,
+            "sha256": "58d790b0a11265aec27d0bde65402bc8e696c0245176eec0150bb4deb968a0a4",
+            "file": "native-print-print.png"
+          },
+          "widgets": {
+            "cancel": {
+              "text": "Cancel",
+              "left": 220,
+              "top": 149,
+              "width": 47,
+              "height": 11,
+              "blue_region": null
+            },
+            "print": {
+              "text": "Print",
+              "left": 821,
+              "top": 149,
+              "width": 32,
+              "height": 11,
+              "blue_region": [
+                796,
+                138,
+                879,
+                172
+              ]
+            },
+            "queue": {
+              "text": "AtomQualification",
+              "left": 242,
+              "top": 284,
+              "width": 130,
+              "height": 13,
+              "blue_region": [
+                209,
+                278,
+                872,
+                302
+              ]
+            }
+          }
+        }
+      ],
+      "associated_project_dirty_flags": [
+        false,
+        false
+      ]
+    }
+  ]
+}

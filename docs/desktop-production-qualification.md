@@ -115,3 +115,20 @@ The corrected [local raw record](assets/desktop-rf-twenty-macos.json), clean sou
 The macOS job in corrected-viewport run `43000567737` fails the size wait before any RF pair; it is not a timing-only failure or a completed qualification. The hosted display cannot accommodate the requested content size in its initial configuration. A test-only Swift helper now records advertised display modes and visible geometry, selects an advertised mode with room for native chrome, and applies it for the disposable login session using Apple's [display configuration API](https://developer.apple.com/documentation/coregraphics/cgcompletedisplayconfiguration(_:_:)). It does not save permanent preferences. If the runner advertises no adequate mode, it records that limitation and fails; the viewport requirement is preserved. No personal-machine display changes are permitted. Local typechecking and a read-only `--observe-only` query validate the helper; actual hosted configuration remains pending. RF failure diagnostics also retain the observed viewport/work area and bounded native window/document state.
 
 Run `43003801102`, execution `3e4e7653d8f84f9ec39f572a8d0d306ac64ad70b` from `7d71017`, successfully switches the hosted Mac to an advertised 1600×1200 mode. Electron observes a 1600×1102 work area and the required 1440×900 content viewport; both macOS and Ubuntu finish all 66 exact pairs and both eight-Cell workflows. The helper itself falsely reports insufficient geometry because the short-lived CLI's `NSScreen` visible frame remains cached at its previous 1024×681 size. Its verdict now uses live CoreGraphics display bounds while retaining the cached AppKit query as a diagnostic. The viewport assertion is unchanged. macOS startup measurements were skipped after that failed preparation step, so the corrected helper still requires a new hosted run before claiming a complete startup/RF qualification on that source.
+
+## Completed hosted content-viewport qualification
+
+[Run 43008763732](https://github.com/Berk-Unsal/atom/actions/runs/43008763732), exact execution `cae198843413d95742d25d7d8d905f2880f73bc3` from head `f22bd2e`, completes all 66 exact deterministic pairs, metadata/technology parity, both eight-Cell workflows, painted Canvas and cleanup on both platforms at the asserted 1440×900 content viewport. Both targets also complete 20 fresh-profile launches plus 20 same-profile relaunches. The Mac display helper passes using live 1600×1200 CoreGraphics bounds; Electron observes a 1600×1102 work area. [The complete raw record](assets/desktop-rf-viewport-ci.json) retains all samples and display diagnostics. This source predates the separate Go security update.
+
+| Original comparator | macOS hosted | Ubuntu hosted |
+| --- | ---: | ---: |
+| Fresh-profile launch p95 / 10 s | 6.163 s — passes | 5.160 s — passes |
+| Same-profile launch p95 / 5 s | 5.828 s — fails | 5.121 s — fails |
+| Fresh-profile child + data p95 / 8 s | 5.125 s — passes | 4.587 s — passes |
+| Same-profile child + data p95 / 4 s | 4.853 s — fails | 4.582 s — fails |
+| Full-pack aggregate idle RSS / 500 MiB | 854.31 MiB — fails | 1239.56 MiB — fails |
+| Simulate relative median difference / 5% | 66.54% — fails | 67.81% — fails |
+| Evaluate-network relative median difference / 5% | 5.41% — fails | 0.36% — passes |
+| Optimize-network relative median difference / 5% | 3.05% — passes | 0.29% — passes |
+
+The Mac evaluation result now also misses 5%; historical passing evaluation measurements do not supersede it. Full/sample aggregate RSS is 854.31/441.77 MiB on macOS and 1239.56/802.61 MiB on Ubuntu; Linux full-pack PSS is 825.45 MiB. Map animation-frame cadence is 58.37/s and 59.00/s; event-to-second-frame p95 is 33.40/46.50 ms. These remain scheduling/presentation proxies, not physical frame or INP claims. The virtual M1 has three CPUs/7 GiB and Ubuntu four CPUs/about 16 GiB; clean minimum-OS/reference-hardware acceptance remains separate. No comparator is changed and both results remain `BUDGET_REVIEW_REQUIRED`.

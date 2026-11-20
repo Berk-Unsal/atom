@@ -159,3 +159,11 @@ operation fails with the observed TypeError; the corrected operation waits,
 sets the required size and retains sandboxed/no-Node renderer isolation. The
 regression runs before the existing macOS/Ubuntu native smoke suite. This
 harness correction does not explain or waive the blank-renderer failures.
+
+
+Startup sampling also uses the bounded observer introduced in #208, retaining
+asset/API failure identities and exception/console hashes when a launch fails.
+It replaces arbitrary exception text in `current_renderer_errors` with the
+observer's class/hash/static-frame records. Repeated console messages share a
+counted entry. The original sampling clock and readiness waits stay unchanged;
+no blank launch is retried or discarded.

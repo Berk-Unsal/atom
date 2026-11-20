@@ -11,6 +11,7 @@ import { startupDiagnostics } from "./startup-diagnostics.mjs";
 import { sourceIdentity, distribution, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
 
 const require = createRequire(import.meta.url);
+const { observeRenderer } = require("./renderer-observation.cjs");
 const desktop = path.resolve(import.meta.dirname, "..");
 const root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/startup-budget.json");
@@ -31,6 +32,7 @@ const checkpoint = () => fs.writeFile(output, JSON.stringify(result, null, 2) + 
 let application;
 let currentProfile;
 let currentPage;
+let rendererObserver;
 async function launch(profile, resourceRoot = resources) {
   currentProfile = profile;
   const started = Date.now();
@@ -40,8 +42,9 @@ async function launch(profile, resourceRoot = resources) {
   const nativeProcess = application.process();
   nativeProcess.once("exit", (code, signal) => { result.last_application_exit = { code, signal, time: new Date().toISOString() }; });
   const page = await application.firstWindow(); currentPage = page;
-  result.current_renderer_errors = [];
-  page.on("pageerror", (error) => { if (result.current_renderer_errors.length < 20) result.current_renderer_errors.push(String(error.message).slice(0, 1000)); });
+  rendererObserver = observeRenderer(page);
+  result.current_renderer_observation = rendererObserver.records;
+  result.current_renderer_errors = rendererObserver.records.page_errors;
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ state: "visible", timeout: 60_000 });
   await page.waitForFunction(() => [...document.querySelectorAll("button")].some((button) => button.textContent.trim() === "Run Sector" && !button.disabled));
   await waitForRuntime(page, (status) => status.state === "ready" && status.readiness.ui && status.readiness.dataset);
@@ -59,6 +62,7 @@ async function launch(profile, resourceRoot = resources) {
     sidecar_start_to_dataset_ready_ms: Date.parse(ready.time) - Date.parse(began.time) };
 }
 async function close() {
+  rendererObserver?.stop(); rendererObserver = null;
   const tree = await processTree(application.process().pid);
   assert.equal(tree.processes.filter((row) => row.executable === "atom-api").length, 1);
   await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close());
@@ -119,6 +123,7 @@ try {
 }
 finally {
   await checkpoint();
+  rendererObserver?.stop();
   if (application) await application.close().catch(() => {});
   await fs.rm(scratch, { recursive: true, force: true });
 }

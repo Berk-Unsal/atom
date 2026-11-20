@@ -1,6 +1,6 @@
 # Production macOS file-panel qualification
 
-Status: a real arm64 Export now passes; the complete flow still stops at the next legacy Open. A control-scan correction is prepared; full arm64/Intel verification remains pending for #154/#156/#158/#159. Unit selectors and local refusal are supporting evidence, not native file-panel acceptance.
+Status: real arm64 Export, legacy Open and Unicode Save As panels complete. The next clean-association assertion still fails; identity observation is prepared. Full arm64/Intel verification remains pending for #154/#156/#158/#159. Unit selectors and local refusal are supporting evidence, not native file-panel acceptance.
 
 The macOS package matrix launches the actual production app, copied outside the repository under a Unicode/space path and made read-only. HOME and document paths belong to one private owned temporary tree. System Events targets the exact PID and `io.github.berk-unsal.atom` bundle ID. No Electron dialog method, selected path response, filesystem operation, shared serializer or RF request is replaced.
 
@@ -31,3 +31,10 @@ The selector now supports this observed buttonless layout only for an unambiguou
 Arm64 run `44818037738`, execution `4ae513fa56d05618c88d7baa30953b8cfe60cf39` from head `02691bb`, completes the actual Export panel, focused Go to Folder Return and Save. The harness reads the resulting file and verifies its shared draft before preparing the schema-2 legacy file. The next Open driver is terminated by the original 100-second bound without a completed receipt. [Frozen partial evidence](assets/desktop-macos-files-export-ci.json) records the one completed operation and error cleanup; ordinary Quit and the full nine-operation flow have not passed.
 
 The driver now excludes native file browsers, rows, sidebars and scrolling inventories from inspection. It needs only dialog controls because the native path sheet selects the exact owned destination. A regression catches the prior file-list traversal before this change and passes after it. Bounded phase markers identify target validation, process selection and each native control wait if another call stalls. No wait is increased, input repeated or assertion removed. Actual corrected hosted execution remains pending.
+
+
+## Save As association observation
+
+Arm64 run `44819718002`, execution `80cb5ebf967fe63a9180200f49901fff1ae8e893` from head `c5bd9d4`, completes three actual panel operations: Export, legacy Open and Unicode Save As. The imported legacy Scenario reaches the shared UI rename, but the fixture then times out at its combined literal-path/clean-state predicate. [Frozen partial evidence](assets/desktop-macos-files-save-ci.json) does not establish which predicate failed or claim a clean association.
+
+The check now records clean status, literal spelling, Unicode-equivalent filename and filesystem identities separately. Acceptance still requires an explicit clean flag plus the exact chosen file **and parent directory** by device/inode, with an equivalent Unicode filename. This handles macOS directory aliases and canonical Unicode spellings without accepting another same-content file or another chosen directory. Four real-filesystem regressions reject dirty/missing associations, byte-identical different files and same-inode links under a different parent, while accepting a canonically equivalent filename for the same file. All project-content, hash, cancellation, legacy and final-Quit assertions stay intact. Corrected actual execution remains pending.

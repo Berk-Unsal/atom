@@ -16,6 +16,7 @@ const { createScenario, exportProjectFile } = await import("../../frontend-react
 const require = createRequire(import.meta.url), run = promisify(execFile);
 const { inventory } = require("../lib/package-contract.cjs");
 const { changeSummary } = require("./surface-diagnostics.cjs");
+const { observeFileAssociation } = require("./file-association-observation.cjs");
 const desktop = path.resolve(import.meta.dirname, ".."), root = path.dirname(desktop);
 const output = path.join(desktop, "test-results/macos-files.json");
 const result = { ...sourceIdentity(root), scope: "Read-only relocated production app on disposable hosted macOS, actual System Events Open/Save/Cancel widgets, private native HOME and exact retained file/PDF checks. Not clean minimum-OS or signed/quarantined qualification.", dialogs: [], rf_posts: [] };
@@ -60,7 +61,11 @@ async function artifacts() {
       read.onsuccess = () => { database.close(); resolve(read.result.map((row) => row.metadata)); }; read.onerror = () => { database.close(); reject(new Error("Artifact read failed")); }; };
   }));
 }
-async function cleanSaved() { const active = await project(); return (await fileState()).some((row) => row.id === active.id && row.path === projectFile && row.dirty === false); }
+async function cleanSaved() {
+  const active = await project(), row = (await fileState()).find((entry) => entry.id === active.id);
+  result.last_association_observation = await observeFileAssociation(row, projectFile);
+  return result.last_association_observation.valid;
+}
 async function completeProjectDialog() {
   await until(() => page.getByRole("button", { name: "Save As", exact: true }).isEnabled(), "Project chooser operation did not finish");
   await page.keyboard.press("Escape");

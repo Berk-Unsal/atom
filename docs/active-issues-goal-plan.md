@@ -137,3 +137,6 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 
 
 - #210 native progression: `44818037738` completes an actual arm64 Export and its shared-draft readback on `4ae513f` from `02691bb`, then the next legacy Open driver reaches its original 100-second bound. The full flow remains failed. Native file-list traversal is excluded and phase markers added without increasing waits or retrying input. [Partial evidence and next verification](desktop-macos-files-qualification.md#real-export-and-subsequent-open-timeout) remain source-bound.
+
+
+- #210 native Save As progression: `44819718002` reaches actual Export, legacy Open and Unicode Save As on `80cb5eb` from `c5bd9d4`, then fails the combined literal-path/clean-association check. The fixture now observes the individual predicates and requires an explicit clean state, exact file/parent identities and Unicode-equivalent filename; four filesystem regressions reject dirty, missing, wrong-file and wrong-parent cases. [Partial source-bound record](desktop-macos-files-qualification.md#save-as-association-observation) leaves full native acceptance pending.

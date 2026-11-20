@@ -50,9 +50,11 @@ function run(argv) {
   var attributes = $.NSFileManager.defaultManager.attributesOfItemAtPathError(root, null);
   if (!hasAttributes(attributes) || Number(ObjC.unwrap(attributes.objectForKey("NSFileOwnerAccountID"))) !== $.getuid() ||
       Number(ObjC.unwrap(attributes.objectForKey("NSFilePosixPermissions"))) !== 448 || ObjC.unwrap(attributes.objectForKey("NSFileType")) !== "NSFileTypeDirectory") throw new Error("Expected an owned private qualification directory");
+  console.log("ATOM_MACOS_FILE_STAGE target-validated");
   var system = Application("System Events"), matches = system.applicationProcesses.whose({ unixId: pid })();
   if (matches.length !== 1 || matches[0].bundleIdentifier() !== "io.github.berk-unsal.atom") throw new Error("Expected the exact packaged Atom process");
-  var process = matches[0]; process.frontmost = true;
+  var process = matches[0]; console.log("ATOM_MACOS_FILE_STAGE process-identified"); process.frontmost = true;
+  console.log("ATOM_MACOS_FILE_STAGE foreground-requested");
   function property(element, name, fallback) { try { return element[name](); } catch (_) { return fallback; } }
   function frame(element) { var p = property(element, "position", []), s = property(element, "size", []); return { x: p[0], y: p[1], width: s[0], height: s[1] }; }
   var refs = {}, last = [];
@@ -61,6 +63,9 @@ function run(argv) {
     function capture(element, depth, controls) {
       if (depth > 16 || ++visited > 2000) throw new Error("Native file accessibility tree exceeds its bound");
       var role = property(element, "role", "");
+      // File rows/sidebar contents are not used for selection: Go to Folder
+      // chooses the exact owned path. Avoid slow/unbounded native inventories.
+      if (["AXScrollArea", "AXOutline", "AXBrowser", "AXTable", "AXList", "AXCollection", "AXRow", "AXColumn", "AXCell"].indexOf(role) >= 0) return;
       if (role === "AXSheet" && depth > 0) { panel(element); return; }
       var id = String(visited), item = { id: id, role: role, name: property(element, "name", ""), description: property(element, "description", ""),
         enabled: property(element, "enabled", false), frame: frame(element) };
@@ -81,10 +86,11 @@ function run(argv) {
     return panels;
   }
   function wait(kind, ready) {
+    console.log("ATOM_MACOS_FILE_STAGE wait-" + kind + (ready ? "-ready" : "-observe"));
     var end = Date.now() + 30000, failure = "";
     while (Date.now() < end) { try { var panels = observe();
       if (kind !== "path" && panels.some(function (panel) { try { chooseFilePanel([panel], "path", false); return true; } catch (_) { return false; } })) throw new Error("Native path navigation is still open");
-      return chooseFilePanel(panels, kind, ready); } catch (error) { failure = String(error); delay(0.15); } }
+      var selected = chooseFilePanel(panels, kind, ready); console.log("ATOM_MACOS_FILE_STAGE selected-" + kind); return selected; } catch (error) { failure = String(error); delay(0.15); } }
     throw new Error(failure + "; bounded native markers: " + JSON.stringify(last));
   }
   function marker(panel) { return { role: panel.role, frame: panel.frame, confirm: panel.confirm ? { role: panel.confirm.role, frame: panel.confirm.frame, enabled: panel.confirm.enabled } : { method: "focused-native-path-field Return" }, field_role: panel.field && panel.field.role }; }
@@ -94,6 +100,7 @@ function run(argv) {
   // No input operation is retried after an uncertain delivery failure.
   if (action.indexOf("cancel-") === 0) { refs[initial.cancel.id].click(); return JSON.stringify(receipt); }
   system.keystroke("g", { using: ["command down", "shift down"] });
+  console.log("ATOM_MACOS_FILE_STAGE path-shortcut-sent");
   var navigation = wait("path", false), destination = action === "open" ? target : target.slice(0, target.lastIndexOf("/"));
   refs[navigation.field.id].value = destination;
   if (property(refs[navigation.field.id], "value", "") !== destination) throw new Error("Native path field did not retain the exact owned destination");

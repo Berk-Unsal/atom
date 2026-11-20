@@ -1,6 +1,6 @@
 # Production macOS file-panel qualification
 
-Status: the first arm64 native attempt reaches the actual Save/path sheets but fails before its first file write; corrected complete arm64/Intel verification is pending for #154/#156/#158/#159. Unit selectors and local refusal are supporting evidence, not native file-panel acceptance.
+Status: a real arm64 Export now passes; the complete flow still stops at the next legacy Open. A control-scan correction is prepared; full arm64/Intel verification remains pending for #154/#156/#158/#159. Unit selectors and local refusal are supporting evidence, not native file-panel acceptance.
 
 The macOS package matrix launches the actual production app, copied outside the repository under a Unicode/space path and made read-only. HOME and document paths belong to one private owned temporary tree. System Events targets the exact PID and `io.github.berk-unsal.atom` bundle ID. No Electron dialog method, selected path response, filesystem operation, shared serializer or RF request is replaced.
 
@@ -24,3 +24,10 @@ Ten host regressions cover selector identity/bounds/ambiguity, cancellation with
 Arm64 run `44816733172`, execution `4a91d19f9380a2deb8ad4a9b12170b6765f120d6` from head `9a5ae95`, passes production package smoke and the separate actual Print flow, then stops during its first Export destination. The actual native Save sheet has the expected labeled filename, Cancel and Save controls. Cmd+Shift+G opens a second native path sheet with one enabled text field and no Go/Cancel buttons, so the initial selector stops at the missing controls. No file operation is completed, and owned cleanup reports no error. [Frozen first-attempt evidence](assets/desktop-macos-files-first-ci.json) retains that failed scope.
 
 The selector now supports this observed buttonless layout only for an unambiguous native path sheet with one bounded text field. Before one Return key event, it requires exact owned destination readback, actual field focus and the expected process remaining frontmost. Two new cases reject unfocused, ambiguous or out-of-panel fields. Input delivery failures still propagate without retry; actual corrected execution is pending.
+
+
+## Real Export and subsequent Open timeout
+
+Arm64 run `44818037738`, execution `4ae513fa56d05618c88d7baa30953b8cfe60cf39` from head `02691bb`, completes the actual Export panel, focused Go to Folder Return and Save. The harness reads the resulting file and verifies its shared draft before preparing the schema-2 legacy file. The next Open driver is terminated by the original 100-second bound without a completed receipt. [Frozen partial evidence](assets/desktop-macos-files-export-ci.json) records the one completed operation and error cleanup; ordinary Quit and the full nine-operation flow have not passed.
+
+The driver now excludes native file browsers, rows, sidebars and scrolling inventories from inspection. It needs only dialog controls because the native path sheet selects the exact owned destination. A regression catches the prior file-list traversal before this change and passes after it. Bounded phase markers identify target validation, process selection and each native control wait if another call stalls. No wait is increased, input repeated or assertion removed. Actual corrected hosted execution remains pending.

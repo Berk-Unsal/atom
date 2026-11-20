@@ -134,3 +134,6 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 
 
 - #154/#156 [macOS file-panel follow-up #210](https://github.com/Berk-Unsal/atom/pull/210): the first arm64 attempt passes separate package/Print qualification and reaches actual Save/Go to Folder sheets, but stops before the first file write because the observed path sheet has no Go button. The corrected selector requires its unique focused native field, exact owned path readback and one Return confirmation; no input retry or supplied chooser response is introduced. [First native evidence and pending verification](desktop-macos-files-qualification.md#first-hosted-attempt) retain that boundary.
+
+
+- #210 native progression: `44818037738` completes an actual arm64 Export and its shared-draft readback on `4ae513f` from `02691bb`, then the next legacy Open driver reaches its original 100-second bound. The full flow remains failed. Native file-list traversal is excluded and phase markers added without increasing waits or retrying input. [Partial evidence and next verification](desktop-macos-files-qualification.md#real-export-and-subsequent-open-timeout) remain source-bound.

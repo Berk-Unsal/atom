@@ -45,13 +45,15 @@ test("the harness refuses personal execution before resolving desktop dependenci
   assert.doesNotMatch(result.stderr, /ERR_MODULE_NOT_FOUND/);
 });
 
-test("never retries an uncertain native Cancel input", () => {
-  const vm = require("node:vm"), fs = require("node:fs"); let clicks = 0;
+test("never retries uncertain native Cancel or inspects native file-list contents", () => {
+  const vm = require("node:vm"), fs = require("node:fs"); let clicks = 0, fileListReads = 0;
   const value = panel("open");
   const native = (row, children = []) => ({ role: () => row.role, subrole: () => row.subrole || "", name: () => row.name || "", description: () => "",
     enabled: () => row.enabled === true, position: () => [row.frame?.x, row.frame?.y], size: () => [row.frame?.width, row.frame?.height], uiElements: () => children,
     attributes: { byName: () => ({ value: () => "" }) }, click: () => { clicks++; throw new Error("AXPress delivery uncertain"); } });
-  const root = native(value, value.controls.map((row) => native(row)));
+  const fileList = native({ role: "AXScrollArea", frame: value.frame });
+  fileList.uiElements = () => { fileListReads++; return []; };
+  const root = native(value, [...value.controls.map((row) => native(row)), fileList]);
   const process = { bundleIdentifier: () => "io.github.berk-unsal.atom", windows: () => [{ subrole: () => "AXStandardWindow", sheets: () => [root] }] };
   const dollar = (value) => ({ stringByResolvingSymlinksInPath: value });
   Object.assign(dollar, { NSProcessInfo: { processInfo: { environment: { objectForKey: () => "true" } } }, getuid: () => 501,
@@ -60,7 +62,7 @@ test("never retries an uncertain native Cancel input", () => {
     Application: () => ({ applicationProcesses: { whose: () => () => [process] } }), delay: () => { throw new Error("Must not retry input"); } };
   vm.createContext(context); vm.runInContext(fs.readFileSync(require.resolve("./macos-file-driver.cjs"), "utf8"), context);
   assert.throws(() => context.run(["123", "cancel-open", "Open A.T.O.M project", "/private/tmp/atom-macos-files-ABC123/file.json", "/private/tmp/atom-macos-files-ABC123"]), /AXPress delivery uncertain/);
-  assert.equal(clicks, 1);
+  assert.equal(clicks, 1); assert.equal(fileListReads, 0);
 });
 
 

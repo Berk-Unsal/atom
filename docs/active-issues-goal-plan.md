@@ -1,9 +1,9 @@
 # Active GitHub issues: execution goal
 
-Snapshot: 2026-11-20, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
+Snapshot: 2026-11-21, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
 20 open issues; pull requests are inventoried separately and are not counted as issues.
 
-Current delivery: all fourteen desktop work packages have implementation PRs. Follow-ups #203/#204 cover production native surfaces, #205 patches the security baseline, #207 qualifies macOS Print and #208 investigates intermittent startup failures. None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
+Current delivery: all fourteen desktop work packages have implementation PRs. Follow-ups #203/#204 cover production native surfaces, #205 patches the security baseline, #207 qualifies macOS Print and #208 investigates intermittent startup failures and #209 corrects native-window ordering in RF qualification. None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
 
 ## Goal and completion rule
 
@@ -124,3 +124,10 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 
 
 - #158 fixture correction: macOS `44811715322` independently catches an RF resize before any native window exists. A deterministic real-Electron regression reproduces that exact TypeError with controlled delayed window creation, then passes when qualification waits for and resizes the matching window. Existing RF samples, viewport and budgets are unchanged. Its earlier blank startup sample remains a separate failure. [Scoped production record](desktop-production-qualification.md#native-window-ordering-follow-up--2026-11-20).
+
+
+- #153/#157 observer verification: `44813483449` passes all four storage launches and all four diagnostics launches on macOS 15 and Ubuntu 24.04, exact execution `5d36bca` from `6d20409`. The earlier blank-renderer cause remains unconfirmed. Ubuntu passes its desktop job; macOS's independent 10.394 s warm-Go measurement misses the unchanged 5 s limit. [#208](https://github.com/Berk-Unsal/atom/pull/208) retains that boundary.
+
+- #158 [window-ordering follow-up #209](https://github.com/Berk-Unsal/atom/pull/209): both hosted native smoke steps pass the new deterministic real-window regression in `44814425713`. Its broader Quality run is red only for macOS development timing; package assembly, actual Linux native dialogs and installed Ubuntu sessions pass. Clean local `be7fb67` completes all 40 startup samples and both idle measurements: all four startup/readiness comparators pass, aggregate full-pack RSS 971.86 MiB still fails the original 500 MiB limit. Full hosted RF comparison remains in progress; no budget is revised.
+
+- #154/#156 remaining native coverage: actual macOS Open/Save/Cancel follow-up is prepared in the arm64/Intel package matrix, with the same nine-file-operation legacy/Unicode/retained-output/ordinary-Quit checks used by the Linux production flow. [Method and pending evidence](desktop-macos-files-qualification.md) distinguish the seven selector/guard/no-retry checks from actual native acceptance. Personal file dialogs are not operated.

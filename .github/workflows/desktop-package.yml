@@ -59,6 +59,11 @@ jobs:
           LANG: en_US.UTF-8
           LC_ALL: en_US.UTF-8
         run: node desktop/test/macos-print.mjs
+      - name: Exercise actual macOS project and report file panels
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
+        run: node desktop/test/macos-files.mjs
       # No binary/data upload: the exact default pack's approval is pending.
       # Diagnostics and cryptographic inventories contain no dataset bytes.
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -77,5 +82,7 @@ jobs:
             desktop/test-results/macos-print-failed.png
             desktop/test-results/macos-print-output.png
             desktop/test-results/macos-print-display.json
+            desktop/test-results/macos-files.json
+            desktop/test-results/macos-files-failed.png
           if-no-files-found: warn
           retention-days: 30

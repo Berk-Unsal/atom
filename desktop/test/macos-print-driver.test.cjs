@@ -24,7 +24,7 @@ test("rejects ambiguous panels/buttons and controls outside the native panel", (
 
 test("refuses non-CI execution before accessing System Events", () => {
   const vm = require("node:vm"), fs = require("node:fs"); let accesses = 0;
-  const context = { ObjC: { import() {}, unwrap: (value) => value },
+  const context = { ObjC: { import() {}, bindFunction() {}, unwrap: (value) => value },
     $: { NSProcessInfo: { processInfo: { environment: { objectForKey: () => "false" } } }, getuid: () => 1000 },
     Application: () => { accesses++; throw new Error("Must not access the desktop"); } };
   vm.createContext(context); vm.runInContext(fs.readFileSync(require.resolve("./macos-print-driver.cjs"), "utf8"), context);
@@ -37,7 +37,7 @@ test("does not retry an ambiguous native AXPress failure", () => {
     attributes: { byName: () => ({ value: () => false }) }, click: () => { clicks++; throw new Error("AXPress delivery is ambiguous"); } });
   const panel = fixture(); const window = native({ ...panel, role: "AXWindow", name: "Print" }, panel.controls.map((row) => native(row)));
   const process = { bundleIdentifier: () => "io.github.berk-unsal.atom", windows: () => [window] };
-  const context = { ObjC: { import() {}, unwrap: (value) => value },
+  const context = { ObjC: { import() {}, bindFunction() {}, unwrap: (value) => value },
     $: { NSProcessInfo: { processInfo: { environment: { objectForKey: () => "true" } } }, getuid: () => 1000 },
     Application: () => ({ applicationProcesses: { whose: () => () => [process] } }), delay: () => { throw new Error("Must not retry input"); } };
   vm.createContext(context); vm.runInContext(fs.readFileSync(require.resolve("./macos-print-driver.cjs"), "utf8"), context);

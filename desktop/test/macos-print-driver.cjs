@@ -21,6 +21,7 @@ function choosePrintPanel(panels, queue) {
 }
 function run(argv) {
   ObjC.import("Foundation"); ObjC.import("stdlib");
+  ObjC.bindFunction("getuid", ["unsigned int", []]);
   var environment = $.NSProcessInfo.processInfo.environment;
   if (ObjC.unwrap(environment.objectForKey("GITHUB_ACTIONS")) !== "true" || $.getuid() === 0) throw new Error("Actual Print driver is restricted to non-root disposable CI");
   if (argv.length !== 2 || !/^[1-9][0-9]{0,9}$/.test(argv[0]) || ["inspect", "cancel", "print"].indexOf(argv[1]) < 0) throw new Error("Usage: macos-print-driver.cjs owned-app-pid inspect|cancel|print");

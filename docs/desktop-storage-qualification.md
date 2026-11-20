@@ -98,3 +98,12 @@ regressions cover redaction, bounds and listener cleanup. These observers do
 not navigate, reload, reveal windows, alter the application, increase the
 existing 60-second wait or retry a failed launch. Hosted verification of this
 instrumentation is pending; no production correction is claimed yet.
+
+
+Clean local `9ea118a` passes the instrumented storage and diagnostics suites,
+including all four storage launches, explicit child/renderer recovery, log
+fallback, missing binary and invalid pack. The source-bound raw supporting
+records are retained above. Local observation exposed repetitive blocked-tile
+console hashes, so repeated identical console errors share one bounded entry
+with an occurrence count. All 170 host and 20 docs tests pass; local success
+still does not identify the earlier hosted failure.

@@ -33,10 +33,11 @@ test("redacts dynamic source identifiers and console text, retaining only error 
   const page = new EventEmitter(), observer = observeRenderer(page);
   page.emit("requestfailed", request("app://atom/api/spatial-evidence/buildings/private-source-row"));
   page.emit("requestfailed", request("app://atom/api/jobs/job-0123456789abcdef01234567"));
-  page.emit("console", { type: () => "error", text: () => "private-source-row token=do-not-copy" });
+  for (let index = 0; index < 25; index++) page.emit("console", { type: () => "error", text: () => "private-source-row token=do-not-copy" });
   page.emit("console", { type: () => "log", text: () => { throw new Error("Ordinary logs must not be read"); } });
   page.emit("crash");
   assert.deepEqual(observer.records.failed_requests.map((value) => value.path), ["/api/spatial-evidence/buildings/:id", "/api/jobs/:id"]);
+  assert.equal(observer.records.console_errors.length, 1); assert.equal(observer.records.console_errors[0].occurrences, 25);
   assert.match(observer.records.console_errors[0].message_sha256, /^[a-f0-9]{64}$/);
   assert.deepEqual(observer.records.crashes, [{ observed: true }]);
   assert.doesNotMatch(JSON.stringify(observer.records), /private-source-row|do-not-copy|0123456789/);

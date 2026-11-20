@@ -28,7 +28,13 @@ function observeRenderer(page) {
   const failed = (request) => { const identity = requestIdentity(request); if (!identity) return; const reason = request.failure()?.errorText;
     append("failed_requests", { ...identity, reason: /^net::[A-Z0-9_]+$/.test(reason || "") ? reason : "unavailable" }); };
   const response = (reply) => { const identity = requestIdentity(reply.request()); if (identity && reply.status() >= 400) append("failed_responses", { ...identity, status: reply.status() }); };
-  const consoleError = (message) => { if (message.type() === "error") append("console_errors", { message_sha256: createHash("sha256").update(message.text()).digest("hex") }); };
+  const consoleError = (message) => {
+    if (message.type() !== "error") return;
+    const hash = createHash("sha256").update(message.text()).digest("hex");
+    const retained = records.console_errors.find((entry) => entry.message_sha256 === hash);
+    if (retained) retained.occurrences++;
+    else append("console_errors", { message_sha256: hash, occurrences: 1 });
+  };
   const crash = () => append("crashes", { observed: true });
   page.on("pageerror", error); page.on("requestfailed", failed); page.on("response", response);
   page.on("console", consoleError); page.on("crash", crash);

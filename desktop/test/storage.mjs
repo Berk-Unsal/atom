@@ -8,9 +8,11 @@ import { createRequire } from "node:module";
 import { execFileSync, spawn } from "node:child_process";
 import { build } from "../../frontend-react/node_modules/vite/dist/node/index.js";
 import { waitForRuntime } from "./runtime-wait.mjs";
+import { startupDiagnostics } from "./startup-diagnostics.mjs";
 
 const require = createRequire(import.meta.url);
 const { nativePaths } = require("../lib/native-paths.cjs");
+const { observeRenderer } = require("./renderer-observation.cjs");
 const desktop = path.resolve(import.meta.dirname, "..");
 // Fixed executable path allows an exact Ubuntu AppArmor rule, never no-sandbox.
 const packagedRoot = path.join(desktop, "build/storage-package");
@@ -21,10 +23,10 @@ const xdg = { XDG_DATA_HOME: path.join(home, "data"), XDG_CONFIG_HOME: path.join
 const env = { ...process.env, ...xdg, HOME: home, ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "must-ignore-profile"), ATOM_DESKTOP_DEV_SERVER: "http://127.0.0.1:5173", ATOM_DESKTOP_DEV_CONTROL: "1" };
 delete env.ELECTRON_RUN_AS_NODE;
 const paths = nativePaths({ packaged: true, home, env });
-let application; let page; let portBlocker;
+let application; let page; let portBlocker; let rendererObserver;
 const result = { source_commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: desktop, encoding: "utf8" }).trim(),
   source_dirty: Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: desktop, encoding: "utf8" }).trim()),
-  platform: process.platform, architecture: process.arch };
+  platform: process.platform, architecture: process.arch, launches: [] };
 const isMac = process.platform === "darwin";
 let bundle = path.join(packagedRoot, isMac ? "A.T.O.M.app" : "atom");
 const resourcesIn = (location) => path.join(location, isMac ? "Contents/Resources" : "resources");
@@ -40,12 +42,14 @@ function privatePort() {
   const listener = execFileSync("lsof", ["-nP", "-a", "-p", pid, "-iTCP", "-sTCP:LISTEN"], { encoding: "utf8" });
   const port = /TCP 127\.0\.0\.1:(\d+) \(LISTEN\)/.exec(listener)?.[1]; assert.ok(port); return Number(port);
 }
-async function launch() {
+async function launch(stage) {
+  const launchRecord = { stage, bundle_name: path.basename(bundle) }; result.launches.push(launchRecord); result.current_stage = stage;
   application = await launchNative({ executablePath: executableIn(bundle), args: [], cwd: home, env, chromiumSandbox: true, timeout: 60_000 });
   application.process().stderr.on("data", (chunk) => {
     const text = chunk.toString(); if (text.includes("STORAGE_STARTUP_FAILURE")) result.startup_failure = text.slice(0, 1500);
   });
   page = await application.firstWindow();
+  rendererObserver = observeRenderer(page); launchRecord.renderer = rendererObserver.records;
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   await waitForRuntime(page, (runtime) => runtime.state === "ready");
   const actual = await application.evaluate(({ app, session }) => ({ packaged: app.isPackaged, profile: app.getPath("userData"),
@@ -53,7 +57,7 @@ async function launch() {
   assert.deepEqual(actual, { packaged: true, profile: paths.profile, sessionPath: paths.profile, persistent: true });
   assert.equal(page.url(), "app://atom/");
 }
-async function close() { if (application) { await application.close(); application = null; page = null; } }
+async function close() { rendererObserver?.stop(); rendererObserver = null; if (application) { await application.close(); application = null; page = null; } }
 async function bundlePermissions(directory, writable) {
   const stat = await fs.lstat(directory);
   if (stat.isSymbolicLink()) return;
@@ -85,7 +89,7 @@ try {
   await build({ configFile: false, publicDir: false, logLevel: "warn", build: { emptyOutDir: false,
     outDir: path.join(resources, "dist/assets"), lib: { entry: path.join(desktop, "test/fixtures/storage-contract.js"), formats: ["es"], fileName: () => "storage-contract.js" }, minify: false } });
   await bundlePermissions(bundle, false);
-  await launch();
+  await launch("initial");
   result.release_overrides_ignored = true;
   await page.getByRole("button", { name: /^Project menu,/ }).click();
   await page.getByText(/Drafts autosave in this app’s recovery storage/).waitFor();
@@ -118,7 +122,7 @@ try {
   // OS cache eviction touches only the advertised cache root, while the host
   // is stopped. No clearStorageData/reset or browser migration is involved.
   await fs.rm(paths.cache, { recursive: true, force: true });
-  await launch(); assert.deepEqual(await inspect(), first);
+  await launch("after-cache-eviction-and-port-change"); assert.deepEqual(await inspect(), first);
   assert.notEqual(privatePort(), firstPort, "The stable origin must preserve data across actual sidecar port changes");
   await new Promise((resolve) => portBlocker.close(resolve));
   assert.notEqual((await page.evaluate(() => window.atomDesktop.getRuntime())).generation, firstRuntime.generation);
@@ -153,7 +157,7 @@ try {
   before.recentFiles.push({ projectId: seeded.projectId, kind: "project", path: chosen });
   before.datasets.push({ id: "retained-test-pack", path: paths.packs });
   const { SettingsStore } = require("../lib/settings-store.cjs"); new SettingsStore(paths.settings).save(before);
-  await launch(); assert.deepEqual(await inspect(), first);
+  await launch("relocated-tested-version-upgrade"); assert.deepEqual(await inspect(), first);
   assert.equal((await page.evaluate(() => window.atomDesktop.getInfo())).version, upgrade);
   const after = JSON.parse(await fs.readFile(paths.settings, "utf8"));
   assert.equal(after.preferences.lastVersion, upgrade); assert.deepEqual(after.recentFiles, before.recentFiles); assert.deepEqual(after.datasets, before.datasets);
@@ -190,7 +194,7 @@ try {
   assert.equal(await fs.readFile(paths.settings, "utf8"), savedSettings);
   assert.equal((await fs.stat(paths.config)).mode & 0o777, 0o500);
   await fs.chmod(paths.config, 0o700);
-  await launch(); assert.deepEqual(await inspect(), first); await close();
+  await launch("after-config-recovery"); assert.deepEqual(await inspect(), first); await close();
   result.future_settings_and_unwritable_config_required_recovery_without_reset = true;
   for (const directory of [paths.profile, paths.data, paths.config, paths.cache, paths.state, paths.logs, paths.packs]) assert.equal((await fs.stat(directory)).mode & 0o777, 0o700);
   for (const file of [paths.settings, paths.geometry]) assert.equal((await fs.stat(file)).mode & 0o777, 0o600);
@@ -198,6 +202,7 @@ try {
   result.read_only_bundle_and_independent_cwd = true;
   await fs.writeFile(path.join(desktop, "test-results/storage.json"), JSON.stringify(result, null, 2)); console.log(JSON.stringify(result, null, 2));
 } catch (error) {
+  if (application && page) result.failure_diagnostics = await startupDiagnostics(application, page);
   await fs.mkdir(path.join(desktop, "test-results"), { recursive: true });
   await page?.screenshot({ path: path.join(desktop, "test-results/failed-storage.png") }).catch(() => {});
   await fs.writeFile(path.join(desktop, "test-results/failed-storage.json"), JSON.stringify({ ...result, error: error.stack }, null, 2)); throw error;

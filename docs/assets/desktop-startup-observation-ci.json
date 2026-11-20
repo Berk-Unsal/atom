@@ -1,0 +1,62 @@
+{
+  "recorded": "2026-11-20",
+  "scope": "Hosted macOS storage and startup diagnostics; observation only, no acceptance waiver",
+  "observations": [
+    {
+      "run_id": 44809236730,
+      "head_commit": "641a92f1169cf7bc426f17f5f2ffda330153a70b",
+      "execution_commit": "a4e8cef3cd032d42c799a259ccdfc6a76e6d399e",
+      "artifact_id": 14666165811,
+      "storage": {
+        "result": "FAIL",
+        "stage": "relocated-tested-version-upgrade",
+        "initial_launch_passed": true,
+        "cache_eviction_and_port_change_passed": true,
+        "failure": "Run Sector visibility timed out after 60000 ms; blank renderer screenshot",
+        "startup_recovery_marker_observed": false
+      },
+      "interpretation": "The prior fixture did not capture renderer exceptions or failed asset/API requests; root cause remains unknown."
+    },
+    {
+      "run_id": 44811714976,
+      "head_commit": "dffaf552d2353f539b2e2dd429d0e0766fa9e1ef",
+      "execution_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+      "artifact_id": 14668086444,
+      "storage": {
+        "source_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+        "source_dirty": false,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "release_overrides_ignored": true,
+        "relaunch_and_cache_eviction_preserved_all_stores": true,
+        "legacy_registry_metadata_survived_without_implicit_approval": true,
+        "relocation_and_tested_version_upgrade_preserved_all_stores": true,
+        "future_settings_and_unwritable_config_required_recovery_without_reset": true,
+        "private_native_directories_and_settings": true,
+        "result": "PASS",
+        "read_only_bundle_and_independent_cwd": true
+      },
+      "diagnostics": {
+        "result": "FAIL",
+        "stage": "invalid-pack",
+        "failure": "Run Sector visibility timed out after 60000 ms",
+        "native_window": {
+          "destroyed": false,
+          "loading": false,
+          "url": "app://atom/"
+        },
+        "healthy_recovery_passed": true,
+        "log_fallback_passed": true,
+        "missing_binary_useful_ui_passed": true
+      },
+      "development_timing": {
+        "result": "TIMING_BUDGET_MISSED",
+        "warm_go_ms": 5187.6105419999985,
+        "budget_ms": 5000
+      },
+      "interpretation": "Storage success on this later source does not explain or clear the earlier intermittent failure; a separate startup visibility failure now affects the invalid-pack diagnostic launch."
+    }
+  ],
+  "changes": "Add bounded test-side renderer observation to storage and diagnostics, plus failure-only window/document state. No application change, navigation retry, increased wait or assertion reduction.",
+  "remaining": "Reproduce the failure with observation, identify its cause, implement and verify a focused correction if justified."
+}

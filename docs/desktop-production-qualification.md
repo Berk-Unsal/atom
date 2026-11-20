@@ -167,3 +167,12 @@ It replaces arbitrary exception text in `current_renderer_errors` with the
 observer's class/hash/static-frame records. Repeated console messages share a
 counted entry. The original sampling clock and readiness waits stay unchanged;
 no blank launch is retried or discarded.
+
+
+### Completed hosted window-ordering qualification
+
+Run `44814425875` completes both platforms on exact execution `a6727b05bbc1009f728e7281079d1286f54f6411`, head `be7fb67`. Each completes all 66 exact RF comparisons, both eight-Cell workflows and 40 startup samples at the asserted content viewport. [Frozen raw hosted/local records](assets/desktop-rf-window-ci.json) retain every sample and original comparator; no blank renderer occurs in this run, which does not explain the earlier intermittent failures.
+
+macOS warm launch p95 is 5.059 s, above 5 s, and warm child/data readiness also misses 4 s; whole-tree idle RSS is 865.08 MiB. Ubuntu passes all four original startup/readiness bounds, while aggregate RSS is 1252.58 MiB. Short simulation median differences are 29.75% / 65.87% (macOS / Ubuntu), failing 5%; network evaluation differs by 0.20% / 0.27% and optimization by 0.29% / 1.00%, passing that comparator. Existing map/input proxy checks pass. These are functional successes and explicit budget failures, not public support or physical responsiveness acceptance.
+
+Clean local `be7fb67` likewise completes all 40 startup samples and both idle measurements: all four startup/readiness comparators pass, while 971.86 MiB full-pack RSS fails 500 MiB. Its command correctly exits nonzero with `BUDGET_REVIEW_REQUIRED` after owned-process/profile cleanup. The hosted Quality run `44814425713` passes both native smoke steps, including controlled real-window creation, plus Ubuntu's full desktop job; its independent macOS development timing remains red.

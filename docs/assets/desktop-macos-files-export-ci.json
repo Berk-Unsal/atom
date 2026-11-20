@@ -1,0 +1,84 @@
+{
+  "recorded": "2026-11-21",
+  "run_id": 44818037738,
+  "head_commit": "02691bbf945a2e26805db03e31a39b20351248e3",
+  "execution_commit": "4ae513fa56d05618c88d7baa30953b8cfe60cf39",
+  "artifact_id": 14670378254,
+  "platform": "macos-15",
+  "architecture": "arm64",
+  "scope": "One completed real Export; full nine-operation flow fails at subsequent legacy Open",
+  "completed_file_operations": 1,
+  "dialogs": [
+    {
+      "pid": 18781,
+      "operation": "save",
+      "bundle_id": "io.github.berk-unsal.atom",
+      "title": "Export project copy",
+      "native_widgets_only": true,
+      "method": "System Events actual native path/filename controls and AXPress; no dialog response replacement",
+      "initial_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 585,
+          "y": 508,
+          "width": 430,
+          "height": 135
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 922,
+            "y": 602,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      },
+      "path_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 570,
+          "y": 486,
+          "width": 460,
+          "height": 180
+        },
+        "confirm": {
+          "method": "focused-native-path-field Return"
+        },
+        "field_role": "AXTextField"
+      },
+      "final_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 585,
+          "y": 508,
+          "width": 430,
+          "height": 135
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 922,
+            "y": 602,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      }
+    }
+  ],
+  "valid_export_read_and_shared_draft_assertion_before_legacy_open": true,
+  "failure": {
+    "operation": "Open legacy schema-2 project",
+    "driver_timeout_ms": 100000,
+    "signal": "SIGTERM",
+    "root_cause": "Not established; the prior driver emits no phase markers and traverses native browser inventories."
+  },
+  "cleanup_errors": [],
+  "next_step": "Exclude native file-list/sidebar/browser contents from control inspection and record bounded phase markers; retain the original driver timeout and all file assertions. Corrected complete hosted execution remains pending.",
+  "source_data_uploaded": false
+}

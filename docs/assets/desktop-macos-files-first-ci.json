@@ -1,0 +1,45 @@
+{
+  "recorded": "2026-11-21",
+  "run_id": 44816733172,
+  "head_commit": "9a5ae952a0045849c43b35400b79a442b91b3407",
+  "execution_commit": "4a91d19f9380a2deb8ad4a9b12170b6765f120d6",
+  "artifact_id": 14670032411,
+  "platform": "macos-15",
+  "architecture": "arm64",
+  "scope": "First real native attempt; not a complete file-flow pass",
+  "production_package_smoke": "PASS",
+  "separate_actual_print_flow": "PASS",
+  "file_flow": "FAIL",
+  "completed_file_operations": 0,
+  "observed": {
+    "save_panel": {
+      "role": "AXSheet",
+      "cancel_and_save_enabled": true,
+      "save_as_filename_label": true
+    },
+    "go_to_folder_sheet": {
+      "role": "AXSheet",
+      "frame": {
+        "x": 570,
+        "y": 486,
+        "width": 460,
+        "height": 180
+      },
+      "text_field": {
+        "role": "AXTextField",
+        "enabled": true,
+        "frame": {
+          "x": 585,
+          "y": 493,
+          "width": 344,
+          "height": 22
+        }
+      },
+      "go_or_cancel_button_observed": false
+    }
+  },
+  "failure": "The driver requires Go/Cancel buttons for native path confirmation, but the actual Go to Folder sheet exposes a path field without those buttons. It stops before the first file write.",
+  "cleanup_errors": [],
+  "next_step": "Support unique buttonless native path sheets with exact destination readback and focused-field Return confirmation; actual corrected hosted verification remains required.",
+  "source_data_uploaded": false
+}

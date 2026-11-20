@@ -1,0 +1,202 @@
+{
+  "recorded": "2026-11-21",
+  "run_id": 44819718002,
+  "head_commit": "c5bd9d4f281bd1e90e3c6557840b7a50661d3fa5",
+  "execution_commit": "80cb5ebf967fe63a9180200f49901fff1ae8e893",
+  "artifact_id": 14671996512,
+  "platform": "macos-15",
+  "architecture": "arm64",
+  "scope": "Three completed native panel operations; full flow still fails the subsequent clean-association check",
+  "completed_native_panel_operations": 3,
+  "dialogs": [
+    {
+      "pid": 19143,
+      "operation": "save",
+      "bundle_id": "io.github.berk-unsal.atom",
+      "title": "Export project copy",
+      "native_widgets_only": true,
+      "method": "System Events actual native path/filename controls and AXPress; no dialog response replacement",
+      "initial_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 585,
+          "y": 508,
+          "width": 430,
+          "height": 135
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 922,
+            "y": 602,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      },
+      "path_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 570,
+          "y": 486,
+          "width": 460,
+          "height": 180
+        },
+        "confirm": {
+          "method": "focused-native-path-field Return"
+        },
+        "field_role": "AXTextField"
+      },
+      "final_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 585,
+          "y": 508,
+          "width": 430,
+          "height": 135
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 922,
+            "y": 602,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      }
+    },
+    {
+      "pid": 19143,
+      "operation": "open",
+      "bundle_id": "io.github.berk-unsal.atom",
+      "title": "Open A.T.O.M project",
+      "native_widgets_only": true,
+      "method": "System Events actual native path/filename controls and AXPress; no dialog response replacement",
+      "initial_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 400,
+          "y": 352,
+          "width": 800,
+          "height": 448
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 1107,
+            "y": 759,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": false
+        },
+        "field_role": "AXTextField"
+      },
+      "path_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 570,
+          "y": 472,
+          "width": 460,
+          "height": 208
+        },
+        "confirm": {
+          "method": "focused-native-path-field Return"
+        },
+        "field_role": "AXTextField"
+      },
+      "final_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 400,
+          "y": 352,
+          "width": 800,
+          "height": 448
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 1107,
+            "y": 759,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      }
+    },
+    {
+      "pid": 19143,
+      "operation": "save",
+      "bundle_id": "io.github.berk-unsal.atom",
+      "title": "Save A.T.O.M project",
+      "native_widgets_only": true,
+      "method": "System Events actual native path/filename controls and AXPress; no dialog response replacement",
+      "initial_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 585,
+          "y": 508,
+          "width": 430,
+          "height": 135
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 922,
+            "y": 602,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      },
+      "path_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 570,
+          "y": 458,
+          "width": 460,
+          "height": 236
+        },
+        "confirm": {
+          "method": "focused-native-path-field Return"
+        },
+        "field_role": "AXTextField"
+      },
+      "final_panel": {
+        "role": "AXSheet",
+        "frame": {
+          "x": 585,
+          "y": 508,
+          "width": 430,
+          "height": 135
+        },
+        "confirm": {
+          "role": "AXButton",
+          "frame": {
+            "x": 922,
+            "y": 602,
+            "width": 74,
+            "height": 22
+          },
+          "enabled": true
+        },
+        "field_role": "AXTextField"
+      }
+    }
+  ],
+  "legacy_scenario_import_and_shared_ui_rename_reached": true,
+  "failure": "The fixture requires literal path equality and a clean flag, but does not separately record those predicates. It times out at that combined association check after Save As. No full file/ordinary-Quit pass is inferred.",
+  "root_cause": "Not established; observe actual clean status, chosen file and parent identities, and filename normalization independently.",
+  "cleanup_errors": [],
+  "next_step": "Require the explicit clean flag, exact file and parent device/inode identities and canonically equivalent Unicode filename. Preserve all project-body, hash, cancellation, legacy and final-Quit assertions.",
+  "source_data_uploaded": false
+}

@@ -9,7 +9,7 @@ import { once } from "node:events";
 import { launchNative } from "./native-launch.mjs";
 import { waitForRuntime } from "./runtime-wait.mjs";
 import { startupDiagnostics } from "./startup-diagnostics.mjs";
-import { sourceIdentity, distribution, processTree, assertExited, sha256, sleep } from "./qualification-support.mjs";
+import { sourceIdentity, distribution, processTree, assertExited, sha256, sleep, firstWindowAtSize } from "./qualification-support.mjs";
 import { DEFAULT_SIMULATION } from "../../frontend-react/src/generated/policy.js";
 import { createDefaultOptimizationConfig } from "../../frontend-react/src/utils/optimizationConfig.js";
 import { buildSimulationPayload, buildNetworkOptimizationPayload } from "../../frontend-react/src/utils/requestPayloads.js";
@@ -100,8 +100,7 @@ try {
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: path.join(scratch, "profile") }; delete env.ELECTRON_RUN_AS_NODE;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   const viewport = process.argv.includes("--compact") ? [1024, 768] : [1440, 900];
-  await application.evaluate(({ BrowserWindow }, size) => BrowserWindow.getAllWindows()[0].setContentSize(...size), viewport);
-  page = await application.firstWindow();
+  page = await firstWindowAtSize(application, viewport);
   // The preload can answer runtime IPC before the initial document transition
   // has settled. Observe the actual app UI before evaluating renderer state.
   await page.waitForURL("app://atom/", { timeout: 60_000 });

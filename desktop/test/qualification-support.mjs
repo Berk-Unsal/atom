@@ -43,3 +43,12 @@ export async function assertExited(pids) {
   }
   throw new Error("Qualification-owned processes survived shutdown");
 }
+
+// Electron's application launch can resolve before any BrowserWindow exists.
+export async function firstWindowAtSize(application, size) {
+  const page = await application.firstWindow();
+  const owner = await application.browserWindow(page);
+  try { await owner.evaluate((window, dimensions) => window.setContentSize(...dimensions), size); }
+  finally { await owner.dispose(); }
+  return page;
+}

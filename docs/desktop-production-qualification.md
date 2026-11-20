@@ -138,3 +138,32 @@ The Mac evaluation result now also misses 5%; historical passing evaluation meas
 [Run 43012720168](https://github.com/Berk-Unsal/atom/actions/runs/43012720168), execution `27e86bd8024cc5a6e86a5d22cfadf935cfcaa0e6` from integrated head `f35cd95`, repeats the full fixture with Go 1.26.11, patched dependencies and legacy Project fixes. Both targets complete 66 exact comparisons, 20 timed pairs per endpoint, both eight-Cell workflows and 40 startup samples at 1440×900. [Frozen raw records](assets/desktop-rf-integrated-ci.json) retain the matching build/binary/pack identities and every original comparator.
 
 Network evaluation/optimization differ by 0.61%/0.62% on macOS and 0.62%/0.35% on Ubuntu, passing 5% in this run. The earlier Mac evaluation miss stays recorded. Short simulation differs by 74.02%/62.31% and still fails. Warm launch p95 is 5.085/5.246 s, warm child/data p95 4.255/4.709 s and aggregate idle RSS 859.12/1238.74 MiB; all three original warm/memory comparators fail. Map scheduling proxies are 58.25/55.65 per second and input-to-second-frame p95 34.10/47.10 ms, retaining their nonphysical scope. No budget revision is applied.
+
+
+## Native-window ordering follow-up — 2026-11-20
+
+The completed macOS job in `44811715322` (execution `66c00a0`, head `dffaf55`)
+has two distinct failures. Startup sampling stops at fresh-profile index 2
+with a visible, nonloading app window, complete empty document and ready
+backend. Separately, RF qualification throws while resizing an undefined
+`BrowserWindow` before any RF comparisons. These are not a completed sample
+set or budget-only outcome. [Frozen source/artifact observations](assets/desktop-startup-observation-ci.json)
+retain both failures and their limited scope.
+
+The RF fixture now waits for Playwright's first actual window and resizes its
+matching native BrowserWindow handle. The requested content viewport, RF
+inputs, admission, sample count and timing comparators are unchanged. A real
+Electron regression deliberately launches with no window and permits its
+creation through independent main-process control: the former early-resize
+operation fails with the observed TypeError; the corrected operation waits,
+sets the required size and retains sandboxed/no-Node renderer isolation. The
+regression runs before the existing macOS/Ubuntu native smoke suite. This
+harness correction does not explain or waive the blank-renderer failures.
+
+
+Startup sampling also uses the bounded observer introduced in #208, retaining
+asset/API failure identities and exception/console hashes when a launch fails.
+It replaces arbitrary exception text in `current_renderer_errors` with the
+observer's class/hash/static-frame records. Repeated console messages share a
+counted entry. The original sampling clock and readiness waits stay unchanged;
+no blank launch is retried or discarded.

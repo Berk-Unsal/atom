@@ -768,5 +768,248 @@
       "local_records_were_structured_private_and_redacted": true,
       "result": "PASS"
     }
+  },
+  "separate_production_fixture_failure": {
+    "run_id": 44811715322,
+    "artifact_id": 14667936216,
+    "head_commit": "dffaf552d2353f539b2e2dd429d0e0766fa9e1ef",
+    "scope": "Completed macOS job only; no completed twenty-pair qualification inferred",
+    "startup_budget": {
+      "source_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+      "source_dirty": false,
+      "reference": {
+        "platform": "darwin",
+        "architecture": "arm64",
+        "kernel": "24.6.0",
+        "cpu": "Apple M1 (Virtual)",
+        "logical_cpus": 3,
+        "memory_bytes": 7516192768,
+        "node": "v24.22.3",
+        "electron": "44.10.2"
+      },
+      "method": "20 paired fresh-profile launches and same-profile relaunches; OS file cache uncontrolled; no cache purge",
+      "samples": [
+        {
+          "index": 0,
+          "state": "fresh_profile",
+          "launch_to_plannable_ms": 9373,
+          "launch_to_dataset_ready_ms": 8972,
+          "sidecar_start_to_dataset_ready_ms": 5830
+        },
+        {
+          "index": 0,
+          "state": "same_profile_relaunch",
+          "launch_to_plannable_ms": 4691,
+          "launch_to_dataset_ready_ms": 4371,
+          "sidecar_start_to_dataset_ready_ms": 3721
+        },
+        {
+          "index": 1,
+          "state": "fresh_profile",
+          "launch_to_plannable_ms": 4460,
+          "launch_to_dataset_ready_ms": 4188,
+          "sidecar_start_to_dataset_ready_ms": 3611
+        },
+        {
+          "index": 1,
+          "state": "same_profile_relaunch",
+          "launch_to_plannable_ms": 5335,
+          "launch_to_dataset_ready_ms": 5043,
+          "sidecar_start_to_dataset_ready_ms": 4470
+        }
+      ],
+      "resource_build_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+      "binary_sha256": "2946c403ae946badc08c2cc1018a090d40da922305597b00824370cc56e19df3",
+      "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+      "current_sample": {
+        "index": 2,
+        "state": "fresh_profile"
+      },
+      "current_renderer_errors": [],
+      "last_application_exit": {
+        "code": 0,
+        "signal": null,
+        "time": "2026-11-20T20:30:56.786Z"
+      },
+      "result": "FAIL",
+      "failure": "locator.waitFor: Timeout 60000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Run Sector', exact: true }) to be visible\n    - waiting for\" app://atom/\" navigation to finish...\n    - navigated to \"app://atom/\"\n",
+      "failure_diagnostics": {
+        "native": {
+          "windows": [
+            {
+              "id": 1,
+              "visible": true,
+              "minimized": false,
+              "focused": true,
+              "bounds": {
+                "x": 80,
+                "y": 126,
+                "width": 1440,
+                "height": 900
+              },
+              "url": "app://atom/",
+              "loading": false,
+              "destroyed": false
+            }
+          ],
+          "document": {
+            "url": "app://atom/",
+            "title": "A.T.O.M - Ankara Telecom Optimization Model",
+            "ready_state": "complete",
+            "text": "",
+            "buttons": []
+          }
+        },
+        "host": [
+          {
+            "time": "2026-11-20T20:30:56.969Z",
+            "level": "info",
+            "component": "host",
+            "event": "host-start",
+            "version": "unknown",
+            "commit": "unknown",
+            "platform": "darwin",
+            "arch": "arm64",
+            "fallback": false
+          },
+          {
+            "time": "2026-11-20T20:30:57.065Z",
+            "level": "info",
+            "component": "host",
+            "event": "build",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64"
+          }
+        ],
+        "backend": [
+          {
+            "time": "2026-11-20T20:30:57.258Z",
+            "level": "info",
+            "component": "backend",
+            "event": "runtime",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64",
+            "generation": "a5d65f7eb61aa9a9eda8b62a988db89b",
+            "state": "starting",
+            "listener": false,
+            "dataset": false,
+            "ui": false,
+            "sequence": 1
+          },
+          {
+            "time": "2026-11-20T20:30:57.306Z",
+            "level": "info",
+            "component": "backend",
+            "event": "runtime",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64",
+            "generation": "a5d65f7eb61aa9a9eda8b62a988db89b",
+            "state": "loading-dataset",
+            "listener": true,
+            "dataset": false,
+            "ui": false,
+            "sequence": 2
+          },
+          {
+            "time": "2026-11-20T20:30:57.430Z",
+            "level": "info",
+            "component": "backend",
+            "event": "runtime",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64",
+            "generation": "a5d65f7eb61aa9a9eda8b62a988db89b",
+            "state": "loading-dataset",
+            "listener": true,
+            "dataset": false,
+            "ui": true,
+            "sequence": 3
+          },
+          {
+            "time": "2026-11-20T20:30:57.431Z",
+            "level": "info",
+            "component": "backend",
+            "event": "runtime",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64",
+            "generation": "a5d65f7eb61aa9a9eda8b62a988db89b",
+            "state": "loading-dataset",
+            "listener": true,
+            "dataset": false,
+            "ui": true,
+            "sequence": 4
+          },
+          {
+            "time": "2026-11-20T20:31:00.724Z",
+            "level": "info",
+            "component": "backend",
+            "event": "runtime",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64",
+            "generation": "a5d65f7eb61aa9a9eda8b62a988db89b",
+            "state": "loading-dataset",
+            "listener": true,
+            "dataset": true,
+            "ui": true,
+            "sequence": 5
+          },
+          {
+            "time": "2026-11-20T20:31:00.801Z",
+            "level": "info",
+            "component": "backend",
+            "event": "runtime",
+            "version": "0.13.1",
+            "commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+            "platform": "darwin",
+            "arch": "arm64",
+            "generation": "a5d65f7eb61aa9a9eda8b62a988db89b",
+            "state": "ready",
+            "listener": true,
+            "dataset": true,
+            "ui": true,
+            "sequence": 6
+          }
+        ]
+      }
+    },
+    "rf_parity": {
+      "source_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+      "source_dirty": false,
+      "reference": {
+        "platform": "darwin",
+        "architecture": "arm64",
+        "kernel": "24.6.0",
+        "cpu": "Apple M1 (Virtual)",
+        "logical_cpus": 3,
+        "memory_bytes": 7516192768,
+        "node": "v24.22.3"
+      },
+      "comparisons": [],
+      "timings": {},
+      "ui": {},
+      "admission_waits": [],
+      "sampling": {
+        "warmup_pairs_per_endpoint": 1,
+        "timed_pairs_per_endpoint": 20,
+        "transport_order": "alternating; sequential RF requests"
+      },
+      "resource_build_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+      "binary_sha256": "2946c403ae946badc08c2cc1018a090d40da922305597b00824370cc56e19df3",
+      "manifest_sha256": "9f2341ca88d2ae421bb7f60c405af7addd1efb6452c529f2c8e4883acda122b5",
+      "result": "FAIL",
+      "failure": "electronApplication.evaluate: TypeError: Cannot read properties of undefined (reading 'setContentSize')\n    at eval (eval at evaluate (:303:30), <anonymous>:1:62)\n    at UtilityScript.evaluate (<anonymous>:305:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at View.emit (node:events:489:44)\n    at launch (/Users/runner/work/atom/atom/desktop/main.cjs:104:12)"
+    },
+    "interpretation": "Startup sample 2 fresh-profile fails with a blank complete document and ready backend; independently RF fixture resizes before a BrowserWindow exists, before any comparisons. Neither is a performance-budget-only outcome."
   }
 }

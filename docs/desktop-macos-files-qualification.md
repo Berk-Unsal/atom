@@ -1,10 +1,10 @@
 # Production macOS file-panel qualification
 
-Status: prepared for #154/#156/#158/#159; actual hosted arm64/Intel outcome is pending. Unit selectors and local refusal are supporting evidence, not native file-panel acceptance.
+Status: the first arm64 native attempt reaches the actual Save/path sheets but fails before its first file write; corrected complete arm64/Intel verification is pending for #154/#156/#158/#159. Unit selectors and local refusal are supporting evidence, not native file-panel acceptance.
 
 The macOS package matrix launches the actual production app, copied outside the repository under a Unicode/space path and made read-only. HOME and document paths belong to one private owned temporary tree. System Events targets the exact PID and `io.github.berk-unsal.atom` bundle ID. No Electron dialog method, selected path response, filesystem operation, shared serializer or RF request is replaced.
 
-The driver identifies native sheets/dialogs with unique bounded Cancel and Open/Save controls. Before confirming, it uses the real Go to Folder sheet to reach the owned destination and sets the actual Unicode filename where needed. It requires exact field readback and an enabled confirmation control. Ambiguous panels, controls outside their panel, unknown operations, escaped/symlink targets and foreign/nonprivate roots fail closed. An uncertain input failure is never retried. Bounded diagnostics record only native marker roles/frames and label classifications, excluding file-list contents and report/document accessibility text.
+The driver identifies native sheets/dialogs with unique bounded Cancel and Open/Save controls. Before confirming, it uses the real Go to Folder sheet to reach the owned destination and sets the actual Unicode filename where needed. It requires exact field readback and an enabled confirmation control. The observed buttonless macOS path sheet instead requires its unique focused field and one native Return key confirmation. Ambiguous panels, controls outside their panel, unknown operations, escaped/symlink targets and foreign/nonprivate roots fail closed. An uncertain input failure is never retried. Bounded diagnostics record only native marker roles/frames and label classifications, excluding file-list contents and report/document accessibility text.
 
 The intended complete flow mirrors the proven Linux file checks:
 
@@ -16,4 +16,11 @@ The intended complete flow mirrors the proven Linux file checks:
 
 There are nine real file-panel operations. Generated portable files, Markdown, PDFs, app bundles and default-data bytes are excluded from uploads. The workflow retains the JSON receipt and failure screenshot only. Print has its separate [complete configured proof](desktop-macos-print-qualification.md); this follow-up does not substitute file Save for native Print or claim physical output, signed/quarantined downloads or clean minimum-OS installation.
 
-Eight host regressions cover selector identity/bounds/ambiguity, cancellation with disabled confirmation, owned Unicode paths/traversal, refusal before desktop access/dependency resolution uncertain AXPress delivery and Foundation’s truthy nil attribute wrapper for a new Save target. JavaScript/JXA compilation and a read-only Foundation ownership/path-alias probe provide supporting local validation. Personal file dialogs and settings were not operated. Actual hosted native execution and resulting source-bound evidence remain required.
+Ten host regressions cover selector identity/bounds/ambiguity, cancellation with disabled confirmation, owned Unicode paths/traversal, refusal before desktop access/dependency resolution uncertain AXPress delivery and Foundation’s truthy nil attribute wrapper for a new Save target. JavaScript/JXA compilation and a read-only Foundation ownership/path-alias probe provide supporting local validation. Personal file dialogs and settings were not operated. Actual hosted native execution and resulting source-bound evidence remain required.
+
+
+## First hosted attempt
+
+Arm64 run `44816733172`, execution `4a91d19f9380a2deb8ad4a9b12170b6765f120d6` from head `9a5ae95`, passes production package smoke and the separate actual Print flow, then stops during its first Export destination. The actual native Save sheet has the expected labeled filename, Cancel and Save controls. Cmd+Shift+G opens a second native path sheet with one enabled text field and no Go/Cancel buttons, so the initial selector stops at the missing controls. No file operation is completed, and owned cleanup reports no error. [Frozen first-attempt evidence](assets/desktop-macos-files-first-ci.json) retains that failed scope.
+
+The selector now supports this observed buttonless layout only for an unambiguous native path sheet with one bounded text field. Before one Return key event, it requires exact owned destination readback, actual field focus and the expected process remaining frontmost. Two new cases reject unfocused, ambiguous or out-of-panel fields. Input delivery failures still propagate without retry; actual corrected execution is pending.

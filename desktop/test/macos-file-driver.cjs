@@ -13,6 +13,11 @@ function chooseFilePanel(panels, kind, ready) {
   var accepted = panels.filter(function (panel) {
     if (!(panel.role === "AXSheet" || panel.role === "AXWindow" && panel.subrole === "AXDialog")) return false;
     var controls = panel.controls.filter(function (item) { return inside(panel.frame, item.frame); });
+    if (kind === "path" && !controls.some(function (item) { return item.role === "AXButton" && ["Cancel", "Save", "Open", "Go"].indexOf(item.name) >= 0; })) {
+      var pathFields = controls.filter(function (item) { return item.role === "AXTextField" && item.enabled === true; });
+      if (pathFields.length !== 1 || ready && pathFields[0].focused !== true) return false;
+      panel.field = pathFields[0]; panel.keyboard_confirmation = true; return true;
+    }
     var cancel = controls.filter(function (item) { return item.role === "AXButton" && item.name === "Cancel" && item.enabled === true; });
     var confirm = controls.filter(function (item) { return item.role === "AXButton" && item.name === label && (!ready || item.enabled === true); });
     if (cancel.length !== 1 || confirm.length !== 1) return false;
@@ -60,6 +65,7 @@ function run(argv) {
       var id = String(visited), item = { id: id, role: role, name: property(element, "name", ""), description: property(element, "description", ""),
         enabled: property(element, "enabled", false), frame: frame(element) };
       try { item.identifier = element.attributes.byName("AXIdentifier").value(); } catch (_) {}
+      try { item.focused = element.attributes.byName("AXFocused").value() === true; } catch (_) {}
       refs[id] = element; controls.push(item);
       property(element, "uiElements", []).forEach(function (child) { capture(child, depth + 1, controls); });
     }
@@ -69,19 +75,19 @@ function run(argv) {
       else property(window, "sheets", []).forEach(panel);
     });
     last = panels.map(function (panel) { return { role: panel.role, subrole: panel.subrole, frame: panel.frame, controls: panel.controls.filter(function (item) {
-      return ["Cancel", "Save", "Open", "Go"].indexOf(item.name) >= 0 || ["AXTextField", "AXComboBox"].indexOf(item.role) >= 0;
-    }).map(function (item) { return { role: item.role, marker: ["Cancel", "Save", "Open", "Go"].indexOf(item.name) >= 0 ? item.name : "native-path-or-filename-field", enabled: item.enabled, frame: item.frame,
+      return item.role === "AXButton" || ["AXTextField", "AXComboBox"].indexOf(item.role) >= 0;
+    }).map(function (item) { return { role: item.role, marker: ["Cancel", "Save", "Open", "Go"].indexOf(item.name) >= 0 ? item.name : item.role === "AXButton" ? "other-native-button" : "native-path-or-filename-field", focused: item.focused, enabled: item.enabled, frame: item.frame,
       save_as_label: [item.name, item.description].some(function (text) { return /^Save As:?$/i.test(text || ""); }) }; }) }; });
     return panels;
   }
   function wait(kind, ready) {
     var end = Date.now() + 30000, failure = "";
     while (Date.now() < end) { try { var panels = observe();
-      if (kind !== "path" && panels.some(function (panel) { return panel.controls.some(function (item) { return item.role === "AXButton" && item.name === "Go"; }); })) throw new Error("Native path navigation is still open");
+      if (kind !== "path" && panels.some(function (panel) { try { chooseFilePanel([panel], "path", false); return true; } catch (_) { return false; } })) throw new Error("Native path navigation is still open");
       return chooseFilePanel(panels, kind, ready); } catch (error) { failure = String(error); delay(0.15); } }
     throw new Error(failure + "; bounded native markers: " + JSON.stringify(last));
   }
-  function marker(panel) { return { role: panel.role, frame: panel.frame, confirm: { role: panel.confirm.role, frame: panel.confirm.frame, enabled: panel.confirm.enabled }, field_role: panel.field && panel.field.role }; }
+  function marker(panel) { return { role: panel.role, frame: panel.frame, confirm: panel.confirm ? { role: panel.confirm.role, frame: panel.confirm.frame, enabled: panel.confirm.enabled } : { method: "focused-native-path-field Return" }, field_role: panel.field && panel.field.role }; }
   var kind = /open$/.test(action) || action === "open" ? "open" : "save", initial = wait(kind, false);
   var receipt = { pid: pid, operation: action, bundle_id: process.bundleIdentifier(), title: title, native_widgets_only: true,
     method: "System Events actual native path/filename controls and AXPress; no dialog response replacement", initial_panel: marker(initial) };
@@ -91,7 +97,12 @@ function run(argv) {
   var navigation = wait("path", false), destination = action === "open" ? target : target.slice(0, target.lastIndexOf("/"));
   refs[navigation.field.id].value = destination;
   if (property(refs[navigation.field.id], "value", "") !== destination) throw new Error("Native path field did not retain the exact owned destination");
-  navigation = wait("path", true); receipt.path_panel = marker(navigation); refs[navigation.confirm.id].click();
+  navigation = wait("path", true); receipt.path_panel = marker(navigation);
+  if (property(refs[navigation.field.id], "value", "") !== destination) throw new Error("Native path changed before confirmation");
+  if (navigation.keyboard_confirmation) {
+    if (property(process, "frontmost", false) !== true || navigation.field.focused !== true) throw new Error("Native path field must own focus before Return");
+    system.keyCode(36);
+  } else refs[navigation.confirm.id].click();
   var final = wait(kind, false);
   if (action === "save") {
     var filename = target.slice(target.lastIndexOf("/") + 1); refs[final.field.id].value = filename;

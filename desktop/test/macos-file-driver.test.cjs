@@ -70,3 +70,16 @@ test("treats Foundation's truthy nil wrapper as absent attributes for a new save
   assert.equal(hasAttributes({ isNil: () => false, objectForKey() {} }), true);
   assert.equal(hasAttributes(null), false); assert.equal(hasAttributes({}), false);
 });
+
+
+test("supports the observed buttonless macOS Go to Folder sheet only with a focused native field", () => {
+  const value = panel("path"); value.controls = [value.controls[2]]; value.controls[0].focused = true;
+  const selected = chooseFilePanel([value], "path", true); assert.equal(selected.keyboard_confirmation, true); assert.equal(selected.field.id, "filename");
+  value.controls[0].focused = false; assert.throws(() => chooseFilePanel([value], "path", true));
+});
+test("rejects ambiguous or out-of-panel buttonless path fields", () => {
+  let value = panel("path"); value.controls = [value.controls[2]]; value.controls[0].focused = true;
+  assert.throws(() => chooseFilePanel([value, structuredClone(value)], "path", true));
+  value.controls.push({ ...value.controls[0], id: "other", focused: false }); assert.throws(() => chooseFilePanel([value], "path", true));
+  value = panel("path"); value.controls = [value.controls[2]]; value.controls[0].frame.x = 1000; assert.throws(() => chooseFilePanel([value], "path", true));
+});

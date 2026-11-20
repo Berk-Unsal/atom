@@ -1,6 +1,6 @@
 "use strict";
 const test = require("node:test"), assert = require("node:assert/strict");
-const { chooseFilePanel, targetWithinRoot } = require("./macos-file-driver.cjs");
+const { chooseFilePanel, targetWithinRoot, hasAttributes } = require("./macos-file-driver.cjs");
 function panel(kind = "save") { return { role: "AXSheet", frame: { x: 10, y: 10, width: 700, height: 500 }, controls: [
   { id: "cancel", role: "AXButton", name: "Cancel", enabled: true, frame: { x: 450, y: 450, width: 80, height: 25 } },
   { id: "confirm", role: "AXButton", name: { save: "Save", open: "Open", path: "Go" }[kind], enabled: true, frame: { x: 550, y: 450, width: 80, height: 25 } },
@@ -55,10 +55,18 @@ test("never retries an uncertain native Cancel input", () => {
   const process = { bundleIdentifier: () => "io.github.berk-unsal.atom", windows: () => [{ subrole: () => "AXStandardWindow", sheets: () => [root] }] };
   const dollar = (value) => ({ stringByResolvingSymlinksInPath: value });
   Object.assign(dollar, { NSProcessInfo: { processInfo: { environment: { objectForKey: () => "true" } } }, getuid: () => 501,
-    NSFileManager: { defaultManager: { attributesOfItemAtPathError: (target) => target.endsWith("ABC123") ? { objectForKey: (name) => ({ NSFileOwnerAccountID: 501, NSFilePosixPermissions: 448, NSFileType: "NSFileTypeDirectory" })[name] } : null } } });
+    NSFileManager: { defaultManager: { attributesOfItemAtPathError: (target) => target.endsWith("ABC123") ? { isNil: () => false, objectForKey: (name) => ({ NSFileOwnerAccountID: 501, NSFilePosixPermissions: 448, NSFileType: "NSFileTypeDirectory" })[name] } : null } } });
   const context = { ObjC: { import() {}, bindFunction() {}, unwrap: (value) => value }, $: dollar,
     Application: () => ({ applicationProcesses: { whose: () => () => [process] } }), delay: () => { throw new Error("Must not retry input"); } };
   vm.createContext(context); vm.runInContext(fs.readFileSync(require.resolve("./macos-file-driver.cjs"), "utf8"), context);
   assert.throws(() => context.run(["123", "cancel-open", "Open A.T.O.M project", "/private/tmp/atom-macos-files-ABC123/file.json", "/private/tmp/atom-macos-files-ABC123"]), /AXPress delivery uncertain/);
   assert.equal(clicks, 1);
+});
+
+
+test("treats Foundation's truthy nil wrapper as absent attributes for a new save target", () => {
+  const nil = { isNil: () => true };
+  assert.equal(Boolean(nil), true); assert.equal(hasAttributes(nil), false);
+  assert.equal(hasAttributes({ isNil: () => false, objectForKey() {} }), true);
+  assert.equal(hasAttributes(null), false); assert.equal(hasAttributes({}), false);
 });

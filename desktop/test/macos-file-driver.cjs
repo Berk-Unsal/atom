@@ -28,6 +28,7 @@ function chooseFilePanel(panels, kind, ready) {
   if (accepted.length !== 1) throw new Error("Expected one unambiguous native " + kind + " panel");
   return accepted[0];
 }
+function hasAttributes(value) { return Boolean(value && typeof value.isNil === "function" && !value.isNil()); }
 function run(argv) {
   ObjC.import("Foundation"); ObjC.import("stdlib"); ObjC.bindFunction("getuid", ["unsigned int", []]);
   var environment = $.NSProcessInfo.processInfo.environment;
@@ -40,9 +41,9 @@ function run(argv) {
   var canonicalParent = ObjC.unwrap($(parent).stringByResolvingSymlinksInPath);
   if (!targetWithinRoot(canonicalRoot, canonicalParent + "/" + basename)) throw new Error("File-panel target escapes the owned tree");
   var leaf = $.NSFileManager.defaultManager.attributesOfItemAtPathError(target, null);
-  if (leaf && ObjC.unwrap(leaf.objectForKey("NSFileType")) === "NSFileTypeSymbolicLink") throw new Error("A native file target must not be a symlink");
+  if (hasAttributes(leaf) && ObjC.unwrap(leaf.objectForKey("NSFileType")) === "NSFileTypeSymbolicLink") throw new Error("A native file target must not be a symlink");
   var attributes = $.NSFileManager.defaultManager.attributesOfItemAtPathError(root, null);
-  if (!attributes || Number(ObjC.unwrap(attributes.objectForKey("NSFileOwnerAccountID"))) !== $.getuid() ||
+  if (!hasAttributes(attributes) || Number(ObjC.unwrap(attributes.objectForKey("NSFileOwnerAccountID"))) !== $.getuid() ||
       Number(ObjC.unwrap(attributes.objectForKey("NSFilePosixPermissions"))) !== 448 || ObjC.unwrap(attributes.objectForKey("NSFileType")) !== "NSFileTypeDirectory") throw new Error("Expected an owned private qualification directory");
   var system = Application("System Events"), matches = system.applicationProcesses.whose({ unixId: pid })();
   if (matches.length !== 1 || matches[0].bundleIdentifier() !== "io.github.berk-unsal.atom") throw new Error("Expected the exact packaged Atom process");
@@ -99,4 +100,4 @@ function run(argv) {
   final = wait(kind, true); receipt.final_panel = marker(final); refs[final.confirm.id].click();
   return JSON.stringify(receipt);
 }
-if (typeof module !== "undefined") module.exports = { inside, targetWithinRoot, chooseFilePanel };
+if (typeof module !== "undefined") module.exports = { inside, targetWithinRoot, chooseFilePanel, hasAttributes };

@@ -48,6 +48,10 @@ jobs:
       - name: Prepare only disposable macOS Print qualification tools and display
         run: |
           brew install poppler tesseract
+          mkdir -p desktop/test-results/macos-ocr
+          curl --fail --silent --show-error --location 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/923915d4ced2a7235221788285785a29c4a42d4a/tur.traineddata' --output desktop/test-results/macos-ocr/tur.traineddata
+          printf '%s  %s\n' '7393381111e1152420fc4092cb44eef4237580d21b92bf30d7d221aad192c6b7' 'desktop/test-results/macos-ocr/tur.traineddata' | shasum -a 256 -c -
+          ln -s "$(brew --prefix tesseract)/share/tessdata/eng.traineddata" desktop/test-results/macos-ocr/eng.traineddata
           mkdir -p desktop/test-results
           swift desktop/test/macos-display.swift > desktop/test-results/macos-print-display.json
       - name: Exercise actual macOS Print Cancel and a completed local IPP job

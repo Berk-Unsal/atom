@@ -1,0 +1,343 @@
+{
+  "schema": 1,
+  "run_id": 44806823023,
+  "url": "https://github.com/Berk-Unsal/atom/actions/runs/44806823023",
+  "pr_head": "70c4fabecf801b241309ee2a195e53549592d360",
+  "source_commit": "caab17b362683c518e53ab9e45f89bcf7dbf10c1",
+  "scope": "First actual configured macOS Print run on both architectures. Native controls/Cancel/job output and Unicode extraction succeed, but full qualification fails raster OCR before ordinary Quit. Corrected-language hosted verification remains pending.",
+  "source_rows_or_generated_pdf_files_uploaded": false,
+  "targets": [
+    {
+      "target": "macos-15",
+      "evidence_artifact_id": 14663057544,
+      "source_commit": "caab17b362683c518e53ab9e45f89bcf7dbf10c1",
+      "reference": {
+        "platform": "darwin",
+        "architecture": "arm64",
+        "kernel": "24.6.0",
+        "cpu": "Apple M1 (Virtual)",
+        "logical_cpus": 3,
+        "memory_bytes": 7516192768,
+        "node": "v24.22.3"
+      },
+      "result": "FAIL",
+      "failure_stage": "English-only raster OCR misses the Turkish Project label before ordinary Quit; native controls, Cancel preservation and strict Unicode extraction passed.",
+      "dialogs": [
+        {
+          "pid": 19125,
+          "bundle_id": "io.github.berk-unsal.atom",
+          "operation": "cancel",
+          "method": "System Events actual native AXPress; no print method or response replacement",
+          "native_widgets_only": true,
+          "panel": {
+            "role": "AXWindow",
+            "subrole": "AXDialog",
+            "frame": {
+              "x": 534,
+              "y": 430,
+              "width": 531,
+              "height": 492
+            }
+          },
+          "widgets": {
+            "cancel": {
+              "id": "3",
+              "role": "AXButton",
+              "name": "Cancel",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 892,
+                "y": 881,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "print": {
+              "id": "4",
+              "role": "AXButton",
+              "name": "Print",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 974,
+                "y": 881,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "queue": {
+              "id": "7",
+              "role": "AXPopUpButton",
+              "name": null,
+              "value": "AtomQualification",
+              "enabled": true,
+              "frame": {
+                "x": 869,
+                "y": 490,
+                "width": 164,
+                "height": 22
+              }
+            }
+          }
+        },
+        {
+          "pid": 19125,
+          "bundle_id": "io.github.berk-unsal.atom",
+          "operation": "print",
+          "method": "System Events actual native AXPress; no print method or response replacement",
+          "native_widgets_only": true,
+          "panel": {
+            "role": "AXWindow",
+            "subrole": "AXDialog",
+            "frame": {
+              "x": 534,
+              "y": 430,
+              "width": 531,
+              "height": 492
+            }
+          },
+          "widgets": {
+            "cancel": {
+              "id": "3",
+              "role": "AXButton",
+              "name": "Cancel",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 892,
+                "y": 881,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "print": {
+              "id": "4",
+              "role": "AXButton",
+              "name": "Print",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 974,
+                "y": 881,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "queue": {
+              "id": "7",
+              "role": "AXPopUpButton",
+              "name": null,
+              "value": "AtomQualification",
+              "enabled": true,
+              "frame": {
+                "x": 869,
+                "y": 490,
+                "width": 164,
+                "height": 22
+              }
+            }
+          }
+        }
+      ],
+      "printer": {
+        "name": "AtomQualification",
+        "enumerated_by_production_app": true,
+        "system_default": true
+      },
+      "real_print_cancel_preserved_retained_bytes_and_empty_queue": true,
+      "printed_text": {
+        "characters": 23735,
+        "sha256": "856b85df6790296a0005027cdbc5ed117d5a6a7449c75e0984f785a1a48d1399",
+        "project_label_recovered": true,
+        "run_label_recovered": true
+      },
+      "printed_visual": {
+        "characters": 903,
+        "sha256": "f4a4e142de15be846fb7aebeaa6ad4b476e6c6e2c91828347a45b881d6fc040c",
+        "project_label_recovered": false,
+        "run_label_recovered": true,
+        "report_title_recovered": true
+      },
+      "raster": {
+        "bytes": 103482,
+        "sha256": "23e82d302c02ef1eff9f1e69ae26b62198f3b9e0d7aef7404a34e96563e470bc"
+      },
+      "local_pinned_turkish_english_ocr": {
+        "all_required_labels_recovered": true,
+        "tur_model_sha256": "7393381111e1152420fc4092cb44eef4237580d21b92bf30d7d221aad192c6b7",
+        "scope": "Supporting re-read of downloaded actual output raster; not a hosted rerun or complete native flow"
+      },
+      "rf_posts": [
+        "/api/analyze-sector"
+      ],
+      "cleanup_errors": []
+    },
+    {
+      "target": "macos-15-intel",
+      "evidence_artifact_id": 14664890430,
+      "source_commit": "caab17b362683c518e53ab9e45f89bcf7dbf10c1",
+      "reference": {
+        "platform": "darwin",
+        "architecture": "x64",
+        "kernel": "24.6.0",
+        "cpu": "Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz",
+        "logical_cpus": 4,
+        "memory_bytes": 15032385536,
+        "node": "v24.19.0"
+      },
+      "result": "FAIL",
+      "failure_stage": "English-only raster OCR misses the Turkish Project label before ordinary Quit; native controls, Cancel preservation and strict Unicode extraction passed.",
+      "dialogs": [
+        {
+          "pid": 34284,
+          "bundle_id": "io.github.berk-unsal.atom",
+          "operation": "cancel",
+          "method": "System Events actual native AXPress; no print method or response replacement",
+          "native_widgets_only": true,
+          "panel": {
+            "role": "AXWindow",
+            "subrole": "AXDialog",
+            "frame": {
+              "x": 694,
+              "y": 397,
+              "width": 531,
+              "height": 492
+            }
+          },
+          "widgets": {
+            "cancel": {
+              "id": "3",
+              "role": "AXButton",
+              "name": "Cancel",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 1052,
+                "y": 848,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "print": {
+              "id": "4",
+              "role": "AXButton",
+              "name": "Print",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 1134,
+                "y": 848,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "queue": {
+              "id": "7",
+              "role": "AXPopUpButton",
+              "name": null,
+              "value": "AtomQualification",
+              "enabled": true,
+              "frame": {
+                "x": 1029,
+                "y": 457,
+                "width": 164,
+                "height": 22
+              }
+            }
+          }
+        },
+        {
+          "pid": 34284,
+          "bundle_id": "io.github.berk-unsal.atom",
+          "operation": "print",
+          "method": "System Events actual native AXPress; no print method or response replacement",
+          "native_widgets_only": true,
+          "panel": {
+            "role": "AXWindow",
+            "subrole": "AXDialog",
+            "frame": {
+              "x": 694,
+              "y": 397,
+              "width": 531,
+              "height": 492
+            }
+          },
+          "widgets": {
+            "cancel": {
+              "id": "3",
+              "role": "AXButton",
+              "name": "Cancel",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 1052,
+                "y": 848,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "print": {
+              "id": "4",
+              "role": "AXButton",
+              "name": "Print",
+              "value": null,
+              "enabled": true,
+              "frame": {
+                "x": 1134,
+                "y": 848,
+                "width": 72,
+                "height": 22
+              }
+            },
+            "queue": {
+              "id": "7",
+              "role": "AXPopUpButton",
+              "name": null,
+              "value": "AtomQualification",
+              "enabled": true,
+              "frame": {
+                "x": 1029,
+                "y": 457,
+                "width": 164,
+                "height": 22
+              }
+            }
+          }
+        }
+      ],
+      "printer": {
+        "name": "AtomQualification",
+        "enumerated_by_production_app": true,
+        "system_default": true
+      },
+      "real_print_cancel_preserved_retained_bytes_and_empty_queue": true,
+      "printed_text": {
+        "characters": 23735,
+        "sha256": "c263bfb4c4623713fe96cc7cc63d5024a206bdaaa31f52e6cc79886164daeb55",
+        "project_label_recovered": true,
+        "run_label_recovered": true
+      },
+      "printed_visual": {
+        "characters": 905,
+        "sha256": "27c55c02084c91223c565f642538a8eae398b79b3f086c137ba4a811be60f2c7",
+        "project_label_recovered": false,
+        "run_label_recovered": true,
+        "report_title_recovered": true
+      },
+      "raster": {
+        "bytes": 103911,
+        "sha256": "3144c4a402369ebb4f4a6f3dd6f719898b3983f5110fab8c6dfe2b7677947ad4"
+      },
+      "local_pinned_turkish_english_ocr": {
+        "all_required_labels_recovered": true,
+        "tur_model_sha256": "7393381111e1152420fc4092cb44eef4237580d21b92bf30d7d221aad192c6b7",
+        "scope": "Supporting re-read of downloaded actual output raster; not a hosted rerun or complete native flow"
+      },
+      "rf_posts": [
+        "/api/analyze-sector"
+      ],
+      "cleanup_errors": []
+    }
+  ]
+}

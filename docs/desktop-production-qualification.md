@@ -132,3 +132,9 @@ Run `43003801102`, execution `3e4e7653d8f84f9ec39f572a8d0d306ac64ad70b` from `7d
 | Optimize-network relative median difference / 5% | 3.05% — passes | 0.29% — passes |
 
 The Mac evaluation result now also misses 5%; historical passing evaluation measurements do not supersede it. Full/sample aggregate RSS is 854.31/441.77 MiB on macOS and 1239.56/802.61 MiB on Ubuntu; Linux full-pack PSS is 825.45 MiB. Map animation-frame cadence is 58.37/s and 59.00/s; event-to-second-frame p95 is 33.40/46.50 ms. These remain scheduling/presentation proxies, not physical frame or INP claims. The virtual M1 has three CPUs/7 GiB and Ubuntu four CPUs/about 16 GiB; clean minimum-OS/reference-hardware acceptance remains separate. No comparator is changed and both results remain `BUDGET_REVIEW_REQUIRED`.
+
+## Completed qualification after the Go security update
+
+[Run 43012720168](https://github.com/Berk-Unsal/atom/actions/runs/43012720168), execution `27e86bd8024cc5a6e86a5d22cfadf935cfcaa0e6` from integrated head `f35cd95`, repeats the full fixture with Go 1.26.11, patched dependencies and legacy Project fixes. Both targets complete 66 exact comparisons, 20 timed pairs per endpoint, both eight-Cell workflows and 40 startup samples at 1440×900. [Frozen raw records](assets/desktop-rf-integrated-ci.json) retain the matching build/binary/pack identities and every original comparator.
+
+Network evaluation/optimization differ by 0.61%/0.62% on macOS and 0.62%/0.35% on Ubuntu, passing 5% in this run. The earlier Mac evaluation miss stays recorded. Short simulation differs by 74.02%/62.31% and still fails. Warm launch p95 is 5.085/5.246 s, warm child/data p95 4.255/4.709 s and aggregate idle RSS 859.12/1238.74 MiB; all three original warm/memory comparators fail. Map scheduling proxies are 58.25/55.65 per second and input-to-second-frame p95 34.10/47.10 ms, retaining their nonphysical scope. No budget revision is applied.

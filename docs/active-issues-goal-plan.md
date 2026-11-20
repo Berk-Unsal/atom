@@ -3,7 +3,7 @@
 Snapshot: 2026-11-20, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
 20 open issues; pull requests are inventoried separately and are not counted as issues.
 
-Current delivery: all fourteen desktop work packages have implementation PRs; #203/#204 cover production native surfaces and #205 patches the security baseline (17 task PRs total). None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
+Current delivery: all fourteen desktop work packages have implementation PRs; #203/#204 cover production native surfaces and #205 patches the security baseline (18 task PRs total, including macOS Print follow-up #207). None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
 
 ## Goal and completion rule
 
@@ -110,3 +110,7 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 - Release integration `ec8b451` passes native macOS package assembly in `43011189486` and both Ubuntu installed-package sessions in `43011189561` with the patched Go/dependency graph. These successful hosted jobs do not adopt performance budgets, signing, clean-machine or redistribution decisions; full Quality/production measurements remain separate.
 
 - macOS Print follow-up prepared: the package matrix now attempts actual System Events native Cancel/Print against an owned loopback IPP test destination on arm64 and Intel. Selector/guard/no-retry checks are supporting tests; actual hosted outcome remains pending. [Method and evidence boundary](desktop-macos-print-qualification.md) preserves physical/minimum-OS/signing/performance/rights limits.
+
+- #156/#158/#159 [macOS Print follow-up #207](https://github.com/Berk-Unsal/atom/pull/207): both hosted architectures operate real native Cancel/Print controls and produce a completed PDF with exact Unicode Project/Run labels in `44806823023`. The full flows fail before Quit because English-only OCR misreads the Turkish Project label. Pinned Turkish + English OCR recovers all required labels from both actual rasters locally; corrected full hosted verification remains pending. [Scoped first-run evidence](desktop-macos-print-qualification.md) preserves that boundary.
+
+- #158 integrated runtime evidence: `43012720168` completes all 66 exact pairs and 40 startup samples per platform with the patched Go/dependency graph and legacy fixes. [Raw evidence](assets/desktop-rf-integrated-ci.json) shows network medians within 5% in this run, while short simulation, original warm-start/readiness and RSS comparators still fail. No budget is raised.

@@ -45,6 +45,20 @@ jobs:
       - run: npm run build --prefix desktop
       - run: npm run package --prefix desktop -- --dmg
       - run: npm run test:package --prefix desktop
+      - name: Prepare only disposable macOS Print qualification tools and display
+        run: |
+          brew install poppler tesseract
+          mkdir -p desktop/test-results/macos-ocr
+          curl --fail --silent --show-error --location 'https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/923915d4ced2a7235221788285785a29c4a42d4a/tur.traineddata' --output desktop/test-results/macos-ocr/tur.traineddata
+          printf '%s  %s\n' '7393381111e1152420fc4092cb44eef4237580d21b92bf30d7d221aad192c6b7' 'desktop/test-results/macos-ocr/tur.traineddata' | shasum -a 256 -c -
+          ln -s "$(brew --prefix tesseract)/share/tessdata/eng.traineddata" desktop/test-results/macos-ocr/eng.traineddata
+          mkdir -p desktop/test-results
+          swift desktop/test/macos-display.swift > desktop/test-results/macos-print-display.json
+      - name: Exercise actual macOS Print Cancel and a completed local IPP job
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
+        run: node desktop/test/macos-print.mjs
       # No binary/data upload: the exact default pack's approval is pending.
       # Diagnostics and cryptographic inventories contain no dataset bytes.
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -59,5 +73,9 @@ jobs:
             desktop/build/packages/*/*.license-index.json
             desktop/test-results/packaged.json
             desktop/test-results/package-failed.png
+            desktop/test-results/macos-print.json
+            desktop/test-results/macos-print-failed.png
+            desktop/test-results/macos-print-output.png
+            desktop/test-results/macos-print-display.json
           if-no-files-found: warn
           retention-days: 30

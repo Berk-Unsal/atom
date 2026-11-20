@@ -1,6 +1,6 @@
 # Active GitHub issues: execution goal
 
-Snapshot: 2026-11-11, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
+Snapshot: 2026-11-20, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
 20 open issues; pull requests are inventoried separately and are not counted as issues.
 
 Current delivery: all fourteen desktop work packages have implementation PRs; #203/#204 cover production native surfaces and #205 patches the security baseline (17 task PRs total). None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
@@ -108,3 +108,5 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 - Latest security baseline: #205 at `10dd020` passes all nine Quality checks in `43011081753`, including both Go jobs, the actual production-image security scan and browser suite. It remains an independent unmerged main-target PR and is included in the release/file/Print integration. Data provenance is documented, but no historical redistribution approval was found; rights/provider, signing identity, clean minimum-OS machines, physical/macOS Print and the four field-evidence issues remain open.
 
 - Release integration `ec8b451` passes native macOS package assembly in `43011189486` and both Ubuntu installed-package sessions in `43011189561` with the patched Go/dependency graph. These successful hosted jobs do not adopt performance budgets, signing, clean-machine or redistribution decisions; full Quality/production measurements remain separate.
+
+- macOS Print follow-up prepared: the package matrix now attempts actual System Events native Cancel/Print against an owned loopback IPP test destination on arm64 and Intel. Selector/guard/no-retry checks are supporting tests; actual hosted outcome remains pending. [Method and evidence boundary](desktop-macos-print-qualification.md) preserves physical/minimum-OS/signing/performance/rights limits.

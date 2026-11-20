@@ -45,6 +45,16 @@ jobs:
       - run: npm run build --prefix desktop
       - run: npm run package --prefix desktop -- --dmg
       - run: npm run test:package --prefix desktop
+      - name: Prepare only disposable macOS Print qualification tools and display
+        run: |
+          brew install poppler tesseract
+          mkdir -p desktop/test-results
+          swift desktop/test/macos-display.swift > desktop/test-results/macos-print-display.json
+      - name: Exercise actual macOS Print Cancel and a completed local IPP job
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
+        run: node desktop/test/macos-print.mjs
       # No binary/data upload: the exact default pack's approval is pending.
       # Diagnostics and cryptographic inventories contain no dataset bytes.
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -59,5 +69,9 @@ jobs:
             desktop/build/packages/*/*.license-index.json
             desktop/test-results/packaged.json
             desktop/test-results/package-failed.png
+            desktop/test-results/macos-print.json
+            desktop/test-results/macos-print-failed.png
+            desktop/test-results/macos-print-output.png
+            desktop/test-results/macos-print-display.json
           if-no-files-found: warn
           retention-days: 30

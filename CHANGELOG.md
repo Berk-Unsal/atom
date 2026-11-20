@@ -6,6 +6,8 @@ All notable changes to A.T.O.M are recorded here. The project follows [Semantic 
 
 ### Added
 
+- Add disposable macOS production Print qualification through real native accessibility controls and an owned loopback IPP test destination.
+
 - Bundle exact-version runtime dependency notices and a CycloneDX SBOM, add protected native candidate workflows and fail-closed exact-byte desktop release promotion, and document manual installation/updates while qualification and redistribution approvals remain pending.
 
 - Add Ubuntu 24.04 x86_64 internal .deb assembly, measured ELF dependency metadata, desktop identity and per-app sandbox policy, with separate X11/Wayland install/upgrade/removal qualification. Public Linux support and data distribution remain gated.

@@ -76,3 +76,34 @@ for directory tables and cache-cleanup boundaries. Reproduce with the existing
 frontend/desktop dependencies, the local desktop build and `--storage` in a
 sandboxed graphical session. The Quality workflow documents Ubuntu's exact
 AppArmor rules; no test disables the sandbox.
+
+
+## Current startup investigation — 2026-11-20
+
+Quality run `44809236730` (`a4e8cef`, PR head `641a92f`) records a blank
+renderer during the relocated/tested-version-upgrade launch after initial
+storage, relaunch and cache checks pass. The same fixture passes locally on
+clean `0e3561a`; later hosted run `44811714976` (`66c00a0`, head `dffaf55`)
+also passes every storage assertion, but its diagnostics suite times out at
+the invalid-pack launch with a live, nonloading `app://atom/` window. The
+[scoped source/artifact record](assets/desktop-startup-observation-ci.json)
+preserves both outcomes. Neither later pass establishes the earlier cause.
+
+The storage and diagnostics fixtures now label each launch and observe bounded
+renderer exceptions, console-error hashes, approved asset/API failures and
+crashes. Exception text, console text, credentials, query strings, dynamic
+source IDs and request/response bodies are excluded. Failure-only window and
+document observations use the existing startup diagnostic helper. Four host
+regressions cover redaction, bounds and listener cleanup. These observers do
+not navigate, reload, reveal windows, alter the application, increase the
+existing 60-second wait or retry a failed launch. Hosted verification of this
+instrumentation is pending; no production correction is claimed yet.
+
+
+Clean local `9ea118a` passes the instrumented storage and diagnostics suites,
+including all four storage launches, explicit child/renderer recovery, log
+fallback, missing binary and invalid pack. The source-bound raw supporting
+records are retained above. Local observation exposed repetitive blocked-tile
+console hashes, so repeated identical console errors share one bounded entry
+with an occurrence count. All 170 host and 20 docs tests pass; local success
+still does not identify the earlier hosted failure.

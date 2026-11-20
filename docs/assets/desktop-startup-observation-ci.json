@@ -1,0 +1,772 @@
+{
+  "recorded": "2026-11-20",
+  "scope": "Hosted macOS storage and startup diagnostics; observation only, no acceptance waiver",
+  "observations": [
+    {
+      "run_id": 44809236730,
+      "head_commit": "641a92f1169cf7bc426f17f5f2ffda330153a70b",
+      "execution_commit": "a4e8cef3cd032d42c799a259ccdfc6a76e6d399e",
+      "artifact_id": 14666165811,
+      "storage": {
+        "result": "FAIL",
+        "stage": "relocated-tested-version-upgrade",
+        "initial_launch_passed": true,
+        "cache_eviction_and_port_change_passed": true,
+        "failure": "Run Sector visibility timed out after 60000 ms; blank renderer screenshot",
+        "startup_recovery_marker_observed": false
+      },
+      "interpretation": "The prior fixture did not capture renderer exceptions or failed asset/API requests; root cause remains unknown."
+    },
+    {
+      "run_id": 44811714976,
+      "head_commit": "dffaf552d2353f539b2e2dd429d0e0766fa9e1ef",
+      "execution_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+      "artifact_id": 14668086444,
+      "storage": {
+        "source_commit": "66c00a0573e050aecea0c240a7de4eac4fe06689",
+        "source_dirty": false,
+        "platform": "darwin",
+        "architecture": "arm64",
+        "release_overrides_ignored": true,
+        "relaunch_and_cache_eviction_preserved_all_stores": true,
+        "legacy_registry_metadata_survived_without_implicit_approval": true,
+        "relocation_and_tested_version_upgrade_preserved_all_stores": true,
+        "future_settings_and_unwritable_config_required_recovery_without_reset": true,
+        "private_native_directories_and_settings": true,
+        "result": "PASS",
+        "read_only_bundle_and_independent_cwd": true
+      },
+      "diagnostics": {
+        "result": "FAIL",
+        "stage": "invalid-pack",
+        "failure": "Run Sector visibility timed out after 60000 ms",
+        "native_window": {
+          "destroyed": false,
+          "loading": false,
+          "url": "app://atom/"
+        },
+        "healthy_recovery_passed": true,
+        "log_fallback_passed": true,
+        "missing_binary_useful_ui_passed": true
+      },
+      "development_timing": {
+        "result": "TIMING_BUDGET_MISSED",
+        "warm_go_ms": 5187.6105419999985,
+        "budget_ms": 5000
+      },
+      "interpretation": "Storage success on this later source does not explain or clear the earlier intermittent failure; a separate startup visibility failure now affects the invalid-pack diagnostic launch."
+    }
+  ],
+  "changes": "Add bounded test-side renderer observation to storage and diagnostics, plus failure-only window/document state. No application change, navigation retry, increased wait or assertion reduction.",
+  "remaining": "Reproduce the failure with observation, identify its cause, implement and verify a focused correction if justified.",
+  "local_supporting_observation": {
+    "scope": "Clean local macOS arm64 supporting run, not hosted failure clearance",
+    "storage": {
+      "source_commit": "9ea118a98e1769a28a4c5392e48016d61aaacb22",
+      "source_dirty": false,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "launches": [
+        {
+          "stage": "initial",
+          "bundle_name": "A.T.O.M.app",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [
+              {
+                "method": "GET",
+                "path": "/api/datasets",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/meta",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              }
+            ],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        },
+        {
+          "stage": "after-cache-eviction-and-port-change",
+          "bundle_name": "A.T.O.M.app",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [
+              {
+                "method": "GET",
+                "path": "/api/meta",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/datasets",
+                "reason": "net::ERR_ABORTED"
+              }
+            ],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        },
+        {
+          "stage": "relocated-tested-version-upgrade",
+          "bundle_name": "Relocated — çığ A.T.O.M.app",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [
+              {
+                "method": "GET",
+                "path": "/api/meta",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              }
+            ],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        },
+        {
+          "stage": "after-config-recovery",
+          "bundle_name": "Relocated — çığ A.T.O.M.app",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [
+              {
+                "method": "GET",
+                "path": "/api/meta",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              }
+            ],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        }
+      ],
+      "current_stage": "after-config-recovery",
+      "release_overrides_ignored": true,
+      "relaunch_and_cache_eviction_preserved_all_stores": true,
+      "legacy_registry_metadata_survived_without_implicit_approval": true,
+      "relocation_and_tested_version_upgrade_preserved_all_stores": true,
+      "future_settings_and_unwritable_config_required_recovery_without_reset": true,
+      "private_native_directories_and_settings": true,
+      "result": "PASS",
+      "read_only_bundle_and_independent_cwd": true
+    },
+    "diagnostics": {
+      "source_commit": "9ea118a98e1769a28a4c5392e48016d61aaacb22",
+      "source_dirty": false,
+      "platform": "darwin",
+      "architecture": "arm64",
+      "launches": [
+        {
+          "stage": "healthy",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [
+              {
+                "method": "GET",
+                "path": "/api/datasets",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/meta",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/buildings/summary",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              }
+            ],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": [
+              {
+                "observed": true
+              }
+            ]
+          }
+        },
+        {
+          "stage": "fallback",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [
+              {
+                "method": "GET",
+                "path": "/api/meta",
+                "reason": "net::ERR_ABORTED"
+              },
+              {
+                "method": "GET",
+                "path": "/api/towers",
+                "reason": "net::ERR_ABORTED"
+              }
+            ],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        },
+        {
+          "stage": "missing-binary",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        },
+        {
+          "stage": "invalid-pack",
+          "renderer": {
+            "page_errors": [],
+            "failed_requests": [],
+            "failed_responses": [],
+            "console_errors": [
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              },
+              {
+                "message_sha256": "d1dc62a9456c0d9582ea56f861af0a335d777558dfd3329501072f56a1ee1946"
+              }
+            ],
+            "crashes": []
+          }
+        }
+      ],
+      "current_stage": "invalid-pack",
+      "renderer_fault_injection": "owned-renderer-SIGKILL",
+      "child_and_renderer_crashes_required_explicit_recovery_without_rf_replay": true,
+      "open_logs_followed_a_runtime_sink_failure": true,
+      "unwritable_logs_used_private_fallback_and_opened_actual_directory": true,
+      "missing_binary_left_useful_ui_and_discoverable_logs": true,
+      "invalid_pack_exposed_dataset_failure_without_recording_manifest_or_paths": true,
+      "startup_failure_exposed_repair_choices_without_raw_user_paths": true,
+      "local_records_were_structured_private_and_redacted": true,
+      "result": "PASS"
+    }
+  }
+}

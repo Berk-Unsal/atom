@@ -6,14 +6,16 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { execFileSync, spawn } from "node:child_process";
 import { waitForRuntime } from "./runtime-wait.mjs";
+import { startupDiagnostics } from "./startup-diagnostics.mjs";
 
 const require = createRequire(import.meta.url);
+const { observeRenderer } = require("./renderer-observation.cjs");
 const desktop = path.resolve(import.meta.dirname, "..");
 const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "atom-native-diagnostics-"));
 const output = path.join(desktop, "test-results");
 const result = { source_commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: desktop, encoding: "utf8" }).trim(),
-  source_dirty: Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: desktop, encoding: "utf8" }).trim()), platform: process.platform, architecture: process.arch };
-let application; let page;
+  source_dirty: Boolean(execFileSync("git", ["status", "--porcelain"], { cwd: desktop, encoding: "utf8" }).trim()), platform: process.platform, architecture: process.arch, launches: [] };
+let application; let page; let rendererObserver;
 const fallbackDirectories = [];
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function until(predicate, message, timeout = 15_000) {
@@ -26,15 +28,17 @@ async function rows(directory, component) {
 }
 const profileAt = (name) => path.join(scratch, name);
 async function launch(name, resources) {
+  const launchRecord = { stage: name }; result.launches.push(launchRecord); result.current_stage = name;
   const env = { ...process.env, ATOM_DESKTOP_TEST_PROFILE: profileAt(name) }; delete env.ELECTRON_RUN_AS_NODE;
   delete env.ATOM_DESKTOP_DEV_SERVER; delete env.ATOM_DESKTOP_DEV_CONTROL;
   if (resources) env.ATOM_DESKTOP_TEST_RESOURCES = resources; else delete env.ATOM_DESKTOP_TEST_RESOURCES;
   application = await launchNative({ executablePath: require("electron"), args: [desktop], env, chromiumSandbox: true, timeout: 60_000 });
   page = await application.firstWindow();
+  rendererObserver = observeRenderer(page); launchRecord.renderer = rendererObserver.records;
   await page.getByRole("button", { name: "Run Sector", exact: true }).waitFor({ timeout: 60_000 });
   return application.evaluate(({ app }) => app.getPath("logs"));
 }
-async function close() { if (application) { await application.close(); application = null; page = null; } }
+async function close() { rendererObserver?.stop(); rendererObserver = null; if (application) { await application.close(); application = null; page = null; } }
 async function openLogs(expected) {
   await application.evaluate(({ shell, Menu }) => {
     globalThis.__openedLogs = []; shell.openPath = async (directory) => { globalThis.__openedLogs.push(directory); return ""; };
@@ -138,6 +142,7 @@ try {
   result.local_records_were_structured_private_and_redacted = true; result.result = "PASS";
   await fs.mkdir(output, { recursive: true }); await fs.writeFile(path.join(output, "diagnostics.json"), JSON.stringify(result, null, 2)); console.log(JSON.stringify(result, null, 2));
 } catch (error) {
+  if (application && page) result.failure_diagnostics = await startupDiagnostics(application, page);
   let nativeState;
   try { nativeState = await application?.evaluate(({ BrowserWindow }) => ({ events: globalThis.__rendererEvents, dialogs: globalThis.__rendererRecovery,
     windows: BrowserWindow.getAllWindows().map((owner) => ({ destroyed: owner.isDestroyed(), loading: owner.webContents.isLoading(), url: owner.webContents.getURL() })) })); } catch { /* Main process may already have exited. */ }

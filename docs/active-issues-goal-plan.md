@@ -3,7 +3,7 @@
 Snapshot: 2026-11-20, repository `Berk-Unsal/atom`, main `95389c9`, product 0.13.1.
 20 open issues; pull requests are inventoried separately and are not counted as issues.
 
-Current delivery: all fourteen desktop work packages have implementation PRs; #203/#204 cover production native surfaces and #205 patches the security baseline (18 task PRs total, including macOS Print follow-up #207). None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
+Current delivery: all fourteen desktop work packages have implementation PRs; #203/#204 cover production native surfaces and #205 patches the security baseline (18 task PRs total, including macOS Print follow-up #207; an additional startup investigation is prepared). None is merged or closed. Historical check counts below retain their recorded source. The latest release → file → Print integration includes twenty-pair RF qualification, the legacy persistence fixes and Go 1.26.11/x/net 0.62.0; its real nine-dialog and eleven-action Print flows now pass on X11/Wayland. PR #205 has all nine checks green. Package integration, original performance comparators and external acceptance remain separate.
 
 ## Goal and completion rule
 
@@ -118,3 +118,6 @@ An issue is complete only when its acceptance criteria have code, tests and any 
 - Latest #156/#158/#159 macOS Print proof: [#207](https://github.com/Berk-Unsal/atom/pull/207) passes both complete native flows in `44809236684`, execution `a4e8cef` from `641a92f`. Real Cancel/Print, exact Unicode/readable output, final Quit/owned-child cleanup and immutable bundle checks pass with one explicit Sector request. [Frozen scoped evidence](desktop-macos-print-qualification.md) preserves physical/minimum-OS/signing/performance/rights limits.
 
 - #153 current uncertainty: Quality `44809236730` records a macOS blank-renderer timeout at the relocated/upgraded storage fixture's launch, after its initial/relaunch/cache checks pass. It also misses warm Go development timing. This functional storage failure is being diagnosed and is not waived by the separate passing Print/package jobs.
+
+
+- #153/#157 startup investigation: later hosted `44811714976` passes the complete storage suite on `66c00a0`, but the invalid-pack diagnostics launch times out with a live, nonloading app window. The earlier storage failure remains unexplained. Test-side launch labels and bounded, redacted renderer observations are prepared for both fixtures; their existing wait/assertions and production code are unchanged. [Source-bound observations and next step](desktop-storage-qualification.md#current-startup-investigation--2026-11-20) preserve the failures and later pass without claiming a fix.
